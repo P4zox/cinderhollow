@@ -1,0 +1,174 @@
+{
+ "native": 1,
+ "frame": [
+  160,
+  96
+ ],
+ "anchor": [
+  78,
+  96
+ ],
+ "hurtbox": [
+  37,
+  24,
+  75,
+  57
+ ],
+ "hurtbox_head": [
+  108,
+  38,
+  43,
+  36
+ ],
+ "attacks": {
+  "bite": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    108,
+    45,
+    52,
+    51
+   ],
+   "rects": {
+    "3": [
+     108,
+     45,
+     51,
+     51
+    ],
+    "4": [
+     108,
+     45,
+     52,
+     51
+    ]
+   }
+  },
+  "pounce": {
+   "active": [
+    4,
+    5
+   ],
+   "hit": [
+    110,
+    28,
+    49,
+    68
+   ],
+   "rects": {
+    "4": [
+     110,
+     28,
+     47,
+     62
+    ],
+    "5": [
+     112,
+     46,
+     47,
+     50
+    ]
+   }
+  },
+  "sweep": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    1,
+    70,
+    159,
+    26
+   ],
+   "rects": {
+    "3": [
+     1,
+     70,
+     157,
+     25
+    ],
+    "4": [
+     79,
+     70,
+     81,
+     26
+    ]
+   }
+  },
+  "charge": {
+   "active": [
+    0,
+    3
+   ],
+   "hit": [
+    94,
+    19,
+    65,
+    74
+   ],
+   "rects": {
+    "0": [
+     94,
+     27,
+     61,
+     66
+    ],
+    "1": [
+     94,
+     19,
+     63,
+     67
+    ],
+    "2": [
+     94,
+     20,
+     65,
+     64
+    ],
+    "3": [
+     96,
+     25,
+     63,
+     66
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "bite": {
+   "frame": 2,
+   "at": [
+    131,
+    43
+   ]
+  },
+  "pounce": {
+   "frame": 1,
+   "at": [
+    140,
+    72
+   ]
+  },
+  "sweep": {
+   "frame": 1,
+   "at": [
+    127,
+    69
+   ]
+  }
+ },
+ "spawn": {
+  "howl": {
+   "frame": 4,
+   "at": [
+    86,
+    95
+   ]
+  }
+ },
+ "notes": "faces right; 'hit' = union of per-frame 'rects' over the inclusive active range; charge is active on every frame (loop); howl spawns fx_root_spike (engine positions them); telegraph 'at' = where to flash the glint the frame before the strike."
+}

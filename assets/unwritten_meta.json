@@ -1,0 +1,114 @@
+{
+ "native": 1,
+ "frame": [
+  224,
+  176
+ ],
+ "anchor": [
+  114,
+  176
+ ],
+ "floating": true,
+ "hurtbox": [
+  92,
+  33,
+  41,
+  127
+ ],
+ "attacks": {
+  "reap": {
+   "active": [
+    4,
+    6
+   ],
+   "hit": [
+    128,
+    17,
+    93,
+    159
+   ],
+   "rects": {
+    "4": [
+     128,
+     17,
+     82,
+     159
+    ],
+    "5": [
+     167,
+     37,
+     54,
+     139
+    ],
+    "6": [
+     181,
+     90,
+     40,
+     86
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "reap": {
+   "frame": 3,
+   "at": [
+    102,
+    23
+   ]
+  },
+  "cast": {
+   "frame": 3,
+   "at": [
+    165,
+    87
+   ]
+  },
+  "write": {
+   "frame": 2,
+   "at": [
+    145,
+    133
+   ]
+  }
+ },
+ "spawn": {
+  "cast": {
+   "frame": 5,
+   "at": [
+    167,
+    85
+   ],
+   "hold": 6
+  },
+  "write": {
+   "frame": 4,
+   "at": [
+    142,
+    174
+   ]
+  },
+  "sink": {
+   "frame": 6,
+   "at": [
+    114,
+    173
+   ]
+  }
+ },
+ "points": {
+  "eye": [
+   121,
+   64
+  ],
+  "chest": [
+   116,
+   94
+  ],
+  "scythe_rest": [
+   138,
+   108
+  ]
+ },
+ "notes": "faces right; floating: anchor = floor point under the body (lowest wisp ~11px above it). hurtbox = hood, robe and upper cloak tails. reap: overhead scythe chop in front, telegraph glint on frame 3 (held 200ms), active 4-6, 'hit' = blade + smear union reaching the floor. cast: glyph ring grows 1-4, fire patterns at spawn.cast (frame 5), hold frame 6 to channel. write: the scythe butt is stabbed into the floor on frame 3, spawn.write on frame 4 (ink runs along the floor). sink/rise: the body sinks into / rises from an ink pool at the anchor; frames 5-6 of sink (0-1 of rise) are fully submerged. transform: phase-2 change (hood tears on frame 4). death: the scythe falls behind it and the body unravels into ink; the last frame (scythe on the floor) is held."
+}

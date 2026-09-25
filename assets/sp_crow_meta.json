@@ -1,0 +1,42 @@
+{
+ "native": 1,
+ "frame": [
+  40,
+  32
+ ],
+ "anchor": [
+  20,
+  16
+ ],
+ "flying": true,
+ "hurtbox": [
+  12,
+  10,
+  16,
+  12
+ ],
+ "attacks": {
+  "dive": {
+   "active": [
+    2,
+    4
+   ],
+   "hit": [
+    14,
+    11,
+    18,
+    12
+   ]
+  }
+ },
+ "telegraph": {
+  "dive": {
+   "frame": 1,
+   "at": [
+    23,
+    7
+   ]
+  }
+ },
+ "notes": "faces right; floats (anchor = body centre). fly: 6-frame wingbeat loop. perch: standing on a ledge, feet on frame row 24 (8px below the anchor), head bob/peck loop. takeoff: perch -> fly. dive: 0-1 wings flare up/back (1 = held windup, eye glints), 2-4 wings folded, beak-first plunge ~40 deg down-right (engine moves it along that line), 5 wings snap open. death: tumbles, feathers burst, falls and scatters into feathers (engine may let it fall further)."
+}

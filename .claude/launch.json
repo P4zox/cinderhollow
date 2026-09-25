@@ -1,0 +1,53 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "heist",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--directory",
+        "/Users/halstonchen/Claude/heist-proto"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "aurarng",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8766",
+        "--directory",
+        "/Users/halstonchen/Claude/AuraRNG"
+      ],
+      "port": 8766
+    },
+    {
+      "name": "ashen-omen",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8767",
+        "--directory",
+        "/Users/halstonchen/Claude/elden-knight/web/dist"
+      ],
+      "port": 8767
+    },
+    {
+      "name": "cinderhollow",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8768",
+        "--directory",
+        "/Users/halstonchen/Claude/cinderhollow/web/dist"
+      ],
+      "port": 8768
+    }
+  ]
+}

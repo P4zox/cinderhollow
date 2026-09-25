@@ -1,0 +1,41 @@
+{
+ "native": 1,
+ "frame": [
+  40,
+  48
+ ],
+ "anchor": [
+  16,
+  48
+ ],
+ "hurtbox": [
+  7,
+  5,
+  17,
+  43
+ ],
+ "attacks": {
+  "swing": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    28,
+    13,
+    12,
+    35
+   ]
+  }
+ },
+ "telegraph": {
+  "swing": {
+   "frame": 4,
+   "at": [
+    35,
+    14
+   ]
+  }
+ },
+ "notes": "faces right; swing: lantern whirled up behind and held overhead (frames 1-3, 3 = held windup with the flame flaring), whipped over (4) and down in front (active 5-6, low enough to hit the floor), follow-through 7, recover 8-9. The lantern flame is the only light source (engine may add a violet point light at the lantern; frame-0 lantern centre = hurtbox-relative idle position)."
+}

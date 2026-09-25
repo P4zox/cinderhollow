@@ -1,0 +1,105 @@
+{
+ "native": 1,
+ "frame": [
+  72,
+  72
+ ],
+ "anchor": [
+  29,
+  72
+ ],
+ "hurtbox": [
+  17,
+  5,
+  27,
+  67
+ ],
+ "attacks": {
+  "swing": {
+   "windows": [
+    {
+     "active": [
+      3,
+      4
+     ],
+     "hit": [
+      36,
+      35,
+      36,
+      37
+     ]
+    },
+    {
+     "active": [
+      8,
+      9
+     ],
+     "hit": [
+      36,
+      2,
+      36,
+      70
+     ]
+    }
+   ]
+  },
+  "slam": {
+   "active": [
+    6,
+    7
+   ],
+   "hit": [
+    44,
+    46,
+    24,
+    26
+   ]
+  }
+ },
+ "spawn": {
+  "snuff": {
+   "frame": 6,
+   "at": [
+    55,
+    23
+   ]
+  },
+  "slam": {
+   "frame": 6,
+   "at": [
+    56,
+    71
+   ]
+  }
+ },
+ "telegraph": {
+  "swing": {
+   "frame": 2,
+   "at": [
+    10,
+    49
+   ]
+  },
+  "snuff": {
+   "frame": 4,
+   "at": [
+    55,
+    23
+   ]
+  },
+  "slam": {
+   "frame": 3,
+   "at": [
+    8,
+    26
+   ]
+  }
+ },
+ "light": {
+  "idle": [
+   47,
+   59
+  ]
+ },
+ "notes": "faces right. swing: two chain swings -- window 0 low underhand sweep (wind-up held on frame 2), window 1 overhead smash (wind-up held on frame 7). snuff: lantern raised, flame flares (4, held), lid clamps (5), all light snuffed on frame 6 -- spawn the darkness effect at spawn.snuff.at; the lantern stays dark until frame 9. slam: censer hoisted behind (3 held), smashed into the floor, active 6-7 with violet fire erupting (spawn.slam = floor impact point, frame 6). light.idle = censer centre for an engine point light. Telegraph 'at' = glint point."
+}

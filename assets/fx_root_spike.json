@@ -1,0 +1,86 @@
+{ "frames": [
+   {
+    "filename": "fx_root_spike 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 110
+   },
+   {
+    "filename": "fx_root_spike 1.aseprite",
+    "frame": { "x": 24, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 130
+   },
+   {
+    "filename": "fx_root_spike 2.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_root_spike 3.aseprite",
+    "frame": { "x": 72, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 60
+   },
+   {
+    "filename": "fx_root_spike 4.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 140
+   },
+   {
+    "filename": "fx_root_spike 5.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "fx_root_spike 6.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 80
+   },
+   {
+    "filename": "fx_root_spike 7.aseprite",
+    "frame": { "x": 168, "y": 0, "w": 24, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 64 },
+    "sourceSize": { "w": 24, "h": 64 },
+    "duration": 90
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_root_spike.png",
+  "format": "RGBA8888",
+  "size": { "w": 192, "h": 64 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "root_spike", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

@@ -1,0 +1,578 @@
+{ "frames": [
+   {
+    "filename": "vessel 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 1.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 2.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 3.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 4.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 5.aseprite",
+    "frame": { "x": 800, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 6.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 7.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 8.aseprite",
+    "frame": { "x": 1280, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 9.aseprite",
+    "frame": { "x": 1440, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 10.aseprite",
+    "frame": { "x": 1600, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 11.aseprite",
+    "frame": { "x": 1760, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 12.aseprite",
+    "frame": { "x": 1920, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 13.aseprite",
+    "frame": { "x": 2080, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 14.aseprite",
+    "frame": { "x": 2240, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 15.aseprite",
+    "frame": { "x": 2400, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 16.aseprite",
+    "frame": { "x": 2560, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 17.aseprite",
+    "frame": { "x": 2720, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 360
+   },
+   {
+    "filename": "vessel 18.aseprite",
+    "frame": { "x": 2880, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "vessel 19.aseprite",
+    "frame": { "x": 3040, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vessel 20.aseprite",
+    "frame": { "x": 3200, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vessel 21.aseprite",
+    "frame": { "x": 3360, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vessel 22.aseprite",
+    "frame": { "x": 3520, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 23.aseprite",
+    "frame": { "x": 3680, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 220
+   },
+   {
+    "filename": "vessel 24.aseprite",
+    "frame": { "x": 3840, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 25.aseprite",
+    "frame": { "x": 4000, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 26.aseprite",
+    "frame": { "x": 4160, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 27.aseprite",
+    "frame": { "x": 4320, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 340
+   },
+   {
+    "filename": "vessel 28.aseprite",
+    "frame": { "x": 4480, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "vessel 29.aseprite",
+    "frame": { "x": 4640, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vessel 30.aseprite",
+    "frame": { "x": 4800, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vessel 31.aseprite",
+    "frame": { "x": 4960, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vessel 32.aseprite",
+    "frame": { "x": 5120, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 33.aseprite",
+    "frame": { "x": 5280, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 220
+   },
+   {
+    "filename": "vessel 34.aseprite",
+    "frame": { "x": 5440, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vessel 35.aseprite",
+    "frame": { "x": 5600, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 36.aseprite",
+    "frame": { "x": 5760, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 37.aseprite",
+    "frame": { "x": 5920, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 38.aseprite",
+    "frame": { "x": 6080, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 260
+   },
+   {
+    "filename": "vessel 39.aseprite",
+    "frame": { "x": 6240, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vessel 40.aseprite",
+    "frame": { "x": 6400, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vessel 41.aseprite",
+    "frame": { "x": 6560, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "vessel 42.aseprite",
+    "frame": { "x": 6720, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vessel 43.aseprite",
+    "frame": { "x": 6880, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vessel 44.aseprite",
+    "frame": { "x": 7040, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vessel 45.aseprite",
+    "frame": { "x": 7200, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 46.aseprite",
+    "frame": { "x": 7360, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "vessel 47.aseprite",
+    "frame": { "x": 7520, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 48.aseprite",
+    "frame": { "x": 7680, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 260
+   },
+   {
+    "filename": "vessel 49.aseprite",
+    "frame": { "x": 7840, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 260
+   },
+   {
+    "filename": "vessel 50.aseprite",
+    "frame": { "x": 8000, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "vessel 51.aseprite",
+    "frame": { "x": 8160, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "vessel 52.aseprite",
+    "frame": { "x": 8320, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "vessel 53.aseprite",
+    "frame": { "x": 8480, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "vessel 54.aseprite",
+    "frame": { "x": 8640, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vessel 55.aseprite",
+    "frame": { "x": 8800, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 56.aseprite",
+    "frame": { "x": 8960, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vessel 57.aseprite",
+    "frame": { "x": 9120, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vessel 58.aseprite",
+    "frame": { "x": 9280, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vessel 59.aseprite",
+    "frame": { "x": 9440, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 220
+   },
+   {
+    "filename": "vessel 60.aseprite",
+    "frame": { "x": 9600, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 260
+   },
+   {
+    "filename": "vessel 61.aseprite",
+    "frame": { "x": 9760, "y": 0, "w": 160, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "sourceSize": { "w": 160, "h": 128 },
+    "duration": 900
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "vessel.png",
+  "format": "RGBA8888",
+  "size": { "w": 9920, "h": 128 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "crawl", "from": 6, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "slam", "from": 14, "to": 23, "direction": "forward", "color": "#000000ff" },
+   { "name": "sweep", "from": 24, "to": 33, "direction": "forward", "color": "#000000ff" },
+   { "name": "spew", "from": 34, "to": 45, "direction": "forward", "color": "#000000ff" },
+   { "name": "stagger", "from": 46, "to": 49, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 50, "to": 61, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

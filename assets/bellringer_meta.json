@@ -1,0 +1,147 @@
+{
+ "native": 1,
+ "frame": [
+  192,
+  128
+ ],
+ "anchor": [
+  96,
+  128
+ ],
+ "hurtbox": [
+  79,
+  49,
+  43,
+  79
+ ],
+ "attacks": {
+  "swing": {
+   "windows": [
+    {
+     "active": [
+      5,
+      7
+     ],
+     "hit": [
+      104,
+      30,
+      84,
+      98
+     ],
+     "rects": {
+      "5": [
+       104,
+       80,
+       59,
+       48
+      ],
+      "6": [
+       130,
+       74,
+       58,
+       54
+      ],
+      "7": [
+       131,
+       30,
+       57,
+       98
+      ]
+     }
+    },
+    {
+     "active": [
+      10,
+      11
+     ],
+     "hit": [
+      17,
+      7,
+      59,
+      121
+     ],
+     "rects": {
+      "10": [
+       18,
+       7,
+       57,
+       121
+      ],
+      "11": [
+       17,
+       60,
+       59,
+       68
+      ]
+     }
+    }
+   ]
+  },
+  "slam": {
+   "active": [
+    6,
+    7
+   ],
+   "hit": [
+    106,
+    0,
+    78,
+    128
+   ],
+   "rects": {
+    "6": [
+     106,
+     0,
+     58,
+     128
+    ],
+    "7": [
+     112,
+     39,
+     72,
+     89
+    ]
+   }
+  }
+ },
+ "spawn": {
+  "slam": {
+   "frame": 7,
+   "at": [
+    148,
+    127
+   ]
+  },
+  "ring": {
+   "frame": 5,
+   "at": [
+    143,
+    112
+   ]
+  }
+ },
+ "telegraph": {
+  "swing": {
+   "frame": 4,
+   "at": [
+    24,
+    102
+   ]
+  },
+  "slam": {
+   "frame": 5,
+   "at": [
+    50,
+    44
+   ]
+  },
+  "ring": {
+   "frame": 4,
+   "at": [
+    75,
+    49
+   ]
+  }
+ },
+ "notes": "faces right, anchor = feet (body centre x=96). swing = two windows: 0-4 winds the bell back low behind him (4 = held windup), window 0 (5-7) the bell sweeps forward low-to-high in front (skims the floor, reach ~88px), 8-9 whirls over his head, window 1 (10-11) the backswing sweeps low BEHIND him (hit rect is behind the anchor), 12-13 recover. slam: 0-5 hauls the bell overhead behind his head (5 held peak), active 6-7, bell lip strikes the floor on frame 7 -> spawn.slam = impact point on the floor (shockwave ring). ring: 0-3 plants the bell mouth-down in front, 4 rears back the chain-wound fist (held telegraph), 5 strikes -> spawn.ring = bell centre (toll shockwave + fx_sp_toll), 6-9 bell shudders while he recovers; no hitbox. 'hit' = union of per-frame 'rects' over the inclusive active range; each rect reaches the floor. telegraph 'at' = the glint on the bell lip (swing/slam) or on the raised fist (ring). stagger holds its last frame; death final frame held (1000ms)."
+}

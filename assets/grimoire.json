@@ -1,0 +1,224 @@
+{ "frames": [
+   {
+    "filename": "grimoire 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "grimoire 1.aseprite",
+    "frame": { "x": 40, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "grimoire 2.aseprite",
+    "frame": { "x": 80, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "grimoire 3.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "grimoire 4.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "grimoire 5.aseprite",
+    "frame": { "x": 200, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 100
+   },
+   {
+    "filename": "grimoire 6.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 130
+   },
+   {
+    "filename": "grimoire 7.aseprite",
+    "frame": { "x": 280, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 140
+   },
+   {
+    "filename": "grimoire 8.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 150
+   },
+   {
+    "filename": "grimoire 9.aseprite",
+    "frame": { "x": 360, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 150
+   },
+   {
+    "filename": "grimoire 10.aseprite",
+    "frame": { "x": 400, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 340
+   },
+   {
+    "filename": "grimoire 11.aseprite",
+    "frame": { "x": 440, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 70
+   },
+   {
+    "filename": "grimoire 12.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "grimoire 13.aseprite",
+    "frame": { "x": 520, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 140
+   },
+   {
+    "filename": "grimoire 14.aseprite",
+    "frame": { "x": 560, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 150
+   },
+   {
+    "filename": "grimoire 15.aseprite",
+    "frame": { "x": 600, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 80
+   },
+   {
+    "filename": "grimoire 16.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 140
+   },
+   {
+    "filename": "grimoire 17.aseprite",
+    "frame": { "x": 680, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   },
+   {
+    "filename": "grimoire 18.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "grimoire 19.aseprite",
+    "frame": { "x": 760, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "grimoire 20.aseprite",
+    "frame": { "x": 800, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 120
+   },
+   {
+    "filename": "grimoire 21.aseprite",
+    "frame": { "x": 840, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 140
+   },
+   {
+    "filename": "grimoire 22.aseprite",
+    "frame": { "x": 880, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 700
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "grimoire.png",
+  "format": "RGBA8888",
+  "size": { "w": 920, "h": 32 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "fly", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "cast", "from": 6, "to": 14, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 15, "to": 16, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 17, "to": 22, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

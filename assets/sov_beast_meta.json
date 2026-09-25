@@ -1,0 +1,37 @@
+{
+ "seg_l": 8,
+ "radii": [
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  10,
+  12,
+  14
+ ],
+ "seg_angles": 16,
+ "head_angles": [
+  -90.0,
+  -78.75,
+  -67.5,
+  -56.25,
+  -45.0,
+  -33.75,
+  -22.5,
+  -11.25,
+  0.0,
+  11.25,
+  22.5,
+  33.75,
+  45.0,
+  56.25,
+  67.5,
+  78.75,
+  90.0
+ ],
+ "tail_angles": 24,
+ "notes": "body assembled along a spine in web/src/26_sovereign2.js; head/fin mirrored for leftward angles"
+}

@@ -1,0 +1,32 @@
+{
+ "native": 1,
+ "frame": [
+  32,
+  24
+ ],
+ "anchor": [
+  15,
+  24
+ ],
+ "hurtbox": [
+  9,
+  9,
+  12,
+  15
+ ],
+ "attacks": {
+  "burst": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    0,
+    3,
+    32,
+    21
+   ]
+  }
+ },
+ "self_destruct": "burst"
+}

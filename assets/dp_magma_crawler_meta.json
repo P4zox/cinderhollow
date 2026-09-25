@@ -1,0 +1,49 @@
+{
+ "native": 1,
+ "frame": [
+  64,
+  32
+ ],
+ "anchor": [
+  30,
+  32
+ ],
+ "hurtbox": [
+  18,
+  18,
+  36,
+  14
+ ],
+ "attacks": {
+  "bite": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    40,
+    17,
+    20,
+    15
+   ]
+  }
+ },
+ "burst_leap": 3,
+ "telegraph": {
+  "bite": {
+   "frame": 1,
+   "at": [
+    43,
+    17
+   ]
+  },
+  "burst": {
+   "frame": 0,
+   "at": [
+    46,
+    18
+   ]
+  }
+ },
+ "notes": "faces right; sub = swimming undulation drawn low (the engine sinks it so only the scutes break the lava surface); burst 0-2 = rising from the lava (telegraph), 3-7 = the arching leap (engine flies it); sink = diving back in."
+}

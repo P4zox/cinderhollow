@@ -1,0 +1,70 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  40
+ ],
+ "anchor": [
+  24,
+  20
+ ],
+ "flying": true,
+ "hurtbox": [
+  12,
+  4,
+  22,
+  29
+ ],
+ "attacks": {
+  "breath": {
+   "active": [
+    4,
+    7
+   ],
+   "hit": [
+    35,
+    14,
+    26,
+    20
+   ]
+  },
+  "dive": {
+   "active": [
+    2,
+    4
+   ],
+   "hit": [
+    26,
+    13,
+    20,
+    26
+   ]
+  }
+ },
+ "spawn": {
+  "breath": {
+   "frame": 4,
+   "at": [
+    35,
+    14
+   ]
+  }
+ },
+ "telegraph": {
+  "breath": {
+   "frame": 2,
+   "at": [
+    31,
+    5
+   ]
+  },
+  "dive": {
+   "frame": 1,
+   "at": [
+    30,
+    2
+   ]
+  }
+ },
+ "notes": "faces right; floats (anchor = body centre). breath: rears back and inhales 0-3 (throat glow builds, 3 = held), exhales 4-7 (in-frame mist burst; hit = ~26px cone in front of the mouth, may extend past the frame), emit fx_hf_breath from spawn.breath.at; recovery 8-9. dive: wind-up 0-1 (claws raised, glint on 1), claws-first swoop 2-4 (engine moves it), recover 5."
+}

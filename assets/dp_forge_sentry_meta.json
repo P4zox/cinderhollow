@@ -1,0 +1,61 @@
+{
+ "native": 1,
+ "frame": [
+  56,
+  48
+ ],
+ "anchor": [
+  24,
+  48
+ ],
+ "hurtbox": [
+  18,
+  1,
+  12,
+  47
+ ],
+ "attacks": {
+  "bash": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    28,
+    3,
+    13,
+    45
+   ]
+  }
+ },
+ "spawn": {
+  "jet": {
+   "frame": 5,
+   "at": [
+    41,
+    23
+   ]
+  }
+ },
+ "jet_frames": [
+  5,
+  10
+ ],
+ "telegraph": {
+  "jet": {
+   "frame": 2,
+   "at": [
+    41,
+    23
+   ]
+  },
+  "bash": {
+   "frame": 2,
+   "at": [
+    24,
+    11
+   ]
+  }
+ },
+ "notes": "faces right; jet: brace + raise the gauntlet (0-1), nozzle kindles (2-4, telegraph 2), flame frames 5-10 (engine draws fx_dp_flame from the spawn point and deals tick damage), vent + recover 11-13. bash: coil (1-2), pauldron charge active 3-4 (engine lunges it)."
+}

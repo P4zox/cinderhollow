@@ -1,0 +1,768 @@
+{
+ "native": 1,
+ "frame": [
+  192,
+  160
+ ],
+ "anchor": [
+  96,
+  150
+ ],
+ "floating": true,
+ "floor_y": 160,
+ "hurtbox": [
+  75,
+  30,
+  37,
+  112
+ ],
+ "hurtbox_head": [
+  94,
+  31,
+  14,
+  16
+ ],
+ "attacks": {
+  "sweep": {
+   "active": [
+    3,
+    8
+   ],
+   "hit": [
+    1,
+    96,
+    189,
+    64
+   ],
+   "windows": [
+    {
+     "active": [
+      3,
+      4
+     ],
+     "hit": [
+      100,
+      96,
+      90,
+      64
+     ],
+     "side": "front"
+    },
+    {
+     "active": [
+      7,
+      8
+     ],
+     "hit": [
+      1,
+      96,
+      183,
+      64
+     ],
+     "side": "both"
+    }
+   ],
+   "rects": {
+    "3": [
+     103,
+     96,
+     87,
+     64
+    ],
+    "4": [
+     100,
+     96,
+     89,
+     64
+    ],
+    "7": [
+     8,
+     96,
+     176,
+     64
+    ],
+    "8": [
+     1,
+     96,
+     183,
+     64
+    ]
+   }
+  },
+  "nova": {
+   "active": [
+    8,
+    10
+   ],
+   "hit": [
+    12,
+    0,
+    170,
+    139
+   ],
+   "rects": {
+    "8": [
+     68,
+     34,
+     58,
+     53
+    ],
+    "9": [
+     40,
+     8,
+     114,
+     105
+    ],
+    "10": [
+     12,
+     0,
+     170,
+     139
+    ]
+   },
+   "center": [
+    97,
+    61
+   ]
+  },
+  "combo": {
+   "active": [
+    3,
+    12
+   ],
+   "hit": [
+    95,
+    7,
+    97,
+    153
+   ],
+   "windows": [
+    {
+     "active": [
+      3,
+      4
+     ],
+     "hit": [
+      108,
+      7,
+      84,
+      153
+     ]
+    },
+    {
+     "active": [
+      6,
+      7
+     ],
+     "hit": [
+      95,
+      13,
+      97,
+      147
+     ]
+    },
+    {
+     "active": [
+      11,
+      12
+     ],
+     "hit": [
+      148,
+      82,
+      44,
+      78
+     ]
+    }
+   ],
+   "rects": {
+    "3": [
+     108,
+     7,
+     84,
+     153
+    ],
+    "4": [
+     137,
+     88,
+     55,
+     72
+    ],
+    "6": [
+     95,
+     75,
+     97,
+     85
+    ],
+    "7": [
+     139,
+     13,
+     53,
+     147
+    ],
+    "11": [
+     148,
+     82,
+     44,
+     78
+    ],
+    "12": [
+     150,
+     83,
+     42,
+     77
+    ]
+   }
+  },
+  "cross": {
+   "active": [
+    4,
+    6
+   ],
+   "hit": [
+    98,
+    44,
+    92,
+    116
+   ],
+   "rects": {
+    "4": [
+     98,
+     44,
+     92,
+     116
+    ],
+    "5": [
+     99,
+     55,
+     91,
+     105
+    ],
+    "6": [
+     98,
+     54,
+     92,
+     106
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "sweep": {
+   "frame": 2,
+   "at": [
+    100,
+    20
+   ]
+  },
+  "rain": {
+   "frame": 4,
+   "at": [
+    115,
+    23
+   ]
+  },
+  "lance": {
+   "frame": 5,
+   "at": [
+    156,
+    50
+   ]
+  },
+  "nova": {
+   "frame": 6,
+   "at": [
+    99,
+    56
+   ]
+  },
+  "summon": {
+   "frame": 3,
+   "at": [
+    116,
+    28
+   ]
+  },
+  "lash": {
+   "frame": 2,
+   "at": [
+    118,
+    29
+   ]
+  },
+  "combo": {
+   "frame": 2,
+   "at": [
+    87,
+    4
+   ]
+  },
+  "petals": {
+   "frame": 2,
+   "at": [
+    98,
+    58
+   ]
+  },
+  "grab": {
+   "frame": 2,
+   "at": [
+    102,
+    20
+   ]
+  },
+  "grabhold": {
+   "frame": 3,
+   "at": [
+    141,
+    46
+   ]
+  },
+  "orbs": {
+   "frame": 4,
+   "at": [
+    119,
+    28
+   ]
+  },
+  "beam": {
+   "frame": 4,
+   "at": [
+    126,
+    39
+   ]
+  },
+  "spears": {
+   "frame": 3,
+   "at": [
+    122,
+    74
+   ]
+  },
+  "cross": {
+   "frame": 3,
+   "at": [
+    97,
+    58
+   ]
+  },
+  "rings": {
+   "frame": 5,
+   "at": [
+    100,
+    55
+   ]
+  },
+  "crown": {
+   "frame": 4,
+   "at": [
+    90,
+    15
+   ]
+  }
+ },
+ "spawn": {
+  "rain": {
+   "frame": 6,
+   "at": [
+    115,
+    19
+   ]
+  },
+  "lance": {
+   "frame": 6,
+   "at": [
+    141,
+    64
+   ],
+   "dir": [
+    1,
+    0
+   ]
+  },
+  "summon": {
+   "frame": 5,
+   "at": [
+    96,
+    159
+   ],
+   "points": [
+    [
+     36,
+     159
+    ],
+    [
+     66,
+     159
+    ],
+    [
+     126,
+     159
+    ],
+    [
+     156,
+     159
+    ]
+   ]
+  },
+  "nova": {
+   "frame": 8,
+   "at": [
+    97,
+    61
+   ]
+  },
+  "lash": {
+   "frame": 4,
+   "at": [
+    126,
+    159
+   ]
+  },
+  "orbs": {
+   "frame": 6,
+   "at": [
+    146,
+    68
+   ],
+   "halo": [
+    [
+     72,
+     25
+    ],
+    [
+     80,
+     16
+    ],
+    [
+     90,
+     12
+    ],
+    [
+     101,
+     16
+    ],
+    [
+     108,
+     25
+    ]
+   ]
+  },
+  "petals": {
+   "frame": 4,
+   "at": [
+    104,
+    65
+   ],
+   "second": 8
+  },
+  "spears": {
+   "frame": 5,
+   "at": [
+    96,
+    159
+   ]
+  },
+  "rings": {
+   "frame": 6,
+   "at": [
+    96,
+    159
+   ],
+   "second": 10
+  },
+  "grabhold": {
+   "frame": 4,
+   "at": [
+    149,
+    96
+   ]
+  }
+ },
+ "notes": "faces right; floating: anchor [96,150] is the hem line, rows 151-159 hold only light/roots/FX (floor_y = frame bottom if the engine hovers her 10px). 'hit' = union of per-frame 'rects' over the inclusive active range; sweep has two windows (engine: attacks.sweep.windows) -- window 0 the near wing slams low in front, window 1 the back wing sweeps low under/behind her while the front wing stays down (both sides). nova: in-sprite ring active 8-10; spawn fx_sov_nova at spawn.nova. rain: spawn fx_lightpillar columns (engine positions) at frame 6; lance: fx_sov_lance from spawn.lance.at travelling right at frame 6; summon: fx_root_spike (or fx_lightpillar) at frame 5; telegraph 'at' = glint point the frame before the strike.",
+ "grab": {
+  "active": [
+   3,
+   5
+  ],
+  "hit": [
+   126,
+   100,
+   64,
+   60
+  ],
+  "rects": {
+   "3": [
+    126,
+    100,
+    61,
+    60
+   ],
+   "4": [
+    128,
+    100,
+    62,
+    60
+   ],
+   "5": [
+    128,
+    100,
+    62,
+    60
+   ]
+  },
+  "hold": [
+   158,
+   160
+  ]
+ },
+ "frames": {
+  "beam": [
+   {
+    "hand": [
+     119,
+     68
+    ],
+    "ang": null
+   },
+   {
+    "hand": [
+     125,
+     37
+    ],
+    "ang": -35
+   },
+   {
+    "hand": [
+     126,
+     38
+    ],
+    "ang": -30
+   },
+   {
+    "hand": [
+     126,
+     39
+    ],
+    "ang": -25
+   },
+   {
+    "hand": [
+     126,
+     39
+    ],
+    "ang": -22
+   },
+   {
+    "hand": [
+     128,
+     42
+    ],
+    "ang": -20
+   },
+   {
+    "hand": [
+     131,
+     47
+    ],
+    "ang": -11
+   },
+   {
+    "hand": [
+     133,
+     54
+    ],
+    "ang": -2
+   },
+   {
+    "hand": [
+     133,
+     59
+    ],
+    "ang": 7
+   },
+   {
+    "hand": [
+     133,
+     64
+    ],
+    "ang": 15
+   },
+   {
+    "hand": [
+     132,
+     69
+    ],
+    "ang": 24
+   },
+   {
+    "hand": [
+     130,
+     74
+    ],
+    "ang": 32
+   },
+   {
+    "hand": [
+     130,
+     73
+    ],
+    "ang": 30
+   },
+   {
+    "hand": [
+     128,
+     74
+    ],
+    "ang": null
+   },
+   {
+    "hand": [
+     123,
+     74
+    ],
+    "ang": null
+   },
+   {
+    "hand": [
+     119,
+     74
+    ],
+    "ang": null
+   }
+  ],
+  "crown": [
+   {
+    "halo": [
+     95,
+     36
+    ]
+   },
+   {
+    "halo": [
+     93,
+     35
+    ]
+   },
+   {
+    "halo": [
+     92,
+     34
+    ]
+   },
+   {
+    "halo": [
+     91,
+     33
+    ]
+   },
+   {
+    "halo": [
+     90,
+     32
+    ]
+   },
+   {
+    "halo": [
+     91,
+     32
+    ]
+   },
+   {
+    "halo": [
+     93,
+     32
+    ]
+   },
+   {
+    "halo": [
+     95,
+     32
+    ]
+   },
+   {
+    "halo": [
+     96,
+     32
+    ]
+   },
+   {
+    "halo": [
+     97,
+     32
+    ]
+   },
+   {
+    "halo": [
+     98,
+     34
+    ]
+   },
+   {
+    "halo": [
+     98,
+     34
+    ]
+   },
+   {
+    "halo": [
+     97,
+     35
+    ]
+   },
+   {
+    "halo": [
+     95,
+     36
+    ]
+   }
+  ]
+ },
+ "sheets": {
+  "p1": {
+   "idle": "sovereign",
+   "glide": "sovereign",
+   "stagger": "sovereign",
+   "combo": "sovereign_2",
+   "beam": "sovereign_3",
+   "nova": "sovereign_4",
+   "vanish": "sovereign_4",
+   "death": "sovereign_5",
+   "rings": "sovereign_6",
+   "crown": "sovereign_7",
+   "sweep": "sovereign_8",
+   "petals": "sovereign_9",
+   "cross": "sovereign_10",
+   "lash": "sovereign_11",
+   "rain": "sovereign_11",
+   "grab": "sovereign_12",
+   "lance": "sovereign_12",
+   "orbs": "sovereign_13",
+   "summon": "sovereign_13",
+   "spears": "sovereign_14",
+   "grabhold": "sovereign_14"
+  },
+  "p2": {
+   "idle": "sovereign_p2",
+   "glide": "sovereign_p2",
+   "stagger": "sovereign_p2",
+   "combo": "sovereign_p2_2",
+   "beam": "sovereign_p2_3",
+   "nova": "sovereign_p2_4",
+   "vanish": "sovereign_p2_4",
+   "death": "sovereign_p2_5",
+   "rings": "sovereign_p2_6",
+   "crown": "sovereign_p2_7",
+   "sweep": "sovereign_p2_8",
+   "petals": "sovereign_p2_9",
+   "cross": "sovereign_p2_10",
+   "lash": "sovereign_p2_11",
+   "rain": "sovereign_p2_11",
+   "grab": "sovereign_p2_12",
+   "lance": "sovereign_p2_12",
+   "orbs": "sovereign_p2_13",
+   "summon": "sovereign_p2_13",
+   "spears": "sovereign_p2_14",
+   "grabhold": "sovereign_p2_14"
+  }
+ }
+}

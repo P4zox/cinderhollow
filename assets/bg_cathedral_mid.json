@@ -1,0 +1,23 @@
+{ "frames": [
+   {
+    "filename": "bg_cathedral_mid.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "sourceSize": { "w": 512, "h": 216 },
+    "duration": 1000
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "bg_cathedral_mid.png",
+  "format": "RGBA8888",
+  "size": { "w": 512, "h": 216 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "loop", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

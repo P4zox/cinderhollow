@@ -1,0 +1,1463 @@
+{ "frames": [
+   {
+    "filename": "cindervane 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 1.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 2.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 3.aseprite",
+    "frame": { "x": 864, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 4.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 5.aseprite",
+    "frame": { "x": 1440, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 6.aseprite",
+    "frame": { "x": 1728, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 7.aseprite",
+    "frame": { "x": 2016, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 8.aseprite",
+    "frame": { "x": 2304, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 9.aseprite",
+    "frame": { "x": 2592, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 10.aseprite",
+    "frame": { "x": 2880, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 11.aseprite",
+    "frame": { "x": 3168, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 12.aseprite",
+    "frame": { "x": 3456, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 13.aseprite",
+    "frame": { "x": 3744, "y": 0, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 14.aseprite",
+    "frame": { "x": 0, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 15.aseprite",
+    "frame": { "x": 288, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 16.aseprite",
+    "frame": { "x": 576, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 17.aseprite",
+    "frame": { "x": 864, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 18.aseprite",
+    "frame": { "x": 1152, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 19.aseprite",
+    "frame": { "x": 1440, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 300
+   },
+   {
+    "filename": "cindervane 20.aseprite",
+    "frame": { "x": 1728, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 50
+   },
+   {
+    "filename": "cindervane 21.aseprite",
+    "frame": { "x": 2016, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 22.aseprite",
+    "frame": { "x": 2304, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 23.aseprite",
+    "frame": { "x": 2592, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 24.aseprite",
+    "frame": { "x": 2880, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 25.aseprite",
+    "frame": { "x": 3168, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "cindervane 26.aseprite",
+    "frame": { "x": 3456, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 27.aseprite",
+    "frame": { "x": 3744, "y": 176, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 28.aseprite",
+    "frame": { "x": 0, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 29.aseprite",
+    "frame": { "x": 288, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 280
+   },
+   {
+    "filename": "cindervane 30.aseprite",
+    "frame": { "x": 576, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 55
+   },
+   {
+    "filename": "cindervane 31.aseprite",
+    "frame": { "x": 864, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 32.aseprite",
+    "frame": { "x": 1152, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 33.aseprite",
+    "frame": { "x": 1440, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 34.aseprite",
+    "frame": { "x": 1728, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 35.aseprite",
+    "frame": { "x": 2016, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "cindervane 36.aseprite",
+    "frame": { "x": 2304, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 37.aseprite",
+    "frame": { "x": 2592, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 38.aseprite",
+    "frame": { "x": 2880, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 39.aseprite",
+    "frame": { "x": 3168, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 40.aseprite",
+    "frame": { "x": 3456, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 300
+   },
+   {
+    "filename": "cindervane 41.aseprite",
+    "frame": { "x": 3744, "y": 352, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 50
+   },
+   {
+    "filename": "cindervane 42.aseprite",
+    "frame": { "x": 0, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "cindervane 43.aseprite",
+    "frame": { "x": 288, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 44.aseprite",
+    "frame": { "x": 576, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 45.aseprite",
+    "frame": { "x": 864, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "cindervane 46.aseprite",
+    "frame": { "x": 1152, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 47.aseprite",
+    "frame": { "x": 1440, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 48.aseprite",
+    "frame": { "x": 1728, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 49.aseprite",
+    "frame": { "x": 2016, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 50.aseprite",
+    "frame": { "x": 2304, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 180
+   },
+   {
+    "filename": "cindervane 51.aseprite",
+    "frame": { "x": 2592, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 260
+   },
+   {
+    "filename": "cindervane 52.aseprite",
+    "frame": { "x": 2880, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 53.aseprite",
+    "frame": { "x": 3168, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 54.aseprite",
+    "frame": { "x": 3456, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 55.aseprite",
+    "frame": { "x": 3744, "y": 528, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 56.aseprite",
+    "frame": { "x": 0, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 57.aseprite",
+    "frame": { "x": 288, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 58.aseprite",
+    "frame": { "x": 576, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 59.aseprite",
+    "frame": { "x": 864, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 60.aseprite",
+    "frame": { "x": 1152, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 61.aseprite",
+    "frame": { "x": 1440, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 62.aseprite",
+    "frame": { "x": 1728, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 160
+   },
+   {
+    "filename": "cindervane 63.aseprite",
+    "frame": { "x": 2016, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 64.aseprite",
+    "frame": { "x": 2304, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 65.aseprite",
+    "frame": { "x": 2592, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 66.aseprite",
+    "frame": { "x": 2880, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 67.aseprite",
+    "frame": { "x": 3168, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 68.aseprite",
+    "frame": { "x": 3456, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 69.aseprite",
+    "frame": { "x": 3744, "y": 704, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 160
+   },
+   {
+    "filename": "cindervane 70.aseprite",
+    "frame": { "x": 0, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 71.aseprite",
+    "frame": { "x": 288, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 72.aseprite",
+    "frame": { "x": 576, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 220
+   },
+   {
+    "filename": "cindervane 73.aseprite",
+    "frame": { "x": 864, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 74.aseprite",
+    "frame": { "x": 1152, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 75.aseprite",
+    "frame": { "x": 1440, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 76.aseprite",
+    "frame": { "x": 1728, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 77.aseprite",
+    "frame": { "x": 2016, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 78.aseprite",
+    "frame": { "x": 2304, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 95
+   },
+   {
+    "filename": "cindervane 79.aseprite",
+    "frame": { "x": 2592, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 95
+   },
+   {
+    "filename": "cindervane 80.aseprite",
+    "frame": { "x": 2880, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 95
+   },
+   {
+    "filename": "cindervane 81.aseprite",
+    "frame": { "x": 3168, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 95
+   },
+   {
+    "filename": "cindervane 82.aseprite",
+    "frame": { "x": 3456, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 95
+   },
+   {
+    "filename": "cindervane 83.aseprite",
+    "frame": { "x": 3744, "y": 880, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 95
+   },
+   {
+    "filename": "cindervane 84.aseprite",
+    "frame": { "x": 0, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 85.aseprite",
+    "frame": { "x": 288, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 86.aseprite",
+    "frame": { "x": 576, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 87.aseprite",
+    "frame": { "x": 864, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 88.aseprite",
+    "frame": { "x": 1152, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 89.aseprite",
+    "frame": { "x": 1440, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 90.aseprite",
+    "frame": { "x": 1728, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 91.aseprite",
+    "frame": { "x": 2016, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 220
+   },
+   {
+    "filename": "cindervane 92.aseprite",
+    "frame": { "x": 2304, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 93.aseprite",
+    "frame": { "x": 2592, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "cindervane 94.aseprite",
+    "frame": { "x": 2880, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "cindervane 95.aseprite",
+    "frame": { "x": 3168, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "cindervane 96.aseprite",
+    "frame": { "x": 3456, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 97.aseprite",
+    "frame": { "x": 3744, "y": 1056, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "cindervane 98.aseprite",
+    "frame": { "x": 0, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 99.aseprite",
+    "frame": { "x": 288, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 100.aseprite",
+    "frame": { "x": 576, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 101.aseprite",
+    "frame": { "x": 864, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 102.aseprite",
+    "frame": { "x": 1152, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "cindervane 103.aseprite",
+    "frame": { "x": 1440, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 104.aseprite",
+    "frame": { "x": 1728, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "cindervane 105.aseprite",
+    "frame": { "x": 2016, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 106.aseprite",
+    "frame": { "x": 2304, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 107.aseprite",
+    "frame": { "x": 2592, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 160
+   },
+   {
+    "filename": "cindervane 108.aseprite",
+    "frame": { "x": 2880, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 400
+   },
+   {
+    "filename": "cindervane 109.aseprite",
+    "frame": { "x": 3168, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "cindervane 110.aseprite",
+    "frame": { "x": 3456, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 111.aseprite",
+    "frame": { "x": 3744, "y": 1232, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 112.aseprite",
+    "frame": { "x": 0, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 260
+   },
+   {
+    "filename": "cindervane 113.aseprite",
+    "frame": { "x": 288, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "cindervane 114.aseprite",
+    "frame": { "x": 576, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 115.aseprite",
+    "frame": { "x": 864, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "cindervane 116.aseprite",
+    "frame": { "x": 1152, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 117.aseprite",
+    "frame": { "x": 1440, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "cindervane 118.aseprite",
+    "frame": { "x": 1728, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 119.aseprite",
+    "frame": { "x": 2016, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "cindervane 120.aseprite",
+    "frame": { "x": 2304, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "cindervane 121.aseprite",
+    "frame": { "x": 2592, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 900
+   },
+   {
+    "filename": "cindervane 122.aseprite",
+    "frame": { "x": 2880, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 123.aseprite",
+    "frame": { "x": 3168, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 124.aseprite",
+    "frame": { "x": 3456, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "cindervane 125.aseprite",
+    "frame": { "x": 3744, "y": 1408, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "cindervane 126.aseprite",
+    "frame": { "x": 0, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "cindervane 127.aseprite",
+    "frame": { "x": 288, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 220
+   },
+   {
+    "filename": "cindervane 128.aseprite",
+    "frame": { "x": 576, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 129.aseprite",
+    "frame": { "x": 864, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 130.aseprite",
+    "frame": { "x": 1152, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 131.aseprite",
+    "frame": { "x": 1440, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 132.aseprite",
+    "frame": { "x": 1728, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 133.aseprite",
+    "frame": { "x": 2016, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 134.aseprite",
+    "frame": { "x": 2304, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "cindervane 135.aseprite",
+    "frame": { "x": 2592, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "cindervane 136.aseprite",
+    "frame": { "x": 2880, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 160
+   },
+   {
+    "filename": "cindervane 137.aseprite",
+    "frame": { "x": 3168, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 138.aseprite",
+    "frame": { "x": 3456, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "cindervane 139.aseprite",
+    "frame": { "x": 3744, "y": 1584, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 140.aseprite",
+    "frame": { "x": 0, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 141.aseprite",
+    "frame": { "x": 288, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 142.aseprite",
+    "frame": { "x": 576, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 300
+   },
+   {
+    "filename": "cindervane 143.aseprite",
+    "frame": { "x": 864, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "cindervane 144.aseprite",
+    "frame": { "x": 1152, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 145.aseprite",
+    "frame": { "x": 1440, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 146.aseprite",
+    "frame": { "x": 1728, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "cindervane 147.aseprite",
+    "frame": { "x": 2016, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "cindervane 148.aseprite",
+    "frame": { "x": 2304, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 149.aseprite",
+    "frame": { "x": 2592, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "cindervane 150.aseprite",
+    "frame": { "x": 2880, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 151.aseprite",
+    "frame": { "x": 3168, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "cindervane 152.aseprite",
+    "frame": { "x": 3456, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "cindervane 153.aseprite",
+    "frame": { "x": 3744, "y": 1760, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 320
+   },
+   {
+    "filename": "cindervane 154.aseprite",
+    "frame": { "x": 0, "y": 1936, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "cindervane 155.aseprite",
+    "frame": { "x": 288, "y": 1936, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 156.aseprite",
+    "frame": { "x": 576, "y": 1936, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "cindervane 157.aseprite",
+    "frame": { "x": 864, "y": 1936, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "cindervane 158.aseprite",
+    "frame": { "x": 1152, "y": 1936, "w": 288, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 288, "h": 176 },
+    "sourceSize": { "w": 288, "h": 176 },
+    "duration": 150
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "cindervane.png",
+  "format": "RGBA8888",
+  "size": { "w": 4032, "h": 2112 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "walk", "from": 8, "to": 15, "direction": "forward", "color": "#000000ff" },
+   { "name": "bite", "from": 16, "to": 25, "direction": "forward", "color": "#000000ff" },
+   { "name": "claw", "from": 26, "to": 35, "direction": "forward", "color": "#000000ff" },
+   { "name": "tail", "from": 36, "to": 46, "direction": "forward", "color": "#000000ff" },
+   { "name": "breath", "from": 47, "to": 59, "direction": "forward", "color": "#000000ff" },
+   { "name": "roar", "from": 60, "to": 69, "direction": "forward", "color": "#000000ff" },
+   { "name": "takeoff", "from": 70, "to": 77, "direction": "forward", "color": "#000000ff" },
+   { "name": "fly", "from": 78, "to": 83, "direction": "forward", "color": "#000000ff" },
+   { "name": "flybreath", "from": 84, "to": 89, "direction": "forward", "color": "#000000ff" },
+   { "name": "dive", "from": 90, "to": 95, "direction": "forward", "color": "#000000ff" },
+   { "name": "land", "from": 96, "to": 102, "direction": "forward", "color": "#000000ff" },
+   { "name": "stagger", "from": 103, "to": 108, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 109, "to": 121, "direction": "forward", "color": "#000000ff" },
+   { "name": "rushprep", "from": 122, "to": 127, "direction": "forward", "color": "#000000ff" },
+   { "name": "rush", "from": 128, "to": 133, "direction": "forward", "color": "#000000ff" },
+   { "name": "rushstop", "from": 134, "to": 138, "direction": "forward", "color": "#000000ff" },
+   { "name": "buffet", "from": 139, "to": 148, "direction": "forward", "color": "#000000ff" },
+   { "name": "slam", "from": 149, "to": 158, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

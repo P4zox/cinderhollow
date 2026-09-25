@@ -1,0 +1,151 @@
+{ "frames": [
+   {
+    "filename": "fx_g_icewall 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 40
+   },
+   {
+    "filename": "fx_g_icewall 1.aseprite",
+    "frame": { "x": 28, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 40
+   },
+   {
+    "filename": "fx_g_icewall 2.aseprite",
+    "frame": { "x": 56, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 40
+   },
+   {
+    "filename": "fx_g_icewall 3.aseprite",
+    "frame": { "x": 84, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 40
+   },
+   {
+    "filename": "fx_g_icewall 4.aseprite",
+    "frame": { "x": 112, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 40
+   },
+   {
+    "filename": "fx_g_icewall 5.aseprite",
+    "frame": { "x": 140, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_g_icewall 6.aseprite",
+    "frame": { "x": 168, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_g_icewall 7.aseprite",
+    "frame": { "x": 196, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_g_icewall 8.aseprite",
+    "frame": { "x": 224, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_g_icewall 9.aseprite",
+    "frame": { "x": 252, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g_icewall 10.aseprite",
+    "frame": { "x": 280, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g_icewall 11.aseprite",
+    "frame": { "x": 308, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g_icewall 12.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g_icewall 13.aseprite",
+    "frame": { "x": 364, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g_icewall 14.aseprite",
+    "frame": { "x": 392, "y": 0, "w": 28, "h": 52 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 28, "h": 52 },
+    "sourceSize": { "w": 28, "h": 52 },
+    "duration": 50
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_g_icewall.png",
+  "format": "RGBA8888",
+  "size": { "w": 420, "h": 52 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "g_icewall_rise", "from": 0, "to": 4, "direction": "forward", "color": "#000000ff" },
+   { "name": "g_icewall_idle", "from": 5, "to": 8, "direction": "forward", "color": "#000000ff" },
+   { "name": "g_icewall_shatter", "from": 9, "to": 14, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

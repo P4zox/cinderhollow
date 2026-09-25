@@ -1,0 +1,41 @@
+{
+ "native": 1,
+ "frame": [
+  56,
+  32
+ ],
+ "anchor": [
+  26,
+  32
+ ],
+ "hurtbox": [
+  14,
+  4,
+  37,
+  28
+ ],
+ "attacks": {
+  "pounce": {
+   "active": [
+    4,
+    5
+   ],
+   "hit": [
+    34,
+    5,
+    22,
+    27
+   ]
+  }
+ },
+ "telegraph": {
+  "pounce": {
+   "frame": 3,
+   "at": [
+    45,
+    5
+   ]
+  }
+ },
+ "notes": "faces right; pounce drawn in place (engine lunges it forward on frames 3-5): frames 1-2 are the held coil (glyphs + eye flare), launch 3, active 4-5 (jaws + fore-claws), land 6, recover 7."
+}

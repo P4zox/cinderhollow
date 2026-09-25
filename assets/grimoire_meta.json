@@ -1,0 +1,51 @@
+{
+ "native": 1,
+ "frame": [
+  40,
+  32
+ ],
+ "anchor": [
+  20,
+  16
+ ],
+ "flying": true,
+ "hurtbox": [
+  6,
+  3,
+  24,
+  26
+ ],
+ "attacks": {
+  "cast": {
+   "active": [
+    5,
+    5
+   ],
+   "hit": [
+    23,
+    13,
+    11,
+    11
+   ]
+  }
+ },
+ "spawn": {
+  "cast": {
+   "frame": 5,
+   "at": [
+    28,
+    18
+   ]
+  }
+ },
+ "telegraph": {
+  "cast": {
+   "frame": 4,
+   "at": [
+    29,
+    14
+   ]
+  }
+ },
+ "notes": "faces right; floats (anchor = body centre). Body contact damage = hurtbox. cast: violet burst at the maw active on frame 5 only (point-blank), proj_inkbolt spawns at spawn.cast.at on frame 5; frame 4 is the held windup (telegraph)."
+}

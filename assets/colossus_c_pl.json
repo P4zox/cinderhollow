@@ -1,0 +1,159 @@
+{ "frames": [
+   {
+    "filename": "colossus_c_pl 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_c_pl 1.aseprite",
+    "frame": { "x": 256, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_c_pl 2.aseprite",
+    "frame": { "x": 512, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "colossus_c_pl 3.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "colossus_c_pl 4.aseprite",
+    "frame": { "x": 1024, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_c_pl 5.aseprite",
+    "frame": { "x": 1280, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 400
+   },
+   {
+    "filename": "colossus_c_pl 6.aseprite",
+    "frame": { "x": 1536, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 500
+   },
+   {
+    "filename": "colossus_c_pl 7.aseprite",
+    "frame": { "x": 1792, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 500
+   },
+   {
+    "filename": "colossus_c_pl 8.aseprite",
+    "frame": { "x": 2048, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 160
+   },
+   {
+    "filename": "colossus_c_pl 9.aseprite",
+    "frame": { "x": 2304, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 180
+   },
+   {
+    "filename": "colossus_c_pl 10.aseprite",
+    "frame": { "x": 2560, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_c_pl 11.aseprite",
+    "frame": { "x": 2816, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "colossus_c_pl 12.aseprite",
+    "frame": { "x": 3072, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "colossus_c_pl 13.aseprite",
+    "frame": { "x": 3328, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 220
+   },
+   {
+    "filename": "colossus_c_pl 14.aseprite",
+    "frame": { "x": 3584, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_c_pl 15.aseprite",
+    "frame": { "x": 3840, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 160
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "colossus_c_pl.png",
+  "format": "RGBA8888",
+  "size": { "w": 4096, "h": 176 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "topple", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "rise", "from": 8, "to": 15, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

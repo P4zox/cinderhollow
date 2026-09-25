@@ -1,0 +1,107 @@
+{ "frames": [
+   {
+    "filename": "omen_colossus 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 400
+   },
+   {
+    "filename": "omen_colossus 1.aseprite",
+    "frame": { "x": 352, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 400
+   },
+   {
+    "filename": "omen_colossus 2.aseprite",
+    "frame": { "x": 704, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 160
+   },
+   {
+    "filename": "omen_colossus 3.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 200
+   },
+   {
+    "filename": "omen_colossus 4.aseprite",
+    "frame": { "x": 1408, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 300
+   },
+   {
+    "filename": "omen_colossus 5.aseprite",
+    "frame": { "x": 1760, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 70
+   },
+   {
+    "filename": "omen_colossus 6.aseprite",
+    "frame": { "x": 2112, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 110
+   },
+   {
+    "filename": "omen_colossus 7.aseprite",
+    "frame": { "x": 2464, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 160
+   },
+   {
+    "filename": "omen_colossus 8.aseprite",
+    "frame": { "x": 2816, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 220
+   },
+   {
+    "filename": "omen_colossus 9.aseprite",
+    "frame": { "x": 3168, "y": 0, "w": 352, "h": 256 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 352, "h": 256 },
+    "sourceSize": { "w": 352, "h": 256 },
+    "duration": 260
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "omen_colossus.png",
+  "format": "RGBA8888",
+  "size": { "w": 3520, "h": 256 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "raise", "from": 2, "to": 4, "direction": "forward", "color": "#000000ff" },
+   { "name": "swing", "from": 5, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "recover", "from": 8, "to": 9, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

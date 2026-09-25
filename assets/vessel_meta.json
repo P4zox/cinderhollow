@@ -1,0 +1,121 @@
+{
+ "native": 1,
+ "frame": [
+  160,
+  128
+ ],
+ "anchor": [
+  80,
+  128
+ ],
+ "hurtbox": [
+  26,
+  33,
+  100,
+  95
+ ],
+ "weakpoint": [
+  106,
+  46,
+  15,
+  31
+ ],
+ "attacks": {
+  "slam": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    100,
+    61,
+    60,
+    67
+   ],
+   "rects": {
+    "5": [
+     102,
+     61,
+     58,
+     67
+    ],
+    "6": [
+     100,
+     86,
+     60,
+     42
+    ]
+   }
+  },
+  "sweep": {
+   "active": [
+    4,
+    5
+   ],
+   "hit": [
+    0,
+    71,
+    160,
+    57
+   ],
+   "rects": {
+    "4": [
+     0,
+     71,
+     160,
+     57
+    ],
+    "5": [
+     0,
+     73,
+     160,
+     55
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "slam": {
+   "frame": 3,
+   "at": [
+    119,
+    6
+   ]
+  },
+  "sweep": {
+   "frame": 3,
+   "at": [
+    154,
+    48
+   ]
+  },
+  "spew": {
+   "frame": 4,
+   "at": [
+    118,
+    60
+   ]
+  }
+ },
+ "spawn": {
+  "spew": {
+   "frame": 6,
+   "at": [
+    128,
+    69
+   ],
+   "dir": [
+    1,
+    0.15
+   ]
+  },
+  "slam": {
+   "frame": 5,
+   "at": [
+    146,
+    127
+   ]
+  }
+ },
+ "notes": "faces right, anchor = centre of the base. hurtbox = the mass; weakpoint = the maw (optional bonus-damage zone). slam: near arm raised overhead (frames 1-3, hold on 3) then brought down, active 5-6; spawn.slam = impact point on the floor (shockwave / fx_rot_wave both ways). sweep: both arms raised wide (hold on 3) then raked outward along the floor to BOTH sides, active 4-5, hit spans the whole base. spew: rears back and swells (frames 1-4), vomits on 6; engine spawns proj_rotglob / fx_rot_wave at spawn.spew (the drawn gush is visual only). crawl is a loop drawn in place."
+}

@@ -1,0 +1,69 @@
+{
+ "native": 1,
+ "frame": [
+  64,
+  64
+ ],
+ "anchor": [
+  29,
+  64
+ ],
+ "hurtbox": [
+  16,
+  19,
+  26,
+  45
+ ],
+ "attacks": {
+  "slam": {
+   "active": [
+    7,
+    8
+   ],
+   "hit": [
+    40,
+    29,
+    24,
+    35
+   ]
+  },
+  "swipe": {
+   "active": [
+    4,
+    5
+   ],
+   "hit": [
+    37,
+    17,
+    27,
+    47
+   ]
+  }
+ },
+ "spawn": {
+  "slam": {
+   "frame": 7,
+   "at": [
+    53,
+    63
+   ]
+  }
+ },
+ "telegraph": {
+  "slam": {
+   "frame": 5,
+   "at": [
+    33,
+    3
+   ]
+  },
+  "swipe": {
+   "frame": 2,
+   "at": [
+    12,
+    41
+   ]
+  }
+ },
+ "notes": "faces right; slow heavy sentinel of basalt plates bound by ice. slam: both ice claws hoisted overhead 0-5 (5 = long held telegraph glint), smashed down 6, floor impact + ice burst on active 7-8 (spawn fx_hf_frostwave at spawn.slam.at, frame 7), slow recovery 9-11. swipe: arm wound back 0-3 (2 = held, glint), wide low backhand sweep active 4-5, recovery 6-8. death: cracks glow, kneels, shatters into a pile of stone and ice (7 = settled)."
+}

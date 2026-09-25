@@ -1,0 +1,503 @@
+{ "frames": [
+   {
+    "filename": "colossus_b_pl 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "colossus_b_pl 1.aseprite",
+    "frame": { "x": 256, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "colossus_b_pl 2.aseprite",
+    "frame": { "x": 512, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 160
+   },
+   {
+    "filename": "colossus_b_pl 3.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 400
+   },
+   {
+    "filename": "colossus_b_pl 4.aseprite",
+    "frame": { "x": 1024, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "colossus_b_pl 5.aseprite",
+    "frame": { "x": 1280, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "colossus_b_pl 6.aseprite",
+    "frame": { "x": 1536, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "colossus_b_pl 7.aseprite",
+    "frame": { "x": 1792, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "colossus_b_pl 8.aseprite",
+    "frame": { "x": 2048, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "colossus_b_pl 9.aseprite",
+    "frame": { "x": 2304, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_b_pl 10.aseprite",
+    "frame": { "x": 2560, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 180
+   },
+   {
+    "filename": "colossus_b_pl 11.aseprite",
+    "frame": { "x": 2816, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 12.aseprite",
+    "frame": { "x": 3072, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "colossus_b_pl 13.aseprite",
+    "frame": { "x": 3328, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "colossus_b_pl 14.aseprite",
+    "frame": { "x": 3584, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 15.aseprite",
+    "frame": { "x": 3840, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 260
+   },
+   {
+    "filename": "colossus_b_pl 16.aseprite",
+    "frame": { "x": 4096, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 240
+   },
+   {
+    "filename": "colossus_b_pl 17.aseprite",
+    "frame": { "x": 4352, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 18.aseprite",
+    "frame": { "x": 4608, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 19.aseprite",
+    "frame": { "x": 4864, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 20.aseprite",
+    "frame": { "x": 5120, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 21.aseprite",
+    "frame": { "x": 5376, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 22.aseprite",
+    "frame": { "x": 5632, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 23.aseprite",
+    "frame": { "x": 5888, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 24.aseprite",
+    "frame": { "x": 6144, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "colossus_b_pl 25.aseprite",
+    "frame": { "x": 6400, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 160
+   },
+   {
+    "filename": "colossus_b_pl 26.aseprite",
+    "frame": { "x": 6656, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 27.aseprite",
+    "frame": { "x": 6912, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 28.aseprite",
+    "frame": { "x": 7168, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "colossus_b_pl 29.aseprite",
+    "frame": { "x": 7424, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "colossus_b_pl 30.aseprite",
+    "frame": { "x": 7680, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 31.aseprite",
+    "frame": { "x": 7936, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 250
+   },
+   {
+    "filename": "colossus_b_pl 32.aseprite",
+    "frame": { "x": 8192, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "colossus_b_pl 33.aseprite",
+    "frame": { "x": 8448, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_b_pl 34.aseprite",
+    "frame": { "x": 8704, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 220
+   },
+   {
+    "filename": "colossus_b_pl 35.aseprite",
+    "frame": { "x": 8960, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_b_pl 36.aseprite",
+    "frame": { "x": 9216, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 37.aseprite",
+    "frame": { "x": 9472, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 38.aseprite",
+    "frame": { "x": 9728, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "colossus_b_pl 39.aseprite",
+    "frame": { "x": 9984, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "colossus_b_pl 40.aseprite",
+    "frame": { "x": 10240, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "colossus_b_pl 41.aseprite",
+    "frame": { "x": 10496, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 42.aseprite",
+    "frame": { "x": 10752, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_b_pl 43.aseprite",
+    "frame": { "x": 11008, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_b_pl 44.aseprite",
+    "frame": { "x": 11264, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 45.aseprite",
+    "frame": { "x": 11520, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 200
+   },
+   {
+    "filename": "colossus_b_pl 46.aseprite",
+    "frame": { "x": 11776, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 220
+   },
+   {
+    "filename": "colossus_b_pl 47.aseprite",
+    "frame": { "x": 12032, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 180
+   },
+   {
+    "filename": "colossus_b_pl 48.aseprite",
+    "frame": { "x": 12288, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 260
+   },
+   {
+    "filename": "colossus_b_pl 49.aseprite",
+    "frame": { "x": 12544, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 260
+   },
+   {
+    "filename": "colossus_b_pl 50.aseprite",
+    "frame": { "x": 12800, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 260
+   },
+   {
+    "filename": "colossus_b_pl 51.aseprite",
+    "frame": { "x": 13056, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 220
+   },
+   {
+    "filename": "colossus_b_pl 52.aseprite",
+    "frame": { "x": 13312, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "colossus_b_pl 53.aseprite",
+    "frame": { "x": 13568, "y": 0, "w": 256, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 256, "h": 176 },
+    "sourceSize": { "w": 256, "h": 176 },
+    "duration": 170
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "colossus_b_pl.png",
+  "format": "RGBA8888",
+  "size": { "w": 13824, "h": 176 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "sweep", "from": 0, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "breath", "from": 12, "to": 27, "direction": "forward", "color": "#000000ff" },
+   { "name": "rain", "from": 28, "to": 37, "direction": "forward", "color": "#000000ff" },
+   { "name": "grab", "from": 38, "to": 53, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

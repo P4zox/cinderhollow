@@ -1,0 +1,213 @@
+{ "frames": [
+   {
+    "filename": "fx_ink_tendril 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 1.aseprite",
+    "frame": { "x": 24, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 2.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 3.aseprite",
+    "frame": { "x": 72, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 4.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_ink_tendril 5.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 80
+   },
+   {
+    "filename": "fx_ink_tendril 6.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 100
+   },
+   {
+    "filename": "fx_ink_tendril 7.aseprite",
+    "frame": { "x": 168, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 100
+   },
+   {
+    "filename": "fx_ink_tendril 8.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_ink_tendril 9.aseprite",
+    "frame": { "x": 216, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_ink_tendril 10.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 90
+   },
+   {
+    "filename": "fx_ink_tendril 11.aseprite",
+    "frame": { "x": 264, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 12.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 13.aseprite",
+    "frame": { "x": 312, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 14.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 180
+   },
+   {
+    "filename": "fx_ink_tendril 15.aseprite",
+    "frame": { "x": 360, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_ink_tendril 16.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 80
+   },
+   {
+    "filename": "fx_ink_tendril 17.aseprite",
+    "frame": { "x": 408, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 100
+   },
+   {
+    "filename": "fx_ink_tendril 18.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 100
+   },
+   {
+    "filename": "fx_ink_tendril 19.aseprite",
+    "frame": { "x": 456, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_ink_tendril 20.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_ink_tendril 21.aseprite",
+    "frame": { "x": 504, "y": 0, "w": 24, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 80 },
+    "sourceSize": { "w": 24, "h": 80 },
+    "duration": 90
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_ink_tendril.png",
+  "format": "RGBA8888",
+  "size": { "w": 528, "h": 80 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "v", "from": 0, "to": 10, "direction": "forward", "color": "#000000ff" },
+   { "name": "r", "from": 11, "to": 21, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

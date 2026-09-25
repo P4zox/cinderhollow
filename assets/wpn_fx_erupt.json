@@ -1,0 +1,77 @@
+{ "frames": [
+   {
+    "filename": "wpn_fx_erupt 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "sourceSize": { "w": 25, "h": 49 },
+    "duration": 45
+   },
+   {
+    "filename": "wpn_fx_erupt 1.aseprite",
+    "frame": { "x": 25, "y": 0, "w": 25, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "sourceSize": { "w": 25, "h": 49 },
+    "duration": 50
+   },
+   {
+    "filename": "wpn_fx_erupt 2.aseprite",
+    "frame": { "x": 50, "y": 0, "w": 25, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "sourceSize": { "w": 25, "h": 49 },
+    "duration": 55
+   },
+   {
+    "filename": "wpn_fx_erupt 3.aseprite",
+    "frame": { "x": 75, "y": 0, "w": 25, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "sourceSize": { "w": 25, "h": 49 },
+    "duration": 60
+   },
+   {
+    "filename": "wpn_fx_erupt 4.aseprite",
+    "frame": { "x": 100, "y": 0, "w": 25, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "sourceSize": { "w": 25, "h": 49 },
+    "duration": 70
+   },
+   {
+    "filename": "wpn_fx_erupt 5.aseprite",
+    "frame": { "x": 125, "y": 0, "w": 25, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "sourceSize": { "w": 25, "h": 49 },
+    "duration": 80
+   },
+   {
+    "filename": "wpn_fx_erupt 6.aseprite",
+    "frame": { "x": 150, "y": 0, "w": 25, "h": 49 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 25, "h": 49 },
+    "sourceSize": { "w": 25, "h": 49 },
+    "duration": 90
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "wpn_fx_erupt.png",
+  "format": "RGBA8888",
+  "size": { "w": 175, "h": 49 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "erupt", "from": 0, "to": 6, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

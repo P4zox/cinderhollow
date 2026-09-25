@@ -1,0 +1,37 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  56
+ ],
+ "anchor": [
+  24,
+  56
+ ],
+ "hurtbox": [
+  16,
+  12,
+  14,
+  44
+ ],
+ "attacks": {},
+ "spawn": {
+  "cast": {
+   "frame": 7,
+   "at": [
+    43,
+    11
+   ]
+  }
+ },
+ "telegraph": {
+  "cast": {
+   "frame": 6,
+   "at": [
+    37,
+    11
+   ]
+  }
+ },
+ "notes": "faces right, feet on the bottom row; ranged only (no melee). cast: 0-2 plant and raise the lightning-rod staff, 3-6 arcs gather at the prongs (brighter each frame), 6 = held peak (telegraph at the staff tip), 7 = release flash: spawn the chain bolt at spawn.cast.at, 8-11 recover. The coil/prongs are the only light source (a small cold-blue point light at the staff tip suits idle/cast). death: recoils, a last discharge arcs from the staff into the floor (frame 1), kneels and collapses into sodden robes, staff lying beside them."
+}

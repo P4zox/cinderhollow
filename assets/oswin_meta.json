@@ -1,0 +1,266 @@
+{
+ "native": 1,
+ "frame": [
+  104,
+  72
+ ],
+ "anchor": [
+  44,
+  72
+ ],
+ "hurtbox": [
+  39,
+  23,
+  17,
+  49
+ ],
+ "attacks": {
+  "combo": {
+   "windows": [
+    {
+     "active": [
+      2,
+      2
+     ],
+     "hit": [
+      46,
+      42,
+      41,
+      30
+     ],
+     "rects": {
+      "2": [
+       46,
+       42,
+       41,
+       30
+      ]
+     }
+    },
+    {
+     "active": [
+      5,
+      6
+     ],
+     "hit": [
+      46,
+      9,
+      36,
+      63
+     ],
+     "rects": {
+      "5": [
+       46,
+       9,
+       36,
+       63
+      ],
+      "6": [
+       47,
+       27,
+       30,
+       45
+      ]
+     }
+    },
+    {
+     "active": [
+      8,
+      9
+     ],
+     "hit": [
+      46,
+      12,
+      36,
+      60
+     ],
+     "rects": {
+      "8": [
+       46,
+       26,
+       36,
+       46
+      ],
+      "9": [
+       53,
+       12,
+       16,
+       60
+      ]
+     }
+    }
+   ]
+  },
+  "spin": {
+   "active": [
+    2,
+    5
+   ],
+   "hit": [
+    10,
+    43,
+    68,
+    29
+   ],
+   "rects": {
+    "2": [
+     12,
+     43,
+     66,
+     29
+    ],
+    "3": [
+     10,
+     45,
+     57,
+     27
+    ],
+    "4": [
+     20,
+     43,
+     58,
+     29
+    ],
+    "5": [
+     17,
+     45,
+     47,
+     27
+    ]
+   }
+  },
+  "vault": {
+   "active": [
+    8,
+    9
+   ],
+   "hit": [
+    38,
+    41,
+    46,
+    31
+   ],
+   "rects": {
+    "8": [
+     38,
+     50,
+     46,
+     22
+    ],
+    "9": [
+     38,
+     41,
+     41,
+     31
+    ]
+   }
+  },
+  "riposte": {
+   "windows": [
+    {
+     "active": [
+      2,
+      2
+     ],
+     "hit": [
+      46,
+      39,
+      44,
+      33
+     ],
+     "rects": {
+      "2": [
+       46,
+       39,
+       44,
+       33
+      ]
+     }
+    },
+    {
+     "active": [
+      3,
+      3
+     ],
+     "hit": [
+      46,
+      27,
+      42,
+      45
+     ],
+     "rects": {
+      "3": [
+       46,
+       27,
+       42,
+       45
+      ]
+     }
+    }
+   ]
+  },
+  "dash": {
+   "active": [
+    3,
+    5
+   ],
+   "hit": [
+    38,
+    40,
+    48,
+    32
+   ],
+   "rects": {
+    "3": [
+     38,
+     40,
+     48,
+     32
+    ],
+    "4": [
+     40,
+     41,
+     46,
+     31
+    ],
+    "5": [
+     39,
+     43,
+     47,
+     29
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "combo": {
+   "frame": 1,
+   "at": [
+    64,
+    45
+   ]
+  },
+  "spin": {
+   "frame": 1,
+   "at": [
+    22,
+    48
+   ]
+  },
+  "vault": {
+   "frame": 1,
+   "at": [
+    69,
+    66
+   ]
+  },
+  "dash": {
+   "frame": 1,
+   "at": [
+    58,
+    38
+   ]
+  }
+ },
+ "notes": "Oswin faces right, anchor = feet. combo = jab, overhead smash, rising sweep (3 windows). spin = 360 deg sweep, hits BOTH sides (engine throws whirlwinds on frame 4 in phase 2). vault: frames 2-6 airborne (drawn in place, flips over the player; engine moves him), landing back-sweep 8-9. counter = parry stance loop; riposte = its answer. dash = phase-2 dash-through (engine moves him on 3-5). sit/rise/twirl = cutscene. oswin_p2 shares this meta."
+}

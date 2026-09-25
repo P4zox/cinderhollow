@@ -1,0 +1,144 @@
+{
+ "native": 1,
+ "frame": [
+  144,
+  112
+ ],
+ "anchor": [
+  60,
+  112
+ ],
+ "hurtbox": [
+  48,
+  25,
+  26,
+  87
+ ],
+ "attacks": {
+  "slam": {
+   "active": [
+    7,
+    8
+   ],
+   "hit": [
+    80,
+    35,
+    43,
+    77
+   ],
+   "rects": {
+    "7": [
+     82,
+     35,
+     41,
+     77
+    ],
+    "8": [
+     80,
+     83,
+     42,
+     29
+    ]
+   }
+  },
+  "sweep": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    64,
+    52,
+    68,
+    60
+   ],
+   "rects": {
+    "5": [
+     64,
+     74,
+     68,
+     38
+    ],
+    "6": [
+     104,
+     52,
+     26,
+     60
+    ]
+   }
+  },
+  "stomp": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    63,
+    95,
+    33,
+    17
+   ],
+   "rects": {
+    "5": [
+     63,
+     95,
+     27,
+     17
+    ],
+    "6": [
+     71,
+     95,
+     25,
+     17
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "slam": {
+   "frame": 4,
+   "at": [
+    14,
+    29
+   ]
+  },
+  "sweep": {
+   "frame": 2,
+   "at": [
+    12,
+    82
+   ]
+  },
+  "stomp": {
+   "frame": 3,
+   "at": [
+    80,
+    94
+   ]
+  }
+ },
+ "spawn": {
+  "slam": {
+   "frame": 7,
+   "at": [
+    99,
+    111
+   ]
+  },
+  "stomp": {
+   "frame": 5,
+   "at": [
+    80,
+    111
+   ]
+  },
+  "shatter": {
+   "frame": 6,
+   "at": [
+    53,
+    56
+   ]
+  }
+ },
+ "notes": "faces right, anchor = feet (x=60). ice_warden (phase 1, ice shell on layers ShellBack/Shell/ShellArm) and ice_warden_p2 (bare, cracked armour, frost core) share this meta, frames, tags and durations. 'hit' = union of per-frame 'rects' over the inclusive active range (rects reach the floor). Telegraph 'at' = glint point on the anticipation hold (slam: maul head overhead, sweep: maul head behind, stomp: raised front foot). spawn.slam = maul impact on the floor (fx_hf_shatter + frost crack); slam frames 9-11 = maul stuck in the floor (punish window). spawn.stomp = the stomping foot: erupt a line of fx_hf_icespike forward from there. shatter (phase transition, play on the p1 sheet): cracks 0-4, roar 5, shell explodes 6-8 (spawn fx_hf_shatter at spawn.shatter), revealed 9 -> swap to the p2 sheet after the tag; on the p2 sheet the same tag is a frost-flare roar. stagger holds its last frame; death leaves the maul planted."
+}

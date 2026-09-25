@@ -1,0 +1,250 @@
+// ------------------------------------------------------------------ pause menu (equipment / inventory / status / settings), shop, forge
+const SETTINGS_KEY = 'cinderhollow_settings';
+const SETTINGS = { music: 0.7, sfx: 0.8, shake: 1, numbers: 1, god: 0, infst: 0 };
+try { Object.assign(SETTINGS, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')); } catch (e) {}
+function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} if (master) master.gain.value = SETTINGS.sfx; }
+const TABS = ['Equipment', 'Inventory', 'Status', 'Settings'];
+function openPauseMenu() { menu = { screen: 'pause', tab: 0, sel: 0 }; state = 'menu'; clearBuffer(); sfx.menu(); }
+
+function equipRows() {
+  const rows = [{ k: 'weapon', label: 'Weapon' }, { k: 'art', label: 'Weapon Art' }];
+  for (let i = 0; i < SAVE.spellSlots; i++) rows.push({ k: 'spell', i, label: `Spell ${i + 1}` });
+  for (let i = 0; i < SAVE.charmSlots; i++) rows.push({ k: 'charm', i, label: `Charm ${i + 1}` });
+  return rows;
+}
+function knownSpells() { return Object.keys(SPELLS).filter(spellKnown); }
+function cycle(list, cur, d, allowNone) {
+  const opts = allowNone ? [null, ...list] : list;
+  if (!opts.length) return cur;
+  const i = opts.indexOf(cur);
+  return opts[(i + d + opts.length) % opts.length];
+}
+function changeEquip(row, d) {
+  if (row.k === 'weapon') { const ws = Object.keys(SAVE.weapons); SAVE.weapon = cycle(ws, SAVE.weapon, d); const a = WEAPONS[SAVE.weapon].art; if (SAVE.arts.includes(a) && !SAVE.artPinned) SAVE.art = a; }
+  else if (row.k === 'art') { SAVE.art = cycle(SAVE.arts, SAVE.art, d); SAVE.artPinned = true; }
+  else if (row.k === 'spell') {
+    const others = SAVE.spellsEq.filter((s, j) => j !== row.i);
+    const avail = knownSpells().filter(s => !others.includes(s));
+    const cur = SAVE.spellsEq[row.i] || null, nx = cycle(avail, cur, d, true);
+    const eq = [...SAVE.spellsEq]; if (nx) eq[row.i] = nx; else eq.splice(row.i, 1);
+    SAVE.spellsEq = eq.filter(Boolean); if (!SAVE.spellsEq.includes(SAVE.spell)) SAVE.spell = SAVE.spellsEq[0] || null;
+  } else if (row.k === 'charm') {
+    const others = SAVE.charmsEq.filter((s, j) => j !== row.i);
+    const avail = SAVE.charms.filter(c => !others.includes(c));
+    const cur = SAVE.charmsEq[row.i] || null, nx = cycle(avail, cur, d, true);
+    const eq = [...SAVE.charmsEq]; if (nx) eq[row.i] = nx; else eq.splice(row.i, 1);
+    SAVE.charmsEq = eq.filter(Boolean);
+  }
+  const hpFrac = P.hp / D.maxHp; refreshDerived(false); P.hp = Math.min(D.maxHp, Math.round(D.maxHp * hpFrac)); P.fp = Math.min(P.fp, D.maxFp);
+  sfx.menu(); saveGame();
+}
+function invList() {
+  const out = [];
+  for (const id of Object.keys(SAVE.weapons)) out.push({ id: 'w:' + id, extra: SAVE.weapons[id] ? '+' + SAVE.weapons[id] : '' });
+  for (const [id, n] of Object.entries(SAVE.inv)) if (n > 0) out.push({ id, extra: '×' + n });
+  for (const id of SAVE.charms) out.push({ id });
+  for (const id of SAVE.spellsOwned) out.push({ id: 'sp:' + id });
+  for (const id of SAVE.arts) out.push({ id: 'art:' + id });
+  for (const id of Object.keys(SAVE.items)) if (SAVE.items[id] && ITEMS[id]) out.push({ id });
+  if (SAVE.flaskPot) out.push({ id: 'herb', extra: `flasks +${SAVE.flaskPot * 10}%` });
+  return out;
+}
+const SETTING_ROWS = [
+  { k: 'music', label: 'Music volume', step: 0.1 }, { k: 'sfx', label: 'Effects volume', step: 0.1 },
+  { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true }, { k: 'god', label: 'God mode (test)', toggle: true }, { k: 'infst', label: 'Infinite stamina (test)', toggle: true }, { k: 'armory', label: 'Armory: unlock all gear (test)' }, { k: 'tech', label: 'Grant all techniques (test)' }, { k: 'shrines', label: 'Kindle every shrine for travel (test)' }, { k: 'quit', label: 'Save & quit to title' },
+];
+
+function pauseInput(a) {
+  const M = menu, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
+  if (a === 'pause' || a === 'back' || a === 'heavy') { menu = null; state = 'play'; clearBuffer(); saveGame(); return; }
+  if (a === 'spell' || a === 'map') { M.tab = (M.tab + (a === 'spell' ? 3 : 1)) % 4; M.sel = 0; sfx.menu(); return; }
+  if (M.tab === 0) {
+    const rows = equipRows(); M.n = rows.length;
+    if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
+    else if (a === 'left' || a === 'right') changeEquip(rows[M.sel], a === 'left' ? -1 : 1);
+    else if (conf) changeEquip(rows[M.sel], 1);
+  } else if (M.tab === 1) {
+    const L = invList(); M.n = Math.max(1, L.length);
+    if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
+    else if (a === 'left' || a === 'right') { M.tab = (M.tab + (a === 'left' ? 3 : 1)) % 4; M.sel = 0; }
+  } else if (M.tab === 2) {
+    if (a === 'left' || a === 'right') { M.tab = (M.tab + (a === 'left' ? 3 : 1)) % 4; M.sel = 0; }
+  } else {
+    M.n = SETTING_ROWS.length;
+    if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
+    const R = SETTING_ROWS[M.sel];
+    if (R.k === 'quit' && conf) { menu = null; saveGame(); state = 'title'; titleSel = 0; return; }
+    if (R.k === 'armory') { if (conf) { menu = null; state = 'play'; clearBuffer(); giveArmory(); } return; }
+    if (R.k === 'shrines') { if (conf) { menu = null; state = 'play'; clearBuffer(); for (const r of ROOMS) if (r.shrine && !r.test && !SAVE.shrines.includes(r.id)) SAVE.shrines.push(r.id); saveGame(); sfx.kindle(); toast('Every shrine burns. Rest at one to travel.', 4); } return; }
+    if (R.k === 'tech') { if (conf) { menu = null; state = 'play'; clearBuffer(); grantTechniques(); } return; }
+    if ((a === 'left' || a === 'right' || conf) && !['quit', 'armory', 'tech', 'shrines'].includes(R.k)) {
+      const d = a === 'left' ? -1 : 1;
+      if (R.toggle) SETTINGS[R.k] = SETTINGS[R.k] ? 0 : 1;
+      else SETTINGS[R.k] = clamp(Math.round((SETTINGS[R.k] + d * R.step) * 10) / 10, 0, 1);
+      saveSettings(); sfx.menu();
+    }
+  }
+}
+function statsLines() {
+  const W = D.W, lv = D.wlv;
+  return [
+    ['Level', levelOf(SAVE.stats)], ['Cinders', SAVE.cinders], ['HP', `${Math.round(P.hp)} / ${D.maxHp}`], ['FP', `${Math.round(P.fp)} / ${D.maxFp}`], ['Stamina', D.maxSt],
+    ['Attack', Math.round(D.light)], ['Heavy', Math.round(D.heavy * 2)], ['Spell power', Math.round(D.spell * 100)],
+    ['Vigor', SAVE.stats.vig], ['Mind', SAVE.stats.mnd], ['Endurance', SAVE.stats.end], ['Strength', SAVE.stats.str], ['Dexterity', SAVE.stats.dex], ['Faith', SAVE.stats.fth],
+    ['Deaths', SAVE.deaths], ['Time', fmtTime(SAVE.playTime)], ['Journey', (SAVE.ngp || 0) + 1],
+  ];
+}
+function renderPauseMenu() {
+  const M = menu;
+  vctx.fillStyle = 'rgba(5,4,8,0.78)'; vctx.fillRect(ox, oy, W * scale, H * scale);
+  TABS.forEach((t, i) => {
+    const x = 60 + i * 88, sel = i === M.tab;
+    text(t.toUpperCase(), x, 20, 7, sel ? '#f5e3b0' : '#7f745f', 'center', { spacing: 1.5, weight: sel ? 600 : 500 });
+    if (sel) { vctx.fillStyle = '#b08a3a'; vctx.fillRect(ox + (x - 22) * scale, oy + 23 * scale, 44 * scale, Math.max(1, scale * 0.5)); }
+  });
+  text('Q / Tab — switch tab     ↑↓ select   ←→ change     Esc — close', W / 2, 210, 5.5, '#7f745f', 'center', { weight: 400 });
+  if (M.tab === 0) {
+    const rows = equipRows();
+    panel(14, 30, 190, 172);
+    const vis = 10, off = Math.max(0, Math.min(M.sel - vis + 2, rows.length - vis));   // scroll when there are many slots
+    rows.forEach((r, i) => {
+      if (i < off || i >= off + vis) return;
+      const y = 44 + (i - off) * 16, sel = i === M.sel;
+      if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 18 * scale, oy + (y - 10) * scale, 182 * scale, 15 * scale); }
+      text(r.label, 22, y, 5.8, '#9a8f78', 'left', { weight: 500 });
+      let name = '— empty —', ic = null;
+      if (r.k === 'weapon') { name = WEAPONS[SAVE.weapon].name + (SAVE.weapons[SAVE.weapon] ? ` +${SAVE.weapons[SAVE.weapon]}` : ''); ic = 'w_' + SAVE.weapon; }
+      else if (r.k === 'art') { if (SAVE.art) { name = ARTS[SAVE.art].name; ic = 'a_' + SAVE.art; } }
+      else if (r.k === 'spell') { const s = SAVE.spellsEq[r.i]; if (s) { name = SPELLS[s].name; ic = SPELLS[s].icon; } }
+      else { const c = SAVE.charmsEq[r.i]; if (c) { name = CHARMS[c].name; ic = c; } }
+      if (ic) icon(ic, 72, y - 11, 12);
+      text((sel ? '◂ ' : '') + name + (sel ? ' ▸' : ''), 88, y - 1, 6.8, sel ? '#f5e3b0' : '#e8dcc0', 'left', { weight: sel ? 600 : 500 });
+    });
+    // detail panel
+    panel(210, 30, 160, 172, 0.7);
+    const r = rows[M.sel];
+    let title = '', desc = '', extra = [];
+    if (r.k === 'weapon') {
+      const w = WEAPONS[SAVE.weapon], lv = SAVE.weapons[SAVE.weapon] || 0;
+      title = w.name + (lv ? ` +${lv}` : ''); desc = w.desc;
+      extra = [[`Attack ${Math.round(weaponAR(SAVE.stats, SAVE.weapon, lv))}`, `Speed ${w.speed >= 1.2 ? 'fast' : w.speed <= 0.8 ? 'slow' : 'medium'}`],
+               [`Scaling  Str ${gradeWithLv(w.sc.str, lv)}  Dex ${gradeWithLv(w.sc.dex, lv)}  Fth ${gradeWithLv(w.sc.fth, lv)}`],
+               [`Reach ${w.reach >= 1.3 ? 'long' : w.reach <= 0.8 ? 'short' : 'normal'}   Art: ${ARTS[w.art].name}`]];
+      if (w.bleed) extra.push(['Inflicts bleed']); if (w.armor) extra.push(['Heavy attacks cannot be interrupted']);
+    } else if (r.k === 'art' && SAVE.art) { title = ARTS[SAVE.art].name; desc = ARTS[SAVE.art].desc; extra = [[`${ARTS[SAVE.art].fp} FP · O to use`]]; }
+    else if (r.k === 'spell') { const s = SAVE.spellsEq[r.i]; if (s) { title = SPELLS[s].name; desc = SPELL_DEFS[s] ? SPELL_DEFS[s].desc : ''; extra = [[`${spellCost(s)} FP · U to cast · Q to switch`]]; } else { title = 'Spell slot'; desc = `You know ${knownSpells().length} spell${knownSpells().length === 1 ? '' : 's'}. Learn more from the skill tree or the Hollow Scribe.`; } }
+    else if (r.k === 'charm') { const c = SAVE.charmsEq[r.i]; if (c) { title = CHARMS[c].name; desc = CHARMS[c].desc; } else { title = 'Charm slot'; desc = `You carry ${SAVE.charms.length} charm${SAVE.charms.length === 1 ? '' : 's'}. ←→ to wear one.`; } }
+    text(title, 218, 46, 8, '#e6c77a');
+    let y = 60;
+    for (const l of wrap(desc, 142, 6.2)) { text(l, 218, y, 6.2, '#d8cdb4', 'left', { weight: 400 }); y += 8.5; }
+    y += 4;
+    for (const row of extra) { text(row.join('   '), 218, y, 5.8, '#b8ab90', 'left', { weight: 500 }); y += 9; }
+  } else if (M.tab === 1) {
+    const L = invList();
+    panel(14, 30, 190, 172);
+    const start = Math.max(0, Math.min(M.sel - 8, L.length - 17));
+    L.slice(start, start + 17).forEach((it, k) => {
+      const i = start + k, y = 42 + k * 9.6, sel = i === M.sel, d = ITEMS[it.id];
+      if (!d) return;
+      if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 18 * scale, oy + (y - 7.5) * scale, 182 * scale, 9.6 * scale); }
+      icon(d.icon, 20, y - 8, 9);
+      text(d.name, 32, y, 6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+      if (it.extra) text(it.extra, 198, y, 5.6, '#b8ab90', 'right');
+    });
+    if (!L.length) text('Nothing yet.', 22, 46, 6.5, '#9a8f78');
+    const it = L[M.sel];
+    panel(210, 30, 160, 172, 0.7);
+    if (it && ITEMS[it.id]) {
+      const d = ITEMS[it.id]; icon(d.icon, 218, 38, 24);
+      text(d.name, 248, 50, 7.5, '#e6c77a');
+      let y = 74; for (const l of wrap(d.desc, 142, 6.2)) { text(l, 218, y, 6.2, '#d8cdb4', 'left', { weight: 400 }); y += 8.5; }
+    }
+  } else if (M.tab === 2) {
+    panel(14, 30, 356, 172);
+    const L = statsLines();
+    L.forEach(([k, v], i) => {
+      const col = Math.floor(i / 9), row = i % 9, x = 26 + col * 118, y = 48 + row * 15;
+      text(k, x, y, 6.2, '#9a8f78', 'left', { weight: 500 }); text(String(v), x + 100, y, 6.8, '#e8dcc0', 'right');
+    });
+    text(`Skills ${SAVE.skills.length}/${SKILLS.length}  ·  Weapons ${Object.keys(SAVE.weapons).length}/${Object.keys(WEAPONS).length}  ·  Charms ${SAVE.charms.length}/${Object.keys(CHARMS).length}`, W / 2, 190, 6, '#b8ab90', 'center', { weight: 400 });
+  } else {
+    const rh = Math.min(17, 158 / SETTING_ROWS.length);
+    panel(92, 30, 200, 16 + SETTING_ROWS.length * rh);
+    SETTING_ROWS.forEach((R, i) => {
+      const y = 44 + i * rh, sel = i === M.sel;
+      if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 98 * scale, oy + (y - rh + 4) * scale, 188 * scale, (rh - 1) * scale); }
+      text(R.label, 104, y, 6.8, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+      if (['quit', 'armory', 'tech', 'shrines'].includes(R.k)) return;
+      const v = SETTINGS[R.k], label = R.toggle ? (v ? 'On' : 'Off') : R.k === 'shake' ? (v === 0 ? 'Off' : v < 1 ? 'Low' : 'Full') : Math.round(v * 100) + '%';
+      text((sel ? '◂ ' : '') + label + (sel ? ' ▸' : ''), 280, y, 6.8, '#e8dcc0', 'right');
+    });
+  }
+}
+
+// ---- shops & forge
+function shopList(id) { return SHOPS[id].filter(e => (SAVE.bought[id + ':' + e.item] || 0) < e.stock); }
+function shopInput(a) {
+  const M = menu, L = shopList(M.shop), conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
+  M.n = Math.max(1, L.length);
+  if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
+  else if (['pause', 'back', 'heavy', 'roll'].includes(a)) return leaveShop();
+  else if (conf && L[M.sel]) {
+    const e = L[M.sel], owned = (ITEMS[e.item].weapon && SAVE.weapons[ITEMS[e.item].weapon] !== undefined) || (ITEMS[e.item].charm && SAVE.charms.includes(e.item)) || (ITEMS[e.item].spell && spellKnown(ITEMS[e.item].spell));
+    if (owned) { sfx.deny(); toast('You already have that'); return; }
+    if (SAVE.cinders < e.price) { sfx.deny(); toast('Not enough cinders'); return; }
+    SAVE.cinders -= e.price; SAVE.bought[M.shop + ':' + e.item] = (SAVE.bought[M.shop + ':' + e.item] || 0) + 1;
+    grantItem(e.item); M.sel = Math.min(M.sel, Math.max(0, shopList(M.shop).length - 1));
+  }
+}
+function leaveShop() { menu = null; if (dialog && dialog.resume) { dialog.resume = false; state = 'dialog'; advanceDialog(); } else state = 'play'; clearBuffer(); }
+function renderShop() {
+  const M = menu, L = shopList(M.shop);
+  vctx.fillStyle = 'rgba(5,4,8,0.6)'; vctx.fillRect(ox, oy, W * scale, H * scale);
+  panel(20, 22, 200, 176);
+  text(M.shop === 'ashwright' ? 'ASHWRIGHT’S WARES' : 'THE SCRIBE’S TEACHINGS', 30, 38, 7.5, '#e6c77a', 'left', { spacing: 1 });
+  icon('cinder', 180, 30, 10); text(String(SAVE.cinders), 212, 38, 7, '#e8dcc0', 'right');
+  L.forEach((e, i) => {
+    const d = ITEMS[e.item], y = 56 + i * 15, sel = i === M.sel, afford = SAVE.cinders >= e.price;
+    if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 10) * scale, 192 * scale, 14 * scale); }
+    icon(d.icon, 28, y - 10, 12);
+    text(d.name, 44, y - 1, 6.6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+    text(String(e.price), 212, y - 1, 6.4, afford ? '#e6c77a' : '#8a6050', 'right');
+  });
+  if (!L.length) text('Sold out.', 30, 60, 6.5, '#9a8f78');
+  const e = L[M.sel];
+  panel(226, 22, 140, 176, 0.7);
+  if (e) { const d = ITEMS[e.item]; icon(d.icon, 234, 30, 24); text(d.name, 234, 66, 7.2, '#e6c77a'); let y = 80; for (const l of wrap(d.desc, 124, 6)) { text(l, 234, y, 6, '#d8cdb4', 'left', { weight: 400 }); y += 8.2; } }
+  text('Enter — buy    Esc — leave', 120, 192, 5.5, '#7f745f', 'center', { weight: 400 });
+}
+function forgeInput(a) {
+  const M = menu, L = Object.keys(SAVE.weapons), conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
+  M.n = L.length;
+  if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
+  else if (['pause', 'back', 'heavy', 'roll'].includes(a)) return leaveShop();
+  else if (conf) {
+    const id = L[M.sel], lv = SAVE.weapons[id];
+    if (lv >= 5) { sfx.deny(); toast('It can take no more'); return; }
+    const c = upgradeCost(lv);
+    if ((SAVE.inv.emberstone || 0) < c.stones || SAVE.cinders < c.cinders) { sfx.deny(); toast(`Needs ${c.stones} Emberstone${c.stones > 1 ? 's' : ''} and ${c.cinders} cinders`); return; }
+    SAVE.inv.emberstone -= c.stones; SAVE.cinders -= c.cinders; SAVE.weapons[id] = lv + 1;
+    refreshDerived(); sfx.levelup(); tone(1500, 0.3, 0.08, 'square', 0.5); shake = 3; flashScreen = 0.2;
+    toast(`${WEAPONS[id].name} tempered to +${lv + 1}`); saveGame();
+  }
+}
+function renderForge() {
+  const M = menu, L = Object.keys(SAVE.weapons);
+  vctx.fillStyle = 'rgba(5,4,8,0.6)'; vctx.fillRect(ox, oy, W * scale, H * scale);
+  panel(20, 22, 344, 176);
+  text('TEMPER A WEAPON', 30, 38, 7.5, '#e6c77a', 'left', { spacing: 1 });
+  text(`Emberstones ${SAVE.inv.emberstone || 0}     Cinders ${SAVE.cinders}`, 354, 38, 6.2, '#e8dcc0', 'right');
+  L.forEach((id, i) => {
+    const w = WEAPONS[id], lv = SAVE.weapons[id], y = 58 + i * 16, sel = i === M.sel;
+    if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 11) * scale, 336 * scale, 15 * scale); }
+    icon('w_' + id, 28, y - 11, 12);
+    text(`${w.name}${lv ? ' +' + lv : ''}`, 44, y - 1, 6.6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+    const a0 = Math.round(weaponAR(SAVE.stats, id, lv)), a1 = lv < 5 ? Math.round(weaponAR(SAVE.stats, id, lv + 1)) : null;
+    text(a1 ? `Attack ${a0} → ${a1}` : `Attack ${a0}  (max)`, 230, y - 1, 6.2, '#b8ab90', 'left');
+    if (lv < 5) { const c = upgradeCost(lv); text(`${c.stones}◆  ${c.cinders}`, 356, y - 1, 6.2, (SAVE.inv.emberstone || 0) >= c.stones && SAVE.cinders >= c.cinders ? '#e6c77a' : '#8a6050', 'right'); }
+  });
+  text('Enter — temper    Esc — leave', W / 2, 192, 5.5, '#7f745f', 'center', { weight: 400 });
+}

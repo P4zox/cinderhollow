@@ -1,0 +1,86 @@
+{ "frames": [
+   {
+    "filename": "fx_sov_nova 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_sov_nova 1.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 60
+   },
+   {
+    "filename": "fx_sov_nova 2.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_sov_nova 3.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 80
+   },
+   {
+    "filename": "fx_sov_nova 4.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 80
+   },
+   {
+    "filename": "fx_sov_nova 5.aseprite",
+    "frame": { "x": 800, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 90
+   },
+   {
+    "filename": "fx_sov_nova 6.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 100
+   },
+   {
+    "filename": "fx_sov_nova 7.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 160, "h": 120 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 120 },
+    "sourceSize": { "w": 160, "h": 120 },
+    "duration": 110
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_sov_nova.png",
+  "format": "RGBA8888",
+  "size": { "w": 1280, "h": 120 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "sov_nova", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

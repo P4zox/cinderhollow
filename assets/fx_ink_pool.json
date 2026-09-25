@@ -1,0 +1,161 @@
+{ "frames": [
+   {
+    "filename": "fx_ink_pool 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 1.aseprite",
+    "frame": { "x": 16, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 2.aseprite",
+    "frame": { "x": 32, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 3.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 4.aseprite",
+    "frame": { "x": 64, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 5.aseprite",
+    "frame": { "x": 80, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 6.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 7.aseprite",
+    "frame": { "x": 112, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 8.aseprite",
+    "frame": { "x": 128, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 9.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 10.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 11.aseprite",
+    "frame": { "x": 176, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 12.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 13.aseprite",
+    "frame": { "x": 208, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 14.aseprite",
+    "frame": { "x": 224, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   },
+   {
+    "filename": "fx_ink_pool 15.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 16, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 12 },
+    "sourceSize": { "w": 16, "h": 12 },
+    "duration": 120
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_ink_pool.png",
+  "format": "RGBA8888",
+  "size": { "w": 256, "h": 12 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "tele", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "loop", "from": 4, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "r_tele", "from": 8, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "r_loop", "from": 12, "to": 15, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

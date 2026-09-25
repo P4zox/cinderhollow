@@ -1,0 +1,288 @@
+{ "frames": [
+   {
+    "filename": "rot_hulk 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 230
+   },
+   {
+    "filename": "rot_hulk 1.aseprite",
+    "frame": { "x": 64, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 230
+   },
+   {
+    "filename": "rot_hulk 2.aseprite",
+    "frame": { "x": 128, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 230
+   },
+   {
+    "filename": "rot_hulk 3.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 230
+   },
+   {
+    "filename": "rot_hulk 4.aseprite",
+    "frame": { "x": 256, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 5.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 6.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 7.aseprite",
+    "frame": { "x": 448, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 8.aseprite",
+    "frame": { "x": 512, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 9.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 10.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 140
+   },
+   {
+    "filename": "rot_hulk 11.aseprite",
+    "frame": { "x": 704, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 12.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 170
+   },
+   {
+    "filename": "rot_hulk 13.aseprite",
+    "frame": { "x": 832, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 200
+   },
+   {
+    "filename": "rot_hulk 14.aseprite",
+    "frame": { "x": 896, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 460
+   },
+   {
+    "filename": "rot_hulk 15.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 60
+   },
+   {
+    "filename": "rot_hulk 16.aseprite",
+    "frame": { "x": 1024, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 70
+   },
+   {
+    "filename": "rot_hulk 17.aseprite",
+    "frame": { "x": 1088, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 120
+   },
+   {
+    "filename": "rot_hulk 18.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 240
+   },
+   {
+    "filename": "rot_hulk 19.aseprite",
+    "frame": { "x": 1216, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 220
+   },
+   {
+    "filename": "rot_hulk 20.aseprite",
+    "frame": { "x": 1280, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 80
+   },
+   {
+    "filename": "rot_hulk 21.aseprite",
+    "frame": { "x": 1344, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 150
+   },
+   {
+    "filename": "rot_hulk 22.aseprite",
+    "frame": { "x": 1408, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 100
+   },
+   {
+    "filename": "rot_hulk 23.aseprite",
+    "frame": { "x": 1472, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 160
+   },
+   {
+    "filename": "rot_hulk 24.aseprite",
+    "frame": { "x": 1536, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 220
+   },
+   {
+    "filename": "rot_hulk 25.aseprite",
+    "frame": { "x": 1600, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 320
+   },
+   {
+    "filename": "rot_hulk 26.aseprite",
+    "frame": { "x": 1664, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 130
+   },
+   {
+    "filename": "rot_hulk 27.aseprite",
+    "frame": { "x": 1728, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 110
+   },
+   {
+    "filename": "rot_hulk 28.aseprite",
+    "frame": { "x": 1792, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 120
+   },
+   {
+    "filename": "rot_hulk 29.aseprite",
+    "frame": { "x": 1856, "y": 0, "w": 64, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 56 },
+    "sourceSize": { "w": 64, "h": 56 },
+    "duration": 900
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "rot_hulk.png",
+  "format": "RGBA8888",
+  "size": { "w": 1920, "h": 56 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "walk", "from": 4, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "smash", "from": 10, "to": 19, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 20, "to": 21, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 22, "to": 29, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

@@ -1,0 +1,248 @@
+{
+ "native": 1,
+ "frame": [
+  96,
+  72
+ ],
+ "anchor": [
+  40,
+  72
+ ],
+ "hurtbox": [
+  34,
+  21,
+  14,
+  51
+ ],
+ "attacks": {
+  "flurry": {
+   "windows": [
+    {
+     "active": [
+      2,
+      2
+     ],
+     "hit": [
+      57,
+      17,
+      20,
+      55
+     ],
+     "rects": {
+      "2": [
+       57,
+       17,
+       20,
+       55
+      ]
+     }
+    },
+    {
+     "active": [
+      3,
+      3
+     ],
+     "hit": [
+      42,
+      33,
+      31,
+      39
+     ],
+     "rects": {
+      "3": [
+       42,
+       33,
+       31,
+       39
+      ]
+     }
+    },
+    {
+     "active": [
+      6,
+      6
+     ],
+     "hit": [
+      42,
+      23,
+      38,
+      49
+     ],
+     "rects": {
+      "6": [
+       42,
+       23,
+       38,
+       49
+      ]
+     }
+    },
+    {
+     "active": [
+      9,
+      10
+     ],
+     "hit": [
+      56,
+      14,
+      26,
+      58
+     ],
+     "rects": {
+      "9": [
+       61,
+       14,
+       21,
+       58
+      ],
+      "10": [
+       56,
+       56,
+       17,
+       16
+      ]
+     }
+    }
+   ]
+  },
+  "cross": {
+   "active": [
+    2,
+    3
+   ],
+   "hit": [
+    42,
+    17,
+    41,
+    55
+   ],
+   "rects": {
+    "2": [
+     42,
+     37,
+     40,
+     35
+    ],
+    "3": [
+     64,
+     17,
+     19,
+     55
+    ]
+   }
+  },
+  "whirl": {
+   "windows": [
+    {
+     "active": [
+      2,
+      3
+     ],
+     "hit": [
+      10,
+      36,
+      62,
+      36
+     ],
+     "rects": {
+      "2": [
+       10,
+       36,
+       62,
+       36
+      ],
+      "3": [
+       10,
+       39,
+       61,
+       33
+      ]
+     }
+    },
+    {
+     "active": [
+      4,
+      5
+     ],
+     "hit": [
+      10,
+      38,
+      62,
+      34
+     ],
+     "rects": {
+      "4": [
+       10,
+       38,
+       62,
+       34
+      ],
+      "5": [
+       11,
+       43,
+       58,
+       29
+      ]
+     }
+    }
+   ]
+  },
+  "leap": {
+   "active": [
+    7,
+    8
+   ],
+   "hit": [
+    51,
+    54,
+    10,
+    18
+   ],
+   "rects": {
+    "7": [
+     51,
+     54,
+     10,
+     18
+    ],
+    "8": [
+     51,
+     55,
+     9,
+     17
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "flurry": {
+   "frame": 1,
+   "at": [
+    34,
+    16
+   ]
+  },
+  "cross": {
+   "frame": 1,
+   "at": [
+    18,
+    48
+   ]
+  },
+  "whirl": {
+   "frame": 1,
+   "at": [
+    22,
+    44
+   ]
+  },
+  "leap": {
+   "frame": 1,
+   "at": [
+    52,
+    30
+   ]
+  }
+ },
+ "notes": "Hollow Champion faces right, anchor = feet. flurry = 4 cuts (windows), cross = lunging X-cut (engine steps him forward), whirl = spinning blade dance hitting both sides, leap = jump + double plunge (airborne 2-6, drawn in place). salute = intro. champion_p2 shares this meta."
+}

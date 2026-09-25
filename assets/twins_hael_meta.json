@@ -1,0 +1,359 @@
+{
+ "native": 1,
+ "frame": [
+  96,
+  72
+ ],
+ "anchor": [
+  40,
+  72
+ ],
+ "hurtbox": [
+  31,
+  9,
+  20,
+  63
+ ],
+ "attacks": {
+  "slash": {
+   "windows": [
+    {
+     "active": [
+      3,
+      4
+     ],
+     "hit": [
+      50,
+      0,
+      40,
+      72
+     ],
+     "rects": {
+      "3": [
+       50,
+       0,
+       40,
+       72
+      ],
+      "4": [
+       58,
+       50,
+       30,
+       22
+      ]
+     }
+    },
+    {
+     "active": [
+      7,
+      8
+     ],
+     "hit": [
+      55,
+      0,
+      33,
+      72
+     ],
+     "rects": {
+      "7": [
+       61,
+       22,
+       27,
+       50
+      ],
+      "8": [
+       55,
+       0,
+       18,
+       72
+      ]
+     }
+    }
+   ]
+  },
+  "slam": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    61,
+    53,
+    35,
+    19
+   ],
+   "rects": {
+    "5": [
+     61,
+     53,
+     35,
+     19
+    ],
+    "6": [
+     61,
+     53,
+     35,
+     19
+    ]
+   }
+  },
+  "bash": {
+   "active": [
+    3,
+    5
+   ],
+   "hit": [
+    48,
+    26,
+    27,
+    46
+   ],
+   "rects": {
+    "3": [
+     48,
+     26,
+     25,
+     46
+    ],
+    "4": [
+     49,
+     26,
+     25,
+     46
+    ],
+    "5": [
+     49,
+     26,
+     26,
+     46
+    ]
+   }
+  },
+  "plant": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    39,
+    47,
+    29,
+    25
+   ],
+   "rects": {
+    "3": [
+     39,
+     47,
+     29,
+     25
+    ],
+    "4": [
+     39,
+     48,
+     29,
+     24
+    ]
+   }
+  },
+  "lunge": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    44,
+    40,
+    46,
+    32
+   ],
+   "rects": {
+    "3": [
+     44,
+     40,
+     45,
+     32
+    ],
+    "4": [
+     44,
+     40,
+     46,
+     32
+    ]
+   }
+  },
+  "leap": {
+   "active": [
+    7,
+    8
+   ],
+   "hit": [
+    61,
+    53,
+    35,
+    19
+   ],
+   "rects": {
+    "7": [
+     61,
+     53,
+     35,
+     19
+    ],
+    "8": [
+     61,
+     53,
+     35,
+     19
+    ]
+   }
+  },
+  "wave": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    60,
+    23,
+    29,
+    49
+   ],
+   "rects": {
+    "3": [
+     60,
+     57,
+     28,
+     15
+    ],
+    "4": [
+     61,
+     23,
+     28,
+     49
+    ]
+   }
+  },
+  "launch": {
+   "active": [
+    2,
+    3
+   ],
+   "hit": [
+    49,
+    0,
+    36,
+    72
+   ],
+   "rects": {
+    "2": [
+     59,
+     7,
+     26,
+     65
+    ],
+    "3": [
+     49,
+     0,
+     14,
+     72
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "slash": {
+   "frame": 2,
+   "at": [
+    13,
+    10
+   ]
+  },
+  "slam": {
+   "frame": 3,
+   "at": [
+    14,
+    3
+   ]
+  },
+  "bash": {
+   "frame": 1,
+   "at": [
+    56,
+    30
+   ]
+  },
+  "plant": {
+   "frame": 2,
+   "at": [
+    49,
+    12
+   ]
+  },
+  "absorb": {
+   "frame": 6,
+   "at": [
+    42,
+    3
+   ]
+  },
+  "lunge": {
+   "frame": 2,
+   "at": [
+    63,
+    43
+   ]
+  },
+  "leap": {
+   "frame": 5,
+   "at": [
+    9,
+    3
+   ]
+  },
+  "wave": {
+   "frame": 1,
+   "at": [
+    9,
+    64
+   ]
+  },
+  "launch": {
+   "frame": 1,
+   "at": [
+    67,
+    68
+   ]
+  }
+ },
+ "spawn": {
+  "slam": {
+   "frame": 5,
+   "at": [
+    84,
+    71
+   ]
+  },
+  "plant": {
+   "frame": 3,
+   "at": [
+    53,
+    71
+   ]
+  },
+  "leap": {
+   "frame": 7,
+   "at": [
+    84,
+    71
+   ]
+  },
+  "wave": {
+   "frame": 4,
+   "at": [
+    90,
+    71
+   ]
+  }
+ },
+ "notes": "Ser Hael (flame). slash = 2 windows (overhead cut, rising backhand); slam = overhead flame slam, spawn.slam = blade impact on the floor (flame wave); bash = shield charge drawn in place (engine moves him on frames 3-5); plant = enraged move, sword driven into the floor (spawn.plant). absorb = phase-2 turn (kneel, element flows in, rise). twins_hael_p2 shares this meta."
+}

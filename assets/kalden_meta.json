@@ -1,0 +1,232 @@
+{
+ "native": 1,
+ "frame": [
+  96,
+  72
+ ],
+ "anchor": [
+  40,
+  72
+ ],
+ "hurtbox": [
+  33,
+  24,
+  15,
+  48
+ ],
+ "attacks": {
+  "combo": {
+   "windows": [
+    {
+     "active": [
+      2,
+      3
+     ],
+     "hit": [
+      48,
+      0,
+      43,
+      72
+     ],
+     "rects": {
+      "2": [
+       48,
+       0,
+       43,
+       72
+      ],
+      "3": [
+       57,
+       46,
+       32,
+       26
+      ]
+     }
+    },
+    {
+     "active": [
+      6,
+      7
+     ],
+     "hit": [
+      54,
+      1,
+      35,
+      71
+     ],
+     "rects": {
+      "6": [
+       61,
+       27,
+       28,
+       45
+      ],
+      "7": [
+       54,
+       1,
+       19,
+       71
+      ]
+     }
+    },
+    {
+     "active": [
+      10,
+      11
+     ],
+     "hit": [
+      42,
+      40,
+      52,
+      32
+     ],
+     "rects": {
+      "10": [
+       42,
+       40,
+       52,
+       32
+      ],
+      "11": [
+       42,
+       51,
+       9,
+       21
+      ]
+     }
+    }
+   ]
+  },
+  "thrust": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    42,
+    45,
+    50,
+    27
+   ],
+   "rects": {
+    "3": [
+     42,
+     45,
+     49,
+     27
+    ],
+    "4": [
+     44,
+     47,
+     48,
+     25
+    ]
+   }
+  },
+  "leap": {
+   "active": [
+    8,
+    9
+   ],
+   "hit": [
+    63,
+    28,
+    33,
+    44
+   ],
+   "rects": {
+    "8": [
+     63,
+     28,
+     31,
+     44
+    ],
+    "9": [
+     63,
+     56,
+     33,
+     16
+    ]
+   }
+  },
+  "rotburst": {
+   "active": [
+    6,
+    8
+   ],
+   "hit": [
+    0,
+    23,
+    90,
+    49
+   ],
+   "rects": {
+    "6": [
+     11,
+     31,
+     59,
+     41
+    ],
+    "7": [
+     0,
+     23,
+     90,
+     49
+    ],
+    "8": [
+     2,
+     29,
+     78,
+     43
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "combo": {
+   "frame": 1,
+   "at": [
+    10,
+    10
+   ]
+  },
+  "thrust": {
+   "frame": 2,
+   "at": [
+    63,
+    46
+   ]
+  },
+  "leap": {
+   "frame": 5,
+   "at": [
+    4,
+    12
+   ]
+  },
+  "rotburst": {
+   "frame": 5,
+   "at": [
+    39,
+    47
+   ]
+  }
+ },
+ "spawn": {
+  "leap": {
+   "frame": 8,
+   "at": [
+    87,
+    71
+   ]
+  },
+  "rotburst": {
+   "frame": 6,
+   "at": [
+    40,
+    71
+   ]
+  }
+ },
+ "notes": "faces right, anchor = feet. combo = 3 windows (overhead cut, rising backhand, low flat cleave). 'hit' = union of per-frame 'rects' over the inclusive active range. Telegraph 'at' = glint point on the anticipation hold. leap is drawn in place (engine moves him; airborne frames 2-7), spawn.leap = blade impact on the floor (shockwave / fx_rot_wave in phase 2). rotburst: hit covers BOTH sides; spawn.rotburst = floor under him (fx_rot_wave both directions). guard = parry/block stance loop; backstep drawn in place (engine moves him back). kalden_p2 shares this meta."
+}

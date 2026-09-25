@@ -1,0 +1,68 @@
+{ "frames": [
+   {
+    "filename": "wpn_fx_whirl 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 37, "h": 53 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 37, "h": 53 },
+    "sourceSize": { "w": 37, "h": 53 },
+    "duration": 70
+   },
+   {
+    "filename": "wpn_fx_whirl 1.aseprite",
+    "frame": { "x": 37, "y": 0, "w": 37, "h": 53 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 37, "h": 53 },
+    "sourceSize": { "w": 37, "h": 53 },
+    "duration": 70
+   },
+   {
+    "filename": "wpn_fx_whirl 2.aseprite",
+    "frame": { "x": 74, "y": 0, "w": 37, "h": 53 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 37, "h": 53 },
+    "sourceSize": { "w": 37, "h": 53 },
+    "duration": 70
+   },
+   {
+    "filename": "wpn_fx_whirl 3.aseprite",
+    "frame": { "x": 111, "y": 0, "w": 37, "h": 53 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 37, "h": 53 },
+    "sourceSize": { "w": 37, "h": 53 },
+    "duration": 70
+   },
+   {
+    "filename": "wpn_fx_whirl 4.aseprite",
+    "frame": { "x": 148, "y": 0, "w": 37, "h": 53 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 37, "h": 53 },
+    "sourceSize": { "w": 37, "h": 53 },
+    "duration": 70
+   },
+   {
+    "filename": "wpn_fx_whirl 5.aseprite",
+    "frame": { "x": 185, "y": 0, "w": 37, "h": 53 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 37, "h": 53 },
+    "sourceSize": { "w": 37, "h": 53 },
+    "duration": 70
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "wpn_fx_whirl.png",
+  "format": "RGBA8888",
+  "size": { "w": 222, "h": 53 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "whirl", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

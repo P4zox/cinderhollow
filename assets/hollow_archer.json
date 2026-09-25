@@ -1,0 +1,261 @@
+{ "frames": [
+   {
+    "filename": "hollow_archer 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 210
+   },
+   {
+    "filename": "hollow_archer 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 210
+   },
+   {
+    "filename": "hollow_archer 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 210
+   },
+   {
+    "filename": "hollow_archer 3.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 210
+   },
+   {
+    "filename": "hollow_archer 4.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 115
+   },
+   {
+    "filename": "hollow_archer 5.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 115
+   },
+   {
+    "filename": "hollow_archer 6.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 115
+   },
+   {
+    "filename": "hollow_archer 7.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 115
+   },
+   {
+    "filename": "hollow_archer 8.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 115
+   },
+   {
+    "filename": "hollow_archer 9.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 115
+   },
+   {
+    "filename": "hollow_archer 10.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 140
+   },
+   {
+    "filename": "hollow_archer 11.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 130
+   },
+   {
+    "filename": "hollow_archer 12.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 130
+   },
+   {
+    "filename": "hollow_archer 13.aseprite",
+    "frame": { "x": 624, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 150
+   },
+   {
+    "filename": "hollow_archer 14.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 170
+   },
+   {
+    "filename": "hollow_archer 15.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 380
+   },
+   {
+    "filename": "hollow_archer 16.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 60
+   },
+   {
+    "filename": "hollow_archer 17.aseprite",
+    "frame": { "x": 816, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 130
+   },
+   {
+    "filename": "hollow_archer 18.aseprite",
+    "frame": { "x": 864, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 200
+   },
+   {
+    "filename": "hollow_archer 19.aseprite",
+    "frame": { "x": 912, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "hollow_archer 20.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 140
+   },
+   {
+    "filename": "hollow_archer 21.aseprite",
+    "frame": { "x": 1008, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 100
+   },
+   {
+    "filename": "hollow_archer 22.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 140
+   },
+   {
+    "filename": "hollow_archer 23.aseprite",
+    "frame": { "x": 1104, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 200
+   },
+   {
+    "filename": "hollow_archer 24.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "hollow_archer 25.aseprite",
+    "frame": { "x": 1200, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "hollow_archer 26.aseprite",
+    "frame": { "x": 1248, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 700
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "hollow_archer.png",
+  "format": "RGBA8888",
+  "size": { "w": 1296, "h": 40 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "walk", "from": 4, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "shoot", "from": 10, "to": 18, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 19, "to": 20, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 21, "to": 26, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

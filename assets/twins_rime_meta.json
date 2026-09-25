@@ -1,0 +1,283 @@
+{
+ "native": 1,
+ "frame": [
+  96,
+  72
+ ],
+ "anchor": [
+  40,
+  72
+ ],
+ "hurtbox": [
+  31,
+  19,
+  20,
+  53
+ ],
+ "attacks": {
+  "thrust": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    60,
+    38,
+    33,
+    34
+   ],
+   "rects": {
+    "3": [
+     60,
+     38,
+     33,
+     34
+    ],
+    "4": [
+     63,
+     39,
+     24,
+     33
+    ]
+   }
+  },
+  "combo": {
+   "windows": [
+    {
+     "active": [
+      2,
+      3
+     ],
+     "hit": [
+      57,
+      1,
+      33,
+      71
+     ],
+     "rects": {
+      "2": [
+       62,
+       1,
+       28,
+       71
+      ],
+      "3": [
+       57,
+       54,
+       26,
+       18
+      ]
+     }
+    },
+    {
+     "active": [
+      6,
+      7
+     ],
+     "hit": [
+      57,
+      0,
+      32,
+      72
+     ],
+     "rects": {
+      "6": [
+       63,
+       18,
+       26,
+       54
+      ],
+      "7": [
+       57,
+       0,
+       14,
+       72
+      ]
+     }
+    }
+   ]
+  },
+  "spikes": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    41,
+    45,
+    29,
+    27
+   ],
+   "rects": {
+    "3": [
+     41,
+     45,
+     29,
+     27
+    ],
+    "4": [
+     41,
+     46,
+     29,
+     26
+    ]
+   }
+  },
+  "charge": {
+   "active": [
+    3,
+    5
+   ],
+   "hit": [
+    48,
+    26,
+    26,
+    46
+   ],
+   "rects": {
+    "3": [
+     48,
+     26,
+     25,
+     46
+    ],
+    "4": [
+     48,
+     26,
+     24,
+     46
+    ],
+    "5": [
+     49,
+     26,
+     25,
+     46
+    ]
+   }
+  },
+  "riposte": {
+   "active": [
+    2,
+    3
+   ],
+   "hit": [
+    60,
+    4,
+    33,
+    68
+   ],
+   "rects": {
+    "2": [
+     61,
+     38,
+     32,
+     34
+    ],
+    "3": [
+     60,
+     4,
+     27,
+     68
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "thrust": {
+   "frame": 2,
+   "at": [
+    64,
+    40
+   ]
+  },
+  "combo": {
+   "frame": 1,
+   "at": [
+    25,
+    3
+   ]
+  },
+  "cast": {
+   "frame": 4,
+   "at": [
+    41,
+    3
+   ]
+  },
+  "absorb": {
+   "frame": 6,
+   "at": [
+    43,
+    3
+   ]
+  },
+  "volley": {
+   "frame": 3,
+   "at": [
+    65,
+    13
+   ]
+  },
+  "spikes": {
+   "frame": 2,
+   "at": [
+    48,
+    10
+   ]
+  },
+  "charge": {
+   "frame": 1,
+   "at": [
+    57,
+    34
+   ]
+  },
+  "counter": {
+   "frame": 1,
+   "at": [
+    53,
+    37
+   ]
+  }
+ },
+ "spawn": {
+  "cast": {
+   "frame": 6,
+   "at": [
+    41,
+    -13
+   ]
+  },
+  "spikes": {
+   "frame": 3,
+   "at": [
+    55,
+    71
+   ]
+  },
+  "volley": {
+   "frame": 4,
+   "at": [
+    84,
+    30
+   ]
+  }
+ },
+ "spawn_multi": {
+  "volley": {
+   "4": [
+    84,
+    30
+   ],
+   "6": [
+    85,
+    35
+   ],
+   "8": [
+    86,
+    40
+   ]
+  }
+ },
+ "notes": "Dame Rime (frost). thrust = lunging ice thrust (engine moves her on frames 3-4); combo = 2 quick windows; cast = sword raised, frost gathers at the tip (spawn frame 6: engine spawns ice spikes / lances); backstep drawn in place. twins_rime_p2 shares this meta."
+}
