@@ -19,7 +19,27 @@
   .top { position: fixed; top: calc(8px + env(safe-area-inset-top, 0px)); right: 12px; display: none; gap: 8px; }
   .top button { height: 30px; padding: 0 10px; border-radius: 15px; border: 1px solid var(--gold); background: var(--btn); color: var(--ink); font: 600 10px 'Cinzel', Georgia, serif; }
   @media (pointer: coarse) { .pad, .top { display: flex; } }
+  #loading { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+             background: var(--ground); transition: opacity .4s; padding: 0 16px; text-align: center; }
+  #loading .lt { font: 600 clamp(22px, 6vw, 40px) 'Cinzel', Georgia, serif; letter-spacing: .25em; color: #e6c77a; }
+  #loading .ls { font: 500 13px 'Cinzel', Georgia, serif; letter-spacing: .12em; color: #9a8f78; }
+  #loading .lh { font: 400 11px Georgia, serif; color: #6f6656; }
+  #loading .lb { width: min(260px, 70vw); height: 3px; background: #2a2230; overflow: hidden; }
+  #loadbar { width: 30%; height: 100%; background: var(--gold); transition: width .2s; animation: lslide 1.4s ease-in-out infinite; }
+  @keyframes lslide { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
 </style>
+<div id="loading" role="status" aria-live="polite">
+  <div class="lt">CINDERHOLLOW</div>
+  <div class="ls" id="loadmsg">Kindling the ashes…</div>
+  <div class="lb"><div id="loadbar"></div></div>
+  <div class="lh">First visit downloads about 11 MB. Later visits are faster.</div>
+</div>
+<script>
+  // loading screen: shown while the (large) game script downloads; the game calls __loadDone() when it boots
+  window.__loadProgress = (p, msg) => { const b = document.getElementById('loadbar'); if (b) { b.style.animation = 'none'; b.style.width = Math.max(3, Math.min(100, p * 100)) + '%'; } if (msg) { const m = document.getElementById('loadmsg'); if (m) m.textContent = msg; } };
+  window.__loadDone = () => { const l = document.getElementById('loading'); if (l) { l.style.opacity = '0'; setTimeout(() => l.remove(), 400); } };
+  window.addEventListener('error', e => { const m = document.getElementById('loadmsg'); if (m && document.getElementById('loading')) m.textContent = 'Something went wrong: ' + (e.message || 'unknown error'); });
+</script>
 <div id="stage"><canvas id="game" tabindex="0" aria-label="Cinderhollow game canvas"></canvas></div>
 <div class="pad left">
   <button data-act="up" aria-label="Up" style="margin-left:52px">▲</button>
@@ -77,7 +97,6 @@ class Sheet {
     this.name = name; this.tags = {}; this.frames = []; this.meta = null; this.fw = this.fh = 16; this.ax = 8; this.ay = 16; this.native = opt.native ?? 1;
     this.ok = !!(a && a.png && a.json);
     if (!this.ok) return;
-    this.img = new Image(); this.img.src = a.png;
     this.frames = a.json.frames.map(f => ({ x: f.frame.x, y: f.frame.y, w: f.frame.w, h: f.frame.h, ms: f.duration }));
     this.tags = {};
     for (const t of a.json.meta.frameTags) this.tags[t.name] = { from: t.from, to: t.to };
@@ -94,11 +113,28 @@ class Sheet {
     this.ay = opt.ay ?? (an ? an[1] : this.fh);
     return this;
   }
+  // images are created on first use and big ones are dropped again a few rooms later (phones can't hold every sheet decoded)
+  get img() {
+    if (!this._img) { this._img = new Image(); this._img.src = ASSETS[this.name].png; }
+    this.used = SHEET_EPOCH; return this._img;
+  }
+  get big() { return this.fw * this.fh * this.frames.length > 600000; }
+  evict() { if (this._img) { this._img.src = ''; this._img = null; } }
   tag(name) { return this.tags[name] || Object.values(this.tags)[0]; }
   has(name) { return !!this.tags[name]; }
   first(name) { const t = this.tag(name); return t ? t.from : 0; }
 }
 const SHEETS = {};
+let SHEET_EPOCH = 0;   // bumped on every room change
+// warm up sheets created while a room was built; free big ones unused for a few rooms (never the player/weapon)
+function sheetHousekeeping(keep) {
+  SHEET_EPOCH++;
+  for (const s of Object.values(SHEETS)) {
+    if (!s.ok || !s._img) continue;
+    if (s.big && !keep(s.name) && SHEET_EPOCH - (s.used ?? 0) > 3) s.evict();
+  }
+}
+function warmSheets() { for (const s of Object.values(SHEETS)) if (s.ok && s._img && !s._img.complete && s._img.decode) s._img.decode().catch(() => {}); }
 function sheet(name, opt) { const s = SHEETS[name]; if (!s) return (SHEETS[name] = new Sheet(name, opt)); if (opt && !s.cfgd) { s.cfgd = true; s.configure(opt); } return s; }
 
 class Anim {
@@ -5682,7 +5718,7 @@ function renderTitle() {
     const y = 96 + i * 13, sel = i === titleSel;
     text((sel ? '— ' : '') + o + (sel ? ' —' : ''), W / 2, y, 8.5, sel ? '#f5e3b0' : '#9a8f78', 'center', { weight: sel ? 600 : 400 });
   });
-  CONTROLS.forEach(([k, v], i) => {
+  if (!matchMedia('(pointer: coarse)').matches) CONTROLS.forEach(([k, v], i) => {
     const col = i % 2, row = Math.floor(i / 2), x = 70 + col * 170, y = 134 + row * 10;
     text(k, x, y, 5.5, '#e6c77a', 'right', { weight: 600 }); text(v, x + 6, y, 5.5, '#c9bda2', 'left', { weight: 400 });
   });
@@ -6073,6 +6109,8 @@ function enterRoom(id, px, py, opt = {}) {
   updateCamera(0, true);
   hints(id);
   runHooks('enter', def);
+  sheetHousekeeping(n => n === 'player' || n === 'wpn_' + (SAVE.weapon || 'longsword'));
+  warmSheets();
 }
 function hints(id) {
   const H = SAVE.hints, once = (k, m) => { if (!H[k]) { H[k] = 1; setTimeout(() => toast(m, 4.5), 1200); } };
@@ -6353,10 +6391,14 @@ function titleBackdrop() {
 }
 function boot() {
   resize(); grabFocus(); titleBackdrop();
+  window.__loadDone && window.__loadDone();
   requestAnimationFrame(t => { last = t; frame(t); });
 }
+// preload only the small sheets (tiles, props, UI, fx, most enemies) + the player; bosses and weapon overlays load on demand
 const allSheetNames = Object.keys(ASSETS).filter(k => ASSETS[k] && ASSETS[k].png);
-Promise.all(allSheetNames.map(n => { const s = sheet(n); return s.ok && s.img.decode ? s.img.decode().catch(() => {}) : null; }))
+const preloadNames = allSheetNames.filter(n => { const s = sheet(n); return s.ok && (!s.big || n === 'player' || n === 'wpn_longsword'); });
+window.__loadProgress && window.__loadProgress(0.92, 'Waking the Hallow…');
+Promise.all(preloadNames.map(n => { const s = sheet(n); return s.img.decode ? s.img.decode().catch(() => {}) : null; }))
   .then(() => document.fonts && document.fonts.load ? document.fonts.load('600 20px Cinzel').catch(() => {}) : null)
   .then(boot);
 

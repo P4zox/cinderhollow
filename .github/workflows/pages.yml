@@ -1,4 +1,4 @@
-# Publishes the prebuilt game (web/dist/index.html) to GitHub Pages on every push to main.
+# Publishes the prebuilt split game (web/dist/pub: small page + asset chunks with a progress bar) to GitHub Pages on every push to main.
 name: Deploy game to GitHub Pages
 on:
   push:
@@ -22,6 +22,6 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: web/dist
+          path: web/dist/pub
       - id: deployment
         uses: actions/deploy-pages@v4

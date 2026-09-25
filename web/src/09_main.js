@@ -105,6 +105,8 @@ function enterRoom(id, px, py, opt = {}) {
   updateCamera(0, true);
   hints(id);
   runHooks('enter', def);
+  sheetHousekeeping(n => n === 'player' || n === 'wpn_' + (SAVE.weapon || 'longsword'));
+  warmSheets();
 }
 function hints(id) {
   const H = SAVE.hints, once = (k, m) => { if (!H[k]) { H[k] = 1; setTimeout(() => toast(m, 4.5), 1200); } };
@@ -385,10 +387,14 @@ function titleBackdrop() {
 }
 function boot() {
   resize(); grabFocus(); titleBackdrop();
+  window.__loadDone && window.__loadDone();
   requestAnimationFrame(t => { last = t; frame(t); });
 }
+// preload only the small sheets (tiles, props, UI, fx, most enemies) + the player; bosses and weapon overlays load on demand
 const allSheetNames = Object.keys(ASSETS).filter(k => ASSETS[k] && ASSETS[k].png);
-Promise.all(allSheetNames.map(n => { const s = sheet(n); return s.ok && s.img.decode ? s.img.decode().catch(() => {}) : null; }))
+const preloadNames = allSheetNames.filter(n => { const s = sheet(n); return s.ok && (!s.big || n === 'player' || n === 'wpn_longsword'); });
+window.__loadProgress && window.__loadProgress(0.92, 'Waking the Hallow…');
+Promise.all(preloadNames.map(n => { const s = sheet(n); return s.img.decode ? s.img.decode().catch(() => {}) : null; }))
   .then(() => document.fonts && document.fonts.load ? document.fonts.load('600 20px Cinzel').catch(() => {}) : null)
   .then(boot);
 

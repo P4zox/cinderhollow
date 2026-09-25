@@ -488,7 +488,7 @@ function renderTitle() {
     const y = 96 + i * 13, sel = i === titleSel;
     text((sel ? '— ' : '') + o + (sel ? ' —' : ''), W / 2, y, 8.5, sel ? '#f5e3b0' : '#9a8f78', 'center', { weight: sel ? 600 : 400 });
   });
-  CONTROLS.forEach(([k, v], i) => {
+  if (!matchMedia('(pointer: coarse)').matches) CONTROLS.forEach(([k, v], i) => {
     const col = i % 2, row = Math.floor(i / 2), x = 70 + col * 170, y = 134 + row * 10;
     text(k, x, y, 5.5, '#e6c77a', 'right', { weight: 600 }); text(v, x + 6, y, 5.5, '#c9bda2', 'left', { weight: 400 });
   });

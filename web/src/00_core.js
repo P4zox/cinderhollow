@@ -27,7 +27,6 @@ class Sheet {
     this.name = name; this.tags = {}; this.frames = []; this.meta = null; this.fw = this.fh = 16; this.ax = 8; this.ay = 16; this.native = opt.native ?? 1;
     this.ok = !!(a && a.png && a.json);
     if (!this.ok) return;
-    this.img = new Image(); this.img.src = a.png;
     this.frames = a.json.frames.map(f => ({ x: f.frame.x, y: f.frame.y, w: f.frame.w, h: f.frame.h, ms: f.duration }));
     this.tags = {};
     for (const t of a.json.meta.frameTags) this.tags[t.name] = { from: t.from, to: t.to };
@@ -44,11 +43,28 @@ class Sheet {
     this.ay = opt.ay ?? (an ? an[1] : this.fh);
     return this;
   }
+  // images are created on first use and big ones are dropped again a few rooms later (phones can't hold every sheet decoded)
+  get img() {
+    if (!this._img) { this._img = new Image(); this._img.src = ASSETS[this.name].png; }
+    this.used = SHEET_EPOCH; return this._img;
+  }
+  get big() { return this.fw * this.fh * this.frames.length > 600000; }
+  evict() { if (this._img) { this._img.src = ''; this._img = null; } }
   tag(name) { return this.tags[name] || Object.values(this.tags)[0]; }
   has(name) { return !!this.tags[name]; }
   first(name) { const t = this.tag(name); return t ? t.from : 0; }
 }
 const SHEETS = {};
+let SHEET_EPOCH = 0;   // bumped on every room change
+// warm up sheets created while a room was built; free big ones unused for a few rooms (never the player/weapon)
+function sheetHousekeeping(keep) {
+  SHEET_EPOCH++;
+  for (const s of Object.values(SHEETS)) {
+    if (!s.ok || !s._img) continue;
+    if (s.big && !keep(s.name) && SHEET_EPOCH - (s.used ?? 0) > 3) s.evict();
+  }
+}
+function warmSheets() { for (const s of Object.values(SHEETS)) if (s.ok && s._img && !s._img.complete && s._img.decode) s._img.decode().catch(() => {}); }
 function sheet(name, opt) { const s = SHEETS[name]; if (!s) return (SHEETS[name] = new Sheet(name, opt)); if (opt && !s.cfgd) { s.cfgd = true; s.configure(opt); } return s; }
 
 class Anim {

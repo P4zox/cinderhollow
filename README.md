@@ -34,7 +34,7 @@ Requirements: Python 3 with Pillow. To regenerate art you also need [Aseprite](h
 
 ```bash
 python3 web/build_web.py            # -> web/dist/index.html (validates rooms, bundles code + assets)
-SPLIT=1 python3 web/build_web.py    # also writes web/dist/pub/ (page + asset chunks, for hosts with a file-size limit)
+SPLIT=1 python3 web/build_web.py    # also writes web/dist/pub/ (page + asset chunks; this is what GitHub Pages serves)
 python3 art/gen_<thing>.py          # regenerate a sprite sheet: art/*.aseprite + assets/*.png/json
 ```
 

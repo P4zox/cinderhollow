@@ -96,7 +96,13 @@ if os.environ.get("SPLIT"):
         fn = f"assets{i}.json"; names.append(fn)
         open(os.path.join(pub, fn), "w").write(json.dumps(c, separators=(",", ":")))
     loader = ("<script>let ASSETS = null;</script>\n<script>window.__startGame = () => {\n" + game + "\n};</script>\n"
-              "<script>Promise.all(" + json.dumps(names) + ".map(u => fetch(u).then(r => { if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); })))"
+              "<script>(() => { const SZ = " + json.dumps({fn: os.path.getsize(os.path.join(pub, fn)) for fn in names}) + ", got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };\n"
+              "const get = async u => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); tot[u] = SZ[u] || 5e6; got[u] = 0;"
+              " if (!r.body || !r.body.getReader) { const j = await r.json(); got[u] = tot[u]; upd(); return j; }"
+              " const rd = r.body.getReader(), parts = []; for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got[u] += value.length; if (got[u] > tot[u]) tot[u] = got[u]; upd(); }"
+              " return JSON.parse(new TextDecoder().decode(await new Blob(parts).arrayBuffer())); };\n"
+              "window.__getAll = () => Promise.all(" + json.dumps(names) + ".map(get)); })();\n"
+              "window.__getAll()"
               ".then(parts => { ASSETS = Object.assign({}, ...parts); window.__startGame(); })"
               ".catch(e => { document.body.insertAdjacentHTML('beforeend', '<p style=\"color:#e6c77a;font:16px serif;text-align:center\">Could not load the game assets: ' + e.message + '</p>'); });</script>\n")
     open(os.path.join(pub, "index.html"), "w").write(shell + "\n" + loader)

@@ -2,6 +2,7 @@
 web/.pngcache/
 web/dist/*
 !web/dist/index.html
+!web/dist/pub/
 __pycache__/
 *.pyc
 .DS_Store
