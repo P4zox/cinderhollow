@@ -14,6 +14,10 @@ Outputs
     art/previews/kalden.png, kalden_p2.png (3x, one row per tag), kalden_hitbox.png, kalden_closeup.png,
     fx_kalden.png
 
+Rig options added for the rework (agent K; defaults leave every old frame unchanged): armlen (phase-2 rot arm stretches
+past a man's reach), claw ('open'/'shut': the rot hand without its gauntlet, sword planted), rotglow (hot boils/veins).
+The new movesets are keyed in art/kalden_moves.py on this same draw().
+
 Method: enemy_kit.py (normal-field shading, sel-out outlines, Rig) -- same family as grave_knight, scaled
 up to a ~52px knight in a 96x72 frame.  Faces RIGHT, feet on the bottom row, anchor x = 40.
 """
@@ -67,7 +71,8 @@ KBLADE = dict(pommel=-7.0, grip_end=0.8, grip="L1", grip_w=0.8, pommel_c="G3", g
 NEU = dict(P=(39.5, 51.5), C=(40.8, 40.4), Hd=(42.4, 30.2), hup=(0.1, -1), fb=(32.0, 71), ff=(47.0, 71),
            kb=None, kf=None, hf=(49.0, 49.0), wang=-58, wl="Weapon", hb=None, onehand=False, sword="hand",
            smear=None, flat=None, thrust=None, eye=1, wind=0.0, lift=0.0, impact=0, dust=0, burst=0.0,
-           dissolve=0.0, shake=0, glint=None, rot=0.0, piv=(0, 0), fwd=0.0)
+           dissolve=0.0, shake=0, glint=None, rot=0.0, piv=(0, 0), fwd=0.0,
+           armlen=1.0, claw=None, rotglow=0.0)
 
 
 def P_(**kw):
@@ -312,19 +317,37 @@ def draw(p, fi, sw, phase):
         R.cap(Fa, lerp(el, hfr, 0.45), hfr, 2.4, 2.1, "I", 0, ao=0)                 # gauntlet cuff
     else:
         # the sword arm is bloated with rot: the plate has burst, a lumpy green limb with boils
-        el = ik(shF, hfr, 7.8, 8.0, (-1, 0.7))
-        R.cap(Fa, shF, el, 4.4, 4.0, "V", 0)
-        R.cap(Fa, el, hfr, 3.9, 2.6, "V", 0)
-        R.dome(Fa, lerp(shF, el, 0.55), 4.4, 3.9, "V", 0)
-        R.dome(Fa, lerp(el, hfr, 0.4), 3.8, 3.3, "V", 0)
+        al = p["armlen"]
+        el = ik(shF, hfr, 7.8 * al, 8.0 * al, (-1, 0.7))
+        if al > 1.05:
+            # the rot arm stretches past what a man's arm can do: a sinewy mass that thins into the forearm
+            R.cap(Fa, shF, el, 4.4, 3.6, "V", 0)
+            R.cap(Fa, el, hfr, 3.4, 2.2, "V", 0)
+            R.dome(Fa, lerp(shF, el, 0.35), 4.2, 3.7, "V", 0)
+            R.dome(Fa, lerp(el, hfr, 0.3), 3.2, 2.8, "V", 0)
+            for t_ in (0.62, 0.88):
+                R.dome(Fa, lerp(el, hfr, t_), 2.5, 2.2, "V", 0)
+        else:
+            R.cap(Fa, shF, el, 4.4, 4.0, "V", 0)
+            R.cap(Fa, el, hfr, 3.9, 2.6, "V", 0)
+            R.dome(Fa, lerp(shF, el, 0.55), 4.4, 3.9, "V", 0)
+            R.dome(Fa, lerp(el, hfr, 0.4), 3.8, 3.3, "V", 0)
         R.dome(Fa, add(lerp(shF, el, 0.8), (1.2, 1.4)), 2.4, 2.2, "V", 0)
         R.dome(Fa, add(el, (0.2, 0.4)), 2.2, 2.0, "S", bias=-1)                         # a torn couter
-        R.cap(Fa, lerp(el, hfr, 0.72), hfr, 2.4, 2.1, "I", 0, ao=1)                    # gauntlet still holds
-        R.dome(Fa, hfr, 2.1, 2.1, "I", 0)
+        if p["claw"]:
+            claw(R, Fa, FX, el, hfr, p["claw"], burst >= 2 or p["rotglow"] > 0)
+        else:
+            R.cap(Fa, lerp(el, hfr, 0.72), hfr, 2.4, 2.1, "I", 0, ao=1)                # gauntlet still holds
+            R.dome(Fa, hfr, 2.1, 2.1, "I", 0)
         vein = polyline([R.T(shF), R.T(lerp(shF, el, 0.5)), R.T(add(el, (0.8, 0.6))), R.T(lerp(el, hfr, 0.6))])
         Fa.decal([q for i, q in enumerate(vein) if i % 4 < 2], ("V", 5))
-        for k, (q, r) in enumerate(((lerp(shF, el, 0.7), 0.8), (lerp(el, hfr, 0.3), 0.7), (lerp(shF, el, 0.3), 0.55))):
-            pustule(Fa, R.T(add(q, (0.6, -0.4))), r, hot=burst >= 2)
+        if p["rotglow"] > 0 and al <= 1.05:
+            Fa.decal([q for i, q in enumerate(vein) if i % 9 == 0 and hash01(i, fi, 61) < p["rotglow"]], "O3")
+        pus = ((lerp(shF, el, 0.7), 0.8), (lerp(el, hfr, 0.3), 0.7), (lerp(shF, el, 0.3), 0.55))
+        if al > 1.05:
+            pus = pus[:2] + ((lerp(el, hfr, 0.62), 0.6),)
+        for k, (q, r) in enumerate(pus):
+            pustule(Fa, R.T(add(q, (0.6, -0.4))), r, hot=burst >= 2 or p["rotglow"] > 0.5)
     pm = set()
     lames = ((0.9, 3.6, 4.2, 2.5), (0.5, 1.3, 4.9, 3.0), (0.0, -1.3, 5.4, 3.8))
     for k, (dx, dy, rx, ry) in enumerate(lames if not swollen else lames[:2]):
@@ -397,6 +420,29 @@ def draw(p, fi, sw, phase):
     if p["glint"]:
         star(FX, p["glint"], "Y3", "Q3" if phase == 1 else "O4")
     return Ls, info
+
+
+def claw(R, L, FX, el, hand, mode, hot):
+    """Phase 2: the rot hand with the gauntlet burst off -- four long hooked talons.
+    mode 'open' = splayed, reaching; 'shut' = curled closed (holding)."""
+    d = sub(hand, el)
+    ln = math.hypot(*d) or 1.0
+    ux, uy = d[0] / ln, d[1] / ln
+    R.dome(L, hand, 2.6, 2.3, "V", 0)
+    spread = (-48, -18, 12, 40) if mode == "open" else (-30, -12, 6, 22)
+    for k, sp_ in enumerate(spread):
+        a = math.atan2(uy, ux) + math.radians(sp_)
+        L0 = (5.6 if mode == "open" else 4.2) + (0.8 if k in (1, 2) else 0.0)
+        b0 = add(hand, (math.cos(a) * 1.6, math.sin(a) * 1.6))
+        m1 = add(b0, (math.cos(a) * L0 * 0.55, math.sin(a) * L0 * 0.55))
+        cu = math.radians(55 if mode == "open" else 110) * (1 if sp_ >= 0 else -1) * 0.5 + math.radians(35)
+        a2 = a + cu
+        tip = add(m1, (math.cos(a2) * L0 * 0.55, math.sin(a2) * L0 * 0.55))
+        tube(R, L, [b0, m1, tip], 1.05, 0.45, "V", bias=0)
+        L.decal([ip(R.T(tip))], ("B", 4))
+        L.decal([ip(R.T(lerp(m1, tip, 0.5)))], ("B", 3))
+    if hot:
+        FX.put([ip(R.T(hand))], "O4")
 
 
 def star(FX, c, core, arm_):

@@ -195,28 +195,9 @@ function rootSpikeAt(x, floor, delay, dmg) {
 }
 
 // ================================================================== Ser Kalden, the Oathless
-function makeKalden(x, y) {
-  const K = new MetaBoss('kalden', x, y, {
-    sheets: ['kalden', 'kalden_p2'], stanceMax: 300, walkSpeed: 46, prefer: 56, p2at: 0.5, p2speed: 1.15, p2tag: 'rotburst', critRange: 44,
-    introTag: 'guard', cool1: [0.8, 1.4], cool2: [0.45, 0.9], victory: 'OATH FULFILLED', deathParticle: 'gold',
-    onIntro() { sfx.roar(); },
-    weights(d, p2) {
-      if (d < 70) return { combo: 3, thrust: 0.8, guard: p2 ? 0.4 : 1.2, backstep: 0.9, rotburst: p2 ? 1.4 : 0, leap: 0.3 };
-      if (d < 160) return { thrust: 2.5, leap: 1.6, walk: 1.2, combo: 0.5, rotburst: p2 ? 0.8 : 0 };
-      return { leap: 2.6, walk: 2, thrust: 1 };
-    },
-    chains: { combo(d) { return d < 80 ? (this.phase === 2 ? 'rotburst' : 'thrust') : 'leap'; }, thrust: 'combo', leap: 'combo' },
-    moves: {
-      combo: { dmg: [36, 36, 48], parry: true, step: 70, fx: 'kalden_slash' },
-      thrust: { dmg: [54], parry: true, step: 230, fx: 'thrust' },
-      leap: { dmg: [58], leap: 2, height: 80, onLand() { if (this.phase === 2) for (const dd of [-1, 1]) hazards.push({ x: this.x, y: this.floor, vx: dd * 160, w: 14, h: 12, dmg: BOSS_DMG * 30, rot: 25, id: ++hazardId, life: 1.2, wave: true, dir: dd, color: 'rot' }); } },
-      rotburst: { dmg: [46], rot: 60, shake: 8, on: { 6() { sfx.fire(); spawnFx(fxOr('rotmist', 'shockwave'), this.x, this.floor, 1, null, { bottom: true }); for (const dd of [-1, 1]) hazards.push({ x: this.x, y: this.floor, vx: dd * 150, w: 16, h: 14, dmg: BOSS_DMG * 32, rot: 30, id: ++hazardId, life: 1.6, wave: true, dir: dd, color: 'rot' }); } } },
-    },
-    wake() { return P.x > 4 * TILE + 24; },
-    ambient() { if (this.phase === 2 && Math.random() < 0.3) particles.push({ x: this.x + rand(-16, 16), y: this.y - rand(10, 50), vx: 0, vy: -rand(10, 25), life: 0.8, kind: 'spore' }); addLight(this.x, this.y - 30, 60, this.phase === 2 ? '150,210,90' : '160,220,230', 0.6); },
-  });
-  return K;
-}
+// Reworked in web/src/28_kalden2.js (agent K): 3-5 hit sword strings, charge, kick, plunge, feint in phase 1;
+// the rot arm (rot strings and pools, tendril lines, ring burst, grab, berserk string) in phase 2.
+function makeKalden(x, y) { return makeKalden2(x, y); }
 
 // ================================================================== The Vessel of Rot
 function makeVessel(x, y) {

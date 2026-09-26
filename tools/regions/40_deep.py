@@ -14,9 +14,11 @@
 #   D8 The Crucible     228..279 x  98..115   main boss: the Molten Colossus
 SOLID |= set('<>')
 
-# ---- anchor: a thin trapdoor in the Sunken Road's floor (drop through with down + jump)
+# ---- anchor: an open shaft in the Sunken Road's floor, walled off from the rot pool, dropping into the Deep
 _m4 = ROOM('M4')
-_m4.fill(41, 11, 43, 13, '.').fill(41, 13, 43, 13, '=')
+_m4.fill(40, 11, 40, 13)                    # stone lip: the rot pool ends here, so the shaft reads as its own hole
+_m4.fill(41, 11, 43, 13, '.')              # open shaft (was a hidden drop-through trapdoor under the pool's surface)
+_m4.put(43, 13, '=')                       # one-tile ledge on the right: a normal jump step on the way back up
 
 # ---------------------------------------------------------------- D1 Cinder Throat
 r = Room('D1', 'Cinder Throat', 'deep', 280, 84, 24, 14, indoor=True)

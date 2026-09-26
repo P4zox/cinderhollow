@@ -1133,3 +1133,11 @@ Object.assign(BOSS_CUTS, {
   ],
 });
 PHASE2_LINES.colossus = ['Old Ashwright', 'The shell’s off — that’s raw heartwood burning. Strike fast.'];
+
+// ---- the way down from the Sunken Road: embers and a warm glow rise out of the shaft so it reads as an entrance
+HOOKS.update.push(() => {
+  if (!room || room.id !== 'M4') return;
+  const x0 = 41 * TILE, x1 = 44 * TILE, y = 14 * TILE;
+  if (Math.random() < 0.5) particles.push({ x: rand(x0 + 2, x1 - 2), y: y - rand(0, 10), vx: rand(-6, 6), vy: -rand(25, 70), life: rand(0.8, 1.6), kind: Math.random() < 0.6 ? 'fire' : 'spark' });
+  addLight((x0 + x1) / 2, y - 12, 70, '255,130,50', 0.9);
+});
