@@ -400,7 +400,10 @@ function addRot(n) {
 }
 function inWater(b) { const t = tileAt(Math.floor(b.x / TILE), Math.floor((b.y - 4) / TILE)); return t === T_WATER; }
 function chargeTime() { return has('charged_arts') ? 0.35 : 0.55; }
-function onPlatform() { return tileAt(Math.floor(P.x / TILE), Math.floor((P.y + 1) / TILE)) === T_PLAT; }
+function onPlatform() {   // one-way tiles, plus one-way dynamic platforms (e.g. the Unwritten's ink platforms)
+  return tileAt(Math.floor(P.x / TILE), Math.floor((P.y + 1) / TILE)) === T_PLAT ||
+    room.dyn.some(d => d.oneway && d.on() && P.x >= d.x0 && P.x < d.x1 && Math.abs(P.y - d.y0) < 1.5);
+}
 function nearSpikes() {
   const tx = Math.floor(P.x / TILE), ty = Math.floor((P.y + 1) / TILE);
   for (let dx = -2; dx <= 2; dx++) { const t = tileAt(tx + dx, ty); if (t === T_SPIKE || t === T_PLAT) return true; if (tileAt(tx + dx, ty - 1) === T_SPIKE) return true; }

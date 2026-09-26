@@ -77,7 +77,7 @@ function drawInkBullets() {
 // ================================================================== written platforms + ink floods
 function inkPlat(x0, row, life, delay = 0, perm = false) {
   const pl = { x0, x1: x0 + 48, y0: row * TILE, t: -delay, life, perm, solid: false };
-  pl.dyn = { x0: pl.x0, x1: pl.x1, y0: pl.y0, y1: pl.y0 + 6, ar2: true, on: () => pl.solid && P.y <= pl.y0 + 0.5 };
+  pl.dyn = { x0: pl.x0, x1: pl.x1, y0: pl.y0, y1: pl.y0 + 6, ar2: true, oneway: true, on: () => pl.solid && P.y <= pl.y0 + 0.5 };
   room.dyn.push(pl.dyn); INK.plats.push(pl); return pl;
 }
 function updateInkPlats(dt) {
@@ -749,3 +749,13 @@ HOOKS.hud.push(() => {
 });
 HOOKS.death.push(() => { INK.b = []; INK.pages.forEach(p => { if (p.mode !== 'orbit') p.gone = true; }); });
 try { window.__ar2 = { INK, INV, get hz() { return hazards; } }; } catch (e) {}   // debug handle for automated tests
+
+// the top ink step sits in the mouth of the shaft under the Unbound Folio: walls on both sides at head height,
+// so the only way down from it is to drop through (↓ + Space). Say so the first time you stand on it.
+HOOKS.update.push(() => {
+  if (!room || room.id !== 'A6' || !INK.stairs || !P.ground) return;
+  const top = AR2_STAIRS[AR2_STAIRS.length - 1], x0 = top[0] * TILE;
+  if (P.x >= x0 && P.x < x0 + 48 && Math.abs(P.y - top[1] * TILE) < 1.5 && !INK.dropHint) {
+    INK.dropHint = true; toast(matchMedia('(pointer: coarse)').matches ? 'Hold ▼ and press Jump to drop down' : 'Hold ↓ and press Space to drop down', 4);
+  }
+});
