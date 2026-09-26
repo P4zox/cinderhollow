@@ -1,0 +1,41 @@
+{
+ "native": 1,
+ "frame": [
+  40,
+  40
+ ],
+ "anchor": [
+  18,
+  40
+ ],
+ "hurtbox": [
+  15,
+  7,
+  9,
+  33
+ ],
+ "attacks": {
+  "attack": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    20,
+    0,
+    20,
+    40
+   ]
+  }
+ },
+ "telegraph": {
+  "attack": {
+   "frame": 1,
+   "at": [
+    7,
+    5
+   ]
+  }
+ },
+ "notes": "the Pharaoh's summons; rise = forming out of the sand (no hurtbox until frame 2 in the engine)."
+}

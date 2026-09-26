@@ -1,0 +1,41 @@
+{
+ "native": 1,
+ "frame": [
+  40,
+  24
+ ],
+ "anchor": [
+  20,
+  24
+ ],
+ "hurtbox": [
+  5,
+  16,
+  30,
+  8
+ ],
+ "attacks": {
+  "bite": {
+   "active": [
+    2,
+    3
+   ],
+   "hit": [
+    20,
+    13,
+    17,
+    11
+   ]
+  }
+ },
+ "telegraph": {
+  "bite": {
+   "frame": 1,
+   "at": [
+    29,
+    21
+   ]
+  }
+ },
+ "notes": "a swarm of three; bite = the lead beetle leaps (engine lunges it); burrow/emerge sink into / burst from the sand (the engine hides it and draws a ripple while it travels under the sand)."
+}

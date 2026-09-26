@@ -1,0 +1,341 @@
+{ "frames": [
+   {
+    "filename": "scarab 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 170
+   },
+   {
+    "filename": "scarab 1.aseprite",
+    "frame": { "x": 112, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 170
+   },
+   {
+    "filename": "scarab 2.aseprite",
+    "frame": { "x": 224, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 170
+   },
+   {
+    "filename": "scarab 3.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 170
+   },
+   {
+    "filename": "scarab 4.aseprite",
+    "frame": { "x": 448, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 170
+   },
+   {
+    "filename": "scarab 5.aseprite",
+    "frame": { "x": 560, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 170
+   },
+   {
+    "filename": "scarab 6.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 7.aseprite",
+    "frame": { "x": 784, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 8.aseprite",
+    "frame": { "x": 896, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 9.aseprite",
+    "frame": { "x": 1008, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 10.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 11.aseprite",
+    "frame": { "x": 1232, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 12.aseprite",
+    "frame": { "x": 1344, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 13.aseprite",
+    "frame": { "x": 1456, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 105
+   },
+   {
+    "filename": "scarab 14.aseprite",
+    "frame": { "x": 1568, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 110
+   },
+   {
+    "filename": "scarab 15.aseprite",
+    "frame": { "x": 1680, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 150
+   },
+   {
+    "filename": "scarab 16.aseprite",
+    "frame": { "x": 1792, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 160
+   },
+   {
+    "filename": "scarab 17.aseprite",
+    "frame": { "x": 1904, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 60
+   },
+   {
+    "filename": "scarab 18.aseprite",
+    "frame": { "x": 2016, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 70
+   },
+   {
+    "filename": "scarab 19.aseprite",
+    "frame": { "x": 2128, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 90
+   },
+   {
+    "filename": "scarab 20.aseprite",
+    "frame": { "x": 2240, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 110
+   },
+   {
+    "filename": "scarab 21.aseprite",
+    "frame": { "x": 2352, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 120
+   },
+   {
+    "filename": "scarab 22.aseprite",
+    "frame": { "x": 2464, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 140
+   },
+   {
+    "filename": "scarab 23.aseprite",
+    "frame": { "x": 2576, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 140
+   },
+   {
+    "filename": "scarab 24.aseprite",
+    "frame": { "x": 2688, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 110
+   },
+   {
+    "filename": "scarab 25.aseprite",
+    "frame": { "x": 2800, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 170
+   },
+   {
+    "filename": "scarab 26.aseprite",
+    "frame": { "x": 2912, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 160
+   },
+   {
+    "filename": "scarab 27.aseprite",
+    "frame": { "x": 3024, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 60
+   },
+   {
+    "filename": "scarab 28.aseprite",
+    "frame": { "x": 3136, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 70
+   },
+   {
+    "filename": "scarab 29.aseprite",
+    "frame": { "x": 3248, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 120
+   },
+   {
+    "filename": "scarab 30.aseprite",
+    "frame": { "x": 3360, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 160
+   },
+   {
+    "filename": "scarab 31.aseprite",
+    "frame": { "x": 3472, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 60
+   },
+   {
+    "filename": "scarab 32.aseprite",
+    "frame": { "x": 3584, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 70
+   },
+   {
+    "filename": "scarab 33.aseprite",
+    "frame": { "x": 3696, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 130
+   },
+   {
+    "filename": "scarab 34.aseprite",
+    "frame": { "x": 3808, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 140
+   },
+   {
+    "filename": "scarab 35.aseprite",
+    "frame": { "x": 3920, "y": 0, "w": 112, "h": 80 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 112, "h": 80 },
+    "sourceSize": { "w": 112, "h": 80 },
+    "duration": 150
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "scarab.png",
+  "format": "RGBA8888",
+  "size": { "w": 4032, "h": 80 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "walk", "from": 6, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "thrust", "from": 14, "to": 23, "direction": "forward", "color": "#000000ff" },
+   { "name": "sweep", "from": 24, "to": 35, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

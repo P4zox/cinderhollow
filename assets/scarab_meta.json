@@ -1,0 +1,107 @@
+{
+ "native": 1,
+ "frame": [
+  112,
+  80
+ ],
+ "anchor": [
+  50,
+  80
+ ],
+ "hurtbox": [
+  40,
+  25,
+  14,
+  55
+ ],
+ "sheets": {
+  "idle": "scarab",
+  "walk": "scarab",
+  "thrust": "scarab",
+  "sweep": "scarab",
+  "rear": "scarab_b",
+  "charge": "scarab_b",
+  "burrow": "scarab_b",
+  "emerge": "scarab_b",
+  "stagger": "scarab_b",
+  "death": "scarab_b"
+ },
+ "attacks": {
+  "thrust": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    65,
+    48,
+    43,
+    32
+   ]
+  },
+  "sweep": {
+   "windows": [
+    {
+     "active": [
+      3,
+      4
+     ],
+     "hit": [
+      50,
+      2,
+      54,
+      78
+     ]
+    },
+    {
+     "active": [
+      7,
+      8
+     ],
+     "hit": [
+      7,
+      26,
+      36,
+      54
+     ]
+    }
+   ]
+  },
+  "emerge": {
+   "active": [
+    1,
+    3
+   ],
+   "hit": [
+    49,
+    0,
+    17,
+    80
+   ]
+  }
+ },
+ "telegraph": {
+  "thrust": {
+   "frame": 2,
+   "at": [
+    80,
+    50
+   ]
+  },
+  "sweep": {
+   "frame": 2,
+   "at": [
+    20,
+    30
+   ]
+  },
+  "rear": {
+   "frame": 2,
+   "at": [
+    58,
+    10
+   ]
+  }
+ },
+ "notes": "faces right, anchor = feet. thrust = spear lunge (3-4); sweep = a forward overhead sweep (3-4) then a backhand sweep behind him (7-8). rear = wind-up of the horn charge (charge loops while the engine drives him). burrow sinks into the sand (the engine moves the mound), emerge erupts upward with the spear (1-3). scarab_b shares this meta."
+}

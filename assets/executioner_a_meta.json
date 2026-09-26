@@ -1,0 +1,125 @@
+{
+ "native": 1,
+ "frame": [
+  128,
+  80
+ ],
+ "anchor": [
+  48,
+  80
+ ],
+ "hurtbox": [
+  35,
+  14,
+  28,
+  66
+ ],
+ "attacks": {
+  "chop": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    55,
+    0,
+    49,
+    80
+   ]
+  },
+  "sweep": {
+   "active": [
+    4,
+    6
+   ],
+   "hit": [
+    30,
+    34,
+    76,
+    46
+   ]
+  },
+  "leap": {
+   "active": [
+    8,
+    9
+   ],
+   "hit": [
+    54,
+    0,
+    49,
+    80
+   ]
+  },
+  "charge": {
+   "active": [
+    0,
+    3
+   ],
+   "hit": [
+    52,
+    30,
+    22,
+    50
+   ]
+  }
+ },
+ "spawn": {
+  "chain": {
+   "frame": 4,
+   "at": [
+    67,
+    34
+   ]
+  },
+  "chop": {
+   "frame": 6,
+   "at": [
+    94,
+    60
+   ]
+  },
+  "leap": {
+   "frame": 9,
+   "at": [
+    92,
+    67
+   ]
+  }
+ },
+ "telegraph": {
+  "chop": {
+   "frame": 4,
+   "at": [
+    14,
+    17
+   ]
+  },
+  "sweep": {
+   "frame": 3,
+   "at": [
+    6,
+    56
+   ]
+  },
+  "chain": {
+   "frame": 3,
+   "at": [
+    41,
+    26
+   ]
+  },
+  "leap": {
+   "frame": 2,
+   "at": [
+    53,
+    32
+   ]
+  }
+ },
+ "leap": {
+  "rise": 3,
+  "land": 9
+ },
+ "notes": "chain: the engine draws the thrown shackle chain from spawn.at; leap is drawn in place (lift), the engine moves the body between frames 3 and 9."
+}

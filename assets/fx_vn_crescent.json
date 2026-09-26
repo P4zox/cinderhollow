@@ -1,0 +1,50 @@
+{ "frames": [
+   {
+    "filename": "fx_vn_crescent 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 40, "h": 30 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 30 },
+    "sourceSize": { "w": 40, "h": 30 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_vn_crescent 1.aseprite",
+    "frame": { "x": 40, "y": 0, "w": 40, "h": 30 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 30 },
+    "sourceSize": { "w": 40, "h": 30 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_vn_crescent 2.aseprite",
+    "frame": { "x": 80, "y": 0, "w": 40, "h": 30 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 30 },
+    "sourceSize": { "w": 40, "h": 30 },
+    "duration": 70
+   },
+   {
+    "filename": "fx_vn_crescent 3.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 40, "h": 30 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 30 },
+    "sourceSize": { "w": 40, "h": 30 },
+    "duration": 70
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_vn_crescent.png",
+  "format": "RGBA8888",
+  "size": { "w": 160, "h": 30 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "vn_crescent", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

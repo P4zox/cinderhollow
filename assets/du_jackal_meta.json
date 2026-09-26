@@ -1,0 +1,76 @@
+{
+ "native": 1,
+ "frame": [
+  64,
+  64
+ ],
+ "anchor": [
+  28,
+  64
+ ],
+ "hurtbox": [
+  22,
+  11,
+  18,
+  53
+ ],
+ "attacks": {
+  "combo": {
+   "windows": [
+    {
+     "active": [
+      3,
+      4
+     ],
+     "hit": [
+      30,
+      0,
+      34,
+      64
+     ]
+    },
+    {
+     "active": [
+      8,
+      9
+     ],
+     "hit": [
+      30,
+      0,
+      34,
+      64
+     ]
+    }
+   ]
+  },
+  "lunge": {
+   "active": [
+    3,
+    5
+   ],
+   "hit": [
+    30,
+    29,
+    34,
+    35
+   ]
+  }
+ },
+ "telegraph": {
+  "combo": {
+   "frame": 1,
+   "at": [
+    5,
+    10
+   ]
+  },
+  "lunge": {
+   "frame": 1,
+   "at": [
+    48,
+    37
+   ]
+  }
+ },
+ "notes": "faces right; combo = overhead crescent cut (3-4) then a rising back-cut (8-9); lunge = low wind-up and a dashing thrust (engine lunges it on 3-5); guard = glaive held across (the engine blocks frontal light blows)."
+}

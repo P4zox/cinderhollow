@@ -1,0 +1,796 @@
+{ "frames": [
+   {
+    "filename": "ferryman 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 1.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 2.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 3.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 4.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 5.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 6.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 7.aseprite",
+    "frame": { "x": 1344, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 8.aseprite",
+    "frame": { "x": 1536, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 9.aseprite",
+    "frame": { "x": 1728, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 10.aseprite",
+    "frame": { "x": 1920, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 11.aseprite",
+    "frame": { "x": 2112, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 12.aseprite",
+    "frame": { "x": 2304, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 13.aseprite",
+    "frame": { "x": 2496, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 14.aseprite",
+    "frame": { "x": 2688, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 15.aseprite",
+    "frame": { "x": 2880, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 16.aseprite",
+    "frame": { "x": 3072, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 17.aseprite",
+    "frame": { "x": 3264, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 18.aseprite",
+    "frame": { "x": 3456, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 330
+   },
+   {
+    "filename": "ferryman 19.aseprite",
+    "frame": { "x": 3648, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "ferryman 20.aseprite",
+    "frame": { "x": 3840, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "ferryman 21.aseprite",
+    "frame": { "x": 4032, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "ferryman 22.aseprite",
+    "frame": { "x": 4224, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 23.aseprite",
+    "frame": { "x": 4416, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 24.aseprite",
+    "frame": { "x": 4608, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 25.aseprite",
+    "frame": { "x": 4800, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "ferryman 26.aseprite",
+    "frame": { "x": 4992, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 27.aseprite",
+    "frame": { "x": 5184, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 28.aseprite",
+    "frame": { "x": 5376, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 29.aseprite",
+    "frame": { "x": 5568, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 30.aseprite",
+    "frame": { "x": 5760, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 31.aseprite",
+    "frame": { "x": 5952, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 340
+   },
+   {
+    "filename": "ferryman 32.aseprite",
+    "frame": { "x": 6144, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "ferryman 33.aseprite",
+    "frame": { "x": 6336, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "ferryman 34.aseprite",
+    "frame": { "x": 6528, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 35.aseprite",
+    "frame": { "x": 6720, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "ferryman 36.aseprite",
+    "frame": { "x": 6912, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 37.aseprite",
+    "frame": { "x": 7104, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "ferryman 38.aseprite",
+    "frame": { "x": 7296, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 39.aseprite",
+    "frame": { "x": 7488, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 40.aseprite",
+    "frame": { "x": 7680, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 41.aseprite",
+    "frame": { "x": 7872, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 42.aseprite",
+    "frame": { "x": 8064, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 330
+   },
+   {
+    "filename": "ferryman 43.aseprite",
+    "frame": { "x": 8256, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "ferryman 44.aseprite",
+    "frame": { "x": 8448, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 45.aseprite",
+    "frame": { "x": 8640, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 46.aseprite",
+    "frame": { "x": 8832, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 47.aseprite",
+    "frame": { "x": 9024, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 48.aseprite",
+    "frame": { "x": 9216, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 49.aseprite",
+    "frame": { "x": 9408, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "ferryman 50.aseprite",
+    "frame": { "x": 9600, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 51.aseprite",
+    "frame": { "x": 9792, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 52.aseprite",
+    "frame": { "x": 9984, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 53.aseprite",
+    "frame": { "x": 10176, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "ferryman 54.aseprite",
+    "frame": { "x": 10368, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "ferryman 55.aseprite",
+    "frame": { "x": 10560, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 56.aseprite",
+    "frame": { "x": 10752, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "ferryman 57.aseprite",
+    "frame": { "x": 10944, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 58.aseprite",
+    "frame": { "x": 11136, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 59.aseprite",
+    "frame": { "x": 11328, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 60.aseprite",
+    "frame": { "x": 11520, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 61.aseprite",
+    "frame": { "x": 11712, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 260
+   },
+   {
+    "filename": "ferryman 62.aseprite",
+    "frame": { "x": 11904, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 63.aseprite",
+    "frame": { "x": 12096, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "ferryman 64.aseprite",
+    "frame": { "x": 12288, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "ferryman 65.aseprite",
+    "frame": { "x": 12480, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "ferryman 66.aseprite",
+    "frame": { "x": 12672, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "ferryman 67.aseprite",
+    "frame": { "x": 12864, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "ferryman 68.aseprite",
+    "frame": { "x": 13056, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "ferryman 69.aseprite",
+    "frame": { "x": 13248, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "ferryman 70.aseprite",
+    "frame": { "x": 13440, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "ferryman 71.aseprite",
+    "frame": { "x": 13632, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "ferryman 72.aseprite",
+    "frame": { "x": 13824, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "ferryman 73.aseprite",
+    "frame": { "x": 14016, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 240
+   },
+   {
+    "filename": "ferryman 74.aseprite",
+    "frame": { "x": 14208, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 75.aseprite",
+    "frame": { "x": 14400, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "ferryman 76.aseprite",
+    "frame": { "x": 14592, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "ferryman 77.aseprite",
+    "frame": { "x": 14784, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 170
+   },
+   {
+    "filename": "ferryman 78.aseprite",
+    "frame": { "x": 14976, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "ferryman 79.aseprite",
+    "frame": { "x": 15168, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "ferryman 80.aseprite",
+    "frame": { "x": 15360, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 81.aseprite",
+    "frame": { "x": 15552, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "ferryman 82.aseprite",
+    "frame": { "x": 15744, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "ferryman 83.aseprite",
+    "frame": { "x": 15936, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "ferryman 84.aseprite",
+    "frame": { "x": 16128, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "ferryman 85.aseprite",
+    "frame": { "x": 16320, "y": 0, "w": 192, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
+    "sourceSize": { "w": 192, "h": 128 },
+    "duration": 1000
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "ferryman.png",
+  "format": "RGBA8888",
+  "size": { "w": 16512, "h": 128 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "stride", "from": 6, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "sweep", "from": 14, "to": 25, "direction": "forward", "color": "#000000ff" },
+   { "name": "slam", "from": 26, "to": 37, "direction": "forward", "color": "#000000ff" },
+   { "name": "hook", "from": 38, "to": 49, "direction": "forward", "color": "#000000ff" },
+   { "name": "flare", "from": 50, "to": 59, "direction": "forward", "color": "#000000ff" },
+   { "name": "vault", "from": 60, "to": 69, "direction": "forward", "color": "#000000ff" },
+   { "name": "stagger", "from": 70, "to": 73, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 74, "to": 85, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "native": 1,
+ "frame": [
+  80,
+  64
+ ],
+ "anchor": [
+  32,
+  64
+ ],
+ "hurtbox": [
+  26,
+  22,
+  11,
+  42
+ ],
+ "attacks": {},
+ "spawn": {
+  "cast": {
+   "frame": 6,
+   "at": [
+    44,
+    36
+   ]
+  },
+  "ward": {
+   "frame": 6,
+   "at": [
+    36,
+    13
+   ]
+  }
+ },
+ "telegraph": {
+  "cast": {
+   "frame": 3,
+   "at": [
+    40,
+    34
+   ]
+  }
+ }
+}

@@ -1,0 +1,12 @@
+await boot();
+G.give({ items: { hook: 1, talon: 1 } });
+G.tp('DB2', 32, 9); G.step(30);
+const D = window.__db.DBW;
+const o = { cur: D.currents, cells: D.cells.length, surf: D.surf.length };
+G.step(40, ['left']);
+const p = G.P;
+o.p = [p.x, p.y, p.state, p.pushVx];
+o.sf = window.__db.surface(p.x, p.y - 13);
+G.step(1);
+o.p2 = [p.x, p.y, p.state, p.pushVx, p.vx];
+return o;

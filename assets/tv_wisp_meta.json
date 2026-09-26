@@ -1,0 +1,36 @@
+{
+ "native": 1,
+ "frame": [
+  40,
+  40
+ ],
+ "anchor": [
+  20,
+  20
+ ],
+ "hurtbox": [
+  8,
+  9,
+  21,
+  16
+ ],
+ "attacks": {},
+ "spawn": {
+  "cast": {
+   "frame": 5,
+   "at": [
+    27,
+    21
+   ]
+  }
+ },
+ "telegraph": {
+  "cast": {
+   "frame": 2,
+   "at": [
+    16,
+    13
+   ]
+  }
+ }
+}

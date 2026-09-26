@@ -1,0 +1,11 @@
+await boot();
+G.give({ items: { wings: 1, talon: 1, hook: 1, emberdash: 1, gale: 1, slam: 1 } });
+G.SAVE.flags['sf:stair'] = 1;
+const out = [];
+G.tp('X4', 7, 10); S(60);
+out.push(jumpTo(7, 7)); out.push(jumpTo(3, 4)); out.push(jumpTo(7, 1));
+await snap('stair_top');
+out.push(jumpTo(3, 22)); await snap('sf1_first');
+out.push(jumpTo(9, 18)); out.push(jumpTo(3, 14)); out.push(jumpTo(9, 10)); out.push(jumpTo(12, 7)); out.push(jumpTo(17, 4));
+out.push(walkTo(40)); await snap('sf2_in');
+return out.map(o => JSON.stringify(o));

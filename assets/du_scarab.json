@@ -1,0 +1,353 @@
+{ "frames": [
+   {
+    "filename": "du_scarab 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 150
+   },
+   {
+    "filename": "du_scarab 1.aseprite",
+    "frame": { "x": 40, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 150
+   },
+   {
+    "filename": "du_scarab 2.aseprite",
+    "frame": { "x": 80, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 150
+   },
+   {
+    "filename": "du_scarab 3.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 150
+   },
+   {
+    "filename": "du_scarab 4.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 5.aseprite",
+    "frame": { "x": 200, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 6.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 7.aseprite",
+    "frame": { "x": 280, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 8.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 9.aseprite",
+    "frame": { "x": 360, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 10.aseprite",
+    "frame": { "x": 400, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 110
+   },
+   {
+    "filename": "du_scarab 11.aseprite",
+    "frame": { "x": 440, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 160
+   },
+   {
+    "filename": "du_scarab 12.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 13.aseprite",
+    "frame": { "x": 520, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 70
+   },
+   {
+    "filename": "du_scarab 14.aseprite",
+    "frame": { "x": 560, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 15.aseprite",
+    "frame": { "x": 600, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 110
+   },
+   {
+    "filename": "du_scarab 16.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 120
+   },
+   {
+    "filename": "du_scarab 17.aseprite",
+    "frame": { "x": 680, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 18.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 19.aseprite",
+    "frame": { "x": 760, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 20.aseprite",
+    "frame": { "x": 800, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 21.aseprite",
+    "frame": { "x": 840, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 22.aseprite",
+    "frame": { "x": 880, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 23.aseprite",
+    "frame": { "x": 920, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 80
+   },
+   {
+    "filename": "du_scarab 24.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 80
+   },
+   {
+    "filename": "du_scarab 25.aseprite",
+    "frame": { "x": 1000, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 80
+   },
+   {
+    "filename": "du_scarab 26.aseprite",
+    "frame": { "x": 1040, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 80
+   },
+   {
+    "filename": "du_scarab 27.aseprite",
+    "frame": { "x": 1080, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 80
+   },
+   {
+    "filename": "du_scarab 28.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 80
+   },
+   {
+    "filename": "du_scarab 29.aseprite",
+    "frame": { "x": 1160, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 30.aseprite",
+    "frame": { "x": 1200, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 120
+   },
+   {
+    "filename": "du_scarab 31.aseprite",
+    "frame": { "x": 1240, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 90
+   },
+   {
+    "filename": "du_scarab 32.aseprite",
+    "frame": { "x": 1280, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 100
+   },
+   {
+    "filename": "du_scarab 33.aseprite",
+    "frame": { "x": 1320, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 100
+   },
+   {
+    "filename": "du_scarab 34.aseprite",
+    "frame": { "x": 1360, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 110
+   },
+   {
+    "filename": "du_scarab 35.aseprite",
+    "frame": { "x": 1400, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 130
+   },
+   {
+    "filename": "du_scarab 36.aseprite",
+    "frame": { "x": 1440, "y": 0, "w": 40, "h": 24 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 24 },
+    "sourceSize": { "w": 40, "h": 24 },
+    "duration": 500
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "du_scarab.png",
+  "format": "RGBA8888",
+  "size": { "w": 1480, "h": 24 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "crawl", "from": 4, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "bite", "from": 10, "to": 16, "direction": "forward", "color": "#000000ff" },
+   { "name": "burrow", "from": 17, "to": 22, "direction": "forward", "color": "#000000ff" },
+   { "name": "emerge", "from": 23, "to": 28, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 29, "to": 30, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 31, "to": 36, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

@@ -1,0 +1,307 @@
+{ "frames": [
+   {
+    "filename": "du_soldier 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "du_soldier 1.aseprite",
+    "frame": { "x": 40, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "du_soldier 2.aseprite",
+    "frame": { "x": 80, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "du_soldier 3.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "du_soldier 4.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "du_soldier 5.aseprite",
+    "frame": { "x": 200, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "du_soldier 6.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 180
+   },
+   {
+    "filename": "du_soldier 7.aseprite",
+    "frame": { "x": 280, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 180
+   },
+   {
+    "filename": "du_soldier 8.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 180
+   },
+   {
+    "filename": "du_soldier 9.aseprite",
+    "frame": { "x": 360, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 180
+   },
+   {
+    "filename": "du_soldier 10.aseprite",
+    "frame": { "x": 400, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 11.aseprite",
+    "frame": { "x": 440, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 12.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 13.aseprite",
+    "frame": { "x": 520, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 14.aseprite",
+    "frame": { "x": 560, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 15.aseprite",
+    "frame": { "x": 600, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 16.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 17.aseprite",
+    "frame": { "x": 680, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 160
+   },
+   {
+    "filename": "du_soldier 18.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 170
+   },
+   {
+    "filename": "du_soldier 19.aseprite",
+    "frame": { "x": 760, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 60
+   },
+   {
+    "filename": "du_soldier 20.aseprite",
+    "frame": { "x": 800, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 70
+   },
+   {
+    "filename": "du_soldier 21.aseprite",
+    "frame": { "x": 840, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 130
+   },
+   {
+    "filename": "du_soldier 22.aseprite",
+    "frame": { "x": 880, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 140
+   },
+   {
+    "filename": "du_soldier 23.aseprite",
+    "frame": { "x": 920, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 150
+   },
+   {
+    "filename": "du_soldier 24.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 90
+   },
+   {
+    "filename": "du_soldier 25.aseprite",
+    "frame": { "x": 1000, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 26.aseprite",
+    "frame": { "x": 1040, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 100
+   },
+   {
+    "filename": "du_soldier 27.aseprite",
+    "frame": { "x": 1080, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "du_soldier 28.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "du_soldier 29.aseprite",
+    "frame": { "x": 1160, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 130
+   },
+   {
+    "filename": "du_soldier 30.aseprite",
+    "frame": { "x": 1200, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 150
+   },
+   {
+    "filename": "du_soldier 31.aseprite",
+    "frame": { "x": 1240, "y": 0, "w": 40, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 40 },
+    "sourceSize": { "w": 40, "h": 40 },
+    "duration": 500
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "du_soldier.png",
+  "format": "RGBA8888",
+  "size": { "w": 1280, "h": 40 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "rise", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "idle", "from": 6, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "walk", "from": 10, "to": 15, "direction": "forward", "color": "#000000ff" },
+   { "name": "attack", "from": 16, "to": 23, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 24, "to": 25, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 26, "to": 31, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

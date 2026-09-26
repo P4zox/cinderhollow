@@ -1,0 +1,50 @@
+{ "frames": [
+   {
+    "filename": "fx_g2_blood_lance 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 44, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 44, "h": 12 },
+    "sourceSize": { "w": 44, "h": 12 },
+    "duration": 60
+   },
+   {
+    "filename": "fx_g2_blood_lance 1.aseprite",
+    "frame": { "x": 44, "y": 0, "w": 44, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 44, "h": 12 },
+    "sourceSize": { "w": 44, "h": 12 },
+    "duration": 60
+   },
+   {
+    "filename": "fx_g2_blood_lance 2.aseprite",
+    "frame": { "x": 88, "y": 0, "w": 44, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 44, "h": 12 },
+    "sourceSize": { "w": 44, "h": 12 },
+    "duration": 60
+   },
+   {
+    "filename": "fx_g2_blood_lance 3.aseprite",
+    "frame": { "x": 132, "y": 0, "w": 44, "h": 12 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 44, "h": 12 },
+    "sourceSize": { "w": 44, "h": 12 },
+    "duration": 60
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_g2_blood_lance.png",
+  "format": "RGBA8888",
+  "size": { "w": 176, "h": 12 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "g2_blood_lance", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

@@ -1,0 +1,106 @@
+{
+ "native": 1,
+ "frame": [
+  64,
+  48
+ ],
+ "anchor": [
+  28,
+  48
+ ],
+ "hurtbox": [
+  25,
+  15,
+  14,
+  33
+ ],
+ "attacks": {
+  "slash": {
+   "windows": [
+    {
+     "active": [
+      4,
+      4
+     ],
+     "hit": [
+      43,
+      13,
+      12,
+      35
+     ],
+     "rects": {
+      "4": [
+       43,
+       13,
+       12,
+       35
+      ]
+     }
+    },
+    {
+     "active": [
+      6,
+      6
+     ],
+     "hit": [
+      29,
+      28,
+      27,
+      20
+     ],
+     "rects": {
+      "6": [
+       29,
+       28,
+       27,
+       20
+      ]
+     }
+    }
+   ]
+  },
+  "lunge": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    36,
+    22,
+    21,
+    26
+   ],
+   "rects": {
+    "5": [
+     36,
+     22,
+     19,
+     26
+    ],
+    "6": [
+     36,
+     25,
+     21,
+     23
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "lunge": {
+   "frame": 3,
+   "at": [
+    34,
+    25
+   ]
+  },
+  "slash": {
+   "frame": 2,
+   "at": [
+    19,
+    10
+   ]
+  }
+ },
+ "notes": "Faces right, anchor = feet. slash: crouch windup (hold f2), two quick slashes, front knife f4 then back knife f6. lunge: coils f0-3 (telegraph f3: eye flare + bared fangs), launches f4, airborne knife-first f5-6 (drawn in place ~4px above the floor; the engine carries it forward ~40-60px over f4-f6), lands f7. emerge: f0 only the legs show at the top of the frame (dropping out of a portrait hung above), f1 falling, f2 lands in a crouch (dust), f3 hold, f4-5 rise; spawn it with its anchor on the floor under the portrait. walk: planted foot travels 3px per 110ms frame (~27 px/s). death: crumbles into ash and a blood pool; last frame is only the pool."
+}

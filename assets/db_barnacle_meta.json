@@ -1,0 +1,54 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  32
+ ],
+ "anchor": [
+  24,
+  32
+ ],
+ "hurtbox": [
+  8,
+  13,
+  30,
+  19
+ ],
+ "attacks": {
+  "snap": {
+   "active": [
+    4,
+    5
+   ],
+   "hit": [
+    36,
+    20,
+    11,
+    12
+   ]
+  }
+ },
+ "telegraph": {
+  "snap": {
+   "frame": 3,
+   "at": [
+    36,
+    4
+   ]
+  }
+ },
+ "guard": {
+  "tag": "shell",
+  "held": [
+   2,
+   3
+  ],
+  "hurtbox": [
+   7,
+   19,
+   31,
+   13
+  ]
+ },
+ "notes": "faces right, feet on the bottom row. crawl: tripod gait, feet planted 3 frames moving back 2px/frame at 110ms -> engine crawl speed ~18 px/s keeps feet from sliding; body steady. snap: 0-2 rears back and raises the pincers wide open, 3 = held (glint on the near claw = telegraph), 4-5 ACTIVE: both pincers snap shut forward and low (~20px ahead of the anchor), 6-8 recover. shell: withdraws flat under its ribcage shell (legs + pincers tucked); frames 2-3 are the held guard pose (use guard.hurtbox; engine should block/reduce frontal hits while held, loop 2-3 while guarding, play 1..0 reversed or idle to un-guard). death: flips onto its back, legs twitch then curl (hold last)."
+}

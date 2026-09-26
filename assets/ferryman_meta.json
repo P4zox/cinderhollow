@@ -1,0 +1,163 @@
+{
+ "native": 1,
+ "frame": [
+  192,
+  128
+ ],
+ "anchor": [
+  96,
+  128
+ ],
+ "hurtbox": [
+  78,
+  41,
+  27,
+  87
+ ],
+ "attacks": {
+  "sweep": {
+   "active": [
+    5,
+    7
+   ],
+   "hit": [
+    106,
+    70,
+    82,
+    58
+   ],
+   "rects": {
+    "5": [
+     106,
+     101,
+     53,
+     27
+    ],
+    "6": [
+     106,
+     101,
+     79,
+     27
+    ],
+    "7": [
+     106,
+     70,
+     82,
+     58
+    ]
+   }
+  },
+  "slam": {
+   "active": [
+    6,
+    7
+   ],
+   "hit": [
+    118,
+    0,
+    72,
+    128
+   ],
+   "rects": {
+    "6": [
+     118,
+     0,
+     41,
+     128
+    ],
+    "7": [
+     144,
+     77,
+     46,
+     51
+    ]
+   }
+  },
+  "vault": {
+   "active": [
+    8,
+    8
+   ],
+   "hit": [
+    56,
+    90,
+    85,
+    38
+   ],
+   "rects": {
+    "8": [
+     56,
+     90,
+     85,
+     38
+    ]
+   }
+  }
+ },
+ "spawn": {
+  "slam": {
+   "frame": 7,
+   "at": [
+    167,
+    127
+   ]
+  },
+  "hook": {
+   "frame": 5,
+   "at": [
+    164,
+    52
+   ]
+  },
+  "flare": {
+   "frame": 6,
+   "at": [
+    112,
+    20
+   ]
+  }
+ },
+ "telegraph": {
+  "sweep": {
+   "frame": 4,
+   "at": [
+    24,
+    103
+   ]
+  },
+  "slam": {
+   "frame": 5,
+   "at": [
+    44,
+    14
+   ]
+  },
+  "hook": {
+   "frame": 4,
+   "at": [
+    158,
+    64
+   ]
+  },
+  "flare": {
+   "frame": 3,
+   "at": [
+    112,
+    19
+   ]
+  },
+  "vault": {
+   "frame": 1,
+   "at": [
+    132,
+    123
+   ]
+  }
+ },
+ "fx": {
+  "wave": "fx_db_wave",
+  "wisp": "fx_db_wisp",
+  "hook": "fx_db_hook"
+ },
+ "notes": "faces right, anchor = hem centre on the water (x=96, bottom row); no feet: the robe hem liquefies into black water that always touches the bottom row, so he glides (stride is a loop drawn in place). hurtbox = robe+cowl, not the oar. sweep: 0-3 draws the oar back low behind him, 4 held windup (blade glint = telegraph.at), active 5-7 the blade sweeps low in front from the waterline up to chest height, reach ~90px (rects per frame), 8-11 recover. slam: 0-4 raises the oar overhead (blade behind), 5 held (glint), 6 swings over, 7 blade crashes into the water -> spawn.slam = impact on the floor: spawn fx_db_wave there travelling forward (pivot bottom-centre), 8-11 recover. hook: 0-3 lifts the hook-lantern end forward, 4 held (lantern flares = telegraph), frame 5 the hook-lantern leaves the staff: spawn the chained hook projectile (fx_db_hook, faces right) at spawn.hook = the bare staff tip and draw the chain from that point; 6-9 he braces back pulling (staff tip stays near spawn.hook +-2px), 10-11 lantern back on the hook. flare: 0-5 raises the lantern overhead, glow growing (3 = telegraph), frame 6 burst -> spawn homing fx_db_wisp at spawn.flare (the lantern), 7-9 recover. vault: 0-2 plants the oar and crouches (1 = telegraph, blade glint), 3-7 airborne pose drawn in place (move him in an arc; the hem lifts off the water in these frames), 8 lands with the blade striking down at his feet (active, hit covers +-40px around the anchor), 9 recover. 'hit' = union of per-frame 'rects' over the inclusive active range; every rect reaches the floor. stagger (4) holds its last frame; death (12): the lantern gutters (0-2) and goes out (3), the robe sinks and collapses empty into a spreading black puddle while the oar topples behind him (3-10); final frame held 1000ms."
+}

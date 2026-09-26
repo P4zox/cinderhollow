@@ -1,0 +1,361 @@
+{ "frames": [
+   {
+    "filename": "nh_cyborg 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 180
+   },
+   {
+    "filename": "nh_cyborg 1.aseprite",
+    "frame": { "x": 56, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 180
+   },
+   {
+    "filename": "nh_cyborg 2.aseprite",
+    "frame": { "x": 112, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 180
+   },
+   {
+    "filename": "nh_cyborg 3.aseprite",
+    "frame": { "x": 168, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 180
+   },
+   {
+    "filename": "nh_cyborg 4.aseprite",
+    "frame": { "x": 224, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 5.aseprite",
+    "frame": { "x": 280, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 6.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 7.aseprite",
+    "frame": { "x": 392, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 8.aseprite",
+    "frame": { "x": 448, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 9.aseprite",
+    "frame": { "x": 504, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 10.aseprite",
+    "frame": { "x": 560, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "nh_cyborg 11.aseprite",
+    "frame": { "x": 616, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "nh_cyborg 12.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "nh_cyborg 13.aseprite",
+    "frame": { "x": 728, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 200
+   },
+   {
+    "filename": "nh_cyborg 14.aseprite",
+    "frame": { "x": 784, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 60
+   },
+   {
+    "filename": "nh_cyborg 15.aseprite",
+    "frame": { "x": 840, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 80
+   },
+   {
+    "filename": "nh_cyborg 16.aseprite",
+    "frame": { "x": 896, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "nh_cyborg 17.aseprite",
+    "frame": { "x": 952, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "nh_cyborg 18.aseprite",
+    "frame": { "x": 1008, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "nh_cyborg 19.aseprite",
+    "frame": { "x": 1064, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 20.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 21.aseprite",
+    "frame": { "x": 1176, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 22.aseprite",
+    "frame": { "x": 1232, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 180
+   },
+   {
+    "filename": "nh_cyborg 23.aseprite",
+    "frame": { "x": 1288, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 70
+   },
+   {
+    "filename": "nh_cyborg 24.aseprite",
+    "frame": { "x": 1344, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 70
+   },
+   {
+    "filename": "nh_cyborg 25.aseprite",
+    "frame": { "x": 1400, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 80
+   },
+   {
+    "filename": "nh_cyborg 26.aseprite",
+    "frame": { "x": 1456, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "nh_cyborg 27.aseprite",
+    "frame": { "x": 1512, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "nh_cyborg 28.aseprite",
+    "frame": { "x": 1568, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "nh_cyborg 29.aseprite",
+    "frame": { "x": 1624, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 90
+   },
+   {
+    "filename": "nh_cyborg 30.aseprite",
+    "frame": { "x": 1680, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 130
+   },
+   {
+    "filename": "nh_cyborg 31.aseprite",
+    "frame": { "x": 1736, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 32.aseprite",
+    "frame": { "x": 1792, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 33.aseprite",
+    "frame": { "x": 1848, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 34.aseprite",
+    "frame": { "x": 1904, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 35.aseprite",
+    "frame": { "x": 1960, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 36.aseprite",
+    "frame": { "x": 2016, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_cyborg 37.aseprite",
+    "frame": { "x": 2072, "y": 0, "w": 56, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 56, "h": 48 },
+    "sourceSize": { "w": 56, "h": 48 },
+    "duration": 400
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "nh_cyborg.png",
+  "format": "RGBA8888",
+  "size": { "w": 2128, "h": 48 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "walk", "from": 4, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "slash", "from": 10, "to": 18, "direction": "forward", "color": "#000000ff" },
+   { "name": "dash", "from": 19, "to": 28, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 29, "to": 30, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 31, "to": 37, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

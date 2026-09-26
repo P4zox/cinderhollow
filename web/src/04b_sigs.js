@@ -120,7 +120,175 @@ const SIGS = {
         for (let i = 0; i < 8; i++) particles.push({ x: info.x, y: info.y, vx: rand(-60, 60), vy: -rand(20, 90), g: 100, life: rand(0.3, 0.6), kind: 'ember' });
       } });
     } },
+  // ---- v9 (Expansion 2) boss weapons
+  antler_scythe: { glow: '#9fe8a0', light: '140,230,150', pk: 'spore', pk2: 'root',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 14 : 7, 'spore', 'root'); },
+    finisher(A) { sig9Thorns(A.kind === 'heavy' ? 5 : 3, A.kind === 'heavy' ? 0.8 : 0.5); } },
+  choir_harpoon: { glow: '#7ff0e0', light: '100,230,210', pk: 'teal', pk2: 'frost',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'teal', 'frost'); },
+    finisher(A, r) { const p = sigPoint(r); if (A.kind === 'heavy') for (const vy of [-50, 0, 50]) sig9WaterLance(p, vy, 0.6); else sig9WaterLance(p, 0, 0.8); },
+    dive(t, info) { sig9WaterLance({ x: info.x, y: info.y }, 0, 0.6); } },
+  sanguine_rapier: { glow: '#ff5060', light: '240,60,80', pk: 'blood', pk2: 'fire',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 6, 'blood', 'blood'); },
+    finisher(A, r) { const p = sigPoint(r); sig9BloodLance(p, 0); if (A.kind === 'heavy') { sig9BloodLance(p, -40); sig9BloodLance(p, 40); } },
+    crit(t, dmg) {   // every critical blow drinks deep
+      const h = Math.round(Math.min(D.maxHp * 0.25, dmg * 0.3));
+      P.hp = Math.min(D.maxHp, P.hp + h); popup(P.x, P.y - 34, h, '#ff6a7a'); sfx.bleed();
+      for (let i = 0; i < 16; i++) particles.push({ x: t.x + rand(-8, 8), y: t.y - rand(6, 26), vx: (P.x - t.x) * rand(2, 3), vy: -rand(0, 30), life: 0.45, kind: 'blood' });
+    } },
+  vael_greatsword: { glow: '#a8dcff', light: '150,200,255', pk: 'frost', pk2: 'teal',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 16 : 8, 'frost', 'teal'); tone(A.kind === 'heavy' ? 180 : 260, 0.35, 0.04, 'sine', 0.6); },
+    hit(t, info) { if (!t.prop) wAddBurn(t, 2.5, D.light * 0.16); },   // ghost-fire in the wound
+    finisher(A) { if (A.kind === 'heavy') sig9Chains(); } },
+  pharaoh_khopesh: { glow: '#ffd070', light: '255,210,120', pk: 'gold', pk2: 'dust',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'gold', 'dust'); },
+    finisher(A, r) { if (A.kind === 'heavy') sig9Sand(); else sig9SunDisc(sigPoint(r)); } },
+  starblade: { glow: '#c8d8ff', light: '190,210,255', pk: 'mote', pk2: 'frost',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'mote', 'frost'); tone(1480, 0.2, 0.03, 'sine', 1.3); },
+    finisher(A) { sig9Stars(A.kind === 'heavy' ? 5 : 3); } },
+  saint_lance: { glow: '#70fff8', light: '120,255,250', pk: 'teal', pk2: 'spark',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 6, 'teal', 'spark'); tone(1760, 0.08, 0.04, 'square', 0.5); },
+    finisher(A, r) { sig9Laser(sigPoint(r), A.kind === 'heavy'); },
+    hit(t, info) { sig9Glitch(t, info); },
+    dive(t, info) { sig9Laser({ x: info.x, y: info.y }, false); } },
+  last_kindling: { glow: '#fff4d0', light: '255,244,210', pk: 'mote', pk2: 'gold',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'mote', 'gold'); },
+    hit(t, info) { sig9Pyre(t.x, t.y, t); },
+    finisher(A) { if (A.kind === 'heavy') for (let k = -2; k <= 2; k++) sig9Pyre(P.x + k * 18, P.y, null, true); } },
 };
+// ---- v9 signature helpers (entities live in 13_weapons.js's WFX list)
+const sig9Pyres = [];
+function sig9Thorns(n, mult) {   // thorns erupt along the sweep, one after another
+  sfx.crumble();
+  for (let k = 0; k < n; k++) {
+    const x = P.x + P.face * (22 + k * 14), fy = wFloorBelow(x, P.y - 6);
+    if (fy === null || Math.abs(fy - P.y) > 24 || solidAtPx(x, fy - 8)) break;
+    wfx({ life: 0.55 + k * 0.07, x, fy, at: k * 0.07, face: P.face, done: false, skip: new Set(),
+      update() {
+        if (this.t >= this.at + 0.05 && !this.done) { this.done = true; wStrike(rect(this.x - 7, this.fy - 26, this.x + 7, this.fy + 1), D.light * mult, { poise: 22, skip: this.skip, dir: this.face });
+          for (let i = 0; i < 5; i++) particles.push({ x: this.x + rand(-5, 5), y: this.fy - 2, vx: rand(-40, 40), vy: -rand(40, 110), g: 380, life: 0.5, kind: i % 2 ? 'spore' : 'root' }); }
+      },
+      draw() { if (this.t >= this.at) { if (!wfxDraw('thorn', this.t - this.at, this.x, this.fy + 1, this.face)) { g.fillStyle = '#6a8a40'; g.fillRect(this.x - 1, this.fy - 18, 3, 18); } addLight(this.x, this.fy - 10, 22, '140,230,150', 0.5); } } });
+  }
+}
+function sig9Proj(o) {   // a straight player projectile drawn from a wpn_fx sheet, rotated along its flight
+  return wfx(Object.assign({ skip: new Set(), life: 0.6, update(dt) {
+    this.x += this.vx * dt; this.y += this.vy * dt;
+    if (solidAtPx(this.x, this.y)) { this.onEnd && this.onEnd(); return false; }
+    for (const t of wStrike(rect(this.x - 6, this.y - 4, this.x + 6, this.y + 4), this.dmg, { skip: this.skip, poise: this.poise || 12, dir: Math.sign(this.vx) || 1, kind: 'spell' })) this.onHit && this.onHit(t);
+    if (this.trail && Math.random() < 0.7) particles.push({ x: this.x - Math.sign(this.vx) * 6, y: this.y + rand(-1, 1), vx: -this.vx * 0.1, vy: rand(-10, 10), life: 0.3, kind: this.trail });
+  }, draw() { const a = Math.atan2(this.vy, Math.abs(this.vx)); if (!wfxDraw(this.sheet, this.t, this.x, this.y, Math.sign(this.vx) || 1, { center: true, loop: true, rot: a * (Math.sign(this.vx) || 1) })) { g.fillStyle = this.col || '#fff'; g.fillRect(this.x - 4, this.y - 1, 8, 2); } addLight(this.x, this.y, 26, this.light || '255,255,255', 0.6); } }, o));
+}
+function sig9WaterLance(p, vy, mult) {
+  sfx.spear(); noise(0.2, 1200, 0.8, 0.12, 'bandpass', 0.6);
+  sig9Proj({ x: p.x, y: p.y, vx: P.face * 300, vy, dmg: D.light * mult, sheet: 'waterlance', trail: 'teal', light: '100,230,210', col: '#70e8d8', poise: 16,
+    onHit(t) { if (!t.prop && !t.boss && !(t.cfg && t.cfg.elite) && t.vx !== undefined) { t.vx = -P.face * 120; weaponPull(t, { chain: false }); } } });   // the tide drags them in
+}
+function sig9BloodLance(p, vy) {
+  sig9Proj({ x: p.x, y: p.y, vx: P.face * 360, vy, dmg: D.light * 0.7, sheet: 'bloodlance', trail: 'blood', light: '240,60,80', col: '#e02040', poise: 10,
+    onHit(t) { if (t.hit && !t.prop) t.hit({ dmg: 0, poise: 0, dir: P.face, kind: 'spell', x: t.x, y: t.y - 14, bleed: 30, quiet: true }); } });
+  tone(880, 0.15, 0.04, 'sawtooth', 0.5);
+}
+function sig9Chains() {   // spectral chains burst from the ground and bind the nearest foe ahead
+  const t = sigFrontTarget(P.x, P.y - 16, 130); if (!t) return;
+  const hb = t.hurtbox(); if (!hb) return;
+  const fy = wFloorBelow((hb.x0 + hb.x1) / 2, hb.y1 - 4) ?? hb.y1;
+  tone(120, 0.6, 0.08, 'sawtooth', 1.4); noise(0.4, 2400, 1, 0.15, 'highpass');
+  wfx({ life: 1.4, t0: t, anchors: [(hb.x0 + hb.x1) / 2 - 22, (hb.x0 + hb.x1) / 2 + 22], fy, bound: false,
+    update() {
+      if (!this.bound && this.t > 0.25) {
+        this.bound = true; if (t.alive !== false && t.hit) { t.hit({ dmg: D.heavy * 0.9, poise: 40, dir: P.face, kind: 'spell', x: t.x, y: t.y - 16, big: true }); t._slowT = t.boss ? 1.2 : 2.0; wSlowWrap(t); }
+      }
+      if (t.alive === false) return false;
+    },
+    draw() {
+      const h2 = t.hurtbox && t.hurtbox(); if (!h2) return;
+      const k = Math.min(1, this.t / 0.25), cy = (h2.y0 + h2.y1) / 2, cx = (h2.x0 + h2.x1) / 2, a = Math.max(0, 1 - Math.max(0, this.t - 1.0) / 0.4);
+      g.save(); g.globalAlpha = a;
+      for (const ax of this.anchors) {   // chain links from the grave to the foe
+        const ex = ax + (cx - ax) * k, ey = this.fy + (cy - this.fy) * k, n = Math.max(3, Math.round(Math.hypot(ex - ax, ey - this.fy) / 4));
+        for (let i = 0; i <= n; i++) { const x = ax + (ex - ax) * i / n, y = this.fy + (ey - this.fy) * i / n; g.fillStyle = i % 2 ? '#8fc8ff' : '#dff0ff'; g.fillRect(Math.round(x) - (i % 2), Math.round(y) - 1, 2 + (i % 2), 2); }
+      }
+      g.restore(); addLight(cx, cy, 34, '150,200,255', 0.6 * a);
+    } });
+}
+function sig9SunDisc(p) {   // a disc of sunlight flung out that comes back to the hand
+  sfx.heavySwing(); tone(660, 0.3, 0.04, 'triangle', 1.2);
+  wfx({ life: 1.4, x: p.x, y: p.y, vx: P.face * 300, back: false, skip: new Set(),
+    update(dt) {
+      if (!this.back) { this.vx -= Math.sign(this.vx) * 520 * dt; if (Math.abs(this.vx) < 20 || solidAtPx(this.x + Math.sign(this.vx) * 6, this.y)) { this.back = true; this.skip = new Set(); } this.x += this.vx * dt; }
+      else { const dx = P.x - this.x, dy = P.y - 18 - this.y, d = Math.hypot(dx, dy) || 1; this.x += dx / d * 320 * dt; this.y += dy / d * 320 * dt; if (d < 10) return false; }
+      wStrike(rect(this.x - 7, this.y - 7, this.x + 7, this.y + 7), D.light * 0.6, { skip: this.skip, poise: 12, fire: true, kind: 'spell' });
+      if (Math.random() < 0.5) particles.push({ x: this.x, y: this.y, vx: rand(-20, 20), vy: rand(-20, 20), life: 0.3, kind: 'gold' });
+    },
+    draw() { if (!wfxDraw('sundisc', this.t, this.x, this.y, 1, { center: true, loop: true })) { g.fillStyle = '#ffd070'; g.fillRect(this.x - 4, this.y - 4, 8, 8); } addLight(this.x, this.y, 34, '255,210,120', 0.8); } });
+}
+function sig9Sand() {   // the heavy raises a burst of scouring sand around you
+  sfx.crumble(); shake = Math.max(shake, 4);
+  wStrike(rect(P.x - 44, P.y - 30, P.x + 44, P.y + 2), D.heavy * 0.6, { poise: 30, kind: 'spell' });
+  for (let i = 0; i < 40; i++) { const a = rand(0, Math.PI); particles.push({ x: P.x + Math.cos(a) * rand(4, 20), y: P.y - rand(0, 8), vx: Math.cos(a) * rand(60, 160) * (Math.random() < 0.5 ? 1 : -1), vy: -rand(20, 110), g: 260, life: rand(0.4, 0.9), kind: 'dust' }); }
+  spawnFx('shockwave', P.x, P.y, 1);
+}
+function sig9Stars(n) {   // star shards fall on what stands before you
+  const xs = [];
+  for (const t of targets()) { if (t.prop) continue; const hb = t.hurtbox(); if (!hb) continue; const cx = (hb.x0 + hb.x1) / 2; if ((cx - P.x) * P.face > -10 && Math.abs(cx - P.x) < 150) xs.push(cx); }
+  for (let k = 0; k < n; k++) {
+    const x = xs.length ? xs[k % xs.length] + rand(-10, 10) : P.x + P.face * (30 + k * 18);
+    const fy = wFloorBelow(x, P.y - 8) ?? P.y;
+    wfx({ life: 1.2, x: x + P.face * 30, y: fy - 110, tx: x, fy, at: k * 0.1, hit: false, skip: new Set(),
+      update(dt) {
+        if (this.t < this.at || this.hit) return this.hit ? this.t < this.hitT + 0.3 : undefined;
+        const k2 = Math.min(1, (this.t - this.at) / 0.28); this.cx = this.x + (this.tx - this.x) * k2; this.cy = this.y + (this.fy - this.y) * k2;
+        if (Math.random() < 0.8) particles.push({ x: this.cx, y: this.cy, vx: rand(-10, 10), vy: -rand(0, 20), life: 0.3, kind: 'mote' });
+        if (k2 >= 1) { this.hit = true; this.hitT = this.t; wStrike(rect(this.tx - 12, this.fy - 24, this.tx + 12, this.fy + 1), D.light * 0.65, { skip: this.skip, poise: 20, kind: 'spell' }); shake = Math.max(shake, 3); tone(1320, 0.3, 0.05, 'triangle', 0.5); for (let i = 0; i < 10; i++) particles.push({ x: this.tx, y: this.fy - 2, vx: rand(-80, 80), vy: -rand(30, 120), g: 300, life: 0.5, kind: i % 2 ? 'mote' : 'frost' }); }
+      },
+      draw() {
+        if (this.t < this.at) return;
+        if (!this.hit) { const a = Math.atan2(this.fy - this.y, this.tx - this.x) - Math.PI / 2; if (!wfxDraw('starshard', this.t, this.cx ?? this.x, this.cy ?? this.y, 1, { center: true, loop: true, rot: a })) { g.fillStyle = '#e8f0ff'; g.fillRect(this.cx - 1, this.cy - 3, 3, 6); } addLight(this.cx ?? this.x, this.cy ?? this.y, 30, '200,220,255', 0.8); }
+        else { addLight(this.tx, this.fy - 8, 40, '200,220,255', Math.max(0, 1 - (this.t - this.hitT) / 0.3)); }
+      } });
+  }
+}
+function sig9Laser(p, wide) {   // a neon laser line drawn through the world
+  let x1 = p.x; const dir = P.face;
+  for (let k = 0; k < 200; k += 4) { if (solidAtPx(p.x + dir * k, p.y)) break; x1 = p.x + dir * k; }
+  const hw = wide ? 5 : 3;
+  wStrike(rect(Math.min(p.x, x1), p.y - hw - 2, Math.max(p.x, x1), p.y + hw + 2), D.light * (wide ? 1.3 : 0.95), { poise: 20, kind: 'spell', dir });
+  tone(2200, 0.15, 0.05, 'square', 0.4); tone(440, 0.25, 0.05, 'sawtooth', 2); flashScreen = Math.max(flashScreen, 0.06);
+  wfx({ life: 0.3, x0: p.x, x1, y: p.y, hw, draw() {
+    const a = 1 - this.t / this.life, jit = Math.floor(this.t * 60) % 3 - 1, lo = Math.min(this.x0, this.x1), w = Math.abs(this.x1 - this.x0);
+    g.save(); g.globalAlpha = a;
+    g.fillStyle = 'rgba(255,70,200,0.8)'; g.fillRect(Math.round(lo), Math.round(this.y - this.hw + jit), Math.round(w), this.hw * 2);
+    g.fillStyle = '#78fff8'; g.fillRect(Math.round(lo), Math.round(this.y - 1), Math.round(w), 2);
+    g.fillStyle = '#ffffff'; g.fillRect(Math.round(lo), Math.round(this.y), Math.round(w), 1);
+    for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? '#ff46c8' : '#78fff8'; g.fillRect(Math.round(lo + rand(0, w)), Math.round(this.y + rand(-8, 8)), Math.round(rand(4, 14)), 1); }   // glitch slivers
+    g.restore(); addLight(lo + w / 2, this.y, w / 2 + 20, '120,255,250', 0.7 * a);
+  } });
+}
+function sig9Glitch(t, info) {   // the wound glitches: a corrupted copy of the blow lands a moment later
+  if (t.prop || (t._glitchT || 0) > time) return;
+  t._glitchT = time + 0.2;
+  wfx({ life: 0.4, done: false, update() {
+    if (this.t >= 0.22 && !this.done) { this.done = true; if (t.alive !== false) t.hit({ dmg: info.dmg * 0.35, poise: 6, dir: info.dir, kind: 'spell', x: info.x, y: info.y, quiet: true }); tone(1200 + rand(0, 800), 0.06, 0.04, 'square', 0.3); }
+  }, draw() {
+    const hb = t.hurtbox && t.hurtbox(); if (!hb) return;
+    for (let i = 0; i < 3; i++) { g.fillStyle = (Math.floor(this.t * 40) + i) % 2 ? 'rgba(120,255,250,0.8)' : 'rgba(255,70,200,0.8)'; g.fillRect(Math.round(hb.x0 + rand(-6, 6)), Math.round(rand(hb.y0, hb.y1)), Math.round(hb.x1 - hb.x0), 1); }
+  } });
+}
+function sig9Pyre(x, y, t, force) {   // a pyre of pale flame where the foe stood
+  if (!force && t && (t._pyreT || 0) > time) return;
+  if (t) t._pyreT = time + 0.5;
+  const fy = wFloorBelow(x, y - 6); if (fy === null || solidAtPx(x, fy - 8)) return;
+  while (sig9Pyres.length && (sig9Pyres[0].dead || sig9Pyres.length >= 5)) { const o = sig9Pyres.shift(); o.life = Math.min(o.life, o.t + 0.2); }
+  const e = wfx({ life: 2.2, x, fy, tick: 0.1,
+    update(dt) {
+      if ((this.tick -= dt) <= 0) { this.tick = 0.3; wStrike(rect(this.x - 9, this.fy - 30, this.x + 9, this.fy + 1), D.light * 0.2, { quiet: true, kind: 'spell', fire: true }); }
+      if (Math.random() < 0.3) particles.push({ x: this.x + rand(-5, 5), y: this.fy - rand(4, 26), vx: 0, vy: -rand(20, 50), life: 0.4, kind: 'mote' });
+    },
+    draw() { const a = Math.min(1, this.t / 0.12, (this.life - this.t) / 0.3); if (!wfxDraw('pyre', this.t, this.x, this.fy + 1, 1, { loop: true, alpha: a })) { g.fillStyle = `rgba(255,244,210,${0.6 * a})`; g.fillRect(this.x - 4, this.fy - 22, 8, 22); } addLight(this.x, this.fy - 14, 36, '255,244,210', 0.7 * a); } });
+  sig9Pyres.push(e);
+  tone(520, 0.3, 0.03, 'sine', 1.5);
+}
 // ---- v8 signature helpers
 function sigInkGlyph(t, info) {
   if (t.prop || (t._glyphT || 0) > time) return;

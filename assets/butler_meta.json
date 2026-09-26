@@ -1,0 +1,166 @@
+{
+ "native": 1,
+ "frame": [
+  128,
+  80
+ ],
+ "anchor": [
+  56,
+  80
+ ],
+ "hurtbox": [
+  51,
+  20,
+  14,
+  60
+ ],
+ "attacks": {
+  "slash": {
+   "windows": [
+    {
+     "active": [
+      3,
+      3
+     ],
+     "hit": [
+      75,
+      0,
+      29,
+      80
+     ],
+     "rects": {
+      "3": [
+       75,
+       0,
+       29,
+       80
+      ]
+     }
+    },
+    {
+     "active": [
+      6,
+      6
+     ],
+     "hit": [
+      72,
+      32,
+      35,
+      48
+     ],
+     "rects": {
+      "6": [
+       72,
+       32,
+       35,
+       48
+      ]
+     }
+    }
+   ]
+  },
+  "thrust": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    70,
+    46,
+    45,
+    34
+   ],
+   "rects": {
+    "5": [
+     70,
+     46,
+     45,
+     34
+    ],
+    "6": [
+     70,
+     48,
+     41,
+     32
+    ]
+   }
+  },
+  "flourish": {
+   "active": [
+    6,
+    8
+   ],
+   "hit": [
+    10,
+    50,
+    92,
+    30
+   ],
+   "rects": {
+    "6": [
+     12,
+     55,
+     90,
+     25
+    ],
+    "7": [
+     10,
+     50,
+     78,
+     30
+    ],
+    "8": [
+     18,
+     56,
+     82,
+     24
+    ]
+   }
+  }
+ },
+ "spawn": {
+  "serve": {
+   "frame": 6,
+   "at": [
+    73,
+    37
+   ],
+   "dirs_deg": [
+    -5,
+    4,
+    13
+   ]
+  }
+ },
+ "telegraph": {
+  "slash": {
+   "frame": 2,
+   "at": [
+    26,
+    5
+   ]
+  },
+  "thrust": {
+   "frame": 3,
+   "at": [
+    86,
+    41
+   ]
+  },
+  "flourish": {
+   "frame": 3,
+   "at": [
+    16,
+    45
+   ]
+  },
+  "serve": {
+   "frame": 3,
+   "at": [
+    44,
+    32
+   ]
+  }
+ },
+ "notes": "The Butler (mini-boss). Faces right, anchor = feet (x 56). 'hit' = union of the per-frame 'rects' over the inclusive active range (each reaches the floor). slash: two windows (descending diagonal f3, rising cut f6). thrust: fencing lunge drawn in place, the front foot lands ~24px ahead of the anchor (the engine may slide him forward ~12-20px over f4-f5). flourish: coat-wings open (f1-3, hold f3), he spins twice (mirrored frames 5 and 7): the hit covers BOTH sides of him on f6-f8. serve: three silver knives released from the off hand on f6 at spawn.at, fanned at dirs_deg (0 = straight ahead, + = downward). vanish: f0-3 the body breaks into bats (f3 nearly empty) -> teleport between f3 and f4 -> f4-7 re-forms; he should be intangible on f2-f5. backstep drawn in place (airborne f1-3; move him back ~24px). walk: planted foot travels 3.5px per frame (115ms) = ~30 px/s; move him at that speed so the feet do not slide. death: kneels (f2), last bow (f4-5), dissolves into bats and ash (f6-9); the serving blade stays planted in the floor on the last frame. butler_p2 shares this meta (identical frames/poses: coat-wings half-open and torn, eyes blazing, blood on blade and cuffs)."
+}

@@ -1,0 +1,57 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  48
+ ],
+ "anchor": [
+  22,
+  48
+ ],
+ "hurtbox": [
+  15,
+  11,
+  14,
+  37
+ ],
+ "attacks": {
+  "swipe": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    24,
+    0,
+    24,
+    48
+   ]
+  }
+ },
+ "spawn": {
+  "cast": {
+   "frame": 6,
+   "at": [
+    33,
+    -2
+   ]
+  }
+ },
+ "telegraph": {
+  "cast": {
+   "frame": 2,
+   "at": [
+    31,
+    -2
+   ]
+  },
+  "swipe": {
+   "frame": 1,
+   "at": [
+    11,
+    1
+   ]
+  }
+ },
+ "notes": "faces right. cast: the staff rises, its sun-disc flares (2-5), the engine calls a sun-flare down on the player at frame 6. swipe: staff swung overhead and down in front (active 3-4)."
+}

@@ -1,0 +1,76 @@
+{
+ "native": 1,
+ "frame": [
+  64,
+  48
+ ],
+ "anchor": [
+  20,
+  48
+ ],
+ "hurtbox": [
+  14,
+  13,
+  11,
+  35
+ ],
+ "attacks": {
+  "thrust": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    32,
+    26,
+    21,
+    22
+   ]
+  },
+  "flurry": {
+   "windows": [
+    {
+     "active": [
+      3,
+      4
+     ],
+     "hit": [
+      29,
+      19,
+      21,
+      29
+     ]
+    },
+    {
+     "active": [
+      6,
+      7
+     ],
+     "hit": [
+      31,
+      29,
+      17,
+      19
+     ]
+    }
+   ]
+  }
+ },
+ "telegraph": {
+  "thrust": {
+   "frame": 2,
+   "at": [
+    36,
+    28
+   ]
+  },
+  "flurry": {
+   "frame": 2,
+   "at": [
+    29,
+    9
+   ]
+  }
+ },
+ "notes": "hollow noble; parry = a guard flick (engine plays it on a parried hit, then a thrust)."
+}

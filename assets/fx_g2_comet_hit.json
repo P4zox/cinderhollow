@@ -1,0 +1,95 @@
+{ "frames": [
+   {
+    "filename": "fx_g2_comet_hit 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 1.aseprite",
+    "frame": { "x": 104, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 2.aseprite",
+    "frame": { "x": 208, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 3.aseprite",
+    "frame": { "x": 312, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 4.aseprite",
+    "frame": { "x": 416, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 5.aseprite",
+    "frame": { "x": 520, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 6.aseprite",
+    "frame": { "x": 624, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 7.aseprite",
+    "frame": { "x": 728, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   },
+   {
+    "filename": "fx_g2_comet_hit 8.aseprite",
+    "frame": { "x": 832, "y": 0, "w": 104, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 64 },
+    "sourceSize": { "w": 104, "h": 64 },
+    "duration": 50
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "fx_g2_comet_hit.png",
+  "format": "RGBA8888",
+  "size": { "w": 936, "h": 64 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "g2_comet_hit", "from": 0, "to": 8, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

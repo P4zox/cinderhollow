@@ -1,0 +1,49 @@
+{
+ "native": 1,
+ "frame": [
+  72,
+  32
+ ],
+ "anchor": [
+  36,
+  16
+ ],
+ "swimming": true,
+ "hurtbox": [
+  11,
+  11,
+  53,
+  11
+ ],
+ "attacks": {
+  "lunge": {
+   "active": [
+    3,
+    5
+   ],
+   "hit": [
+    56,
+    10,
+    13,
+    12
+   ]
+  }
+ },
+ "telegraph": {
+  "lunge": {
+   "frame": 2,
+   "at": [
+    55,
+    9
+   ]
+  }
+ },
+ "light": {
+  "lure_swim": [
+   64,
+   8
+  ],
+  "color": "#8ff0e0"
+ },
+ "notes": "faces right; lives underwater, anchor = body centre (not feet). The body keeps the same length and girth in every frame and is re-centred on the anchor, so the engine can rotate the sprite about the anchor along its velocity (e.g. when it leaps out of the water). swim: 6-frame sinuous loop. lunge: 0-2 coil into a compressed S (2 = held, the lure flares bright = telegraph), 3-5 ACTIVE: body straightens forward, jaws gape wide at the right end of the frame (engine drives it forward on 3-5), 6 jaws snap shut, 7 recoil. death: goes limp and curls, lure fades out (hold last; engine may let it sink). The lure bulb is a small teal light source (optional point light at `light.lure_swim`)."
+}

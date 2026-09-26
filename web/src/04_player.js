@@ -16,7 +16,12 @@ const WEAPON_CLASS = { longsword: 'sword', oathbrand: 'sword', kalden: 'sword', 
   // v8 expansion (data in 13_weapons.js)
   frostbrand: 'sword', pagecutter: 'dagger', colossus_hammer: 'great', glacier_maul: 'great', bell_hammer: 'great', forge_cleaver: 'great',
   stormfang: 'spear', stormvein: 'katana', quarterstaff: 'staff', windstaff: 'staff', inkquill: 'staff', lantern_staff: 'staff',
-  knight_shield: 'shield', twinborne: 'shield', overseer_bulwark: 'shield', twinfangs: 'twin', first_ember: 'mirror' };
+  knight_shield: 'shield', twinborne: 'shield', overseer_bulwark: 'shield', twinfangs: 'twin', first_ember: 'mirror',
+  // v9 (Expansion 2; data in 15_weapons2.js)
+  antler_scythe: 'scythe', briar_scythe: 'scythe', crimson_scythe: 'scythe', last_kindling: 'scythe',
+  headsman_chain: 'whip', gravechain: 'whip', orrery_whip: 'whip', thornwood_staff: 'staff', sun_sceptre: 'staff',
+  choir_harpoon: 'spear', scarab_spear: 'spear', saint_lance: 'spear', tidecleaver: 'great', vael_greatsword: 'great', meteor_maul: 'great',
+  barnacle_fang: 'dagger', carving_knife: 'dagger', sanguine_rapier: 'sword', pharaoh_khopesh: 'sword', starblade: 'katana', plasma_katana: 'katana' };
 const MOVESETS = {
   sword: { combo: ['attack1', 'attack2', 'attack3'], extra: 'attack4', heavy: 'heavy' },
   dagger: { combo: ['dg_1', 'dg_2', 'dg_3', 'dg_4'], extra: 'dg_2', heavy: 'dg_heavy' },
@@ -26,6 +31,8 @@ const MOVESETS = {
   staff: { combo: ['st_1', 'st_2', 'st_3', 'st_4'], extra: 'st_2', heavy: 'st_heavy' },
   shield: { combo: ['sh_1', 'sh_2', 'sh_3'], extra: 'sh_1', heavy: 'sh_heavy' },
   twin: { combo: ['tw_1', 'tw_2', 'tw_3', 'tw_4', 'tw_5'], extra: 'tw_2', heavy: 'tw_heavy' },
+  scythe: { combo: ['sc_1', 'sc_2', 'sc_3'], extra: 'sc_2', heavy: 'sc_heavy' },
+  whip: { combo: ['wh_1', 'wh_2', 'wh_3'], extra: 'wh_2', heavy: 'wh_heavy' },
 };
 const CLASS_TUNING = {   // per-class feel: damage mults along the combo, poise, stamina, lunge, fx
   dagger: { mult: [0.8, 0.8, 0.85, 1.25], poise: 7, cost: 7, lunge: 45, fx: ['slash', 'slash2', 'slash', 'slash3'], heavy: { mult: 1.3, poise: 25, cost: 16, lunge: 160, fx: 'slash3' } },
@@ -39,6 +46,14 @@ const CLASS_TUNING = {   // per-class feel: damage mults along the combo, poise,
             heavy: { mult: 0.85, poise: 110, cost: 26, lunge: 210, fx: null, bash: true } },
   twin: { mult: [0.7, 0.7, 0.78, 0.85, 1.15], poise: 8, cost: 7, lunge: 50, fx: ['slash', 'slash2', 'slash_up', 'slash', 'slash3'],
           heavy: { mult: 1.5, poise: 40, cost: 24, lunge: 300, fx: 'slash3' } },
+  // v9: scythe -- between the greatsword and the sword; every blade hooks foes a little toward you; the spin (sc_2) cuts both sides.
+  //     Heavy = reaping sweep: a kill with it heals you a little.
+  scythe: { mult: [1.0, 1.05, 1.45], poise: 20, cost: 15, lunge: 45, fx: [null, null, null], spin: [false, true, false], pull: true,
+            heavy: { mult: 1.5, poise: 60, cost: 30, lunge: 60, fx: null, reap: true, pull: true } },
+  // v9: whip -- fast, light, long; the tip cracks harder (+20% at the far end of the lash); the finisher lashes both sides.
+  //     Heavy = chain pull: small non-boss foes are dragged to you.
+  whip: { mult: [0.74, 0.78, 1.05], poise: 8, cost: 9, lunge: 25, fx: [null, null, null], spin: [false, false, true], crack: true,
+          heavy: { mult: 0.9, poise: 30, cost: 22, lunge: 30, fx: null, chain: true, crack: true } },
 };
 // v8 techniques (any class): guard counter, shield counter, backstep strike (hitboxes from player_meta too)
 const TECH_ATK = {
@@ -57,12 +72,15 @@ const PLUNGE_A = { active: [0, 0], mult: 1, poise: 70, reach: [-26, 40], ys: [-3
     set.combo.forEach((tag, i) => {
       const m = PM[tag] || {};
       ATK[tag] = { active: m.active || [2, 3], mult: T.mult[i], poise: T.poise, reach: m.hit ? [m.hit[0], m.hit[2]] : [-2, 36], ys: m.hit ? [m.hit[1], m.hit[3]] : [-36, -2],
-                   cost: T.cost, fx: T.fx[i], fxAt: m.fxAt || [18, -17], lunge: T.lunge, speed: 1, kind: 'light', cls, big: i === set.combo.length - 1 || cls === 'great' };
+                   cost: T.cost, fx: T.fx[i], fxAt: m.fxAt || [18, -17], lunge: T.lunge, speed: 1, kind: 'light', cls, big: i === set.combo.length - 1 || cls === 'great',
+                   spin: !!(T.spin && T.spin[i]), pull: !!T.pull, crack: !!T.crack };
+      if (cls === 'whip') ATK[tag].reach[1] += 8;   // the lash's crack reaches just past the drawn frame
     });
     const m = PM[set.heavy] || {}, Hh = T.heavy;
     ATK[set.heavy] = { active: m.active || [4, 5], mult: Hh.mult, poise: Hh.poise, reach: m.hit ? [m.hit[0], m.hit[2]] : [-2, 42], ys: m.hit ? [m.hit[1], m.hit[3]] : [-42, 0],
                        cost: Hh.cost, fx: Hh.fx, fxAt: m.fxAt || [18, -17], lunge: Hh.lunge, speed: 1, kind: 'heavy', cls, slam: Hh.slam, big: true,
-                       staffSpin: Hh.staffSpin, noCharge: Hh.noCharge, spin: Hh.spin, bash: Hh.bash };
+                       staffSpin: Hh.staffSpin, noCharge: Hh.noCharge, spin: Hh.spin, bash: Hh.bash, reap: Hh.reap, pull: Hh.pull, chain: Hh.chain, crack: Hh.crack };
+    if (cls === 'whip') ATK[set.heavy].reach[1] += 10;
   }
   for (const [tag, T] of Object.entries(TECH_ATK)) {
     const m = PM[tag] || {};
@@ -637,6 +655,26 @@ function bleedAmt(heavy) {
   const b = (D.W.bleed || 0) + (has('bloodthirst') ? 22 : 0);
   return b * (heavy ? 1.5 : 1) * (charmOn('c_fang') ? 1.5 : 1);
 }
+// v9: scythes hook foes a little toward you; the whip's chain heavy drags small foes all the way in
+function weaponPull(t, A) {
+  if (!t || t.prop || t.boss || t.alive === false || (t.cfg && (t.cfg.elite || t.cfg.flying))) return;
+  const goal = P.x + P.face * (A.chain ? 16 : 20), d = goal - t.x;
+  if (Math.sign(d) !== -P.face && !A.chain) return;           // only ever toward you
+  const step = A.chain ? d : clamp(d, -9, 9);
+  const nx = t.x + step;
+  if (solidAtPx(nx, t.y - 6) || solidAtPx(nx, t.y - 20)) return;
+  if (A.chain) {   // reel it in over a moment, and it stays off balance
+    if (typeof wfx === 'function') wfx({ life: 0.22, x0: t.x, update() { if (t.alive === false) return false; t.x = this.x0 + (goal - this.x0) * Math.min(1, this.t / 0.2); if (t.vx !== undefined) t.vx = 0; } });
+    else t.x = nx;
+    if (t.breakStance && t.state !== 'stagger') t.poise = (t.poise || 0) + 40;
+    for (let i = 0; i < 8; i++) particles.push({ x: (t.x + P.x) / 2 + rand(-10, 10), y: t.y - rand(8, 20), vx: -P.face * rand(20, 60), vy: 0, life: 0.3, kind: 'spark' });
+  } else { t.x = nx; if (t.vx !== undefined) t.vx = -P.face * 30; }
+}
+function reapHeal(t) {   // scythe heavy: a life taken feeds you
+  const h = Math.round(D.maxHp * 0.05 + 4);
+  P.hp = Math.min(D.maxHp, P.hp + h); popup(P.x, P.y - 34, h, '#8fe08a'); sfx.heal();
+  for (let i = 0; i < 12; i++) particles.push({ x: t.x + rand(-8, 8), y: t.y - rand(4, 24), vx: (P.x - t.x) * rand(1.5, 2.5), vy: -rand(10, 40), life: 0.5, kind: 'gold' });
+}
 function playerStrike(A) {
   const W = D.W, side = !A.up && !A.down;
   const front = side ? A.reach[1] * (A.cls ? 1 : W.reach) * REACH_MUL : A.reach[1], top = A.up ? A.ys[0] * Math.min(1.25, W.reach) : A.ys[0];
@@ -648,13 +686,17 @@ function playerStrike(A) {
     if (P.hitSet.has(t)) continue;
     const hb = hbOf(t); if (!hb || !overlap(r, hb)) continue;
     P.hitSet.add(t);
-    const dmg = outgoing(base, A.mult, 'melee') * (A.counter ? P.counterMul || 1 : 1) * (P.twinBuff ? 1.25 : 1);
+    const tipCrack = A.crack && Math.abs((hb.x0 + hb.x1) / 2 - P.x) > Math.abs(front) * 0.62;   // whip: the tip cracks harder
+    const dmg = outgoing(base, A.mult, 'melee') * (A.counter ? P.counterMul || 1 : 1) * (P.twinBuff ? 1.25 : 1) * (tipCrack ? 1.2 : 1);
     const hdir = A.spin ? ((hb.x0 + hb.x1) / 2 > P.x ? 1 : -1) : P.face;   // the staff spin strikes both sides
     const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise: A.poise * W.poise * (P.charged ? 1.8 : 1) * (heavy ? 1 + (SAVE.stats.str - 10) * 0.015 : 1), dir: hdir, kind: heavy ? 'heavy' : 'light', charged: heavy && !!P.charged, bleed: bleedAmt(heavy), fire, rotDot: !!W.rot,
             x: clamp(A.spin ? (hb.x0 + hb.x1) / 2 : (r.x0 + r.x1) / 2, hb.x0 + 3, hb.x1 - 3), y: clamp(P.y + (A.ys[0] + A.ys[1]) / 2, hb.y0, hb.y1), melee: true, big: heavy || !!A.big || P.state === 'attack3' || P.state === 'attack4' };
     t.hit(info);
     runHooks('strike', t, { dmg, heavy, x: info.x, y: info.y }, A);
     if (A.bash && t.alive && !t.boss && !t.prop && t.breakStance && !(t.cfg && t.cfg.elite) && t.state !== 'stagger') t.breakStance();   // shield bash: most foes reel
+    if (tipCrack) { sfx.parry(); for (let i = 0; i < 6; i++) particles.push({ x: info.x, y: info.y, vx: P.face * rand(20, 90), vy: -rand(10, 70), g: 200, life: 0.3, kind: 'spark' }); }
+    if (A.pull || A.chain) weaponPull(t, A);
+    if (A.reap && !t.prop && t.alive === false) reapHeal(t);
     { const sg = SIGS[SAVE.weapon]; if (sg && sg.hit) sg.hit(t, info, A); }
     if (A.down && !P.pogoed) pogo();
     if (P.empower > 0) P.empower = 0;
@@ -713,6 +755,7 @@ function critHit(t) {
   spawnFx(fxOr('riposte', 'parry_spark'), (hb.x0 + hb.x1) / 2, (hb.y0 + hb.y1) / 2, P.face);
   spawnFx('blood', (hb.x0 + hb.x1) / 2, (hb.y0 + hb.y1) / 2, P.face);
   t.hit({ dmg, poise: 0, dir: P.face, kind: 'crit', x: (hb.x0 + hb.x1) / 2, y: (hb.y0 + hb.y1) / 2, melee: true, big: true, crit: true });
+  { const sg = SIGS[SAVE.weapon]; if (sg && sg.crit) sg.crit(t, dmg); }
   if (has('riposte_mastery')) P.hp = Math.min(D.maxHp, P.hp + Math.round(D.maxHp * 0.1));
 }
 
@@ -812,6 +855,24 @@ const ART_SYNC = {
     else jump(an, 5);                                                                                   // the closing X
   },
   backstep_slash(an, s) { if (!s.rel) return; if (s.phase === 1) { if (an.i > 2) hold2(an, 1, s.t, 0.06); } else if (s.phase === 2) jump(an, 3); },
+  // v9 arts (agent G's 16_gear3.js drives them; frames from gen_player.py V9_ARTS)
+  lash(an, s) {   // one arm-snap per crack (G draws the long lash): frames 2/4 crack, 3/5 recoil, 6 the last crack, then recover
+    if (!s.rel || !s.n) return;
+    if (s.n < s.max) { const base = s.n % 2 ? 2 : 4; an.i = s.crackT > 0.08 ? base + 1 : base; an.t = 0; an.done = false; }
+    else if (s.crackT < 0.1) { an.i = 6; an.t = 0; an.done = false; } else jump(an, 7);
+  },
+  chain_drag(an, s) {   // 1/5 chain flying or reeling: throw pose · 2 hauling a small foe in · 3 hauling yourself · 4 the finishing crack
+    if (!s.rel) return;
+    if (s.phase === 1 || s.phase === 5) { if (an.i > 4) hold2(an, 3, s.t, 0.07); }
+    else if (s.phase === 2) { an.i = 5; an.t = 0; an.done = false; }
+    else if (s.phase === 3) { an.i = 6; an.t = 0; an.done = false; }
+    else if (s.phase === 4) jump(an, 7);
+  },
+  blood_frenzy(an, s) {   // a thrust per hit of the frenzy, then the closing lunge
+    if (!s.rel) return;
+    if (s.n < s.max) { an.i = 2 + ((Math.max(1, s.n) - 1) % 5); an.t = 0; an.done = false; } else jump(an, 7);
+  },
+  overclock(an, s) { if (!s.rel) return; if (s.phase === 1) hold2(an, 2, s.t, 0.05); else jump(an, 4); },
 };   // frame to hold while charging (default: release - 1)
 const ART_CHARGE_MIN = 0.6, ART_CHARGE_MAX = 1.6;
 function updateArtCharge(dt, grav) {

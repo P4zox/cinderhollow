@@ -11,7 +11,9 @@ function metaWindows(sh, tag) {
   return [{ active: a.active, hit: a.hit }];
 }
 // later regions are tougher (play order: Archives → Hoarfrost → Spire → Deep); scales HP, damage and cinders per biome
-const BIOME_TIER = { spire: { hp: 1.4, dmg: 1.25, cin: 1.3 }, deep: { hp: 1.6, dmg: 1.4, cin: 1.5 }, ember: { hp: 1.8, dmg: 1.5, cin: 1.6 } };
+const BIOME_TIER = { spire: { hp: 1.4, dmg: 1.25, cin: 1.3 }, deep: { hp: 1.6, dmg: 1.4, cin: 1.5 }, ember: { hp: 1.8, dmg: 1.5, cin: 1.6 },
+  thornveil: { hp: 0.9, dmg: 0.95, cin: 1 }, barrows: { hp: 1.2, dmg: 1.15, cin: 1.2 }, crimson: { hp: 1.25, dmg: 1.2, cin: 1.25 },
+  necropolis: { hp: 1.4, dmg: 1.3, cin: 1.35 }, dunes: { hp: 1.6, dmg: 1.4, cin: 1.5 }, starfall: { hp: 1.8, dmg: 1.5, cin: 1.6 }, neohallow: { hp: 1.7, dmg: 1.45, cin: 1.6 } };
 function tierCfg(cfg) {
   const T = typeof room !== 'undefined' && room && BIOME_TIER[room.def.biome]; if (!T) return cfg;
   const c = { ...cfg, hp: Math.round(cfg.hp * T.hp), cinders: Math.round((cfg.cinders || 0) * T.cin) };

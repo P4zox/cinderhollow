@@ -1,0 +1,50 @@
+{ "frames": [
+   {
+    "filename": "bg_neohallow_cyber_far 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "sourceSize": { "w": 512, "h": 216 },
+    "duration": 160
+   },
+   {
+    "filename": "bg_neohallow_cyber_far 1.aseprite",
+    "frame": { "x": 512, "y": 0, "w": 512, "h": 216 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "sourceSize": { "w": 512, "h": 216 },
+    "duration": 160
+   },
+   {
+    "filename": "bg_neohallow_cyber_far 2.aseprite",
+    "frame": { "x": 1024, "y": 0, "w": 512, "h": 216 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "sourceSize": { "w": 512, "h": 216 },
+    "duration": 160
+   },
+   {
+    "filename": "bg_neohallow_cyber_far 3.aseprite",
+    "frame": { "x": 1536, "y": 0, "w": 512, "h": 216 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "sourceSize": { "w": 512, "h": 216 },
+    "duration": 160
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "bg_neohallow_cyber_far.png",
+  "format": "RGBA8888",
+  "size": { "w": 2048, "h": 216 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "loop", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

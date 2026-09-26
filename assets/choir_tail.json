@@ -1,0 +1,321 @@
+{ "frames": [
+   {
+    "filename": "choir_tail 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 1.aseprite",
+    "frame": { "x": 72, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 2.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 3.aseprite",
+    "frame": { "x": 216, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 4.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 5.aseprite",
+    "frame": { "x": 360, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 6.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 7.aseprite",
+    "frame": { "x": 504, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 8.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 9.aseprite",
+    "frame": { "x": 648, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 10.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 11.aseprite",
+    "frame": { "x": 792, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 12.aseprite",
+    "frame": { "x": 864, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 13.aseprite",
+    "frame": { "x": 936, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 14.aseprite",
+    "frame": { "x": 1008, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 15.aseprite",
+    "frame": { "x": 1080, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 16.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 17.aseprite",
+    "frame": { "x": 1224, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 18.aseprite",
+    "frame": { "x": 1296, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 19.aseprite",
+    "frame": { "x": 1368, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 20.aseprite",
+    "frame": { "x": 1440, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 21.aseprite",
+    "frame": { "x": 1512, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 22.aseprite",
+    "frame": { "x": 1584, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 23.aseprite",
+    "frame": { "x": 1656, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 24.aseprite",
+    "frame": { "x": 1728, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 25.aseprite",
+    "frame": { "x": 1800, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 26.aseprite",
+    "frame": { "x": 1872, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 27.aseprite",
+    "frame": { "x": 1944, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 28.aseprite",
+    "frame": { "x": 2016, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 29.aseprite",
+    "frame": { "x": 2088, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 30.aseprite",
+    "frame": { "x": 2160, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 31.aseprite",
+    "frame": { "x": 2232, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 32.aseprite",
+    "frame": { "x": 2304, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   },
+   {
+    "filename": "choir_tail 33.aseprite",
+    "frame": { "x": 2376, "y": 0, "w": 72, "h": 72 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 72, "h": 72 },
+    "sourceSize": { "w": 72, "h": 72 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "choir_tail.png",
+  "format": "RGBA8888",
+  "size": { "w": 2448, "h": 72 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "t0", "from": 0, "to": 16, "direction": "forward", "color": "#000000ff" },
+   { "name": "t1", "from": 17, "to": 33, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

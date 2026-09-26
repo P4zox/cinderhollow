@@ -1,0 +1,12 @@
+await boot();
+G.SAVE.seenAreas = { barrows: 1, crown: 1 };
+window.__db.pool('T0', 1, 10, 17, 18);
+const out = [], S = () => [G.room, Math.round(G.P.x), Math.round(G.P.y), G.P.state, +window.__db.DBS.breath.toFixed(1)];
+G.tp('T0', 14, 16); G.step(10);
+G.step(60, ['left']); out.push(['float in T0', S()]); await snap('x1_float');
+G.step(60, ['down']); out.push(['cannot dive', S()]);
+G.step(40, ['right']); G.step(1, ['right'], ['jump']); G.step(40, ['right']); out.push(['out', S()]);
+G.give({ items: { tidebreath: 1 } });
+G.step(40, ['left']); G.step(90, ['down', 'left']); out.push(['dive T0', S()]); await snap('x2_dive');
+G.step(60, ['up']); out.push(['surface T0', S()]);
+return out;

@@ -366,7 +366,7 @@ function shrinePos(id) {
   return (_shrineAt[id] = p);
 }
 // is this shrine the last one before a main boss? walk up to two rooms away (never past another shrine)
-const MAIN_BOSSES = new Set(['hound', 'omen', 'vessel', 'kalden', 'sovereign', 'unwritten', 'twins', 'cindervane', 'colossus', 'oswin', 'first_ember']);
+const MAIN_BOSSES = new Set(['hound', 'omen', 'vessel', 'kalden', 'sovereign', 'unwritten', 'twins', 'cindervane', 'colossus', 'oswin', 'first_ember', 'warden', 'choir', 'sanguine', 'vael', 'pharaoh', 'astrel', 'saint0', 'venn']);
 let _roomAdj = null;
 function roomAdj() {   // rooms joined by an actual opening (open cells on both sides of a shared edge)
   if (_roomAdj) return _roomAdj;
@@ -443,7 +443,8 @@ function renderTitle() {
   vctx.fillStyle = 'rgba(6,4,10,0.55)'; vctx.fillRect(ox, oy, W * scale, H * scale);
   text('CINDERHOLLOW', W / 2, 52, 26, '#e6c77a', 'center', { spacing: 4, weight: 600 });
   text('Beneath the fallen Pale Root, the ash remembers.', W / 2, 68, 7, '#c9bda2', 'center', { weight: 400 });
-  const sv = titleSave(); if (sv && (sv.ngp || Object.keys(sv.endings || {}).length)) text(`Journey ${(sv.ngp || 0) + 1}  ·  Endings seen ${Object.keys(sv.endings || {}).length + (sv.flags && sv.flags.true_ending ? 1 : 0)} / 3`, W / 2, 80, 5.8, '#9a8f78', 'center', { weight: 400 });
+  const sv = titleSave(), EN = (sv && sv.endings) || {}, nEnd = sv ? ['kindle', 'ash', 'true', 'venn'].filter(k => EN[k] || (k === 'true' && sv.flags && sv.flags.true_ending)).length : 0;
+  if (sv && (sv.ngp || nEnd)) text(`Journey ${(sv.ngp || 0) + 1}  ·  Endings seen ${nEnd} / 4`, W / 2, 80, 5.8, '#9a8f78', 'center', { weight: 400 });
   const opts = titleOptions();
   opts.forEach((o, i) => {
     const y = 96 + i * 13, sel = i === titleSel;
@@ -475,10 +476,13 @@ function renderDeath() {
 function renderEnding() {
   const a = clamp(stateT / 2, 0, 1);
   vctx.fillStyle = `rgba(4,3,6,${0.85 * a})`; vctx.fillRect(ox, oy, W * scale, H * scale);
-  text('THE ASH IS STILL', W / 2, 60, 16, '#e6c77a', 'center', { alpha: a, spacing: 3 });
-  const lines = ['Morvain falls, and the Pale Root dims to embers.', 'The Sunken Hallow is yours to wander.', '',
+  const E = SAVE.ending, T = { kindle: ['THE ROOT REKINDLED', 'You sit upon the root throne, and the Pale Root glows again.', 'The Sunken Hallow is yours to wander.'],
+    ash: ['THE ASH IS STILL', 'The last grace goes out. No one rules the Hallow now.', 'The Sunken Hallow is yours to wander.'],
+    venn: ['THE EMBER UNBOUND', 'You carry the last flame of the Hallow.', 'Every other light has gone out.'] }[E] || ['THE ASH IS STILL', 'The Pale Sovereign falls, and the Root dims to embers.', 'The Sunken Hallow is yours to wander.'];
+  text(T[0], W / 2, 60, 16, '#e6c77a', 'center', { alpha: a, spacing: 3 });
+  const lines = [T[1], T[2], '',
     `Level ${levelOf(SAVE.stats)}   ·   Deaths ${SAVE.deaths}   ·   ${fmtTime(SAVE.playTime)}`, `Skills learned ${SAVE.skills.length} / ${SKILLS.length}   ·   Secrets ${['C2s', 'K3s', 'H1', 'E1', 'A7'].filter(r => SAVE.visited[r]).length} / 5`,
-    '', 'Thank you for playing this vertical slice.'];
+    '', 'Thank you for playing Cinderhollow.'];
   lines.forEach((l, i) => text(l, W / 2, 86 + i * 12, 7, '#d8cdb4', 'center', { alpha: a, weight: 400 }));
   if (stateT > 2.5) text('Press Enter to keep exploring', W / 2, 190, 6.5, '#b8ab90', 'center', { alpha: clamp(stateT - 2.5, 0, 1) });
 }

@@ -1,0 +1,50 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  48
+ ],
+ "anchor": [
+  18,
+  48
+ ],
+ "hurtbox": [
+  12,
+  19,
+  12,
+  29
+ ],
+ "attacks": {
+  "swing": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    21,
+    12,
+    17,
+    36
+   ]
+  }
+ },
+ "spawn": {
+  "ring": {
+   "frame": 5,
+   "at": [
+    20,
+    11
+   ]
+  }
+ },
+ "telegraph": {
+  "swing": {
+   "frame": 2,
+   "at": [
+    11,
+    15
+   ]
+  }
+ },
+ "notes": "ring: bell raised overhead and shaken -> the engine emits a stunning toll ring from spawn.at."
+}

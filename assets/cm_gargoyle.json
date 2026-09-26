@@ -1,0 +1,253 @@
+{ "frames": [
+   {
+    "filename": "cm_gargoyle 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 600
+   },
+   {
+    "filename": "cm_gargoyle 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 600
+   },
+   {
+    "filename": "cm_gargoyle 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 140
+   },
+   {
+    "filename": "cm_gargoyle 3.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "cm_gargoyle 4.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "cm_gargoyle 5.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "cm_gargoyle 6.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "cm_gargoyle 7.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "cm_gargoyle 8.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "cm_gargoyle 9.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "cm_gargoyle 10.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "cm_gargoyle 11.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "cm_gargoyle 12.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 140
+   },
+   {
+    "filename": "cm_gargoyle 13.aseprite",
+    "frame": { "x": 624, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 100
+   },
+   {
+    "filename": "cm_gargoyle 14.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 70
+   },
+   {
+    "filename": "cm_gargoyle 15.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 70
+   },
+   {
+    "filename": "cm_gargoyle 16.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 80
+   },
+   {
+    "filename": "cm_gargoyle 17.aseprite",
+    "frame": { "x": 816, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 130
+   },
+   {
+    "filename": "cm_gargoyle 18.aseprite",
+    "frame": { "x": 864, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 90
+   },
+   {
+    "filename": "cm_gargoyle 19.aseprite",
+    "frame": { "x": 912, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 130
+   },
+   {
+    "filename": "cm_gargoyle 20.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 100
+   },
+   {
+    "filename": "cm_gargoyle 21.aseprite",
+    "frame": { "x": 1008, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 140
+   },
+   {
+    "filename": "cm_gargoyle 22.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "cm_gargoyle 23.aseprite",
+    "frame": { "x": 1104, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 110
+   },
+   {
+    "filename": "cm_gargoyle 24.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 120
+   },
+   {
+    "filename": "cm_gargoyle 25.aseprite",
+    "frame": { "x": 1200, "y": 0, "w": 48, "h": 40 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 40 },
+    "sourceSize": { "w": 48, "h": 40 },
+    "duration": 400
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "cm_gargoyle.png",
+  "format": "RGBA8888",
+  "size": { "w": 1248, "h": 40 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "perch", "from": 0, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "wake", "from": 2, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "fly", "from": 6, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "dive", "from": 12, "to": 17, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 18, "to": 19, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 20, "to": 25, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

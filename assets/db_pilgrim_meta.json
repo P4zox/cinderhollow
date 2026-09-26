@@ -1,0 +1,67 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  48
+ ],
+ "anchor": [
+  24,
+  48
+ ],
+ "hurtbox": [
+  16,
+  13,
+  18,
+  35
+ ],
+ "attacks": {
+  "swing": {
+   "active": [
+    5,
+    6
+   ],
+   "hit": [
+    37,
+    20,
+    11,
+    28
+   ]
+  },
+  "lunge": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    29,
+    27,
+    19,
+    21
+   ]
+  }
+ },
+ "telegraph": {
+  "swing": {
+   "frame": 4,
+   "at": [
+    14,
+    10
+   ]
+  },
+  "lunge": {
+   "frame": 2,
+   "at": [
+    29,
+    26
+   ]
+  }
+ },
+ "light": {
+  "censer_idle": [
+   32,
+   41
+  ],
+  "color": "#2fbfb0"
+ },
+ "notes": "faces right, feet on the bottom row. walk: feet planted 3 frames moving back 3px/frame at 170ms -> engine walk speed ~17.6 px/s keeps feet from sliding. swing: 0-3 wind the censer back and up behind the head (chain lets out), 4 = held windup with a teal glint on the censer (telegraph), 5-6 ACTIVE: the censer whips over and down in front (mid -> low, reaching ~22px ahead), 7 it slaps the wet floor (teal splash), 8-9 recover. lunge: 0-2 crouch (2 = eye flare telegraph), 3-4 ACTIVE claw rake (drawn in place, engine moves him forward on 3-4), 5 claws hit the floor, 6-7 recover. rise: ambush out of black water; frame 0 only the hand + hood tip are above the floor line, standing by 5 (= idle 0). death ends as a heap of wet robe with the censer guttering out beside it (hold last frame). The censer is a small teal light source (optional point light at `light.censer_idle`)."
+}

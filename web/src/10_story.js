@@ -258,6 +258,10 @@ const ENDINGS = {
            { img: 'story_end_kindle', lines: ['Below, the shrines burned brighter for a thousand years.', 'Venn tended every one of them, and never once forgot your name.'] }],
   ash: [{ img: 'story_end_ash', lines: ['You let the last of the grace go out.', 'No one would rule the Hallow now. No one would feed on it, either.'] },
         { img: 'story_end_ash', lines: ['In the ash, something green took root.', 'Venn walked beside you into a morning no tree had promised.'] }],
+  // the fourth ending (agent V): refuse the choice, and take the last flame from the one who would have carried it
+  venn: [{ img: 'story_end_venn_1', lines: ['Venn’s ashes settled around your feet. In your hand the last flame burned —', 'small, and white, and yours alone.'] },
+         { img: 'story_end_venn_2', lines: ['One by one, the shrines of the Hallow went dark.', 'No one came to light them again.'] },
+         { img: 'story_end_venn_3', lines: ['The Pale Root rotted into the ash, and you walked on through the long dark,', 'carrying the only fire left in the world. It never once felt warm.'] }],
 };
 function playCine(slides, after) { cine = { slides, i: 0, t: 0, after }; state = 'cine'; clearBuffer(); }
 function cineInput(a) {
@@ -285,19 +289,45 @@ function renderCine() {
   if (cine.t > 1.4) text('Enter — continue    Esc — skip', W - 10, 211, 5, '#8a7f6a', 'right', { alpha: 0.7 });
 }
 
-// ---- the ending: Venn appears at the throne, the player chooses
+// ---- the ending: Venn appears at the throne, the player chooses (agent V: + the refusal -> web/src/37_venn.js)
 function beginEnding() {
-  const throne = props.find(p => p.type === 'throne');
-  const vx = throne ? throne.x - 30 : P.x + 30;
-  const venn = makeNpc('venn', vx, P.y); props.push(venn);
+  // only in the Heart of the Root; if you wandered off, she waits there for you (37_venn.js enter hook)
+  if (!room || room.id !== 'X5' || SAVE.ending || F('venn_betrayed')) return;
+  const npc = props.find(p => p.vnEnd) || vnEndingNpc();
   sfx.kindle();
-  setTimeout(() => startDialogue([
-    { w: 'venn', t: 'It’s over. She’s… at peace. I can feel the Root listening, for the first time since it fell.' },
-    { w: 'venn', t: 'The throne is empty. The Root needs a heart, or it will finish dying — and all its grace with it.' },
-    { w: 'venn', t: 'You could sit. Your ember would feed it for an age. Or you could walk away, and let the ash have the last word.' },
-    { choice: [['Take the throne — rekindle the Root', [{ do() { SAVE.ending = 'kindle'; } }]], ['Let the ash settle — walk away', [{ do() { SAVE.ending = 'ash'; } }]]] },
-  ], venn), 600);
+  setTimeout(() => { if (state === 'play' && props.includes(npc)) vnOfferEnding(npc); }, 600);
+}
+function vnOfferEnding(npc) {
+  if (SAVE.ending || F('venn_betrayed')) return;
+  const first = !npc.told; npc.told = true;
   dialogAfterEnding = true;
+  startDialogue([
+    ...(first ? [
+      { w: 'venn', t: 'It’s over. She’s… at peace. I can feel the Root listening, for the first time since it fell.' },
+      { w: 'venn', t: 'The throne is empty. The Root needs a heart, or it will finish dying — and all its grace with it.' },
+      { w: 'venn', t: 'You could sit. Your ember would feed it for an age. Or you could walk away, and let the ash have the last word.' },
+    ] : [{ w: 'venn', t: 'The throne is still empty, Ashbound. Choose.' }]),
+    vnChoiceStep(npc),
+  ], npc);
+}
+function vnChoiceStep(npc) {
+  return { choice: [
+    ['Take the throne — rekindle the Root', [{ do() { SAVE.ending = 'kindle'; } }]],
+    ['Let the ash settle — walk away', [{ do() { SAVE.ending = 'ash'; } }]],
+    ['Refuse — keep the last flame for yourself', [
+      { w: 'venn', t: '…For yourself? The Root is dying. Every shrine I ever lit goes out with it.' },
+      { w: 'venn', t: 'Please. Whatever the ash made you, it did not make you that.' },
+      { choice: [
+        ['The flame is mine. I will not give it up.', [
+          { w: 'player', t: 'The flame is mine.' },
+          { w: 'venn', t: '…' },
+          { w: 'venn', t: 'Then the flame goes to one who will carry it.' },
+          { do() { dialogAfterEnding = false; dialog.after = () => vnBetray(npc); } },
+        ]],
+        ['…No. Let me choose again.', [{ do() { dialog.steps.splice(dialog.i + 1, 0, vnChoiceStep(npc)); } }]],
+      ] },
+    ]],
+  ] };
 }
 let dialogAfterEnding = false;
 function finishStory() {

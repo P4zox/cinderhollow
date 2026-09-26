@@ -1,0 +1,53 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  32
+ ],
+ "anchor": [
+  22,
+  32
+ ],
+ "hurtbox": [
+  15,
+  16,
+  22,
+  16
+ ],
+ "attacks": {
+  "lunge": {
+   "active": [
+    3,
+    5
+   ],
+   "hit": [
+    41,
+    11,
+    7,
+    21
+   ]
+  },
+  "bite": {
+   "active": [
+    3,
+    4
+   ],
+   "hit": [
+    38,
+    16,
+    9,
+    16
+   ]
+  }
+ },
+ "telegraph": {
+  "lunge": {
+   "frame": 1,
+   "at": [
+    37,
+    23
+   ]
+  }
+ },
+ "notes": "skeletal hound; the lunge leaps (engine lunge velocity), the bite is a short snap."
+}

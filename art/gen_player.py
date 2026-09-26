@@ -628,7 +628,12 @@ class Wpn:
     offp = None        # v8: off hand position (absolute), if the pose draws the far arm
     cels = None        # v8: the frame's cels (body masks for the extras)
 
+    lash = None        # v9 whip class: the lash's control points (absolute), None = hanging at rest
+    lash_prev = None   # v9: previous frame's lash (motion smear)
+
     def render(self, kind, dust=True, extras=True):
+        if kind in WHIP_KINDS:
+            return render_whip(self, kind, dust)
         if extras and kind in EXTRA_KINDS:
             return render_extras(self, kind, dust)
         return self.render_core(kind, dust)
@@ -1382,7 +1387,7 @@ def art_fx(g, k, f, tones, tip, d):
                 continue
             front = cx + b * (1 - v * v)
             back = cx + b * 0.35 * (1 - v * v) - 1
-            for x in range(int(back), int(front) + 2):
+            for x in range(max(0, int(back)), min(W, int(front) + 2)):
                 dd = front - x
                 if dd < -0.5:
                     continue
@@ -1457,6 +1462,7 @@ def mseq(frames, base=None, grip=None, art=False):
     out = []
     prev, prevw = ((35, 27), -50), None
     prevoff = None
+    prevlash = None
     for p, ms in frames:
         q = {**dict(footB=FB, footF=FF), **base, **p}
         bx, by = q.get("dx", 0), q.get("dy", 0)
@@ -1514,6 +1520,12 @@ def mseq(frames, base=None, grip=None, art=False):
             if q.get("offsw") and prevoff is not None:
                 w.offfx = (("sweep", prevoff[0], _unwrap(prevoff[1], oang), dict(w=q["offsw"])),)
             prevoff = (w.offw[0], oang)
+        if isinstance(w, Wpn) and q.get("lash") is not None:   # v9 whip: lash control points (pose space)
+            w.lash = [(x + bx, y + by) for x, y in q["lash"]]
+            w.lash_prev = prevlash
+            prevlash = w.lash
+        elif isinstance(w, Wpn):
+            prevlash = None
         if isinstance(w, Wpn) and q.get("sheath"):
             w.sheath = True
         if isinstance(w, Wpn) and q.get("aura"):
@@ -3388,13 +3400,1022 @@ ACTIVE.update({"art_whirlwind": (1, 1), "art_gale_vault": (1, 1), "art_ink_mark"
                "art_tolling_blow": (4, 4), "art_twin_tempest": (1, 1), "art_backstep_slash": (1, 1)})
 
 
+# ================================================================ v9 (Expansion 2): scythe + whip classes, 21 weapons
+# Scythes are hafted two-handed; the blade juts from the head on the +v side (the clockwise side of the swing), its edge on
+# the concave side facing the wielder. Whips are a short rigid handle (the Wpn cel) plus a lash drawn as a curve through
+# per-frame control points (Wpn.lash) -- see render_whip. Like v8, only the new kinds use the new code paths.
+SCYTHE_BACK = {}       # scythe kind -> haft length behind the front hand
+WHIP_KINDS = ("headsman_chain", "gravechain", "orrery_whip")
+
+
+def _scythe_blade(u, v, tip, reach=12.5, sweep=6.5, w0=2.6, root=1.2):
+    """Blade of a scythe/antler: returns (edge_dist, spine_dist, t) if (u, v) is on the blade, else None.
+    The blade leaves the head at u = tip - root along +v, bending back toward -u as it reaches out."""
+    if v < -0.8 or v > reach:
+        return None
+    t = max(0.0, v) / reach
+    uc = tip - root - sweep * t ** 1.7          # spine line
+    w = w0 * (1 - t) ** 0.65 + 0.35              # blade depth toward the wielder
+    if uc - w <= u <= uc + 0.6:
+        return (u - (uc - w), uc + 0.6 - u, t)
+    return None
+
+
+def _haft(u, v, s, lo, hi, dark, lite, hw=0.72):
+    if lo <= u <= hi and abs(v) <= hw:
+        return lite if v * s > 0 else dark
+    return None
+
+
+def shp_antler_scythe(u, v, s, L, back=6.0):
+    """The Warden's scythe: a living-wood haft wound with a green-glowing groove, the blade a branching antler."""
+    tip = L + 1.5
+    b = _scythe_blade(u, v, tip, reach=12.5, sweep=6.0, w0=2.2)
+    if b:
+        e, sp, t = b
+        if e < 0.9:
+            return (244, 238, 222)
+        if int(v * 1.3) % 5 == 3 and sp < 1.2:
+            return (96, 132, 60)                  # moss
+        return (214, 204, 182) if sp > 1.2 else (150, 138, 118)
+    for tv, tl in ((4.0, 3.2), (8.0, 2.4)):       # tines off the outer (spine) side
+        uc = tip - 1.2 - 6.0 * (tv / 12.5) ** 1.7 + 0.6
+        if uc <= u <= uc + tl and abs(v - tv - (u - uc) * 0.5) <= 0.6:
+            return (214, 204, 182) if u < uc + tl - 0.8 else (244, 238, 222)
+    if tip - 2.2 <= u <= tip and abs(v) <= 1.2:
+        return (120, 230, 140) if abs(v) < 0.5 else (60, 44, 36)      # glowing knot where the antler grows
+    if -back <= u < tip - 2.2 and abs(v - 0.25 * math.sin(u * 0.9)) <= 0.72:
+        if abs(((u * 0.8 + v * 2.0) % 4.0) - 2.0) < 0.35:
+            return (110, 220, 130)               # green-glowing spiral groove
+        return (84, 62, 48) if v * s > 0 else (40, 28, 24)
+    return None
+
+
+def _post_ribbon(pix, hand, d, L):   # a pale ribbon hanging from the antler's root, whatever the angle
+    x0, y0 = hand[0] + d[0] * (L - 0.5), hand[1] + d[1] * (L - 0.5)
+    for k in range(1, 6):
+        pix[(int(round(x0 - (k // 3))), int(round(y0 + k)))] = (232, 232, 222) if k < 4 else (180, 180, 172)
+
+
+def shp_briar_scythe(u, v, s, L, back=6.0):
+    """A field scythe grown through with bramble: rusted blade, a haft of thorned briar."""
+    tip = L + 1.5
+    b = _scythe_blade(u, v, tip, reach=11.5, sweep=6.5, w0=2.4)
+    if b:
+        e, sp, t = b
+        if e < 0.9:
+            return (206, 196, 180)
+        return (150, 110, 80) if sp > 1.0 and int(v * 2) % 3 else (96, 70, 54)
+    if tip - 1.6 <= u <= tip and abs(v) <= 1.1:
+        return (110, 104, 110)
+    if -back <= u < tip - 1.6:
+        if abs(v) <= 0.72:
+            return (116, 84, 50) if v * s > 0 else (64, 44, 28)
+        iu = int(math.floor(u))
+        if iu % 3 == 0 and 0.72 < abs(v) <= 1.6 and (iu // 3) % 2 == (1 if v > 0 else 0):
+            return (170, 150, 110)                # thorns
+    return None
+
+
+def shp_crimson_scythe(u, v, s, L, back=6.0):
+    """A duelling scythe of the Crimson court: black-lacquered haft ringed in gold, a blade the colour of old blood."""
+    tip = L + 1.5
+    b = _scythe_blade(u, v, tip, reach=12.0, sweep=7.0, w0=2.5)
+    if b:
+        e, sp, t = b
+        if e < 0.9:
+            return (255, 170, 170)
+        if e < 1.6:
+            return (214, 48, 64)
+        return (130, 20, 40) if sp > 0.8 else (70, 10, 24)
+    if tip - 2.0 <= u <= tip and abs(v) <= 1.3:
+        return (230, 186, 92) if v * s > 0 else (130, 90, 36)
+    r = _haft(u, v, s, -back, tip - 2.0, (22, 16, 22), (58, 44, 58))
+    if r:
+        return (230, 186, 92) if int(math.floor(u)) % 6 == 0 else r
+    return None
+
+
+def shp_last_kindling(u, v, s, L, back=6.0):
+    """Venn's scythe: an ivory root haft, the blade a curved sheet of pale white flame."""
+    tip = L + 1.5
+    b = _scythe_blade(u, v, tip, reach=13.0, sweep=6.0, w0=2.9)
+    if b:
+        e, sp, t = b
+        if e < 0.9:
+            return (210, 230, 255)
+        if sp < 0.9 and int(v * 1.7) % 3 == 0:
+            return (255, 236, 190)                # flame licks on the spine
+        return (255, 252, 240) if e < 2.0 else (255, 236, 190)
+    uc = tip - 1.2
+    if uc < u <= uc + 2.2 and -0.8 < v < 3 and (int(v * 2) + int(u * 2)) % 3 == 0:
+        return (255, 236, 190)                    # sparks off the spine
+    if tip - 2.0 <= u <= tip and abs(v) <= 1.3:
+        return (255, 244, 214) if abs(v) < 0.6 else (190, 176, 150)
+    if -back <= u < tip - 2.0:
+        if abs(v) <= 0.72:
+            if abs(((u * 0.7 - v * 2.2) % 5.0) - 2.5) < 0.4:
+                return (160, 146, 120)            # root tendril wound round it
+            return (236, 228, 206) if v * s > 0 else (176, 162, 136)
+    return None
+
+
+# ---- staffs
+def shp_thornwood_staff(u, v, s, L, back=12.0):
+    """A staff of thornwood, still budding: a green bud swells at its crown."""
+    tip = L + 1.5
+    if tip - 3.2 <= u <= tip + 0.4 and math.hypot(u - (tip - 1.4), v) <= 1.6:
+        return (170, 236, 140) if v * s > 0 and u > tip - 1.8 else (70, 130, 60)
+    if -back <= u < tip - 3.0:
+        if abs(v) <= 0.72:
+            iu = int(math.floor(u))
+            if iu % 5 == 2:
+                return (70, 50, 34)
+            return (104, 80, 54) if v * s > 0 else (58, 42, 30)
+        iu = int(math.floor(u))
+        if iu % 3 == 1 and 0.72 < abs(v) <= 1.7 and (iu // 3) % 2 == (1 if v > 0 else 0):
+            return (150, 170, 100)
+    return None
+
+
+def shp_sun_sceptre(u, v, s, L, back=12.0):
+    """The Pharaoh's sun sceptre: gold ringed in lapis, crowned by a rayed disc of the sun."""
+    tip = L + 1.5
+    cu = tip - 2.4
+    d = math.hypot(u - cu, v)
+    if d <= 2.6:
+        if d < 1.2:
+            return (255, 250, 220)
+        return (255, 214, 104) if d < 2.0 else (200, 140, 50)
+    a = math.atan2(v, u - cu)
+    if 2.6 < d <= 4.3 and (int((a + 3.2) / 0.5236) % 2 == 0) and abs(((a + 3.2) % 0.5236) - 0.26) < 0.14:
+        return (255, 214, 104)                    # rays
+    if -back <= u < cu - 2.6 and abs(v) <= 0.72:
+        iu = int(math.floor(u))
+        if iu % 4 == 0:
+            return (60, 90, 200) if v * s > 0 else (30, 50, 130)
+        return (240, 196, 90) if v * s > 0 else (160, 110, 40)
+    return None
+
+
+# ---- spears (LONGHAFT signature: back = haft behind the hand)
+def shp_choir_harpoon(u, v, s, L, back=SPEAR_BACK):
+    """The Choir's harpoon: a barbed bone head with a teal glow line, lashed to a black-water haft."""
+    tip = L + 1.5
+    h0 = tip - 8.0
+    if h0 <= u <= tip:
+        t = (u - h0) / 8.0
+        hw = 1.3 * (1 - t) + 0.25
+        if abs(v) <= hw:
+            if abs(v) < 0.4 and t < 0.8:
+                return (120, 240, 220)
+            return (236, 230, 214) if v * s > 0 else (160, 150, 136)
+        for bu in (h0 + 1.0, h0 + 3.6):           # barbs sweeping back on both sides
+            if bu <= u <= bu + 2.4 and abs(abs(v) - (hw + (u - bu) * 0.0) - 0.2 - (bu + 2.4 - u) * 0.55) <= 0.5:
+                return (214, 206, 190)
+    if h0 - 2.4 <= u < h0:
+        if abs(v) <= 1.0 and (int(u * 2) % 2 == 0):
+            return (190, 180, 150)                # rope lashing
+        if abs(v) <= 0.6:
+            return (40, 70, 80)
+    if -back <= u < h0 - 2.4 and abs(v) <= 0.55:
+        iu = int(math.floor(u))
+        if iu % 7 == 3:
+            return (80, 200, 190)
+        return (40, 70, 80) if v * s >= 0 else (20, 36, 44)
+    if -back - 1.4 <= u < -back and abs(v) <= 0.8:
+        return (160, 150, 136)
+    return None
+
+
+def shp_scarab_spear(u, v, s, L, back=SPEAR_BACK):
+    """A Scarab Knight's spear: the blade a shard of beetle shell, iridescent green to gold."""
+    tip = L + 1.5
+    h0 = tip - 8.5
+    if h0 <= u <= tip:
+        t = (u - h0) / 8.5
+        hw = max(0.3, 2.0 * math.sin(math.pi * min(1.0, t * 1.2) ** 0.8) if t < 0.8 else 2.0 * (1 - t) / 0.2 * 0.8 + 0.2)
+        if abs(v) <= hw:
+            if abs(v) < 0.4:
+                return (40, 60, 40)
+            k = (u * 0.8 + v * 1.5) % 3.0
+            return (120, 220, 160) if k < 1 else ((220, 200, 90) if k < 2 else (40, 140, 110))
+    if h0 - 1.6 <= u < h0 and abs(v) <= 1.0:
+        return (220, 180, 80) if v * s > 0 else (130, 90, 30)
+    if -back <= u < h0 - 1.6 and abs(v) <= 0.55:
+        return (40, 64, 50) if v * s >= 0 else (20, 32, 26)
+    if -back - 1.4 <= u < -back and abs(v) <= 0.8:
+        return (220, 180, 80)
+    return None
+
+
+NEON = ((255, 255, 255), (120, 255, 250), (40, 170, 230), (255, 70, 200), (150, 30, 140))
+def shp_saint_lance(u, v, s, L, back=SPEAR_BACK):
+    """SAINT-0's lance: a chrome haft traced with circuit light, the head a blade of cyan energy rimmed in magenta."""
+    tip = L + 1.5
+    h0 = tip - 9.0
+    if h0 <= u <= tip:
+        t = (u - h0) / 9.0
+        hw = 1.9 * (1 - t) ** 0.9 + 0.2
+        if abs(v) <= hw:
+            if abs(v) < 0.5:
+                return NEON[0]
+            if abs(v) > hw - 0.6:
+                return NEON[3]
+            return NEON[1] if abs(v) < hw * 0.6 else NEON[2]
+    if h0 - 2.0 <= u < h0 and abs(v) <= 1.4:
+        return (230, 236, 244) if v * s > 0 else (120, 130, 150)   # emitter collar
+    if -back <= u < h0 - 2.0 and abs(v) <= 0.6:
+        iu = int(math.floor(u))
+        if iu % 4 == 1:
+            return NEON[1] if iu % 8 == 1 else NEON[3]            # circuit lights
+        return (224, 230, 240) if v * s >= 0 else (140, 150, 170)
+    if -back - 1.4 <= u < -back and abs(v) <= 0.8:
+        return (140, 150, 170)
+    return None
+
+
+# ---- swords
+def shp_sanguine_rapier(u, v, s, L):
+    """The Countess's rapier: a needle of crimson steel with a blood-red core, a swept gold cup-hilt."""
+    tip = L + 1.5
+    if 2.2 <= u <= tip:
+        hw = _taper(u, tip, 0.62, 5.0)
+        if abs(v) <= hw:
+            if abs(v) < 0.3 and u < tip - 2:
+                return (220, 30, 50)
+            return (236, 220, 226) if v * s > 0 else (150, 110, 124)
+    d = math.hypot(u - 1.2, v)
+    if 1.8 <= d <= 3.0 and u > -0.5:
+        return (240, 196, 90) if v * s > 0 else (150, 100, 40)       # swept ring guard
+    if 0.6 <= u < 2.2 and abs(v) <= 1.2:
+        return (240, 196, 90)
+    if -3.4 <= u < 0.6 and abs(v) <= 0.7:
+        return (100, 20, 34) if int(math.floor(u)) % 2 else (50, 10, 20)
+    if -4.6 <= u < -3.4 and abs(v) <= 1.2:
+        return (240, 196, 90) if v * s > 0 else (150, 100, 40)
+    return None
+
+
+def shp_pharaoh_khopesh(u, v, s, L):
+    """The Veiled Pharaoh's khopesh: a straight neck of gold, then the great sickle curve, its inner edge honed white."""
+    tip = L + 1.5
+    vl = v * s
+    neck = tip * 0.42
+    if 1.8 <= u <= neck and abs(v) <= 0.8:
+        return (230, 186, 90) if vl > 0 else (150, 100, 40)
+    if u > neck - 0.5:
+        # sickle: a disc arc centred off the neck on +v, blade band between radii
+        cu, cv = neck + (tip - neck) * 0.5, 2.6
+        R = (tip - neck) * 0.62
+        d = math.hypot((u - cu) / 1.05, v - cv)
+        a = math.atan2(v - cv, u - cu)
+        band = 3.0 * min(1.0, (0.7 - a) / 1.4)   # grows out of the neck, tapers to the hooked point
+        if R - band <= d <= R and -2.95 <= a <= 0.7:
+            if d > R - 0.9:
+                return (255, 246, 220)            # the honed outer edge
+            return (240, 196, 90) if d > R - 1.8 else (170, 120, 50)
+    if 0.8 <= u < 1.8 and abs(v) <= 1.8:
+        return (240, 196, 90) if vl > 0 else (150, 100, 40)
+    if -3.4 <= u < 0.8 and abs(v) <= 0.72:
+        return (60, 100, 210) if int(math.floor(u)) % 2 else (30, 50, 130)
+    if -4.4 <= u < -3.4 and abs(v) <= 1.1:
+        return (240, 196, 90)
+    return None
+
+
+# ---- daggers
+def shp_barnacle_fang(u, v, s, L):
+    """The Ferryman's knife: a curved fang of shell, crusted with barnacles, on a sea-green grip."""
+    tip = L + 1.5
+    c = 0.5 - 0.024 * max(0.0, u - 2) ** 2
+    dv = v - c
+    if 1.8 <= u <= tip:
+        hw = _taper(u, tip, 0.9, 4.0)
+        if abs(dv) <= hw:
+            if (int(u * 1.3) * 5 + int(v * 2)) % 7 == 0 and u < tip - 3:
+                return (120, 150, 130)            # barnacles
+            return _band(dv * s, hw, (236, 222, 200), (190, 170, 146), (110, 96, 86), 0.2)
+    if 0.8 <= u < 1.8 and abs(v - 0.5) <= 1.5:
+        return (110, 150, 140)
+    if -3.0 <= u < 0.8 and abs(v - 0.5) <= 0.72:
+        return (60, 110, 100) if int(math.floor(u)) % 2 else (30, 60, 56)
+    if -4.0 <= u < -3.0 and abs(v - 0.5) <= 1.1:
+        return (236, 222, 200)
+    return None
+
+
+def shp_carving_knife(u, v, s, L):
+    """The Butler's carving knife: a broad straight blade, spotless but for the red at its heel."""
+    tip = L + 1.5
+    if 1.8 <= u <= tip:
+        top = 1.5 if u < tip - 3.5 else 1.5 * (tip - u) / 3.5 + 0.2
+        if -0.7 <= v <= top:
+            if u < 4.2 and v > 0.2 and int(u * 3) % 2:
+                return (170, 30, 40)              # blood at the heel
+            return (230, 234, 244) if v > top - 0.8 else ((170, 176, 196) if v * s > 0 else (100, 104, 124))
+    if 0.8 <= u < 1.8 and abs(v) <= 1.3:
+        return (150, 150, 160)
+    if -3.4 <= u < 0.8 and abs(v) <= 0.8:
+        if int(math.floor(u)) in (-2, 0) and abs(v) < 0.4:
+            return (200, 200, 210)                # rivets
+        return (40, 30, 34) if v * s > 0 else (20, 14, 18)
+    return None
+
+
+# ---- great weapons
+def shp_tidecleaver(u, v, s, L):
+    """A drowned headsman's cleaver dredged from the Barrows, crusted with barnacles and pale coral."""
+    tip = L + 1.5
+    if 2.6 <= u <= tip:
+        if u > tip - (v + 2.0) * 0.5:
+            return None
+        if -2.0 <= v <= 2.6:
+            if 2.6 - v < 0.9:
+                return (206, 220, 222)            # edge
+            k = (int(u * 1.4) * 7 + int(v * 1.7) * 3) % 9
+            if k == 0:
+                return (230, 200, 190)            # coral
+            if k == 4:
+                return (110, 140, 120)            # barnacle
+            return (110, 130, 140) if v * s > 0.4 else ((74, 92, 104) if v * s > -1 else (44, 56, 66))
+    if 0.8 <= u < 2.6 and abs(v) <= 3.4:
+        return (90, 110, 120) if u < 1.7 else (44, 56, 66)
+    if -5.0 <= u < 0.8 and abs(v) <= 0.75:
+        return (60, 90, 90) if int(math.floor(u)) % 2 else (30, 46, 50)
+    if -6.4 <= u < -5.0 and abs(v) <= 1.3:
+        return (110, 130, 140)
+    return None
+
+
+def shp_vael_greatsword(u, v, s, L):
+    """King Vael's greatsword: a blade of fused bone, ridged like a spine, a corroded gold guard with a skull;
+    pale ghost-fire runs along its edges."""
+    tip = L + 1.5
+    vl = v * s
+    if 2.6 <= u <= tip:
+        hw = min(1.9, 0.5 + (tip - u) * 0.5)
+        if abs(v) <= hw + 0.6:
+            if abs(v) > hw:
+                return (170, 220, 255) if (int(u * 2) + (v > 0)) % 3 else None   # ghost-fire edge
+            iu = int(math.floor(u))
+            if abs(v) < 0.6 and iu % 3 == 0 and u < tip - 3:
+                return (120, 112, 100)            # vertebra ridge
+            return _band(vl, hw, (236, 228, 204), (190, 180, 156), (120, 110, 96), 0.3)
+    if 0.8 <= u < 2.6 and abs(v) <= 4.2:
+        if abs(v) < 1.1 and u > 1.2:
+            return (236, 228, 204) if vl > 0 else (150, 140, 120)      # skull at the guard
+        return (200, 160, 70) if vl > 0 else (110, 90, 50)
+    if -5.0 <= u < 0.8 and abs(v) <= 0.75:
+        return (80, 50, 110) if int(math.floor(u)) % 2 else (40, 24, 60)   # purple-wrapped grip
+    if -6.6 <= u < -5.0 and abs(v) <= 1.3:
+        return (200, 160, 70) if vl > 0 else (110, 90, 50)
+    return None
+
+
+def shp_meteor_maul(u, v, s, L):
+    """A maul whose head is a fist of fallen star: black iron split by white-blue light."""
+    tip = L + 1.5
+    h0 = tip - 7.0
+    if h0 <= u <= tip:
+        du = u - h0
+        hw = 4.6 - 0.6 * abs(math.sin(du * 1.7 + (0.7 if v > 0 else 0)))
+        if abs(v) <= hw:
+            k = abs(((v * 1.1 - du * 1.3) % 4.2) - 2.1)
+            if k < 0.35:
+                return (230, 244, 255)
+            if k < 0.8:
+                return (110, 160, 255)
+            if (int(u * 3) * 7 + int(v * 3) * 5) % 23 == 0:
+                return (255, 255, 255)            # star specks
+            return (60, 58, 76) if v * s > 0.8 else ((40, 38, 54) if v * s > -1.2 else (24, 22, 34))
+    if -2.8 <= u < h0 and abs(v - 0.5) <= 0.75:
+        return (100, 104, 124) if (v - 0.5) * s > 0 else (50, 52, 66)
+    if -4.0 <= u < -2.8 and abs(v - 0.5) <= 1.25:
+        return (110, 160, 255)
+    return None
+
+
+# ---- katanas
+def shp_starblade(u, v, s, L):
+    """Astrel's blade: black glass cracked with starlight, a silver tsuba."""
+    tip = L + 1.5
+    c = 0.5 - 0.0062 * max(0.0, u - 2) ** 2
+    if 2.0 <= u <= tip:
+        hw = _taper(u, tip, 0.85, 3.0)
+        dv = v - c
+        if abs(dv) <= hw:
+            if dv > hw - 0.55:
+                return (230, 240, 255)
+            if (int(u * 2.3) * 3 + int(dv * 4)) % 11 == 0:
+                return (255, 255, 255)
+            if abs(((u * 0.9 + dv * 2) % 3.6) - 1.8) < 0.25:
+                return (140, 180, 255)            # starlight cracks
+            return (30, 30, 50) if dv * s > 0 else (14, 14, 28)
+    if 1.0 <= u < 2.0 and abs(v - 0.5) <= 1.6:
+        return (220, 226, 240) if v * s > 0 else (110, 116, 140)
+    if -5.0 <= u < 1.0 and abs(v - 0.5) <= 0.75:
+        return (200, 210, 240) if (int(math.floor(u)) + (v > 0.5)) % 2 else (24, 26, 50)
+    if -6.0 <= u < -5.0 and abs(v - 0.5) <= 0.8:
+        return (220, 226, 240)
+    return None
+
+
+def shp_plasma_katana(u, v, s, L):
+    """A NEO-HALLOW blade: a black hilt throwing a sheet of magenta plasma with a white-hot core."""
+    tip = L + 1.5
+    if 2.0 <= u <= tip:
+        hw = _taper(u, tip, 1.0, 2.5)
+        if abs(v - 0.3) <= hw:
+            d = abs(v - 0.3)
+            return NEON[0] if d < 0.4 else (NEON[3] if d < hw - 0.5 else NEON[4])
+    if 1.0 <= u < 2.0 and abs(v - 0.3) <= 1.4:
+        return NEON[1]
+    if -5.0 <= u < 1.0 and abs(v - 0.3) <= 0.75:
+        if int(math.floor(u)) % 3 == 0:
+            return NEON[1]
+        return (40, 40, 52) if v * s > 0 else (18, 18, 26)
+    if -6.0 <= u < -5.0 and abs(v - 0.3) <= 0.8:
+        return (120, 124, 140)
+    return None
+
+
+# ---- whips: the handle (rigid, in the hand); the lash is drawn by render_whip
+WHIP = {
+    "headsman_chain": dict(grip=((70, 50, 40), (36, 26, 22)), ferrule=(150, 150, 160),
+                           link=((170, 170, 184), (96, 96, 110), (46, 46, 56)), every=0, tip="hook"),
+    "gravechain":     dict(grip=((120, 84, 56), (64, 44, 30)), ferrule=(150, 96, 60),
+                           link=((176, 116, 72), (110, 70, 44), (60, 38, 28)), bone=(226, 216, 190), every=6, tip="skull"),
+    "orrery_whip":    dict(grip=((60, 60, 90), (30, 30, 50)), ferrule=(230, 190, 90),
+                           link=((255, 220, 120), (200, 150, 60), (120, 80, 30)), orb=(180, 220, 255), every=7, tip="star"),
+}
+
+
+def _shp_whip_handle(kind):
+    sp = WHIP[kind]
+    def f(u, v, s, L):
+        if 1.6 <= u <= 3.2 and abs(v) <= 1.0:
+            return sp["ferrule"]
+        if -3.4 <= u < 1.6 and abs(v) <= 0.75:
+            return sp["grip"][0] if (int(math.floor(u)) + (v > 0)) % 2 else sp["grip"][1]
+        if -4.6 <= u < -3.4 and abs(v) <= 1.2:
+            return sp["ferrule"]
+        return None
+    return f
+
+
+shp_headsman_chain = _shp_whip_handle("headsman_chain")
+shp_gravechain = _shp_whip_handle("gravechain")
+shp_orrery_whip = _shp_whip_handle("orrery_whip")
+
+for _k, _b in (("thornwood_staff", 12.0), ("sun_sceptre", 12.0)):
+    STAFF_BACK[_k] = _b
+for _k in ("antler_scythe", "briar_scythe", "crimson_scythe", "last_kindling"):
+    STAFF_BACK[_k] = 6.0          # scythes share the staff haft path (both ends of the haft drawn)
+    SCYTHE_BACK[_k] = 6.0
+RASTER_POST["antler_scythe"] = _post_ribbon
+LONGHAFT.update({"choir_harpoon": shp_choir_harpoon, "scarab_spear": shp_scarab_spear, "saint_lance": shp_saint_lance})
+
+WPN.update({
+    "antler_scythe":  (shp_antler_scythe, 22, 6.5, 13.0, "blade"),
+    "briar_scythe":   (shp_briar_scythe, 21, 6.5, 12.0, "blade"),
+    "crimson_scythe": (shp_crimson_scythe, 22, 6.5, 12.5, "blade"),
+    "last_kindling":  (shp_last_kindling, 23, 6.5, 13.5, "blade"),
+    "thornwood_staff": (shp_thornwood_staff, 17, 12.5, 2.0, "blade"),
+    "sun_sceptre":    (shp_sun_sceptre, 17, 12.5, 4.5, "blade"),
+    "choir_harpoon":  (shp_choir_harpoon, 20, SPEAR_BACK + 1.5, 3.2, "blade"),
+    "scarab_spear":   (shp_scarab_spear, 20, SPEAR_BACK + 1.5, 2.4, "blade"),
+    "saint_lance":    (shp_saint_lance, 21, SPEAR_BACK + 1.5, 2.4, "blade"),
+    "sanguine_rapier": (shp_sanguine_rapier, 20, 5.0, 3.2, "blade"),
+    "pharaoh_khopesh": (shp_pharaoh_khopesh, 18, 4.8, 6.0, "blade"),
+    "barnacle_fang":  (shp_barnacle_fang, 10, 4.4, 2.2, "blade"),
+    "carving_knife":  (shp_carving_knife, 11, 4.0, 2.0, "blade"),
+    "tidecleaver":    (shp_tidecleaver, 24, 6.8, 3.6, "blade"),
+    "vael_greatsword": (shp_vael_greatsword, 26, 7.0, 4.4, "blade"),
+    "meteor_maul":    (shp_meteor_maul, 21, 4.4, 5.2, "maul"),
+    "starblade":      (shp_starblade, 20, 6.2, 2.5, "blade"),
+    "plasma_katana":  (shp_plasma_katana, 20, 6.2, 2.5, "blade"),
+    "headsman_chain": (shp_headsman_chain, 3, 5.0, 1.4, "blade"),
+    "gravechain":     (shp_gravechain, 3, 5.0, 1.4, "blade"),
+    "orrery_whip":    (shp_orrery_whip, 3, 5.0, 1.4, "blade"),
+})
+V9_IDS = ["antler_scythe", "briar_scythe", "thornwood_staff", "choir_harpoon", "tidecleaver", "barnacle_fang",
+          "sanguine_rapier", "carving_knife", "crimson_scythe", "vael_greatsword", "headsman_chain", "gravechain",
+          "pharaoh_khopesh", "sun_sceptre", "scarab_spear", "starblade", "meteor_maul", "orrery_whip",
+          "saint_lance", "plasma_katana", "last_kindling"]
+WPN_IDS += V9_IDS
+SMEAR.update({
+    "antler_scythe":  ((210, 255, 200), (120, 230, 140), (50, 120, 70)),
+    "briar_scythe":   ((236, 226, 206), (180, 150, 110), (110, 84, 60)),
+    "crimson_scythe": P_BLOOD,
+    "last_kindling":  ((255, 252, 240), (220, 230, 255), (150, 170, 220)),
+    "thornwood_staff": ((210, 250, 190), (140, 200, 110), (80, 120, 60)),
+    "sun_sceptre":    P_GOLD,
+    "choir_harpoon":  ((210, 255, 250), (100, 230, 210), (40, 120, 120)),
+    "scarab_spear":   ((220, 255, 200), (120, 220, 160), (40, 120, 90)),
+    "saint_lance":    (NEON[0], NEON[1], NEON[3]),
+    "sanguine_rapier": P_BLOOD,
+    "pharaoh_khopesh": P_GOLD,
+    "barnacle_fang":  ((236, 250, 246), (150, 200, 190), (70, 110, 110)),
+    "carving_knife":  ((240, 244, 255), (168, 180, 214), (90, 98, 130)),
+    "tidecleaver":    ((210, 240, 240), (120, 170, 180), (60, 90, 100)),
+    "vael_greatsword": ((230, 244, 255), (150, 200, 255), (90, 110, 190)),
+    "meteor_maul":    ((240, 248, 255), (130, 170, 255), (60, 70, 150)),
+    "starblade":      ((255, 255, 255), (160, 190, 255), (70, 80, 170)),
+    "plasma_katana":  (NEON[0], NEON[3], NEON[4]),
+    "headsman_chain": ((230, 234, 244), (150, 156, 176), (80, 84, 100)),
+    "gravechain":     ((244, 226, 200), (190, 140, 96), (110, 70, 44)),
+    "orrery_whip":    ((255, 244, 200), (190, 220, 255), (120, 110, 180)),
+})
+
+
+# ---- whip lash: Catmull-Rom curve through control points, tapering, per-kind link pattern, tip ornament
+def _cr(p0, p1, p2, p3, t):
+    t2, t3 = t * t, t * t * t
+    return tuple(0.5 * ((2 * p1[i]) + (-p0[i] + p2[i]) * t + (2 * p0[i] - 5 * p1[i] + 4 * p2[i] - p3[i]) * t2 +
+                        (-p0[i] + 3 * p1[i] - 3 * p2[i] + p3[i]) * t3) for i in range(2))
+
+
+def lash_curve(pts, step=0.05):
+    out = []
+    n = len(pts)
+    for i in range(n - 1):
+        p0, p1, p2, p3 = pts[max(0, i - 1)], pts[i], pts[i + 1], pts[min(n - 1, i + 2)]
+        k = int(1 / step)
+        for j in range(k):
+            out.append(_cr(p0, p1, p2, p3, j / k))
+    out.append(pts[-1])
+    return out
+
+
+def resample(curve, n):
+    d = [0.0]
+    for a, b in zip(curve, curve[1:]):
+        d.append(d[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
+    L = d[-1] or 1.0
+    out, j = [], 0
+    for i in range(n):
+        s_ = L * i / (n - 1)
+        while j < len(d) - 2 and d[j + 1] < s_:
+            j += 1
+        seg = (d[j + 1] - d[j]) or 1.0
+        t = (s_ - d[j]) / seg
+        a, b = curve[j], curve[j + 1]
+        out.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
+    return out, L
+
+
+def draw_lash(g, pts, kind):
+    sp = WHIP[kind]
+    curve = lash_curve(pts)
+    pts2, L = resample(curve, max(4, int(sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(curve, curve[1:])) * 2)))
+    n = len(pts2)
+    for i, (x, y) in enumerate(pts2):
+        s_ = i / (n - 1) * L
+        thick = s_ < L * 0.4
+        c = sp["link"][0] if int(s_ / 1.5) % 2 == 0 else sp["link"][1]
+        if sp.get("every") and int(s_) % sp["every"] == 0 and 3 < s_ < L - 3:
+            c = sp.get("bone") or sp.get("orb")
+        put(g, x, y, c)
+        if thick:
+            put(g, x, y + 1, sp["link"][2])
+    tx, ty = pts2[-1]
+    if L < 7:            # a stub (the rest of the lash is drawn in-engine): no ornament at the hand
+        return (tx, ty)
+    ax, ay = pts2[-1][0] - pts2[-3][0], pts2[-1][1] - pts2[-3][1]
+    al = math.hypot(ax, ay) or 1
+    ax, ay = ax / al, ay / al
+    if sp["tip"] == "hook":      # the headsman's hook: a small curved blade
+        for k in range(4):
+            put(g, tx + ax * k, ty + ay * k, (200, 204, 220) if k < 3 else (240, 244, 255))
+        for k in range(1, 4):
+            put(g, tx + ax * 3 - ay * k * 0.9 - ax * k * 0.5, ty + ay * 3 + ax * k * 0.9 - ay * k * 0.5, (170, 174, 190))
+    elif sp["tip"] == "skull":
+        for a2, b2, c in ((0, 0, (226, 216, 190)), (1, 0, (226, 216, 190)), (0, 1, (160, 150, 130)), (1, 1, (40, 30, 30)),
+                          (-1, 0, (190, 180, 156)), (0, -1, (236, 228, 204)), (1, -1, (236, 228, 204))):
+            put(g, tx + a2, ty + b2, c)
+    else:                        # a glass star orb
+        for a2, b2 in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            put(g, tx + a2, ty + b2, (255, 255, 255) if (a2, b2) == (0, 0) else sp["orb"])
+        for a2, b2 in ((-1, 0), (2, 1), (0, -1), (1, 2)):
+            put(g, tx + a2, ty + b2, (110, 160, 255))
+    return (tx, ty)
+
+
+def default_lash(tip, bxy):
+    """A whip at rest: the lash hangs from the handle in a soft curve and trails along the floor behind."""
+    x, y = tip
+    if y > 30:   # handle held low: the lash just drops to the floor and trails back
+        return [(x, y), (x - 1, min(38.5, y + 4)), (x - 5, 38.5), (x - 11, 38.5), (x - 16, 38.5)]
+    return [(x, y), (x + 1.5, y + 5), (x + 1.0, y + 9.5), (x - 1.0, min(36.0, y + 13)), (x - 3.5, 38.5), (x - 9, 38.5),
+            (x - 14, 38.5)]
+
+
+def render_whip(w, kind, dust=True):
+    info = {}
+    g = draw_weapon(kind, w.hand, w.ang, w.slen, w.planted, w.held, w.fitb, info=info)
+    a = math.radians(info["ang"])
+    hx, hy = info["hand"]
+    tip = (hx + math.cos(a) * 3.6, hy + math.sin(a) * 3.6)
+    lash = [tip] + list(w.lash) if w.lash else default_lash(tip, w.bxy)
+    fxg = blank()
+    c0, c1, c2 = SMEAR[kind]
+    span = lambda pts: sum(math.hypot(b2[0] - a2[0], b2[1] - a2[1]) for a2, b2 in zip(pts, pts[1:]))
+    if w.lash_prev and w.lash and span([tip] + list(w.lash)) > 8 and span([tip] + list(w.lash_prev)) > 8:   # motion smear (not for stubs)
+        prev = [tip] + list(w.lash_prev)
+        A_, _ = resample(lash_curve(prev), 24)
+        B_, _ = resample(lash_curve(lash), 24)
+        for k, f in enumerate((0.33, 0.66)):
+            mid = [(A_[i][0] + (B_[i][0] - A_[i][0]) * f, A_[i][1] + (B_[i][1] - A_[i][1]) * f) for i in range(24)]
+            for i, (x, y) in enumerate(resample(lash_curve(mid), 60)[0]):
+                if i > 8 and (int(x) + int(y) + k) % 2 == 0:
+                    put(fxg, x, y, c2 if f < 0.5 else c1)
+    if w.fx:
+        extra = move_fx(kind, info, tuple(f for f in w.fx if f[0] not in ("arc", "sweep", "streak")), dust, w.fx_pal)
+        for y in range(H):
+            for x in range(W):
+                if extra[y][x] is not None and fxg[y][x] is None:
+                    fxg[y][x] = extra[y][x]
+    lg = blank()
+    draw_lash(lg, lash, kind)
+    for y in range(H):
+        for x in range(W):
+            if lg[y][x] is not None:
+                g[y][x] = lg[y][x]
+    outline(g)
+    if w.held:
+        fx0, fy0 = int(round(w.hand[0])), int(round(w.hand[1]))
+        for a2, b2 in FIST:
+            if 0 <= fx0 + a2 < W and 0 <= fy0 + b2 < H:
+                g[fy0 + b2][fx0 + a2] = None
+    img = to_img(fxg)
+    img.alpha_composite(to_img(g))
+    w.info = info
+    if w.mirror:
+        m = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        m.alpha_composite(img.transpose(Image.FLIP_LEFT_RIGHT).crop((7, 0, W, H)), (0, 0))
+        img = m
+    if w.mask is not None:
+        px, mk = img.load(), w.mask.load()
+        for y in range(H):
+            for x in range(W):
+                if mk[x, y][3]:
+                    px[x, y] = (0, 0, 0, 0)
+    return img
+
+# ---------------------------------------------------------------- v9 scythe: wide reaping arcs, the blade hooks foes toward you
+GRIP_SCYTHE = 5.5
+
+
+def sc_1():  # raise the scythe, bring it down in front and drag it back: the hook pulls
+    return mseq([(dict(dx=-1, dy=1, hand=(30, 17), ang=-120, footB=(OX + 6, 39), flow=0.3), 70),
+                 (dict(dx=1, hand=(34, 17), ang=-62, flow=0.7, flutter=1, fx=[sw(w=0.4)]), 45),
+                 (dict(dx=3, dy=2, hand=(39, 24), ang=6, footF=(FF[0] + 3, 39), flow=1.1, flutter=2, fx=[sw(w=0.55)]), 45),
+                 (dict(dx=1, dy=2, hand=(33, 26), ang=14, footB=(OX + 6, 39), footF=(FF[0] + 2, 39), flow=0.9, flutter=3,
+                       fx=[("speed", (54, 30), 3, 10)]), 60),
+                 (dict(dy=1, hand=(33, 26), ang=-18, flow=0.5, flutter=4), 90),
+                 (dict(hand=(34, 26), ang=-40, flow=0.3), 90)], grip=GRIP_SCYTHE)
+
+
+def sc_2():  # a full turn at the waist: the blade reaps round both sides
+    RG = dict(sq=0.3, w=12.0)
+    return mseq([(dict(dx=-1, dy=2, hand=(29, 27), ang=176, footB=(OX + 5, 39), footF=(FF[0] + 1, 39), flow=0.3), 60),
+                 (dict(dx=1, dy=2, hand=(34, 27), ang=2, footF=(FF[0] + 2, 39), flow=1.3, flutter=1,
+                       fx=[("ring", (29, 28), 25, 180, 0, RG)]), 45),
+                 (dict(dx=1, dy=2, hand=(34, 27), ang=2, footF=(FF[0] + 2, 39), flow=1.5, flutter=2, mirror=True, behind=True,
+                       fx=[("ring", (29, 28), 25, 180, 0, RG)]), 45),
+                 (dict(dx=2, dy=2, hand=(36, 27), ang=10, footF=(FF[0] + 3, 39), flow=1.3, flutter=3,
+                       fx=[("ring", (29, 28), 25, 170, 10, RG)]), 60),
+                 (dict(dx=1, dy=1, hand=(34, 27), ang=-10, flow=0.6, flutter=4), 100),
+                 (dict(hand=(33, 26), ang=-30, flow=0.3), 90)], grip=GRIP_SCYTHE)
+
+
+def sc_3():  # finisher: heave it high and reap straight down, the blade biting the floor
+    return mseq([(dict(dy=1, hand=(31, 18), ang=-110, flow=0.3), 80),
+                 (dict(dx=-1, hand=(29, 14), ang=-150, footB=(OX + 6, 39), flow=0.3, flutter=1), 100),
+                 (dict(dx=-1, dy=-1, head_dx=-1, hand=(28, 13), ang=-168, footB=(OX + 6, 39), flow=0.2, flutter=2,
+                       fx=[("glint", "tip")]), 130),
+                 (dict(dx=1, dy=-1, hand=(33, 13), ang=-100, flow=0.7, flutter=3, fx=[sw(w=0.35)]), 40),
+                 (dict(dx=3, dy=2, hand=(38, 19), ang=-30, footF=(FF[0] + 3, 39), flow=1.1, flutter=4, fx=[sw(w=0.5)]), 45),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(38, 26), ang=24, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.2, flutter=5,
+                       fx=[sw(w=0.5), ("dust", 50, 5)]), 55),
+                 (dict(dx=3, dy=5, head_dy=1, hand=(38, 27), ang=26, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=0.6, flutter=6,
+                       fx=[("dust", 51, 2)]), 180),
+                 (dict(dx=1, dy=2, hand=(35, 27), ang=-10, flow=0.3), 140)], grip=GRIP_SCYTHE)
+
+
+def sc_heavy():  # reaping sweep: wind the blade far back, then a huge arc over the top and through
+    return mseq([(dict(dx=-1, dy=2, hand=(30, 29), ang=150, flow=0.3), 90),
+                 (dict(dx=-2, dy=3, head_dx=-1, hand=(27, 26), ang=176, footB=(OX + 5, 39), footF=(FF[0] + 1, 39), flow=0.2,
+                       flutter=1), 130),
+                 (dict(dx=-3, dy=3, head_dx=-1, hand=(26, 24), ang=-170, footB=(OX + 4, 39), footF=(FF[0] + 1, 39), flow=0.2,
+                       flutter=2, fx=[("glint", "tip")]), 160),
+                 (dict(dy=2, hand=(31, 21), ang=-100, flow=0.8, flutter=3, fx=[sw(w=0.4)]), 45),
+                 (dict(dx=3, dy=1, hand=(38, 21), ang=-22, footF=(FF[0] + 3, 39), flow=1.3, flutter=4, fx=[sw(w=0.6)]), 50),
+                 (dict(dx=4, dy=2, hand=(40, 25), ang=30, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.4, flutter=5,
+                       fx=[sw(w=0.6)]), 55),
+                 (dict(dx=4, dy=3, hand=(38, 28), ang=72, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.0, flutter=6,
+                       fx=[sw(w=0.4)]), 60),
+                 (dict(dx=3, dy=3, head_dy=1, hand=(36, 30), ang=100, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=0.5,
+                       flutter=7), 200),
+                 (dict(dx=1, dy=1, hand=(34, 27), ang=-20, flow=0.3), 150)], grip=GRIP_SCYTHE)
+
+
+# ---------------------------------------------------------------- v9 whip: the lash (pose-space control points) cracks at the tip
+def wh_1():  # overhead-to-forward crack
+    return mseq([(dict(dx=-1, hand=(30, 17), ang=-120, flow=0.3, lash=[(24, 12), (17, 14), (12, 20), (10, 27)]), 60),
+                 (dict(dx=1, hand=(35, 19), ang=-60, flow=0.7, flutter=1, lash=[(33, 10), (26, 8), (20, 12), (16, 18)]), 40),
+                 (dict(dx=2, hand=(40, 24), ang=-10, footF=(FF[0] + 2, 39), flow=1.0, flutter=2,
+                       lash=[(47, 21), (54, 20), (59, 22), (62, 21)], fx=[("flare", (60, 21), 5)]), 45),
+                 (dict(dx=2, hand=(39, 25), ang=10, footF=(FF[0] + 2, 39), flow=0.9, flutter=3,
+                       lash=[(46, 25), (53, 27), (58, 30), (61, 33)]), 60),
+                 (dict(dx=1, hand=(35, 27), ang=40, flow=0.5, flutter=4, lash=[(38, 31), (42, 36), (46, 38.5), (52, 38.5)]), 90),
+                 (dict(hand=(35, 27), ang=-50, flow=0.3), 100)])
+
+
+def wh_2():  # low backhand that rises into an overhead curl
+    return mseq([(dict(dx=-1, dy=1, hand=(30, 30), ang=150, flow=0.3, lash=[(24, 34), (18, 37), (12, 38.5), (6, 38.5)]), 60),
+                 (dict(dx=1, dy=1, hand=(34, 29), ang=100, flow=0.6, flutter=1, lash=[(33, 35), (38, 38), (45, 38.5), (51, 36)]), 40),
+                 (dict(dx=2, hand=(39, 24), ang=-20, footF=(FF[0] + 2, 39), flow=1.0, flutter=2,
+                       lash=[(47, 22), (54, 18), (59, 15), (62, 13)], fx=[("flare", (61, 13), 4)]), 45),
+                 (dict(dx=2, hand=(38, 21), ang=-50, footF=(FF[0] + 2, 39), flow=0.9, flutter=3,
+                       lash=[(44, 13), (49, 8), (55, 6), (60, 8)]), 55),
+                 (dict(dx=1, hand=(35, 24), ang=-40, flow=0.5, flutter=4, lash=[(41, 18), (46, 20), (51, 26), (55, 33)]), 90),
+                 (dict(hand=(35, 27), ang=-50, flow=0.3), 100)])
+
+
+def wh_3():  # finisher: swing it round overhead, then crack it down on both sides
+    return mseq([(dict(dy=1, hand=(33, 19), ang=-90, flow=0.3, lash=[(30, 10), (25, 13), (21, 20), (19, 27)]), 70),
+                 (dict(dy=-1, hand=(33, 12), ang=-95, flow=0.6, flutter=1, lash=[(30, 5), (22, 4), (15, 7), (11, 13)]), 50),
+                 (dict(dy=-1, hand=(34, 12), ang=-85, flow=0.7, flutter=2, lash=[(38, 4), (46, 3), (53, 5), (58, 10)]), 50),
+                 (dict(dx=1, dy=2, hand=(36, 22), ang=-30, footF=(FF[0] + 2, 39), flow=1.1, flutter=3,
+                       lash=[(44, 22), (51, 27), (57, 33), (61, 38)]), 45),
+                 (dict(dx=1, dy=2, hand=(36, 22), ang=-30, footF=(FF[0] + 2, 39), flow=1.3, flutter=4, mirror=True,
+                       lash=[(44, 24), (51, 30), (57, 35), (62, 38.5)], fx=[("dust", 60, 3)]), 45),
+                 (dict(dx=2, dy=3, hand=(38, 27), ang=20, footF=(FF[0] + 3, 39), flow=1.2, flutter=5,
+                       lash=[(45, 32), (52, 37), (58, 38.5), (63, 38.5)], fx=[("dust", 58, 4), ("flare", (61, 37), 4)]), 45),
+                 (dict(dx=1, dy=2, hand=(36, 28), ang=40, flow=0.6, flutter=6, lash=[(40, 33), (45, 38.5), (51, 38.5), (57, 38.5)]), 120),
+                 (dict(hand=(35, 27), ang=-50, flow=0.3), 110)])
+
+
+def wh_heavy():  # chain throw: coil, fling it straight out, catch, and haul back hand over hand
+    return mseq([(dict(dx=-1, dy=1, hand=(30, 18), ang=-130, flow=0.3, lash=[(28, 10), (22, 9), (19, 14), (22, 18)]), 90),
+                 (dict(dx=-2, dy=2, head_dx=-1, hand=(28, 16), ang=-150, footB=(OX + 5, 39), flow=0.2, flutter=1,
+                       lash=[(22, 10), (16, 12), (12, 18), (11, 25)], fx=[("glint", (29, 14))]), 130),
+                 (dict(dx=1, dy=1, hand=(36, 20), ang=-40, flow=0.9, flutter=2, lash=[(40, 14), (46, 12), (52, 13), (57, 16)]), 40),
+                 (dict(dx=3, dy=1, hand=(41, 23), ang=-4, footB=(OX + 7, 39), footF=(OX + 23, 39), flow=1.3, flutter=3,
+                       lash=[(48, 23), (54, 23), (59, 23), (63, 23)], fx=[("flare", (62, 23), 6), ("speed", (30, 18), 3, 10)]), 50),
+                 (dict(dx=3, dy=1, hand=(41, 23), ang=-2, footB=(OX + 7, 39), footF=(OX + 23, 39), flow=1.0, flutter=4,
+                       lash=[(48, 24), (54, 25), (59, 25), (63, 24)]), 60),
+                 (dict(dy=2, hand=(31, 24), ang=160, footB=(OX + 5, 39), flow=0.8, flutter=5, lash=[(40, 24), (48, 24), (55, 24), (60, 24)],
+                       fx=[("speed", (58, 20), 3, 12)]), 70),
+                 (dict(dx=-1, dy=2, hand=(28, 25), ang=170, footB=(OX + 5, 39), flow=0.6, flutter=6,
+                       lash=[(36, 27), (42, 30), (47, 33), (50, 36)]), 80),
+                 (dict(dy=1, hand=(33, 26), ang=-20, flow=0.4, flutter=7, lash=[(38, 33), (42, 38.5), (47, 38.5), (52, 38.5)]), 140),
+                 (dict(hand=(35, 27), ang=-50, flow=0.3), 100)])
+
+
+V9_MOVES = [("sc_1", sc_1), ("sc_2", sc_2), ("sc_3", sc_3), ("sc_heavy", sc_heavy),
+            ("wh_1", wh_1), ("wh_2", wh_2), ("wh_3", wh_3), ("wh_heavy", wh_heavy)]
+MOVE_CLASS.update({"sc": ("briar_scythe",), "wh": ("gravechain",)})
+ACTIVE.update({"sc_1": (2, 3), "sc_2": (1, 3), "sc_3": (4, 5), "sc_heavy": (4, 6),
+               "wh_1": (2, 3), "wh_2": (2, 3), "wh_3": (3, 5), "wh_heavy": (3, 4)})
+HIT_X0.update({"sc_1": 0, "sc_3": -2, "sc_heavy": -6, "wh_1": 0, "wh_2": 0, "wh_heavy": 0})
+
+
+
+
+# ---------------------------------------------------------------- v9 weapon arts (logic by agent G via ART_IMPL; release = ACTIVE[0])
+P_GREEN = ((210, 255, 200), (120, 230, 140), (50, 120, 70))
+P_TEAL = ((210, 255, 250), (100, 230, 210), (40, 120, 120))
+P_STAR = ((255, 255, 255), (170, 200, 255), (80, 90, 180))
+P_NEON = ((255, 255, 255), (255, 70, 200), (120, 255, 250))
+P_PALE = ((255, 255, 250), (255, 240, 200), (170, 190, 240))
+
+
+def art_reap():  # heave the scythe far back, then one enormous reaping cut into the ground
+    return mseq([(dict(dy=1, hand=(31, 20), ang=-100, flow=0.3), 90),
+                 (dict(dx=-1, dy=-1, hand=(30, 13), ang=-150, footB=(OX + 6, 39), flow=0.3, flutter=1, aura=1,
+                       fx=[("glint", "tip")]), 120),
+                 (dict(dx=-1, dy=-1, head_dx=-1, hand=(30, 11), ang=-178, footB=(OX + 5, 39), flow=0.2, flutter=2, aura=1), 70),
+                 (dict(dx=1, dy=-1, hand=(33, 13), ang=-95, flow=0.8, flutter=3, fx=[sw(w=0.4)]), 40),
+                 (dict(dx=3, dy=3, hand=(39, 22), ang=10, footF=(FF[0] + 3, 39), flow=1.3, flutter=4,
+                       fx=[sw(w=0.7), ("flare", "tip", 7)]), 50),
+                 (dict(dx=3, dy=5, head_dy=1, hand=(38, 28), ang=50, footB=(OX + 6, 39), footF=(FF[0] + 4, 39), flow=1.0, flutter=5,
+                       fx=[sw(w=0.5), ("dust", 52, 7)]), 60),
+                 (dict(dx=3, dy=5, head_dy=1, hand=(38, 28), ang=52, footB=(OX + 6, 39), footF=(FF[0] + 4, 39), flow=0.5, flutter=6,
+                       fx=[("dust", 53, 3)]), 200),
+                 (dict(dx=1, dy=2, hand=(35, 27), ang=-10, flow=0.3), 140)], grip=GRIP_SCYTHE, art=True)
+
+
+def art_harvest_moon():  # draw the scythe far back, then one rising sweep that looses a crescent moon
+    MOON = dict(sq=0.85, w=9.0, pal=P_GREEN)
+    return mseq([(dict(dy=1, hand=(32, 25), ang=-30, flow=0.3), 90),
+                 (dict(dx=-1, dy=3, hand=(29, 29), ang=160, footB=(OX + 5, 39), flow=0.3, flutter=1), 120),
+                 (dict(dx=-2, dy=4, head_dx=-1, hand=(27, 29), ang=172, footB=(OX + 4, 39), footF=(FF[0] + 1, 39), flow=0.2, flutter=2,
+                       aura=2, aura_pal=P_GREEN, fx=[("glint", "tip")]), 140),
+                 (dict(dx=2, dy=1, hand=(38, 22), ang=-40, footF=(FF[0] + 3, 39), flow=1.4, flutter=3,
+                       fx=[("ring", (31, 26), 24, 170, -40, MOON), ("flare", "tip", 6, P_GREEN)]), 50),
+                 (dict(dx=2, dy=-1, hand=(35, 14), ang=-100, footB=(OX + 9, 38), footF=(FF[0] + 3, 39), flow=1.2, flutter=4,
+                       fx=[("ring", (31, 26), 24, -40, -110, MOON)]), 70),
+                 (dict(dx=1, hand=(33, 15), ang=-120, flow=0.6, flutter=5), 160),
+                 (dict(dy=1, hand=(34, 26), ang=-30, flow=0.3), 130)], grip=GRIP_SCYTHE, art=True)
+
+def art_lash():  # wind back, then the arm snaps out again and again (agent G draws the long lash to each crack)
+    stub = lambda x, y: [(x, y), (x + 2, y)]
+    return mseq([(dict(dx=-1, hand=(30, 17), ang=-120, flow=0.3, lash=[(24, 12), (17, 14), (12, 20), (10, 27)]), 80),
+                 (dict(dx=-2, dy=1, head_dx=-1, hand=(28, 16), ang=-140, footB=(OX + 5, 39), flow=0.2, flutter=1, aura=1,
+                       lash=[(22, 10), (15, 11), (10, 16), (8, 23)], fx=[("glint", (29, 14))]), 100),
+                 (dict(dx=1, hand=(36, 22), ang=-6, footF=(FF[0] + 2, 39), flow=1.1, flutter=2, lash=stub(40, 21)), 45),
+                 (dict(dx=1, hand=(35, 19), ang=-50, flow=0.9, flutter=3, lash=stub(37, 16)), 45),
+                 (dict(dx=1, dy=1, hand=(36, 23), ang=6, footF=(FF[0] + 2, 39), flow=1.2, flutter=4, lash=stub(40, 24)), 45),
+                 (dict(dx=1, hand=(35, 18), ang=-60, flow=0.9, flutter=5, lash=stub(37, 15)), 45),
+                 (dict(dx=2, hand=(37, 22), ang=-4, footB=(OX + 7, 39), footF=(OX + 23, 39), flow=1.4, flutter=6, lash=stub(41, 22)), 50),
+                 (dict(dx=1, hand=(35, 27), ang=40, flow=0.6, flutter=7, lash=[(38, 31), (42, 36), (46, 38.5), (52, 38.5)]), 110),
+                 (dict(hand=(35, 27), ang=-50, flow=0.3), 100)], art=True)
+
+def art_chain_drag():  # whirl the chain overhead, fling it (agent G draws it to the hook), haul the catch in, finish with a crack
+    stub = lambda x, y: [(x, y), (x + 2, y)]
+    return mseq([(dict(hand=(33, 16), ang=-100, flow=0.3, lash=[(28, 8), (34, 4), (40, 6), (42, 11)]), 80),
+                 (dict(hand=(33, 15), ang=-95, flow=0.4, flutter=1, lash=[(36, 4), (28, 3), (22, 7), (20, 13)]), 80),
+                 (dict(dx=-1, hand=(32, 15), ang=-100, flow=0.4, flutter=2, aura=1, lash=[(40, 6), (46, 4), (50, 8), (49, 13)],
+                       fx=[("glint", (48, 12))]), 110),
+                 (dict(dx=1, hand=(36, 22), ang=-4, footB=(OX + 6, 39), footF=(OX + 22, 39), flow=1.3, flutter=3, lash=stub(40, 22),
+                       fx=[("speed", (26, 18), 4, 12)]), 45),
+                 (dict(dx=1, hand=(36, 22), ang=-2, footB=(OX + 6, 39), footF=(OX + 22, 39), flow=1.0, flutter=4, lash=stub(40, 22)), 70),
+                 (dict(dx=-1, dy=2, head_dx=-1, hand=(31, 23), ang=170, footB=(OX + 4, 39), flow=0.9, flutter=5, lash=stub(35, 23),
+                       fx=[("speed", (52, 20), 3, 12)]), 70),
+                 (dict(dx=3, dy=1, head_dx=1, hand=(39, 22), ang=-4, footB=(OX + 4, 37), footF=(OX + 16, 36), air=True, flow=1.8,
+                       flutter=6, lash=stub(43, 22), fx=[("speed", (20, 17), 5, 16)]), 60),
+                 (dict(dx=2, hand=(40, 24), ang=-10, footF=(FF[0] + 2, 39), flow=1.2, flutter=7,
+                       lash=[(47, 21), (54, 20), (59, 22), (62, 21)], fx=[("flare", (61, 21), 7)]), 50),
+                 (dict(dx=2, hand=(39, 25), ang=10, footF=(FF[0] + 2, 39), flow=0.9, flutter=8, lash=[(46, 25), (53, 27), (58, 30), (61, 33)]), 70),
+                 (dict(dy=1, hand=(33, 26), ang=-20, flow=0.4, flutter=9, lash=[(38, 33), (42, 38.5), (47, 38.5), (52, 38.5)]), 140)], art=True)
+
+def art_blood_frenzy():  # the blade raised before the face drinks the light, then a frenzy of thrusts
+    thrust = lambda dx, hy, ang, n: dict(dx=dx, hand=(41, hy), ang=ang, footF=(FF[0] + 3, 39), flow=1.2, fx=[("streak", n)], fx_pal=P_BLOOD)
+    back = dict(dx=1, hand=(35, 25), ang=-2, flow=0.8)
+    return mseq([(dict(hand=(34, 22), ang=-92, off=(31, 26), flow=0.3), 90),
+                 (dict(dy=1, hand=(34, 21), ang=-92, off=(31, 25), flow=0.2, flutter=1, aura=2, aura_pal=P_BLOOD,
+                       fx=[("flare", "tip", 6, P_BLOOD)]), 140),
+                 (dict(flutter=2, **thrust(3, 24, -4, 16)), 40), (dict(flutter=3, **back), 40),
+                 (dict(flutter=4, **thrust(3, 20, -14, 16)), 40), (dict(flutter=5, **back), 40),
+                 (dict(dy=1, flutter=6, **thrust(3, 27, 8, 16)), 40),
+                 (dict(dx=4, dy=1, hand=(43, 24), ang=0, footB=(OX + 8, 39), footF=(OX + 25, 39), flow=1.5, flutter=7,
+                       fx=[("streak", 22), ("flare", "tip", 7, P_BLOOD)], fx_pal=P_BLOOD), 60),
+                 (dict(dx=1, hand=(35, 26), ang=-30, flow=0.4), 160)], art=True)
+
+
+def art_tidal_surge():  # raise the harpoon high, hold, then drive it into the ground and loose a wave of black water
+    return mseq([(dict(dx=-1, dy=1, hand=(31, 22), ang=-40, flow=0.3), 90),
+                 (dict(dx=-1, hand=(30, 15), ang=-130, footB=(OX + 6, 39), flow=0.3, flutter=1), 90),
+                 (dict(dx=-1, dy=-1, hand=(30, 14), ang=-150, footB=(OX + 6, 39), flow=0.3, flutter=2, aura=1, aura_pal=P_TEAL,
+                       fx=[("glint", "tip")]), 130),
+                 (dict(dx=1, hand=(34, 14), ang=-60, flow=0.8, flutter=3, fx=[sw(w=0.4)], fx_pal=P_TEAL), 45),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(40, 28), ang=30, footF=(FF[0] + 4, 39), flow=1.3, flutter=4,
+                       fx=[("flare", (52, 36), 8, P_TEAL), ("dust", 50, 5), ("wave", (50, 26), 11, 7)], fx_pal=P_TEAL), 50),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(40, 28), ang=31, footF=(FF[0] + 4, 39), flow=0.9, flutter=5,
+                       fx=[("wave", (56, 24), 13, 8)], fx_pal=P_TEAL), 80),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(40, 29), ang=32, footF=(FF[0] + 4, 39), flow=0.5, flutter=6), 200),
+                 (dict(dx=1, dy=1, hand=(34, 26), ang=-10, flow=0.3), 140)], grip=GRIP_SPEAR, art=True)
+
+def art_solar_flare():  # hold the blade up to the sun until it blazes, then bring the light down
+    return mseq([(dict(hand=(33, 24), ang=-40, off=(30, 26), flow=0.3), 90),
+                 (dict(dy=-1, hand=(33, 12), ang=-88, off=(31, 14), flow=0.2, flutter=1, aura=1, aura_pal=P_GOLD,
+                       fx=[("flare", "tip", 7, P_GOLD)]), 140),
+                 (dict(dy=-1, hand=(33, 12), ang=-88, off=(31, 14), flow=0.3, flutter=2, aura=2, aura_pal=P_GOLD,
+                       fx=[("flare", "tip", 10, P_GOLD), ("rings", (35, 4), (6, 10))], fx_pal=P_GOLD), 70),
+                 (dict(dx=3, dy=2, hand=(39, 24), ang=20, off=(30, 26), footF=(FF[0] + 3, 39), flow=1.3, flutter=3,
+                       fx=[sw(w=0.6), ("flare", "tip", 6, P_GOLD)], fx_pal=P_GOLD), 50),
+                 (dict(dx=3, dy=3, hand=(38, 28), ang=50, off=(30, 27), footF=(FF[0] + 3, 39), flow=0.9, flutter=4,
+                       fx=[("embers", (48, 30), 5, 2)]), 70),
+                 (dict(dx=3, dy=3, hand=(38, 28), ang=52, off=(30, 27), footF=(FF[0] + 3, 39), flow=0.5, flutter=5), 180),
+                 (dict(dx=1, hand=(35, 26), ang=-30, off=(31, 26), flow=0.3), 140)], art=True)
+
+
+def art_starfall():  # point the blade at the sky until a star answers, then cut it down
+    return mseq([(dict(hand=(33, 24), ang=-40, flow=0.3), 90),
+                 (dict(dx=-1, hand=(32, 14), ang=-90, flow=0.2, flutter=1, aura=1, aura_pal=P_STAR,
+                       fx=[("glint", "tip"), ("flare", (32, 2), 4, P_STAR)]), 150),
+                 (dict(dx=-1, hand=(32, 14), ang=-90, flow=0.3, flutter=2, aura=2, aura_pal=P_STAR,
+                       fx=[("flare", (32, 2), 8, P_STAR)]), 70),
+                 (dict(dx=3, dy=2, hand=(39, 24), ang=30, footF=(FF[0] + 3, 39), flow=1.3, flutter=3,
+                       fx=[sw(w=0.55, a0=-90)], fx_pal=P_STAR), 50),
+                 (dict(dx=3, dy=3, hand=(38, 28), ang=55, footF=(FF[0] + 3, 39), flow=0.9, flutter=4, fx=[("dust", 50, 4)]), 70),
+                 (dict(dx=3, dy=3, hand=(38, 28), ang=56, footF=(FF[0] + 3, 39), flow=0.5, flutter=5), 180),
+                 (dict(dx=1, hand=(34, 26), ang=-35, flow=0.3), 140)], grip=GRIP_KATANA, art=True)
+
+
+def art_overclock():  # crouch, then a glitching dash (frames 2-3 while dashing) that ends in a flicked cut
+    dash = dict(dx=4, dy=3, head_dx=2, hand=(30, 29), ang=172, off=(36, 26), footB=(OX + 2, 37), footF=(OX + 13, 36), air=True, flow=2.0,
+                aura=1, aura_pal=P_NEON)
+    return mseq([(dict(dx=-1, dy=3, hand=(30, 29), ang=168, off=(32, 28), footB=(OX + 5, 39), flow=0.3), 70),
+                 (dict(dx=-1, dy=4, head_dy=1, hand=(30, 29), ang=170, off=(32, 28), footB=(OX + 5, 39), flow=0.2, flutter=1,
+                       aura=1, aura_pal=P_NEON, fx=[("flare", "tip", 5, P_NEON)]), 120),
+                 (dict(flutter=2, fx=[("speed", (18, 18), 6, 20, P_NEON)], **dash), 50),
+                 (dict(flutter=5, fx=[("speed", (16, 19), 6, 18, P_NEON)], **{**dash, "footB": (OX + 4, 36), "footF": (OX + 11, 37)}), 50),
+                 (dict(dx=2, dy=1, hand=(37, 17), ang=-80, off=(30, 26), footF=(FF[0] + 2, 39), flow=1.0, flutter=6,
+                       fx=[sw(w=0.4), ("flare", "tip", 6, P_NEON)], fx_pal=P_NEON), 60),
+                 (dict(dx=1, hand=(36, 25), ang=30, off=(30, 26), flow=0.7, flutter=7, fx=[sw(w=0.4)], fx_pal=P_NEON), 80),
+                 (dict(hand=(35, 27), ang=-45, flow=0.3), 120)], art=True)
+
+def art_pale_pyre():  # raise the scythe, then plant it upright: a ring of pale fire answers from the ground
+    plant = dict(dx=1, dy=1, hand=(35, 25), ang=-90, off=(33, 29))
+    return mseq([(dict(hand=(33, 22), ang=-60, flow=0.3), 90),
+                 (dict(dy=-1, hand=(32, 14), ang=-100, flow=0.2, flutter=1, aura=1, aura_pal=P_PALE, fx=[("glint", "tip")]), 140),
+                 (dict(dy=-2, hand=(33, 12), ang=-96, flow=0.3, flutter=2, aura=2, aura_pal=P_PALE), 60),
+                 (dict(flow=1.2, flutter=3, fx=[("flare", (35, 37), 9, P_PALE), ("dust", 35, 6), ("rings", (35, 34), (6, 10))],
+                       fx_pal=P_PALE, **plant), 50),
+                 (dict(flow=0.8, flutter=4, fx=[("rings", (35, 34), (11, 16))], fx_pal=P_PALE, **plant), 90),
+                 (dict(flow=0.5, flutter=5, fx=[("rings", (35, 34), (16, 22))], fx_pal=P_PALE, **plant), 200),
+                 (dict(dy=1, hand=(34, 26), ang=-40, flow=0.3), 140)], grip=GRIP_SCYTHE, art=True)
+
+
+V9_ARTS = [("art_reap", art_reap), ("art_harvest_moon", art_harvest_moon), ("art_lash", art_lash),
+           ("art_chain_drag", art_chain_drag), ("art_blood_frenzy", art_blood_frenzy), ("art_tidal_surge", art_tidal_surge),
+           ("art_solar_flare", art_solar_flare), ("art_starfall", art_starfall), ("art_overclock", art_overclock),
+           ("art_pale_pyre", art_pale_pyre)]
+ACTIVE.update({"art_reap": (4, 4), "art_harvest_moon": (3, 3), "art_lash": (2, 2), "art_chain_drag": (3, 3),
+               "art_blood_frenzy": (2, 2), "art_tidal_surge": (4, 4), "art_solar_flare": (3, 3), "art_starfall": (3, 3),
+               "art_overclock": (2, 2), "art_pale_pyre": (3, 3)})
+
+
+
+
+# ---------------------------------------------------------------- v9b Tidebreath swimming (agent B's physics picks these up)
+class XformWpn(RotWpn):
+    """Weapon cel of a turned frame (swimming): the same rotate-about-a-point + shift as the body layers."""
+    def __init__(self, inner, ang, center, off):
+        self.inner, self.ang, self.center, self.off = inner, ang, center, off
+
+    def render(self, kind, dust=True, extras=True):
+        return self.inner.render(kind, dust, extras).rotate(self.ang, resample=Image.NEAREST, center=self.center, translate=self.off)
+
+
+def xform_frame(cels, ang, center, off):
+    out = {}
+    for n, c in cels.items():
+        if isinstance(c, (Wpn, RotWpn)):
+            out[n] = XformWpn(c, ang, center, off)
+        else:
+            img = c if isinstance(c, Image.Image) else to_img(c)
+            out[n] = img.rotate(ang, resample=Image.NEAREST, center=center, translate=off)
+    return out
+
+
+def swim():  # side stroke under water: the far arm reaches and pulls, the weapon rides along the body, legs scissor, cape trailing
+    """Posed upright, then the body layers are turned a lossless 90 degrees (head forward); the weapon is drawn
+    directly in the turned frame (crisp, along the body, pointing back)."""
+    reach = [(28, 11), (31, 13), (32, 18), (30, 23), (27, 20), (26, 14)]
+    C = (28, 24)
+    out = []
+    for k in range(6):
+        t = k / 6 * 2 * math.pi
+        bob = [0, 0, 1, 1, 1, 0][k]
+        off = (1, 6 + bob)
+        T = lambda x, y: (C[0] - (y - C[1]) + off[0], C[1] + (x - C[0]) + off[1])   # upright -> turned (clockwise 90)
+        hand, ang = (31, 30), 92 + 3 * math.sin(t)
+        p = dict(hand=hand, ang=ang, off=reach[k], sword=False,
+                 footB=(OX + 9 + 3.0 * math.sin(t), 39), footF=(OX + 17 - 3.0 * math.sin(t), 38), bendB=1, bendF=-1)
+        cels = pose({**dict(footB=FB, footF=FF), **p})
+        cels["Cape"] = draw_streamer((OX + 9, OY + 11), 96, 19, 5, 9, k * 1.05, amp=1.4, k=0.6)
+        cels = xform_frame(cels, -90, C, off)
+        cels["Head"] = to_img(draw_helmet(OX + 13, OY + 12 + bob))   # the head lifts to look ahead (not turned face-down)
+        hs = T(*hand)
+        w = Wpn(hs, ang + 90, 16, fitb=False)
+        w.cels, w.bxy = cels, (0, 0)
+        w.shield = ((26.5, 24.0 + off[1] - 6), 90, 0.78, "behind")                     # slung on the back, which faces up
+        w.offw = (T(*reach[k]), -10 + 20 * math.sin(t), 13, False)                     # a twin's second blade in the stroking hand
+        tipx, tipy = hs[0] - 4, hs[1]
+        w.lash = [(tipx - 5, tipy + 1 + math.sin(t)), (tipx - 10, tipy + math.sin(t + 1)), (tipx - 15, tipy + 1 + math.sin(t + 2)),
+                  (tipx - 19, tipy + math.sin(t + 3))]                                   # a whip's lash trails in the current
+        cels["Sword"] = w
+        out.append((cels, 85))
+    return out
+
+
+def tread():  # treading water at the surface: upright, legs kicking below, the free hand sculling, cape afloat behind
+    rows = [(0, (22, 26), (OX + 8, 38), (OX + 18, 36), 40), (1, (24, 27), (OX + 10, 36), (OX + 16, 38), 44),
+            (1, (22, 28), (OX + 8, 38), (OX + 18, 36), 40), (0, (20, 27), (OX + 6, 37), (OX + 20, 38), 36)]
+    out = []
+    for i, (dy, off, fb, ff, ang) in enumerate(rows):
+        cels = pose({**dict(footB=FB, footF=FF), **dict(dy=dy, hand=(33, 29), ang=ang, slen=16, off=off, footB=fb, footF=ff,
+                                                        bendB=1, bendF=1, air=True)})
+        cels["Cape"] = draw_streamer((OX + 9, OY + 12 + dy), 174, 17, 5, 8, i * 1.5, amp=1.0, k=0.7)
+        out.append((cels, 115))
+    return out
+
+
+V9_SWIM = [("swim", swim), ("tread", tread)]
+
+
 ANIMS = [("idle", idle), ("run", run), ("jump_up", jump_up), ("jump_fall", jump_fall), ("land", land),
          ("roll", roll), ("attack1", attack1), ("attack2", attack2), ("attack3", attack3), ("heavy", heavy),
          ("hurt", hurt), ("heal", heal), ("death", death),
          # v3 additions (appended; the frames above keep their indices)
          ("attack_up", attack_up), ("attack_down", attack_down), ("air_attack", air_attack), ("cast", cast),
          ("parry", parry), ("riposte", riposte), ("wall_slide", wall_slide), ("double_jump", double_jump),
-         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS   # v4 movesets after frame 124, v5 arts after 252,
+         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM   # v4 movesets after frame 124, v5 arts after 252,
                                                             # v7 traversal after 308, v8 classes/techniques after 329
 
 BODY_LAYERS = [l for l in LAYERS if l != "Sword"]
@@ -3527,7 +4548,7 @@ def write_meta(raw, tags):
     meta = {"native": 1, "anchor": [AX, AY], "facing": "right",
             "classes": {"dagger": ["dagger"], "great": ["greatsword", "maul"], "spear": ["spear"], "katana": ["katana"],
                         "sword": ["longsword", "oathbrand", "kalden"], "staff": ["quarterstaff"],
-                        "shield": ["knight_shield"], "twin": ["twinfangs"]},
+                        "shield": ["knight_shield"], "twin": ["twinfangs"], "scythe": ["briar_scythe"], "whip": ["gravechain"]},
             "moves": moves}
     with open(os.path.join(asebuild.ASSETS, "player_meta.json"), "w") as fh:
         json.dump(meta, fh, indent=1)
@@ -3919,6 +4940,152 @@ def fx_frost():   # frost burst: a star of ice shards bursting from a white flas
 FX_ALL = [fx_glyph, fx_inkburst, fx_inkblot, fx_gust, fx_whirl, fx_bolt, fx_lava, fx_erupt, fx_frost]
 
 
+# ---- v9 signature FX
+FX_THORN = [(30, 22, 18), (70, 52, 38), (120, 96, 66), (170, 150, 110)]
+FX_GREEN = [(40, 90, 50), (90, 180, 100), (160, 240, 170)]
+FX_TEAL = [(20, 60, 70), (40, 140, 140), (100, 230, 210), (210, 255, 250), (255, 255, 255)]
+FX_BLOOD = [(60, 6, 16), (140, 16, 34), (220, 40, 60), (255, 140, 150), (255, 230, 230)]
+FX_PALE = [(150, 170, 220), (220, 230, 255), (255, 244, 210), (255, 252, 240), (255, 255, 255)]
+
+
+def fx_thorn():   # thorns of the Warden's wood erupt from the ground and sink back (bottom-anchored)
+    W_, H_ = 17, 31
+    hts = [8, 20, 28, 26, 18, 8]
+    out = []
+    for f, h in enumerate(hts):
+        gl, co = _img(W_, H_), _img(W_, H_)
+        for spk, (ox, lean, sc) in enumerate(((8.5, 0.0, 1.0), (4.5, -0.35, 0.65), (12.5, 0.4, 0.55))):
+            hh = h * sc
+            for y in range(int(H_ - hh), H_):
+                t = (H_ - y) / max(1, hh)                 # 0 root .. 1 point
+                cx = ox + lean * (H_ - y)
+                hw = 2.2 * max(0.0, 1 - t) ** 0.8 + 0.2
+                for x in range(W_):
+                    d = x + 0.5 - cx
+                    if abs(d) <= hw:
+                        c = FX_THORN[3] if d < -hw * 0.3 else (FX_THORN[2] if d < hw * 0.3 else FX_THORN[1])
+                        if abs(d) < 0.5 and 0.2 < t < 0.8 and (y + spk) % 5 == 0:
+                            c = FX_GREEN[2]                 # glowing sap
+                        co.putpixel((x, y), _rgba(c))
+                # side barbs
+                if int(H_ - y) % 6 == 3 and 0.1 < t < 0.8:
+                    _put(co, cx + hw + 1, y - 1, FX_THORN[2]); _put(co, cx - hw - 1, y - 1, FX_THORN[2])
+        if f <= 2:
+            for x in range(W_):
+                if (x + f) % 2 == 0:
+                    _put(gl, x, H_ - 1 - (x % 3 == 0), _rgba(FX_GREEN[1], 180))
+        _outline_img(co, (14, 10, 10, 255))
+        out.append((gl, co))
+    return _emit("thorn", W_, H_, out, [40, 45, 70, 90, 70, 60], "thorn")
+
+
+def _lance(name, pal, W_=27, H_=9, n=3):   # a travelling lance (right), a bright head and a tapering, flickering tail
+    out = []
+    for f in range(n):
+        gl, co = _img(W_, H_), _img(W_, H_)
+        cy = H_ // 2
+        for x in range(W_):
+            q = x / (W_ - 1)                             # 0 tail .. 1 head
+            hw = (1.8 if q > 0.8 else 1.2 * q + 0.2) if q < 0.97 else 0.6
+            wob = math.sin(x * 0.9 + f * 2.1) * 0.5 * (1 - q)
+            for y in range(H_):
+                d = abs(y + 0.5 - (cy + 0.5 + wob))
+                if d <= hw:
+                    c = pal[4] if (d < 0.6 and q > 0.6) else (pal[3] if d < hw * 0.6 else pal[2])
+                    if q < 0.3 and (x + y + f) % 2:
+                        continue
+                    co.putpixel((x, y), _rgba(c))
+                elif d <= hw + 1.2 and q > 0.4 and (x + y) % 2 == 0:
+                    gl.putpixel((x, y), _rgba(pal[1], 190))
+        out.append((gl, co))
+    return _emit(name, W_, H_, out, 60, name)
+
+
+def fx_waterlance():
+    return _lance("waterlance", FX_TEAL)
+
+
+def fx_bloodlance():
+    return _lance("bloodlance", FX_BLOOD, W_=25, H_=7)
+
+
+def fx_sundisc():   # a spinning disc of sunlight with a hot core and turning rays
+    W_, H_ = 17, 17
+    c = 8.5
+    out = []
+    for f in range(4):
+        gl, co = _img(W_, H_), _img(W_, H_)
+        for y in range(H_):
+            for x in range(W_):
+                dx, dy = x + 0.5 - c, y + 0.5 - c
+                d = math.hypot(dx, dy)
+                a = math.atan2(dy, dx) + f * 0.39
+                if d < 3.2:
+                    co.putpixel((x, y), _rgba((255, 250, 220) if d < 1.8 else (255, 214, 104)))
+                elif d < 5.2:
+                    co.putpixel((x, y), _rgba((240, 170, 60) if int((a + 7) / 0.785) % 2 else (255, 214, 104)))
+                elif d < 7.8 and abs(((a + 7) % 0.785) - 0.39) < 0.12:
+                    (co if d < 6.6 else gl).putpixel((x, y), _rgba((255, 214, 104) if d < 6.6 else (200, 130, 40), 255 if d < 6.6 else 200))
+        out.append((gl, co))
+    return _emit("sundisc", W_, H_, out, 50, "sundisc")
+
+
+def fx_starshard():   # a shard of the sky falling point-first (drawn pointing down), a comet tail above it
+    W_, H_ = 11, 23
+    out = []
+    for f in range(3):
+        gl, co = _img(W_, H_), _img(W_, H_)
+        for y in range(H_):
+            q = y / (H_ - 1)                              # 0 tail .. 1 point
+            if q > 0.62:                                  # the shard
+                hw = 2.6 * (1 - (q - 0.62) / 0.38) ** 0.9 + 0.2 if q > 0.78 else 2.6 * ((q - 0.62) / 0.16) ** 0.6
+                for x in range(W_):
+                    d = abs(x + 0.5 - 5.5)
+                    if d <= hw:
+                        co.putpixel((x, y), _rgba((255, 255, 255) if d < 0.8 else ((200, 220, 255) if x < 5.5 else (110, 150, 240))))
+            else:                                         # tail
+                hw = 1.6 * q + 0.2
+                for x in range(W_):
+                    d = abs(x + 0.5 - 5.5 - math.sin(y * 0.8 + f * 2) * 0.4 * (1 - q))
+                    if d <= hw and ((x + y + f) % 2 == 0 or q > 0.35):
+                        (co if d < hw * 0.5 else gl).putpixel((x, y), _rgba((200, 220, 255) if d < hw * 0.5 else (110, 150, 240), 255 if d < hw * 0.5 else 190))
+        out.append((gl, co))
+    return _emit("starshard", W_, H_, out, 60, "starshard")
+
+
+def fx_pyre():   # a pyre of pale white flame (bottom-anchored, looping)
+    W_, H_ = 17, 33
+    out = []
+    for f in range(6):
+        gl, co = _img(W_, H_), _img(W_, H_)
+        ph = f / 6 * 2 * math.pi
+        for y in range(H_):
+            t = (H_ - y) / H_                             # 0 foot .. 1 top
+            for tongue, (ox, amp, ht) in enumerate(((8.5, 1.4, 1.0), (5.5, 1.0, 0.7), (11.5, 1.1, 0.78))):
+                if t > ht:
+                    continue
+                tt = t / ht
+                cx = ox + math.sin(tt * 5 + ph + tongue) * amp * tt
+                hw = 3.2 * (1 - tt) ** 0.7 * (0.9 if tongue else 1.0) + 0.3
+                for x in range(W_):
+                    d = abs(x + 0.5 - cx)
+                    if d <= hw:
+                        v = 1 - d / hw * 0.6 - tt * 0.5
+                        img = co if v > 0.25 else gl
+                        c = _ramp(FX_PALE, v, x, y)
+                        if img is gl:
+                            c = (c[0], c[1], c[2], 190)
+                        img.putpixel((x, y), c)
+        for i in range(3):   # embers breaking off the top
+            yy = (H_ - 26 - ((f * 5 + i * 9) % 12))
+            _put(co, 6 + i * 3 + (f % 2), yy, FX_PALE[3])
+        out.append((gl, co))
+    return _emit("pyre", W_, H_, out, 70, "pyre")
+
+
+FX_ALL += [fx_thorn, fx_waterlance, fx_bloodlance, fx_sundisc, fx_starshard, fx_pyre]
+
+
 def fx_main():
     sheets = []
     for fn in FX_ALL:
@@ -3942,6 +5109,36 @@ def fx_main():
     pv = pv.resize((pv.width * 4, pv.height * 4), Image.NEAREST)
     pv.save(os.path.join(asebuild.ART, "previews", "wpn_fx.png"))
     print("wpn_fx:", [n for n, _ in sheets])
+
+
+def _ase_build(name, w, h, layers, frames, tags, tries=3):
+    """asebuild.build with a timeout + retry: a stuck Aseprite process no longer hangs the whole run."""
+    import shutil, subprocess, tempfile
+    for attempt in range(tries):
+        tmp = tempfile.mkdtemp(prefix=f"ase_{name}_")
+        try:
+            with open(os.path.join(tmp, "manifest.txt"), "w") as fh:
+                fh.write(f"size {w} {h}\n")
+                fh.write("layers " + ",".join(layers) + "\n")
+                fh.write("frames " + ",".join(str(int(f["ms"])) for f in frames) + "\n")
+                for t, a, b in tags:
+                    fh.write(f"tag {t} {a + 1} {b + 1}\n")
+            for i, f in enumerate(frames):
+                for layer, img in f["cels"].items():
+                    if img.getbbox():
+                        img.save(os.path.join(tmp, f"{layer}_{i + 1}.png"))
+            src = os.path.join(asebuild.ART, f"{name}.aseprite")
+            subprocess.run([asebuild.ASEPRITE, "-b", "--script-param", f"dir={tmp}", "--script-param", f"out={src}", "--script",
+                            os.path.join(asebuild.ART, "build_sprite.lua")], check=True, timeout=240)
+            subprocess.run([asebuild.ASEPRITE, "-b", src, "--sheet", os.path.join(asebuild.ASSETS, f"{name}.png"),
+                            "--sheet-type", "horizontal", "--data", os.path.join(asebuild.ASSETS, f"{name}.json"),
+                            "--format", "json-array", "--list-tags"], check=True, stdout=subprocess.DEVNULL, timeout=240)
+            return src
+        except subprocess.TimeoutExpired:
+            print("aseprite timed out on", name, "- retrying", flush=True)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+    raise RuntimeError("aseprite kept hanging on " + name)
 
 
 _RAW = None
@@ -3969,6 +5166,15 @@ V8_PREVIEW = [  # (tag, kinds) rows of art/previews/expansion.png
     ("art_aegis", ("knight_shield",)), ("art_frost_aegis", ("twinborne",)), ("art_shield_charge", ("overseer_bulwark",)),
     ("art_magma_quake", ("colossus_hammer",)), ("art_thunder_lunge", ("stormfang",)), ("art_tolling_blow", ("bell_hammer",)),
     ("art_twin_tempest", ("twinfangs",)), ("art_backstep_slash", ("longsword", "katana")),
+    ("sc_1", ("briar_scythe", "antler_scythe")), ("sc_2", ("crimson_scythe",)), ("sc_3", ("last_kindling", "antler_scythe")),
+    ("sc_heavy", ("briar_scythe", "last_kindling")),
+    ("wh_1", ("gravechain", "headsman_chain")), ("wh_2", ("orrery_whip",)), ("wh_3", ("gravechain", "orrery_whip")),
+    ("wh_heavy", ("headsman_chain",)), ("idle", ("headsman_chain", "antler_scythe")), ("run", ("gravechain",)),
+    ("art_reap", ("briar_scythe",)), ("art_harvest_moon", ("antler_scythe",)), ("art_lash", ("gravechain",)),
+    ("art_chain_drag", ("headsman_chain",)), ("art_blood_frenzy", ("sanguine_rapier",)), ("art_tidal_surge", ("choir_harpoon",)),
+    ("art_solar_flare", ("pharaoh_khopesh",)), ("art_starfall", ("starblade",)), ("art_overclock", ("plasma_katana",)),
+    ("art_pale_pyre", ("last_kindling",)),
+    ("swim", ("longsword", "greatsword", "knight_shield", "gravechain")), ("tread", ("longsword", "spear", "twinfangs")),
 ]
 
 
@@ -4007,14 +5213,19 @@ def expansion_preview(raw, tags, body_comp, wpn, prev_dir, scale=3):
     # new weapons lineup: each over a few frames of its own class
     CLS_TAGS = {"staff": ["idle", "st_1", "st_4"], "shield": ["idle", "sh_1", "sh_guard"], "twin": ["idle", "tw_3"],
                 "great": ["idle", "gs_1"], "spear": ["idle", "sp_3"], "katana": ["idle", "kt_1"], "dagger": ["idle", "dg_2"],
-                "sword": ["idle", "attack1", "heavy"]}
+                "sword": ["idle", "attack1", "heavy"], "scythe": ["idle", "sc_1", "sc_3"], "whip": ["idle", "wh_1", "wh_3"]}
     KCLS = {"frostbrand": "sword", "pagecutter": "dagger", "colossus_hammer": "great", "glacier_maul": "great",
             "bell_hammer": "great", "forge_cleaver": "great", "stormfang": "spear", "stormvein": "katana",
             "quarterstaff": "staff", "windstaff": "staff", "inkquill": "staff", "lantern_staff": "staff",
             "knight_shield": "shield", "twinborne": "shield", "overseer_bulwark": "shield", "twinfangs": "twin",
-            "first_ember": "sword"}
+            "first_ember": "sword",
+            "antler_scythe": "scythe", "briar_scythe": "scythe", "crimson_scythe": "scythe", "last_kindling": "scythe",
+            "thornwood_staff": "staff", "sun_sceptre": "staff", "choir_harpoon": "spear", "scarab_spear": "spear",
+            "saint_lance": "spear", "sanguine_rapier": "sword", "pharaoh_khopesh": "sword", "barnacle_fang": "dagger",
+            "carving_knife": "dagger", "tidecleaver": "great", "vael_greatsword": "great", "meteor_maul": "great",
+            "starblade": "katana", "plasma_katana": "katana", "headsman_chain": "whip", "gravechain": "whip", "orrery_whip": "whip"}
     rows = []
-    for kind in V8_IDS:
+    for kind in V8_IDS + V9_IDS:
         if kind not in wpn:
             continue
         r = []
@@ -4047,8 +5258,8 @@ def main(build=True, kinds=None, previews=True):
         for kind in kinds:
             jobs.append(("wpn_" + kind, ["Weapon"], [{"ms": ms, "cels": ({"Weapon": w} if w is not None else {})}
                                                     for w, (_, ms) in zip(wpn[kind], raw)]))
-        with ThreadPoolExecutor(8) as ex:
-            list(ex.map(lambda j: asebuild.build(j[0], W, H, j[1], j[2], tags), jobs))
+        with ThreadPoolExecutor(3) as ex:   # a few Aseprite instances at once (many at once can hang)
+            list(ex.map(lambda j: _ase_build(j[0], W, H, j[1], j[2], tags), jobs))
     prev_dir = os.path.join(asebuild.ART, "previews")
     os.makedirs(prev_dir, exist_ok=True)
     if previews and "longsword" in wpn:

@@ -1,0 +1,78 @@
+{
+ "native": 1,
+ "frame": [
+  48,
+  40
+ ],
+ "anchor": [
+  24,
+  22
+ ],
+ "flying": true,
+ "hurtbox": [
+  15,
+  18,
+  20,
+  11
+ ],
+ "perch": {
+  "feet": [
+   24,
+   39
+  ],
+  "offset_from_anchor": [
+   0,
+   17
+  ],
+  "hurtbox": [
+   18,
+   23,
+   11,
+   17
+  ]
+ },
+ "attacks": {
+  "dive": {
+   "active": [
+    2,
+    4
+   ],
+   "hit": [
+    18,
+    15,
+    17,
+    20
+   ],
+   "rects": {
+    "2": [
+     18,
+     15,
+     16,
+     20
+    ],
+    "3": [
+     18,
+     16,
+     16,
+     19
+    ],
+    "4": [
+     18,
+     15,
+     17,
+     20
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "dive": {
+   "frame": 0,
+   "at": [
+    32,
+    17
+   ]
+  }
+ },
+ "notes": "FLYING: anchor = body centre [24,22] (the engine positions the body centre). perch.hurtbox is the body box while perched (use it for perch/wake f0-1). perch: feet (talons) on the bottom row at [24,39] = anchor + (0,17): to sit it on a ledge whose top surface is at y, put the anchor at y-17 (feet are the frame's bottom row). wake: f0 statue eyes light, f1 unfolds (stone dust falls), f2 wings up, f3 lifts off into the fly pose (body centre back at the anchor). dive: f0 wings raised (telegraph: eye flare), f1 tucks, f2-4 steep talons-first dive drawn in place (the engine moves it along the dive), f5 wings snap open. The dive hit is not extended to the floor (it is a flyer): it covers the talons, head and front of the body. death: glowing cracks, then it shatters into stone chunks that fall to the bottom of the frame."
+}

@@ -1,0 +1,180 @@
+{ "frames": [
+   {
+    "filename": "nh_drone 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_drone 1.aseprite",
+    "frame": { "x": 40, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_drone 2.aseprite",
+    "frame": { "x": 80, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_drone 3.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_drone 4.aseprite",
+    "frame": { "x": 160, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 120
+   },
+   {
+    "filename": "nh_drone 5.aseprite",
+    "frame": { "x": 200, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 120
+   },
+   {
+    "filename": "nh_drone 6.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_drone 7.aseprite",
+    "frame": { "x": 280, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_drone 8.aseprite",
+    "frame": { "x": 320, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   },
+   {
+    "filename": "nh_drone 9.aseprite",
+    "frame": { "x": 360, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 140
+   },
+   {
+    "filename": "nh_drone 10.aseprite",
+    "frame": { "x": 400, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 80
+   },
+   {
+    "filename": "nh_drone 11.aseprite",
+    "frame": { "x": 440, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 110
+   },
+   {
+    "filename": "nh_drone 12.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   },
+   {
+    "filename": "nh_drone 13.aseprite",
+    "frame": { "x": 520, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   },
+   {
+    "filename": "nh_drone 14.aseprite",
+    "frame": { "x": 560, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   },
+   {
+    "filename": "nh_drone 15.aseprite",
+    "frame": { "x": 600, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   },
+   {
+    "filename": "nh_drone 16.aseprite",
+    "frame": { "x": 640, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   },
+   {
+    "filename": "nh_drone 17.aseprite",
+    "frame": { "x": 680, "y": 0, "w": 40, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 40, "h": 32 },
+    "sourceSize": { "w": 40, "h": 32 },
+    "duration": 90
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "nh_drone.png",
+  "format": "RGBA8888",
+  "size": { "w": 720, "h": 32 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "fly", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "alert", "from": 4, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "fire", "from": 6, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 10, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 12, "to": 17, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

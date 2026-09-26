@@ -1,0 +1,55 @@
+{
+ "native": 1,
+ "frame": [
+  64,
+  40
+ ],
+ "anchor": [
+  30,
+  40
+ ],
+ "hurtbox": [
+  16,
+  11,
+  39,
+  29
+ ],
+ "attacks": {
+  "bite": {
+   "active": [
+    4,
+    5
+   ],
+   "hit": [
+    44,
+    15,
+    17,
+    25
+   ],
+   "rects": {
+    "4": [
+     44,
+     15,
+     17,
+     25
+    ],
+    "5": [
+     44,
+     15,
+     17,
+     25
+    ]
+   }
+  }
+ },
+ "telegraph": {
+  "bite": {
+   "frame": 2,
+   "at": [
+    42,
+    11
+   ]
+  }
+ },
+ "notes": "Faces right, anchor = feet (x 30). bite: rears back f1-2 (telegraph f2: eye flare, jaws parting), lunging snap f3-5 drawn in place (the engine may carry it forward ~16-24px over f3-f5), jaws wide f4, snapped shut f5 (active 4-5), recover f6-7. run: gallop, 70ms frames, loop."
+}

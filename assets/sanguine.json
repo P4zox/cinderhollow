@@ -1,0 +1,961 @@
+{ "frames": [
+   {
+    "filename": "sanguine 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 1.aseprite",
+    "frame": { "x": 176, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 2.aseprite",
+    "frame": { "x": 352, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 3.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 4.aseprite",
+    "frame": { "x": 704, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 5.aseprite",
+    "frame": { "x": 880, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 6.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 7.aseprite",
+    "frame": { "x": 1232, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 8.aseprite",
+    "frame": { "x": 1408, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 9.aseprite",
+    "frame": { "x": 1584, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 10.aseprite",
+    "frame": { "x": 1760, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 11.aseprite",
+    "frame": { "x": 1936, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 12.aseprite",
+    "frame": { "x": 2112, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 13.aseprite",
+    "frame": { "x": 2288, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 14.aseprite",
+    "frame": { "x": 2464, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 15.aseprite",
+    "frame": { "x": 2640, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 16.aseprite",
+    "frame": { "x": 2816, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 17.aseprite",
+    "frame": { "x": 2992, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "sanguine 18.aseprite",
+    "frame": { "x": 3168, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "sanguine 19.aseprite",
+    "frame": { "x": 3344, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "sanguine 20.aseprite",
+    "frame": { "x": 3520, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "sanguine 21.aseprite",
+    "frame": { "x": 3696, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "sanguine 22.aseprite",
+    "frame": { "x": 3872, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "sanguine 23.aseprite",
+    "frame": { "x": 4048, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "sanguine 24.aseprite",
+    "frame": { "x": 4224, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "sanguine 25.aseprite",
+    "frame": { "x": 4400, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 26.aseprite",
+    "frame": { "x": 4576, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 27.aseprite",
+    "frame": { "x": 4752, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 28.aseprite",
+    "frame": { "x": 4928, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 29.aseprite",
+    "frame": { "x": 5104, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 30.aseprite",
+    "frame": { "x": 5280, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "sanguine 31.aseprite",
+    "frame": { "x": 5456, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "sanguine 32.aseprite",
+    "frame": { "x": 5632, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 33.aseprite",
+    "frame": { "x": 5808, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 34.aseprite",
+    "frame": { "x": 5984, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 35.aseprite",
+    "frame": { "x": 6160, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "sanguine 36.aseprite",
+    "frame": { "x": 6336, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 37.aseprite",
+    "frame": { "x": 6512, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 38.aseprite",
+    "frame": { "x": 6688, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 39.aseprite",
+    "frame": { "x": 6864, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 40.aseprite",
+    "frame": { "x": 7040, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 41.aseprite",
+    "frame": { "x": 7216, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "sanguine 42.aseprite",
+    "frame": { "x": 7392, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "sanguine 43.aseprite",
+    "frame": { "x": 7568, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "sanguine 44.aseprite",
+    "frame": { "x": 7744, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 45.aseprite",
+    "frame": { "x": 7920, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 46.aseprite",
+    "frame": { "x": 8096, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 47.aseprite",
+    "frame": { "x": 8272, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 48.aseprite",
+    "frame": { "x": 8448, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 49.aseprite",
+    "frame": { "x": 8624, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 50.aseprite",
+    "frame": { "x": 8800, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 51.aseprite",
+    "frame": { "x": 8976, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 52.aseprite",
+    "frame": { "x": 9152, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 53.aseprite",
+    "frame": { "x": 9328, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "sanguine 54.aseprite",
+    "frame": { "x": 9504, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 55.aseprite",
+    "frame": { "x": 9680, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 56.aseprite",
+    "frame": { "x": 9856, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 57.aseprite",
+    "frame": { "x": 10032, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 58.aseprite",
+    "frame": { "x": 10208, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 59.aseprite",
+    "frame": { "x": 10384, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 60.aseprite",
+    "frame": { "x": 10560, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 61.aseprite",
+    "frame": { "x": 10736, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 62.aseprite",
+    "frame": { "x": 10912, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 63.aseprite",
+    "frame": { "x": 11088, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 64.aseprite",
+    "frame": { "x": 11264, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 65.aseprite",
+    "frame": { "x": 11440, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 66.aseprite",
+    "frame": { "x": 11616, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 67.aseprite",
+    "frame": { "x": 11792, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 68.aseprite",
+    "frame": { "x": 11968, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 69.aseprite",
+    "frame": { "x": 12144, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 70.aseprite",
+    "frame": { "x": 12320, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 71.aseprite",
+    "frame": { "x": 12496, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "sanguine 72.aseprite",
+    "frame": { "x": 12672, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "sanguine 73.aseprite",
+    "frame": { "x": 12848, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "sanguine 74.aseprite",
+    "frame": { "x": 13024, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "sanguine 75.aseprite",
+    "frame": { "x": 13200, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "sanguine 76.aseprite",
+    "frame": { "x": 13376, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 77.aseprite",
+    "frame": { "x": 13552, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "sanguine 78.aseprite",
+    "frame": { "x": 13728, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 79.aseprite",
+    "frame": { "x": 13904, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "sanguine 80.aseprite",
+    "frame": { "x": 14080, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "sanguine 81.aseprite",
+    "frame": { "x": 14256, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "sanguine 82.aseprite",
+    "frame": { "x": 14432, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 220
+   },
+   {
+    "filename": "sanguine 83.aseprite",
+    "frame": { "x": 14608, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 220
+   },
+   {
+    "filename": "sanguine 84.aseprite",
+    "frame": { "x": 14784, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 85.aseprite",
+    "frame": { "x": 14960, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 86.aseprite",
+    "frame": { "x": 15136, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 87.aseprite",
+    "frame": { "x": 15312, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 88.aseprite",
+    "frame": { "x": 15488, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 89.aseprite",
+    "frame": { "x": 15664, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 90.aseprite",
+    "frame": { "x": 15840, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 91.aseprite",
+    "frame": { "x": 16016, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 92.aseprite",
+    "frame": { "x": 16192, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "sanguine 93.aseprite",
+    "frame": { "x": 16368, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "sanguine 94.aseprite",
+    "frame": { "x": 16544, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "sanguine 95.aseprite",
+    "frame": { "x": 16720, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "sanguine 96.aseprite",
+    "frame": { "x": 16896, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 97.aseprite",
+    "frame": { "x": 17072, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 98.aseprite",
+    "frame": { "x": 17248, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 99.aseprite",
+    "frame": { "x": 17424, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
+   },
+   {
+    "filename": "sanguine 100.aseprite",
+    "frame": { "x": 17600, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "sanguine 101.aseprite",
+    "frame": { "x": 17776, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "sanguine 102.aseprite",
+    "frame": { "x": 17952, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 300
+   },
+   {
+    "filename": "sanguine 103.aseprite",
+    "frame": { "x": 18128, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 300
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "sanguine.png",
+  "format": "RGBA8888",
+  "size": { "w": 18304, "h": 128 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "walk", "from": 6, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "flurry", "from": 14, "to": 25, "direction": "forward", "color": "#000000ff" },
+   { "name": "lunge", "from": 26, "to": 35, "direction": "forward", "color": "#000000ff" },
+   { "name": "whip", "from": 36, "to": 47, "direction": "forward", "color": "#000000ff" },
+   { "name": "cast", "from": 48, "to": 57, "direction": "forward", "color": "#000000ff" },
+   { "name": "vanish", "from": 58, "to": 63, "direction": "forward", "color": "#000000ff" },
+   { "name": "appear", "from": 64, "to": 69, "direction": "forward", "color": "#000000ff" },
+   { "name": "dance", "from": 70, "to": 79, "direction": "forward", "color": "#000000ff" },
+   { "name": "stagger", "from": 80, "to": 83, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 84, "to": 95, "direction": "forward", "color": "#000000ff" },
+   { "name": "bow", "from": 96, "to": 103, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}
