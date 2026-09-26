@@ -161,6 +161,7 @@ r.fill(30, 8, 33, 8, '=').fill(35, 5, 40, 5, '=')
 for x, y, ch in [(44, 7, 'G'), (38, 4, 'L'), (20, 10, 'K'), (8, 10, 'c'), (34, 10, 'c'), (26, 4, 'f'), (4, 1, 'l'), (24, 1, 'l'),
                  (46, 10, 'u'), (2, 10, 'k'), (17, 1, 'x'), (36, 4, 'C')]:
     r.put(x, y, ch)
+r.fill(44, 1, 44, 6)          # wall above the gate up to the ceiling: no jumping over it
 
 r = Room('K3', 'Bell Ascent', 'cathedral', 348, 0, 24, 28, indoor=True, items=['emberstone'])
 r.walls().open('W', 21, 24).open('E', 21, 24).open('E', 4, 8).open('N', 2, 5)
@@ -245,6 +246,7 @@ for y, x0 in [(8, 15), (5, 18), (2, 15)]:
     r.fill(x0, y, x0 + 3, y, '=')
 for x, y, ch in [(12, 7, 'G'), (8, 10, 'O'), (3, 10, 'k'), (20, 10, 'o')]:
     r.put(x, y, ch)
+r.fill(12, 1, 12, 6)          # wall above the gate up to the ceiling: no jumping over it
 
 r = Room('X2', 'Pale Ascent', 'crown', 420, -14, 24, 28, items=['herb'])
 r.walls(top=False).open('E', 3, 8)

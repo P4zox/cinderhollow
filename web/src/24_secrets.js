@@ -145,6 +145,9 @@ function scWhirl(b, x, dir, dmg) {
   projectiles.push({ owner: 'enemy', kind: 'sc_whirl', x, y: b.floor - 14, vx: dir * 135, vy: 0, dmg: scBossDmg(dmg, b), life: 2.4, r: 9, t: 0, id: ++hazardId, sh: 'fx_sc_whirl', face: dir });
 }
 class Oswin extends MetaBoss {
+  // stay inside the fog-walled arena (west wall .. the golden fog at column 27): vaults and dashes can never leave it
+  get L() { return TILE + 22; }
+  get R() { return 27 * TILE - 22; }
   constructor(x, y) {
     super('oswin', x, y, {
       sheets: ['oswin', 'oswin_p2'], stanceMax: 240, walkSpeed: 52, prefer: 52, p2at: 0.5, p2speed: 1.15, p2tag: 'spin', critRange: 44,

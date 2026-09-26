@@ -782,12 +782,12 @@ const ROOMS = [
   ] },
   { ...{"id": "K2", "name": "Flooded Aisle", "biome": "cathedral", "gx": 300, "gy": 14, "w": 48, "h": 14, "indoor": true, "chests": ["w:oathbrand", "slot"]}, map: [
     "################################################",
-    "#...l............x......l......................#",
-    "#..............................................#",
-    "#..............................................#",
-    "#.........................f.........C.L........#",
-    "#..................................======......#",
-    "#..............................................#",
+    "#...l............x......l...................#..#",
+    "#...........................................#..#",
+    "#...........................................#..#",
+    "#.........................f.........C.L.....#..#",
+    "#..................................======...#..#",
+    "#...........................................#..#",
     "............................................G...",
     "..............................====..............",
     "................................................",
@@ -970,12 +970,12 @@ const ROOMS = [
   ] },
   { ...{"id": "X1", "name": "The Bell Gate", "biome": "crown", "gx": 420, "gy": 14, "w": 24, "h": 14}, map: [
     "##################....##",
-    "#......................#",
-    "#..............====....#",
-    "#......................#",
-    "#......................#",
-    "#.................====.#",
-    "#......................#",
+    "#...........#..........#",
+    "#...........#..====....#",
+    "#...........#..........#",
+    "#...........#..........#",
+    "#...........#.....====.#",
+    "#...........#..........#",
     "............G..........#",
     "...............====....#",
     ".......................#",
@@ -1744,9 +1744,9 @@ const ROOMS = [
     "##.............&&&&&&&....##############",
     "##.............&&&&&&&......############",
     "#...............&&&&&.......############",
-    "#..k....................................",
-    "######..................................",
-    "######...................k........b.....",
+    "#.......................................",
+    "#.......................................",
+    "#..k.....................k........b.....",
     "########################################",
     "########################################",
     "########################################",
@@ -2265,6 +2265,7 @@ function startCast() {
 
 function updatePlayer(dt) {
   const ax = inputX();
+  smashTick(dt);
   P.inv = Math.max(0, P.inv - dt); P.flash = Math.max(0, P.flash - dt * 6); P.ctrlLock -= dt; P.drop -= dt; P.empower -= dt; P.parryWin -= dt;
   if (P.state === 'dead') {
     P.anim.update(dt); P.vx *= Math.pow(0.01, dt); P.vy = Math.min(P.vy + GRAV_DN * dt, FALL_MAX); moveBody(P, dt);
@@ -2291,7 +2292,7 @@ function updatePlayer(dt) {
     else if (peek('attack') && P.gcT > 0 && P.ground && P.st > 0 && startCounter()) take('attack');
     else if (peek('attack') && P.bsT > 0 && P.backRoll && P.ground && P.st > 0) { take('attack'); startBackstep(); }
     else if (peek('heavy') && P.st > 0 && P.ground) { take('heavy'); if (ax) P.face = ax; startHeavy(); }
-    else if (peek('heavy') && P.st > 0 && !P.ground && P.state !== 'wall' && pHas('plunge')) { take('heavy'); if (ax) P.face = ax; startPlunge(); }
+    else if (peek('heavy') && P.st > 0 && !P.ground && P.state !== 'wall' && pHas('plunge') && smashReady()) { take('heavy'); if (ax) P.face = ax; smashStart(); startPlunge(); }
     else if (peek('attack') && P.st > 0) {
       take('attack'); if (ax) P.face = ax;
       if (held.has('up')) startAttack('attack_up');
@@ -2559,8 +2560,20 @@ function updatePlunge(dt, ax, grav) {
     if (an.done) setP('idle', 'idle', true);
   }
 }
+// ---- ground smashes (plunge + Cinder Slam) share a limit: two in a row, then they lock until you've
+// been back on the ground for 0.25 s — no bouncing off a boss's head forever
+const SMASH_CHAIN = 2, SMASH_CD = 0.25;
+function smashReady() { if (P.smashLock) { if (!P.smashDenied) { P.smashDenied = true; sfx.deny(); } return false; } return true; }
+function smashStart() { P.smashN = (P.smashN || 0) + 1; P.smashIdle = 0; P.smashDenied = false; if (P.smashN >= SMASH_CHAIN) { P.smashLock = true; P.smashCd = SMASH_CD; } }
+function smashLanded() { P.smashIdle = 0; }
+function smashTick(dt) {
+  if (P.smashLock) {
+    if (P.ground && !['plunge', 'slam'].includes(P.state)) { P.smashCd -= dt; if (P.smashCd <= 0) { P.smashLock = false; P.smashN = 0; P.smashDenied = false; } }
+  } else if ((P.smashIdle = (P.smashIdle || 0) + dt) > 0.8 && P.ground) P.smashN = 0;   // a lone smash now and then doesn't count toward the chain
+}
 // the plunge lands (on the floor, or on a foe mid-fall): heavy AoE, bounce off whatever it struck
 function plungeImpact(midair) {
+  smashLanded();
   const fall = Math.min(1.5, 1 + P.plungeT * 0.45), A = PLUNGE_A, W = D.W;
   const r = rect(P.x + P.face * A.reach[0], P.y + A.ys[0] - 4, P.x + P.face * A.reach[1], P.y + A.ys[1] + (midair ? 34 : 6));   // mid-air: reach down onto the foe
   shake = Math.max(shake, 8); sfx.boom(); hitstop = Math.max(hitstop, 0.07);
@@ -7013,6 +7026,7 @@ function updateSlam(dt) {
   if (Math.random() < 0.8) particles.push({ x: P.x + rand(-5, 5), y: P.y - rand(0, 20), vx: rand(-10, 10), vy: -rand(20, 60), life: 0.35, kind: 'fire' });
 }
 function slamImpact() {
+  smashLanded();
   shake = 10; hitstop = 0.09; sfx.boom(); sfx.crumble();
   spawnFx(fxOr('slam_impact', 'shockwave'), P.x, P.y, 1, null, { bottom: true });
   const r = rect(P.x - 58, P.y - 30, P.x + 58, P.y + 2);
@@ -7045,7 +7059,7 @@ function breakCrackCluster(tx0, ty0) {
 // ---- hooks called from the player update
 function traversalStart(ax) {
   if (peek('hook') && P.state !== 'hook') { take('hook'); if (tryHook()) return true; }
-  if (!P.ground && SAVE.items.slam && held.has('down') && peek('heavy') && P.st > 0) { take('heavy'); startSlam(); return true; }
+  if (!P.ground && SAVE.items.slam && held.has('down') && peek('heavy') && P.st > 0) { take('heavy'); if (!smashReady()) return true; smashStart(); startSlam(); return true; }
   return false;
 }
 function traversalUpdate(dt) {
@@ -11138,6 +11152,21 @@ PHASE2_LINES.cindervane = ['', 'The drake rears into the rafters. The storm want
 if (window.__game) Object.assign(window.__game, { SPR, spStrike, spSkyFlash, spRing, spTearRoof, spRoom: () => room });
 HOOKS.playerHurt.push((dmg, opt) => { if (window.__spLog && spIn()) window.__spLog.push([Math.round(dmg), boss ? boss.state + ':' + boss.anim.tag + ':' + boss.anim.i : '-', opt.src && opt.src.type || (opt.src === boss ? 'boss' : 'env'), Math.round(P.x - (boss ? boss.x : 0)), P.state]); return dmg; });
 
+// ---- SP7 exit prompt: the way out is dropping through the thin floor at the far right (↓ + Space)
+HOOKS.update.push(() => {
+  if (!room || room.id !== 'SP7' || (boss && boss.alive && boss.active)) return;
+  const onExit = P.ground && P.x > 47 * TILE && P.x < 50 * TILE && P.y <= 16 * TILE + 2;
+  if (onExit && !SPR.exitHint) { SPR.exitHint = true; toast(matchMedia('(pointer: coarse)').matches ? 'Hold ▼ and press Jump to drop down' : 'Hold ↓ and press Space to drop down', 4); }
+  if (!onExit && P.x < 44 * TILE) SPR.exitHint = false;
+});
+HOOKS.render.push(() => {
+  if (!room || room.id !== 'SP7' || (boss && boss.alive && boss.active)) return;
+  const x = 48.5 * TILE, y = 16 * TILE - 22 + Math.sin(time * 4) * 3, a = 0.55 + 0.35 * Math.sin(time * 4);
+  g.fillStyle = `rgba(255,214,120,${a})`;
+  for (let i = 0; i < 4; i++) g.fillRect(Math.round(x - 4 + i), Math.round(y + i), 8 - i * 2, 1);   // small pulsing down-arrow over the exit
+  g.fillRect(Math.round(x - 1), Math.round(y - 5), 2, 5);
+});
+
 // ------------------------------------------------------------------ THE BURNING DEEP (agent D): the root-forges beneath the Mire
 // Rooms D1-D8 (tools/regions/40_deep.py). Lava '*' (tile 20), conveyor belts '<' '>' (21/22), burn status, the rising-magma
 // escape (D6), the forge hatch shortcut (D1 <-> D7), slag imps / forge sentries / magma crawlers, the Forge Overseer and
@@ -12421,6 +12450,9 @@ function scWhirl(b, x, dir, dmg) {
   projectiles.push({ owner: 'enemy', kind: 'sc_whirl', x, y: b.floor - 14, vx: dir * 135, vy: 0, dmg: scBossDmg(dmg, b), life: 2.4, r: 9, t: 0, id: ++hazardId, sh: 'fx_sc_whirl', face: dir });
 }
 class Oswin extends MetaBoss {
+  // stay inside the fog-walled arena (west wall .. the golden fog at column 27): vaults and dashes can never leave it
+  get L() { return TILE + 22; }
+  get R() { return 27 * TILE - 22; }
   constructor(x, y) {
     super('oswin', x, y, {
       sheets: ['oswin', 'oswin_p2'], stanceMax: 240, walkSpeed: 52, prefer: 52, p2at: 0.5, p2speed: 1.15, p2tag: 'spin', critRange: 44,

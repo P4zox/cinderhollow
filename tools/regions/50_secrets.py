@@ -19,13 +19,12 @@ r.fill(0, 0, 39, 1)                                 # ceiling
 r.fill(28, 0, 39, 7)                                # low roof over the narrow passage
 r.fill(24, 2, 27, 3).fill(26, 4, 27, 5)             # the roof steps down into the passage
 r.fill(1, 2, 3, 4).fill(1, 5, 1, 6)                 # rock shoulder, top-left
-r.fill(1, 9, 5, 10)                                 # a raised stone shelf (the hermit's bed-ledge)
 r.fill(9, 2, 10, 2)                                 # stalactite stubs
 for y in range(3, 8):                               # the gap in the rock: the Pale Root beyond
     for x in range(15, 22):
         if not ((y == 3 and x in (15, 21)) or (y == 7 and x in (15, 21))):
             r.put(x, y, '&')
-for x, y, ch in [(3, 8, 'k'), (25, 10, 'k'), (8, 2, 'r'), (23, 4, 'r'), (34, 10, 'b')]:
+for x, y, ch in [(3, 10, 'k'), (25, 10, 'k'), (8, 2, 'r'), (23, 4, 'r'), (34, 10, 'b')]:
     r.put(x, y, ch)
 r.kw['spawns'] = [
     {'t': 'sc_fire', 'x': 9, 'y': 10},

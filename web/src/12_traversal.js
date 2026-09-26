@@ -128,6 +128,7 @@ function updateSlam(dt) {
   if (Math.random() < 0.8) particles.push({ x: P.x + rand(-5, 5), y: P.y - rand(0, 20), vx: rand(-10, 10), vy: -rand(20, 60), life: 0.35, kind: 'fire' });
 }
 function slamImpact() {
+  smashLanded();
   shake = 10; hitstop = 0.09; sfx.boom(); sfx.crumble();
   spawnFx(fxOr('slam_impact', 'shockwave'), P.x, P.y, 1, null, { bottom: true });
   const r = rect(P.x - 58, P.y - 30, P.x + 58, P.y + 2);
@@ -160,7 +161,7 @@ function breakCrackCluster(tx0, ty0) {
 // ---- hooks called from the player update
 function traversalStart(ax) {
   if (peek('hook') && P.state !== 'hook') { take('hook'); if (tryHook()) return true; }
-  if (!P.ground && SAVE.items.slam && held.has('down') && peek('heavy') && P.st > 0) { take('heavy'); startSlam(); return true; }
+  if (!P.ground && SAVE.items.slam && held.has('down') && peek('heavy') && P.st > 0) { take('heavy'); if (!smashReady()) return true; smashStart(); startSlam(); return true; }
   return false;
 }
 function traversalUpdate(dt) {

@@ -183,6 +183,7 @@ function startCast() {
 
 function updatePlayer(dt) {
   const ax = inputX();
+  smashTick(dt);
   P.inv = Math.max(0, P.inv - dt); P.flash = Math.max(0, P.flash - dt * 6); P.ctrlLock -= dt; P.drop -= dt; P.empower -= dt; P.parryWin -= dt;
   if (P.state === 'dead') {
     P.anim.update(dt); P.vx *= Math.pow(0.01, dt); P.vy = Math.min(P.vy + GRAV_DN * dt, FALL_MAX); moveBody(P, dt);
@@ -209,7 +210,7 @@ function updatePlayer(dt) {
     else if (peek('attack') && P.gcT > 0 && P.ground && P.st > 0 && startCounter()) take('attack');
     else if (peek('attack') && P.bsT > 0 && P.backRoll && P.ground && P.st > 0) { take('attack'); startBackstep(); }
     else if (peek('heavy') && P.st > 0 && P.ground) { take('heavy'); if (ax) P.face = ax; startHeavy(); }
-    else if (peek('heavy') && P.st > 0 && !P.ground && P.state !== 'wall' && pHas('plunge')) { take('heavy'); if (ax) P.face = ax; startPlunge(); }
+    else if (peek('heavy') && P.st > 0 && !P.ground && P.state !== 'wall' && pHas('plunge') && smashReady()) { take('heavy'); if (ax) P.face = ax; smashStart(); startPlunge(); }
     else if (peek('attack') && P.st > 0) {
       take('attack'); if (ax) P.face = ax;
       if (held.has('up')) startAttack('attack_up');
@@ -477,8 +478,20 @@ function updatePlunge(dt, ax, grav) {
     if (an.done) setP('idle', 'idle', true);
   }
 }
+// ---- ground smashes (plunge + Cinder Slam) share a limit: two in a row, then they lock until you've
+// been back on the ground for 0.25 s — no bouncing off a boss's head forever
+const SMASH_CHAIN = 2, SMASH_CD = 0.25;
+function smashReady() { if (P.smashLock) { if (!P.smashDenied) { P.smashDenied = true; sfx.deny(); } return false; } return true; }
+function smashStart() { P.smashN = (P.smashN || 0) + 1; P.smashIdle = 0; P.smashDenied = false; if (P.smashN >= SMASH_CHAIN) { P.smashLock = true; P.smashCd = SMASH_CD; } }
+function smashLanded() { P.smashIdle = 0; }
+function smashTick(dt) {
+  if (P.smashLock) {
+    if (P.ground && !['plunge', 'slam'].includes(P.state)) { P.smashCd -= dt; if (P.smashCd <= 0) { P.smashLock = false; P.smashN = 0; P.smashDenied = false; } }
+  } else if ((P.smashIdle = (P.smashIdle || 0) + dt) > 0.8 && P.ground) P.smashN = 0;   // a lone smash now and then doesn't count toward the chain
+}
 // the plunge lands (on the floor, or on a foe mid-fall): heavy AoE, bounce off whatever it struck
 function plungeImpact(midair) {
+  smashLanded();
   const fall = Math.min(1.5, 1 + P.plungeT * 0.45), A = PLUNGE_A, W = D.W;
   const r = rect(P.x + P.face * A.reach[0], P.y + A.ys[0] - 4, P.x + P.face * A.reach[1], P.y + A.ys[1] + (midair ? 34 : 6));   // mid-air: reach down onto the foe
   shake = Math.max(shake, 8); sfx.boom(); hitstop = Math.max(hitstop, 0.07);

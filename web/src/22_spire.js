@@ -1146,3 +1146,18 @@ PHASE2_LINES.cindervane = ['', 'The drake rears into the rafters. The storm want
 // ---- debug helpers for tests
 if (window.__game) Object.assign(window.__game, { SPR, spStrike, spSkyFlash, spRing, spTearRoof, spRoom: () => room });
 HOOKS.playerHurt.push((dmg, opt) => { if (window.__spLog && spIn()) window.__spLog.push([Math.round(dmg), boss ? boss.state + ':' + boss.anim.tag + ':' + boss.anim.i : '-', opt.src && opt.src.type || (opt.src === boss ? 'boss' : 'env'), Math.round(P.x - (boss ? boss.x : 0)), P.state]); return dmg; });
+
+// ---- SP7 exit prompt: the way out is dropping through the thin floor at the far right (↓ + Space)
+HOOKS.update.push(() => {
+  if (!room || room.id !== 'SP7' || (boss && boss.alive && boss.active)) return;
+  const onExit = P.ground && P.x > 47 * TILE && P.x < 50 * TILE && P.y <= 16 * TILE + 2;
+  if (onExit && !SPR.exitHint) { SPR.exitHint = true; toast(matchMedia('(pointer: coarse)').matches ? 'Hold ▼ and press Jump to drop down' : 'Hold ↓ and press Space to drop down', 4); }
+  if (!onExit && P.x < 44 * TILE) SPR.exitHint = false;
+});
+HOOKS.render.push(() => {
+  if (!room || room.id !== 'SP7' || (boss && boss.alive && boss.active)) return;
+  const x = 48.5 * TILE, y = 16 * TILE - 22 + Math.sin(time * 4) * 3, a = 0.55 + 0.35 * Math.sin(time * 4);
+  g.fillStyle = `rgba(255,214,120,${a})`;
+  for (let i = 0; i < 4; i++) g.fillRect(Math.round(x - 4 + i), Math.round(y + i), 8 - i * 2, 1);   // small pulsing down-arrow over the exit
+  g.fillRect(Math.round(x - 1), Math.round(y - 5), 2, 5);
+});

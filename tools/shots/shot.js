@@ -9,7 +9,7 @@ const puppeteer = require('puppeteer-core'); const fs = require('fs'); const pat
   const errors = []; page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.exposeFunction('__save', (name, url) => fs.writeFileSync(path.join(outDir, name + '.png'), Buffer.from(url.split(',')[1], 'base64')));
   const H = process.env.SHOT_HTML || path.join(__dirname, '../../web/dist/index.html'); const url = /^https?:/.test(H) ? H : 'file://' + path.resolve(H);
-  await page.goto(url); await page.waitForFunction('window.__game', { timeout: 20000 }); await new Promise(r => setTimeout(r, 1500));
+  await page.goto(url); await page.waitForFunction('window.__game', { timeout: 90000 }); await new Promise(r => setTimeout(r, 1500));
   const body = fs.readFileSync(scriptFile, 'utf8');
   const res = await page.evaluate(`(async () => { const G = window.__game;
     const snap = async (n) => { const c = [...document.querySelectorAll('canvas')].sort((a,b)=>b.width*b.height-a.width*a.height)[0]; await window.__save(n, c.toDataURL('image/png')); };
