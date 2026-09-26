@@ -420,7 +420,7 @@ function renderInvTab(M) {
 // ---- controls & techniques guide (Settings › Controls & techniques)
 // rows: [keys, name, description, requiredItem]
 const GUIDE_PAGES = [
-  { name: 'Keyboard', rows: () => CONTROLS.map(([k, v]) => [k.split(/\s+/).filter(Boolean), v.split(' · ')[0], v.split(' · ').slice(1).join(' · ')]) },
+  { name: 'Keyboard', rows: () => controlsList().map(([k, v]) => [k.split(/\s+/).filter(Boolean), v.split(' · ')[0], v.split(' · ').slice(1).join(' · ')]) },
   { name: 'Combat', rows: () => [
     [['J'], 'Attack', 'Chain light attacks into a combo. Hold ↑ to strike upward. Click works too.'],
     [['K', 'hold'], 'Charged heavy', 'Hold K (or right-click) to charge a stance-breaking heavy; release to swing.'],

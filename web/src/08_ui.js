@@ -431,13 +431,23 @@ function renderMap() {
 // ---- title / pause / death / ending
 // keyboard quick reference (title screen + first page of Settings › Controls & techniques). Must match KEYMAP in 00_core.js.
 // format: [keys, 'Name · detail · detail']
-const CONTROLS = [['A D / ← →', 'Move · W / S aim up and down', 'Move · W / S aim'], ['Space', 'Jump · hold for height · ↓ + Space drops through thin floors', 'Jump · hold higher'],
-  ['J / click', 'Attack · combo · ↑ strikes up · ↓ in the air pogos', 'Attack · combo'], ['K / right-click', 'Heavy · hold to charge · in the air: plunge', 'Heavy · hold to charge'],
-  ['L / Shift', 'Roll · invulnerable · in the air: dash', 'Roll · invulnerable'], ['I', 'Parry · then J to riposte · shields: hold to block', 'Parry · then J riposte'],
-  ['U / Q', 'Spells · U casts · Q switches spell', 'Cast / switch spell'], ['O', 'Weapon art · hold to charge', 'Weapon art · hold to charge'],
-  ['F / R', 'Flasks · F crimson (HP) · R azure (FP)', 'Crimson / azure flask'], ['E', 'Interact · talk · pick up · rest at shrines', 'Interact · rest'],
-  ['H / C', 'Root Hook · grapple golden rings', 'Root Hook'], ['S + K', 'Cinder Slam · in the air', 'Cinder Slam (in the air)'],
-  ['Esc / P', 'Menu · equipment, items, status, settings', 'Menu · all controls in Settings'], ['Tab / M', 'Map', 'Map']];
+function controlsList() {   // built from the live key bindings, so the title screen and guide show the player's own keys
+  const K = a => keysOf(a).join(' / ') || '—', o = a => keysOf(a)[0] || '—';
+  return [[`${o('left')} ${o('right')}${keysOf('left')[1] ? ` / ${keysOf('left')[1]} ${keysOf('right')[1] || ''}` : ''}`, `Move · ${o('up')} / ${o('down')} aim up and down`, `Move · ${o('up')} / ${o('down')} aim`],
+    [K('jump'), `Jump · hold for height · ${o('down')} + ${o('jump')} drops through thin floors`, 'Jump · hold higher'],
+    [`${K('attack')} / click`, `Attack · combo · ${o('up')} strikes up · ${o('down')} in the air pogos`, 'Attack · combo'],
+    [`${K('heavy')} / right-click`, 'Heavy · hold to charge · in the air: plunge', 'Heavy · hold to charge'],
+    [K('roll'), 'Roll · invulnerable · in the air: dash', 'Roll · invulnerable'],
+    [K('parry'), `Parry · then ${o('attack')} to riposte · shields: hold to block`, `Parry · then ${o('attack')} riposte`],
+    [`${o('cast')} / ${o('spell')}`, `Spells · ${o('cast')} casts · ${o('spell')} switches spell`, 'Cast / switch spell'],
+    [K('art'), 'Weapon art · hold to charge', 'Weapon art · hold to charge'],
+    [`${o('heal')} / ${o('mana')}`, `Flasks · ${o('heal')} crimson (HP) · ${o('mana')} azure (FP)`, 'Crimson / azure flask'],
+    [K('interact'), 'Interact · talk · pick up · rest at shrines', 'Interact · rest'],
+    [K('hook'), 'Root Hook · grapple golden rings', 'Root Hook'],
+    [`${o('down')} + ${o('heavy')}`, 'Cinder Slam · in the air', 'Cinder Slam (in the air)'],
+    [`Esc${keysOf('pause').length ? ' / ' + K('pause') : ''}`, 'Menu · equipment, items, status, settings', 'Menu · keys in Settings'],
+    [K('map'), 'Map', 'Map']];
+}
 let titleSel = 0;
 function renderTitle() {
   vctx.fillStyle = 'rgba(6,4,10,0.55)'; vctx.fillRect(ox, oy, W * scale, H * scale);
@@ -450,7 +460,7 @@ function renderTitle() {
     const y = 96 + i * 13, sel = i === titleSel;
     text((sel ? '— ' : '') + o + (sel ? ' —' : ''), W / 2, y, 8.5, sel ? '#f5e3b0' : '#9a8f78', 'center', { weight: sel ? 600 : 400 });
   });
-  if (!matchMedia('(pointer: coarse)').matches) CONTROLS.forEach(([k, v], i) => {
+  if (!matchMedia('(pointer: coarse)').matches) controlsList().forEach(([k, v], i, CONTROLS) => {
     const col = i % 2, row = Math.floor(i / 2), x = 70 + col * 170, y = 134 + row * 10;
     const short = CONTROLS[i][2] || v.split(' · ')[0];
     text(k, x, y, 5.5, '#e6c77a', 'right', { weight: 600 }); text(short, x + 6, y, uiFit(short, 150, 5.5, 4.5, 400), '#c9bda2', 'left', { weight: 400 });
@@ -463,7 +473,7 @@ function titleOptions() { return hasSave() ? ['Continue', 'New Game'] : ['New Ga
 function renderPause() {
   vctx.fillStyle = 'rgba(5,4,8,0.7)'; vctx.fillRect(ox, oy, W * scale, H * scale);
   text('PAUSED', W / 2, 40, 14, '#e8dcc0', 'center', { spacing: 3 });
-  CONTROLS.forEach(([k, v], i) => { const y = 58 + i * 9; text(k, W / 2 - 10, y, 6, '#e6c77a', 'right'); text(v, W / 2, y, uiFit(v, 180, 6, 4.5, 400), '#c9bda2', 'left', { weight: 400 }); });
+  controlsList().forEach(([k, v], i) => { const y = 58 + i * 9; text(k, W / 2 - 10, y, 6, '#e6c77a', 'right'); text(v, W / 2, y, uiFit(v, 180, 6, 4.5, 400), '#c9bda2', 'left', { weight: 400 }); });
   text(`Level ${levelOf(SAVE.stats)} · Deaths ${SAVE.deaths} · ${fmtTime(SAVE.playTime)}`, W / 2, 184, 6.5, '#b8ab90', 'center', { weight: 400 });
   text('Esc resume · Backspace quit to title · N mute', W / 2, 198, 6, '#8a7f6a', 'center', { weight: 400 });
 }

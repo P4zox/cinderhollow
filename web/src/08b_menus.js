@@ -1,6 +1,6 @@
 // ------------------------------------------------------------------ pause menu (equipment / inventory / status / settings), shop, forge
 const SETTINGS_KEY = 'cinderhollow_settings';
-const SETTINGS = { music: 0.7, sfx: 0.8, shake: 1, numbers: 1, god: 0, infst: 0 };
+const SETTINGS = { music: 0.7, sfx: 0.8, shake: 1, numbers: 1, god: 0, infst: 0, inffp: 0 };
 try { Object.assign(SETTINGS, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')); } catch (e) {}
 function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} if (master) master.gain.value = SETTINGS.sfx; }
 const TABS = ['Equipment', 'Inventory', 'Status', 'Settings'];
@@ -42,15 +42,17 @@ function invList() {
   return out;
 }
 const SETTING_ROWS = [
-  { k: 'guide', label: 'Controls & techniques' },
+  { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' },
   { k: 'music', label: 'Music volume', step: 0.1 }, { k: 'sfx', label: 'Effects volume', step: 0.1 },
-  { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true }, { k: 'god', label: 'God mode (test)', toggle: true }, { k: 'infst', label: 'Infinite stamina (test)', toggle: true }, { k: 'armory', label: 'Armory: unlock all gear (test)' }, { k: 'tech', label: 'Grant all techniques (test)' }, { k: 'shrines', label: 'Kindle every shrine for travel (test)' }, { k: 'quit', label: 'Save & quit to title' },
+  { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
+  { k: 'cheats', label: 'Cheats (test)' }, { k: 'quit', label: 'Save & quit to title' },
 ];
 
-const SETTING_ACTIONS = ['guide', 'quit', 'armory', 'tech', 'shrines'];
+const SETTING_ACTIONS = ['guide', 'keys', 'cheats', 'quit'];
 function pauseInput(a) {
   const M = menu, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
   if (M.guide) return guideInput(M, a);
+  if (M.sub) return settingsSubInput(M, a);
   if (M.tab === 0 && M.pick) return pickInput(M, a);
   if (a === 'pause' || a === 'back' || a === 'heavy') { menu = null; state = 'play'; clearBuffer(); saveGame(); return; }
   if (a === 'spell' || a === 'map') { M.tab = (M.tab + (a === 'spell' ? 3 : 1)) % 4; M.sel = 0; sfx.menu(); return; }
@@ -64,9 +66,8 @@ function pauseInput(a) {
     const R = SETTING_ROWS[M.sel];
     if (R.k === 'guide') { if (conf || a === 'right') { M.guide = { page: TOUCH_UI ? GUIDE_PAGES.length - 1 : 0, off: 0 }; sfx.menu(); } return; }
     if (R.k === 'quit' && conf) { menu = null; saveGame(); state = 'title'; titleSel = 0; return; }
-    if (R.k === 'armory') { if (conf) { menu = null; state = 'play'; clearBuffer(); giveArmory(); } return; }
-    if (R.k === 'shrines') { if (conf) { menu = null; state = 'play'; clearBuffer(); for (const r of ROOMS) if (r.shrine && !r.test && !SAVE.shrines.includes(r.id)) SAVE.shrines.push(r.id); saveGame(); sfx.kindle(); toast('Every shrine burns. Rest at one to travel.', 4); } return; }
-    if (R.k === 'tech') { if (conf) { menu = null; state = 'play'; clearBuffer(); grantTechniques(); } return; }
+    if (R.k === 'keys') { if (conf || a === 'right') { M.sub = { kind: 'keys', sel: 0, col: 0, off: 0 }; sfx.menu(); } return; }
+    if (R.k === 'cheats') { if (conf || a === 'right') { M.sub = { kind: 'cheats', sel: 0 }; sfx.menu(); } return; }
     if ((a === 'left' || a === 'right' || conf) && !SETTING_ACTIONS.includes(R.k)) {
       const d = a === 'left' ? -1 : 1;
       if (R.toggle) SETTINGS[R.k] = SETTINGS[R.k] ? 0 : 1;
@@ -87,6 +88,7 @@ function statsLines() {
 function renderPauseMenu() {
   const M = menu;
   if (M.guide) return renderGuide(M);
+  if (M.sub) return renderSettingsSub(M);
   uiBackdrop(0.84); uiStrips(); uiTabs(M.tab);
   if (M.tab === 0) renderEquipTab(M);
   else if (M.tab === 1) renderInvTab(M);
@@ -105,14 +107,14 @@ function renderPauseMenu() {
     SETTING_ROWS.forEach((R, i) => {
       const y = 44 + i * rh, sel = i === M.sel;
       if (sel) uiSel(97, y - rh + 4, 190, rh - 1);
-      text(R.label, 104, y, 6.8, sel ? '#f5e3b0' : R.k === 'guide' ? UIC.gold : '#d8cdb4', 'left', { weight: sel || R.k === 'guide' ? 600 : 400 });
-      if (R.k === 'guide') { text('▸', 280 + (sel ? uiPulse(6) : 0), y, 6.8, UIC.gold, 'right'); uiFade(104, 280, y + rh / 2 - 2.5, UI_RGB.accent, 0.35); }
+      text(R.label, 104, y, 6.8, sel ? '#f5e3b0' : ['guide', 'keys', 'cheats'].includes(R.k) ? UIC.gold : '#d8cdb4', 'left', { weight: sel || R.k === 'guide' ? 600 : 400 });
+      if (['guide', 'keys', 'cheats'].includes(R.k)) { text('▸', 280 + (sel ? uiPulse(6) : 0), y, 6.8, UIC.gold, 'right'); uiFade(104, 280, y + rh / 2 - 2.5, UI_RGB.accent, 0.35); }
       if (SETTING_ACTIONS.includes(R.k)) return;
       const v = SETTINGS[R.k], label = R.toggle ? (v ? 'On' : 'Off') : R.k === 'shake' ? (v === 0 ? 'Off' : v < 1 ? 'Low' : 'Full') : Math.round(v * 100) + '%';
       text((sel ? '◂ ' : '') + label + (sel ? ' ▸' : ''), 280, y, 6.8, '#e8dcc0', 'right');
     });
     const R = SETTING_ROWS[M.sel];
-    uiFooter(R.k === 'guide' ? [['↑↓', 'select'], ['Enter', 'open guide'], ...tabHint(), ['Esc', 'close']]
+    uiFooter(['guide', 'keys', 'cheats'].includes(R.k) ? [['↑↓', 'select'], ['Enter', 'open'], ...tabHint(), ['Esc', 'close']]
       : SETTING_ACTIONS.includes(R.k) ? [['↑↓', 'select'], ['Enter', 'confirm'], ...tabHint(), ['Esc', 'close']]
       : [['↑↓', 'select'], ['←→', 'change'], ...tabHint(), ['Esc', 'close']]);
   }

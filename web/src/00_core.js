@@ -212,16 +212,60 @@ const sfx = {
 
 // ------------------------------------------------------------------ input
 const held = new Set(), buffered = new Map();
-const KEYMAP = {
+const DEFAULT_KEYMAP = {
   ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down',
   Space: 'jump', KeyJ: 'attack', KeyK: 'heavy', KeyL: 'roll', ShiftLeft: 'roll', ShiftRight: 'roll',
   KeyU: 'cast', KeyI: 'parry', KeyO: 'art', KeyH: 'hook', KeyC: 'hook', KeyQ: 'spell', KeyF: 'heal', KeyR: 'mana', KeyE: 'interact',
   Tab: 'map', KeyM: 'map', Escape: 'pause', KeyP: 'pause', Enter: 'confirm', KeyN: 'mute', Backspace: 'back',
 };
+// ---- rebindable keys (Settings › Key bindings). Two key slots per action, saved per browser.
+const KEYMAP = {};
+const FIXED_KEYS = { Escape: 'pause', Enter: 'confirm', Backspace: 'back' };   // always work, so menus can never be locked out
+const BINDABLE = [['left', 'Move left'], ['right', 'Move right'], ['up', 'Aim up / look up'], ['down', 'Aim down / drop'], ['jump', 'Jump'],
+  ['attack', 'Attack'], ['heavy', 'Heavy attack'], ['roll', 'Roll / air dash'], ['parry', 'Parry / shield block'], ['art', 'Weapon art'],
+  ['cast', 'Cast spell'], ['spell', 'Switch spell'], ['heal', 'Crimson flask (HP)'], ['mana', 'Azure flask (FP)'], ['hook', 'Root Hook'],
+  ['interact', 'Interact / rest'], ['map', 'Map'], ['pause', 'Menu'], ['mute', 'Mute sound']];
+const KEYS_STORE = 'cinderhollow_keys';
+let BINDINGS = {}, KEY_CAPTURE = null;
+function defaultBindings() {
+  const b = {}; for (const [a] of BINDABLE) b[a] = [];
+  for (const [code, a] of Object.entries(DEFAULT_KEYMAP)) if (b[a] && b[a].length < 2 && !FIXED_KEYS[code]) b[a].push(code);
+  return b;
+}
+function applyBindings() {
+  for (const k of Object.keys(KEYMAP)) delete KEYMAP[k];
+  for (const [a, codes] of Object.entries(BINDINGS)) for (const c of codes) if (c) KEYMAP[c] = a;
+  Object.assign(KEYMAP, FIXED_KEYS);
+}
+function loadBindings() {
+  BINDINGS = defaultBindings();
+  try { const s = JSON.parse(localStorage.getItem(KEYS_STORE) || 'null'); if (s) for (const [a] of BINDABLE) if (Array.isArray(s[a])) BINDINGS[a] = s[a].slice(0, 2).filter(c => typeof c === 'string' && !FIXED_KEYS[c]); } catch (e) {}
+  applyBindings();
+}
+function saveBindings() { try { localStorage.setItem(KEYS_STORE, JSON.stringify(BINDINGS)); } catch (e) {} applyBindings(); }
+function bindKey(action, slot, code) {   // code === null clears the slot; a key moves away from any other action
+  for (const [a, codes] of Object.entries(BINDINGS)) BINDINGS[a] = codes.filter(c => c !== code);
+  const L = [...(BINDINGS[action] || [])]; if (code) L[slot] = code; else L.splice(slot, 1);
+  BINDINGS[action] = L.filter(Boolean).slice(0, 2); saveBindings();
+}
+const KEY_NAMES = { ArrowLeft: '←', ArrowRight: '→', ArrowUp: '↑', ArrowDown: '↓', Space: 'Space', ShiftLeft: 'Shift', ShiftRight: 'R-Shift', ControlLeft: 'Ctrl',
+  ControlRight: 'R-Ctrl', AltLeft: 'Alt', AltRight: 'R-Alt', MetaLeft: 'Cmd', MetaRight: 'R-Cmd', Tab: 'Tab', Enter: 'Enter', Escape: 'Esc', Backspace: 'Bksp',
+  CapsLock: 'Caps', Semicolon: ';', Quote: "'", Comma: ',', Period: '.', Slash: '/', Backslash: '\\', BracketLeft: '[', BracketRight: ']', Minus: '-', Equal: '=', Backquote: '`' };
+function keyLabel(code) {
+  if (!code) return '—';
+  if (KEY_NAMES[code]) return KEY_NAMES[code];
+  if (/^Key[A-Z]$/.test(code)) return code.slice(3);
+  if (/^Digit\d$/.test(code)) return code.slice(5);
+  if (/^Numpad/.test(code)) return 'Num' + code.slice(6);
+  if (/^F\d+$/.test(code)) return code;
+  return code;
+}
+function keysOf(action) { return (BINDINGS[action] || []).filter(Boolean).map(keyLabel); }
+loadBindings();
 let onPressHook = () => {};
 function press(a) { if (!held.has(a)) buffered.set(a, performance.now()); held.add(a); onPressHook(a); }
 function release(a) { held.delete(a); }
-addEventListener('keydown', e => { const a = KEYMAP[e.code]; if (!a) return; e.preventDefault(); if (!e.repeat) press(a); else if (['left', 'right', 'up', 'down'].includes(a)) onPressHook(a, true); });
+addEventListener('keydown', e => { if (KEY_CAPTURE) { e.preventDefault(); if (!e.repeat) { const f = KEY_CAPTURE; KEY_CAPTURE = null; f(e.code); } return; } const a = KEYMAP[e.code]; if (!a) return; e.preventDefault(); if (!e.repeat) press(a); else if (['left', 'right', 'up', 'down'].includes(a)) onPressHook(a, true); });
 addEventListener('keyup', e => { const a = KEYMAP[e.code]; if (a) release(a); });
 function grabFocus() { try { window.focus(); view.focus({ preventScroll: true }); } catch (e) {} }
 view.addEventListener('mousedown', e => {
