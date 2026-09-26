@@ -518,3 +518,79 @@ def mid():
         for x in range(BW):
             cv.set(x, y, body)
     return cv.img
+
+
+# =========================================================================== phase-2 void (Astrel): the crater opens to deep space
+VOID = ramp("020106", "05030d", "080516", "0c0720", "110a2c", "170d38")
+GAL = [C("1a0f3a"), C("2c1a5e"), C("41308a"), C("5a52b8"), C("8a8ee0"), C("c8d4ff"), C("ffffff")]
+
+
+def void_far():
+    cv = Canvas(BW, BH, wrap=True)
+    for y in range(BH):
+        for x in range(BW):
+            v = 0.35 + 0.35 * fbm(x, y, 64, 54, 31, BW, 3) - 0.15 * abs(y - 108) / 108
+            cv.set(x, y, pick(VOID, clamp(v, 0, 1), x, y))
+    # a spiral galaxy wheeling in the dark
+    gx, gy = 330, 96
+    for i in range(9000):
+        arm = i % 2
+        t = h01(i, 1, 77)
+        a = arm * math.pi + t * 7.5 + (h01(i, 2, 77) - 0.5) * 0.9 * (1 - t)
+        r = 6 + t * 96
+        x, y = gx + math.cos(a) * r, gy + math.sin(a) * r * 0.42
+        br = (1 - t) * 0.9 + 0.1 * h01(i, 3, 77)
+        cv.set(x, y, GAL[min(6, int(br * 6.5))])
+    for y in range(-10, 11):
+        for x in range(-22, 23):
+            d = math.hypot(x / 22, y / 10)
+            if d < 1:
+                cv.set(gx + x, gy + y, GAL[6] if d < 0.25 else GAL[5] if d < 0.5 else GAL[4] if d < 0.75 else cv.get(gx + x, gy + y) if h01(x, y, 4) < 0.5 else GAL[3])
+    # a dying star, vast and cold, its corona torn into rays
+    sx, sy, sr = 96, 44, 17
+    for y in range(-80, 81):
+        for x in range(-80, 81):
+            d = math.hypot(x, y)
+            if d < sr:
+                l = 1 - d / sr
+                cv.set(sx + x, sy + y, pick([C("4a5a9c"), C("6e80c0"), C("9aaae0"), C("c8d4f4")], 0.2 + 0.7 * l + 0.1 * (-(x + y) / sr), x, y))
+            elif d < sr + 3:
+                cv.set(sx + x, sy + y, C("4a64c8") if h01(x, y, 5) < 0.7 else C("8aa4f0"))
+            elif d < 58:
+                ang = math.atan2(y, x)
+                ray = max(0.0, math.cos(ang * 7 + 0.4)) ** 6 + max(0.0, math.cos(ang * 11 - 1.2)) ** 10
+                v = ray * (1 - (d - sr) / (58 - sr)) ** 1.8 * 0.8
+                if v > 0.12 and bt(x, y) < v * 1.6:
+                    cv.set(sx + x, sy + y, C("222c66") if v < 0.35 else C("3e50a0") if v < 0.6 else C("6e84cc"))
+    # stars: dense, and some big
+    for i in range(1400):
+        x, y = int(h01(i, 5, 9) * BW), int(h01(i, 6, 9) * BH)
+        b = h01(i, 7, 9)
+        cv.set(x, y, C("ffffff") if b > 0.95 else C("a8b8ec") if b > 0.75 else C("5a64a0") if b > 0.4 else C("2e3160"))
+        if b > 0.985:
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                cv.set(x + dx, y + dy, C("7a8ce0"))
+    return cv.img
+
+
+def void_mid():
+    cv = Canvas(BW, BH, wrap=True)
+    body, rim, rim2, glow = C("07070f"), C("34447e"), C("7e92d6"), C("c6d8ff")
+    for k, (ix, iy, w, h) in enumerate(((40, 150, 80, 30), (180, 176, 60, 22), (300, 136, 110, 34), (452, 170, 70, 26), (250, 60, 34, 14), (420, 48, 26, 10))):
+        for x in range(-w // 2, w // 2):
+            t = abs(x) / (w / 2)
+            top = int(iy - (1 - t * t) * 4 - h01(x // 3, 1, ix) * 3)
+            bot = int(iy + (1 - t) ** 1.2 * h * (0.7 + 0.3 * h01(x // 2, 3, ix)))
+            for y in range(top, bot):
+                cv.set(ix + x, y, body)
+            cv.set(ix + x, top, rim if h01(x, 2, ix) > 0.25 else rim2)
+            if h01(x, 5, ix) < 0.06:
+                for y in range(top + 2, min(bot, top + 8)):
+                    cv.set(ix + x, y, glow if y == top + 2 else rim)
+        for j in range(int(w / 12)):                     # shards drifting off the chunk
+            sx, sy = ix + (h01(j, k, 3) - 0.5) * w * 1.3, iy - 10 - h01(j, k, 4) * 24
+            for dy in range(4):
+                for dx in range(-1 + dy // 2, 2 - dy // 2):
+                    cv.set(sx + dx, sy + dy, body)
+            cv.set(sx, sy, rim2)
+    return cv.img

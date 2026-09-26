@@ -67,17 +67,17 @@ r.fill(0, 0, 0, 8).fill(23, 0, 23, 8).fill(0, 13, 23, 15)
 r.put(12, 12, 'S').put(17, 12, 'g')
 
 # ---------------------------------------------------------------- SF4 The Shattered Observatory (tower)
-r = Room('SF4', 'The Shattered Observatory', 'starfall', 604, -84, 28, 52, items=['sp:comet', 'emberstone'],
+r = Room('SF4', 'The Shattered Observatory', 'starfall', 604, -84, 28, 52, items=['sp:comet', 'emberstone'], shrine='Observatory Shrine',
          spawns=[_en('sf_pilgrim', 10, 48), _en('sf_golem', 8, 39), _en('sf_pilgrim', 20, 30), _en('sf_pilgrim', 12, 21),
                  _en('sf_wisp', 12, 26, air=True), _en('sf_wisp', 16, 7, air=True),
-                 _sfd('telescope', 7, 21), _sfd('lens', 20, 48), _sfd('arch', 18, 12), _sfd('shard', 6, 4), _sfd('orrering', 22, 39)])
+                 _sfd('telescope', 7, 21), _sfd('lens', 20, 48), _sfd('arch', 12, 12), _sfd('shard', 6, 4), _sfd('orrering', 22, 39)])
 r.fill(0, 0, 0, 51).fill(27, 0, 27, 51).fill(0, 49, 27, 51)
 r.fill(0, 45, 0, 48, '.').fill(27, 45, 27, 48, '.').fill(27, 9, 27, 12, '.')
 r.fill(1, 40, 18, 40).fill(9, 31, 26, 31).fill(1, 22, 18, 22).fill(9, 13, 26, 13)
 for y, x0, x1 in [(44, 21, 24), (36, 3, 6), (27, 21, 24), (18, 3, 6)]:
     r.fill(x0, y, x1, y, '=')
 r.fill(1, 3, 2, 5, '?').fill(25, 3, 26, 6, '?').fill(3, 2, 4, 2, '?').fill(22, 1, 24, 2, '?')   # the broken dome
-r.put(3, 21, 'i').put(25, 30, 'i')
+r.put(3, 21, 'i').put(25, 30, 'i').put(21, 12, 'S')
 
 # ---------------------------------------------------------------- SF5 The Orrery Hall (mini-boss)
 r = Room('SF5', 'Hall of the Orrery', 'starfall', 632, -84, 40, 16, boss='orrery',
@@ -88,9 +88,9 @@ r.fill(1, 0, 6, 1).fill(33, 0, 38, 1).fill(1, 2, 3, 2).fill(36, 2, 38, 2)   # st
 r.put(1, 12, 'F').put(38, 12, 'F')
 
 # ---------------------------------------------------------------- SF6 The Crater Rim (descent; Moonstep ledge to the Last Light)
-r = Room('SF6', 'The Crater Rim', 'starfall', 672, -84, 28, 52,
+r = Room('SF6', 'The Crater Rim', 'starfall', 672, -84, 28, 52, shrine='Crater Heart Shrine',
          spawns=[_en('sf_golem', 23, 19), _en('sf_pilgrim', 22, 32), _en('sf_wisp', 16, 28, air=True), _en('sf_pilgrim', 4, 12),
-                 _sfd('spire', 2, 48), _sfd('godbone', 20, 48), _sfd('shard', 18, 6)])
+                 _sfd('spire', 2, 48), _sfd('godbone', 12, 48), _sfd('shard', 18, 6)])
 r.fill(0, 0, 0, 51).fill(27, 0, 27, 51, '?').fill(0, 49, 27, 51)
 r.fill(0, 9, 0, 12, '.').fill(0, 45, 0, 48, '.').fill(27, 45, 27, 48, '.').fill(27, 2, 27, 4, '.')
 r.fill(0, 13, 8, 14)                          # the rim you arrive on
@@ -103,6 +103,7 @@ r.fill(1, 30, 4, 30).fill(1, 42, 4, 42)
 r.fill(20, 20, 26, 21).fill(18, 33, 26, 34)   # east ledges
 r.fill(22, 22, 26, 25, '?')
 _zone(r, 2, 16, 12, 47)
+r.put(21, 48, 'S')
 
 # ---------------------------------------------------------------- SF8 The Undercroft of Lenses (shortcut: lever gate back to the tower)
 r = Room('SF8', 'The Undercroft of Lenses', 'starfall', 632, -48, 40, 16, indoor=True,

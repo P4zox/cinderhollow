@@ -5,16 +5,16 @@ G.tp('X5', 20, 10); G.step(5);
 const b = G.boss; G.P.x = 300; G.step(20);
 const L = b.L, R = b.R, fl = b.floor;
 const out = { L, R, fl, edge: [] };
-const MOVES = { 1: ['sweep', 'reap', 'rising', 'glide'], 2: ['lance', 'dive', 'reap', 'glide'], 3: ['flurry', 'blinkcut', 'slam'] };
+const MOVES = { 1: ['sweep', 'reap', 'rising', 'glide', 'string', 'vault', 'hook', 'thrust', 'lowsweep', 'spin'], 2: ['lance', 'dive', 'divecombo', 'reap', 'glide', 'vault', 'whip', 'gust', 'cage'], 3: ['flurry', 'blinkcut', 'blink3', 'blinkfall', 'blinkx', 'slam', 'grab', 'allout', 'dance', 'beam'] };
 for (const px of [36, 60, 740, 700]) {
   for (const ph of [1, 2, 3]) {
     b.phase = ph; b.speed = [1, 1, 1.12, 1.3][ph]; b.pendingPhase = 0; b.hp = b.maxHp * [1, 0.9, 0.5, 0.15][ph];
     for (const m of MOVES[ph]) {
       b.x = px < 400 ? L + 10 : R - 10; b.face = px < b.x ? -1 : 1; b.airH = 0; b.hidden = false; b.state = 'idle';
       G.P.x = px; G.P.y = fl; G.P.hp = G.D.maxHp;
-      b.cool = 99; b.start(m);
+      b.cool = 99; b.queue = []; b.begin(m);
       let minX = 1e9, maxX = -1e9, maxY = -1e9, minY = 1e9;
-      for (let f = 0; f < 240; f++) { G.step(1); G.vn.hold(); minX = Math.min(minX, b.x); maxX = Math.max(maxX, b.x); maxY = Math.max(maxY, b.y); minY = Math.min(minY, b.y); if (b.state !== 'attack' && b.state !== 'glide' && f > 30) break; }
+      for (let f = 0; f < 480; f++) { G.step(1); G.vn.hold(); minX = Math.min(minX, b.x); maxX = Math.max(maxX, b.x); maxY = Math.max(maxY, b.y); minY = Math.min(minY, b.y); if (b.state !== 'attack' && b.state !== 'glide' && !b.queue.length && f > 30) break; }
       const bad = minX < L - 0.5 || maxX > R + 0.5 || maxY > fl + 0.01;
       if (bad) out.edge.push(`BAD p${ph} ${m} px=${px}: x ${minX.toFixed(1)}..${maxX.toFixed(1)} y ${minY.toFixed(1)}..${maxY.toFixed(1)}`);
     }
@@ -50,5 +50,5 @@ for (let s = 0; s < 1400; s++) {
   if (s % 60 === 0 && shots < 24) { await snap('b' + String(shots).padStart(2, '0')); shots++; }
   if (!b.alive) break;
 }
-out.moves = seen; out.phases = phases; out.bossHp = b.hp; out.alive = b.alive; out.state = G.state;
+out.moves = seen; out.log = G.vn.VN.log.join(' '); out.phases = phases; out.bossHp = b.hp; out.alive = b.alive; out.state = G.state;
 return out;

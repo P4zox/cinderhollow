@@ -22,6 +22,6 @@ async function arena(room, px, kind, moves, sides) {
     await snap(kind + '_edge_' + side);
   }
 }
-await arena('DU8', 30, 'pharaoh', ['combo', 'beam', 'coffin', 'summon', 'disc', 'backstep', 'strike', 'eyes', 'sink'], [-1, 1]);
+await arena('DU8', 30, 'pharaoh', ['combo', 'lunge', 'slam', 'command', 'beam', 'coffin', 'summon', 'disc', 'backstep', 'strike', 'eyes', 'sink'], [-1, 1]);
 await arena('DU6', 20, 'scarab', ['thrust', 'sweep', 'rear', 'burrow'], [-1, 1]);
 return o;

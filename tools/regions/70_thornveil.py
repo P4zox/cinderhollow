@@ -10,11 +10,11 @@
 #
 #   TV1 The Rootclimb           48..53  x 28..41   wall-jump shaft up from C2's vault
 #   TV2 Mossgrave Verge          0..47  x 28..41   shrine; the hatch shaft to TV7 (shortcut, opened from above)
-#   TV3 The Bramble Thicket    -48..-1  x 28..41   brambles, a thorn wall across the path, briar scythe
+#   TV3 The Bramble Thicket    -48..-1  x 28..41   Briarheart Shrine (before the Coven); brambles, a thorn wall, briar scythe
 #   TV4 Hollow of the Coven    -84..-49 x 28..41   mini-boss: the Thorn Coven
 #   TV5 Mistfell Ascent       -108..-85 x 15..41   the climb; hook-only alcove (c_moss)
 #   TV6 The Hanging Canopy     -84..-25 x 15..27   thorn pit, branches, a thorn wall, thornwood staff
-#   TV7 Warden's Threshold     -24..11  x 15..27   lever -> thorn hatch down into TV2 (shortcut); graves
+#   TV7 Warden's Threshold     -24..11  x 15..27   Antlergate Shrine (before the Warden); lever -> thorn hatch into TV2; grave
 #   TV8 The Antlered Grove      12..59  x 15..27   main boss: the Antlered Warden
 SOLID.add(')')
 FLYING.add('tv_wisp')
@@ -92,12 +92,12 @@ for x, y, ch in [(28, 10, 'S'), (18, 10, 'g'), (5, 4, 'i'), (2, 10, 'k'), (34, 1
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- TV3 The Bramble Thicket
-r = Room('TV3', 'The Bramble Thicket', 'thornveil', -48, 28, 48, 14, indoor=True, chests=['w:briar_scythe'], items=['emberstone'],
+r = Room('TV3', 'The Bramble Thicket', 'thornveil', -48, 28, 48, 14, indoor=True, shrine='Briarheart Shrine', chests=['w:briar_scythe'], items=['emberstone'],
          spawns=[_en('tv_hound', 9, 10), _en('tv_hound', 41, 10), _en('tv_wisp', 18, 5, air=True), _en('tv_husk', 35, 10),
                  dict(t='tv_fog', x=34, y=2, w=13, h=9),
                  dict(t='tv_pod', x=16, y=2), dict(t='tv_pod', x=40, y=2),
                  _tv('tree', 5, 10, back=True, v=1), _tv('tree', 40, 10, back=True), _tv('fern', 13, 10), _tv('fern', 44, 10),
-                 _tv('ribbons', 22, 10), _tv('shroom', 2, 4)])
+                 _tv('ribbons', 25, 10), _tv('shroom', 2, 4)])
 _tv_paint(r, [
     #0         1         2         3         4
     #012345678901234567890123456789012345678901234567
@@ -111,12 +111,12 @@ _tv_paint(r, [
     "............................)...................",  # 7   thorn wall across the path (col 28)
     "..............===...........)...................",  # 8
     "............................)...................",  # 9
-    "....((.............((.......)........(((........",  # 10  brambles
+    "....((....((................)........(((........",  # 10  brambles
     "################################################",  # 11
     "################################################",  # 12
     "################################################",  # 13
 ])
-for x, y, ch in [(4, 4, 'C'), (45, 10, 'i'), (8, 1, 'r'), (18, 1, 'x'), (38, 1, 'r'), (44, 1, 'x'), (33, 10, 'b'), (16, 10, 'k')]:
+for x, y, ch in [(20, 10, 'S'), (4, 4, 'C'), (45, 10, 'i'), (8, 1, 'r'), (18, 1, 'x'), (38, 1, 'r'), (44, 1, 'x'), (33, 10, 'b'), (16, 10, 'k')]:
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- TV4 Hollow of the Coven (mini-boss)
@@ -212,7 +212,7 @@ for x, y, ch in [(32, 7, 'i'), (53, 6, 'i'), (6, 1, 'r'), (13, 1, 'x'), (39, 1, 
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- TV7 Warden's Threshold (the shortcut lever)
-r = Room('TV7', 'Warden\'s Threshold', 'thornveil', -24, 15, 36, 13, indoor=True, graves=['tv3'], chests=['shard'],
+r = Room('TV7', 'Warden\'s Threshold', 'thornveil', -24, 15, 36, 13, indoor=True, shrine='Antlergate Shrine', graves=['tv3'], chests=['shard'],
          spawns=[dict(t='tv_hatch', x=28, y=10, w=3),
                  _tv('tree', 5, 9, back=True, v=1), _tv('tree', 19, 9, back=True, v=2),
                  _tv('idol', 13, 9, v=1), _tv('idol', 31, 9), _tv('ribbons', 9, 9), _tv('fern', 22, 9), _tv('fern', 2, 9)])
@@ -233,7 +233,7 @@ _tv_paint(r, [
     "############################...#####",  # 11
     "############################...#####",  # 12
 ])
-for x, y, ch in [(16, 9, 'g'), (25, 9, 'L'), (6, 9, 'C'), (8, 1, 'x'), (21, 1, 'r'), (30, 1, 'x'), (33, 9, 'k'), (11, 9, 'b')]:
+for x, y, ch in [(20, 9, 'S'), (16, 9, 'g'), (25, 9, 'L'), (6, 9, 'C'), (8, 1, 'x'), (21, 1, 'r'), (30, 1, 'x'), (33, 9, 'k'), (11, 9, 'b')]:
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- TV8 The Antlered Grove (main boss)

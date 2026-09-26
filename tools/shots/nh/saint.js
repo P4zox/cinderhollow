@@ -1,30 +1,24 @@
 await boot();
 const out = [];
-G.give({ items: { talon: 1, wings: 1 } });
 G.tp('NH7', 8, 10); G.step(10);
-// intro cutscene frames
-for (let i = 0; i < 14; i++) { G.step(30); if (i % 2 === 0) await snap('a_intro_' + String(i).padStart(2, '0')); }
+for (let i = 0; i < 16; i++) { G.step(30); if (i % 2 === 0) await snap('a_intro_' + String(i).padStart(2, '0')); }
 for (let i = 0; i < 400 && G.state === 'cut'; i++) G.step(10);
-out.push(['after intro', G.state, G.boss && G.boss.state, G.boss && G.boss.active]);
-const B = G.boss;
-// phase 1: let it act, record moves
+const B = G.boss; out.push(['after intro', G.state, B.state, B.active, Math.round(B.x), Math.round(B.y)]);
 G.nhGod(true);
-const moves = new Set();
-for (let i = 0; i < 60; i++) { G.step(10); if (B.move) moves.add(B.state + ':' + B.move); if (i % 6 === 0) await snap('b_p1_' + String(i).padStart(2, '0')); }
-out.push(['p1 moves', [...moves]]);
-B.hp = B.maxHp * 0.6; G.step(60);
-for (let i = 0; i < 300 && G.state === 'cut'; i++) G.step(10);
-out.push(['p2', B.phase, G.state]);
-B.cds.delete = 0; B.state = 'idle'; B.cool = 0; B.begin('delete'); 
-for (let i = 0; i < 40; i++) { G.step(6); if (i % 5 === 0) await snap('c_p2_del_' + String(i).padStart(2, '0')); }
-B.begin('firewall'); for (let i = 0; i < 20; i++) { G.step(8); if (i % 5 === 0) await snap('c_p2_fw_' + String(i).padStart(2, '0')); }
-B.hp = B.maxHp * 0.3; for (let i = 0; i < 60; i++) G.step(5);
-for (let i = 0; i < 400 && G.state === 'cut'; i++) { G.step(5); if (i % 20 === 0) await snap('d_cut3_' + String(i).padStart(3, '0')); }
-out.push(['p3', B.phase, G.state, G.nhRoom().def.biome]);
-const m3 = new Set();
-for (let i = 0; i < 60; i++) { G.step(10); if (B.move) m3.add(B.state + ':' + B.move); if (i % 6 === 0) await snap('e_p3_' + String(i).padStart(2, '0')); }
-out.push(['p3 moves', [...m3]]);
-B.hp = 1; B.hit({ dmg: 50, poise: 0, dir: 1, x: B.x, y: B.y - 50 });
-for (let i = 0; i < 40; i++) { G.step(10); if (i % 8 === 0) await snap('f_death_' + String(i).padStart(2, '0')); }
+const moves = ['orbs', 'volley', 'limbo', 'grid', 'gaze', 'burn', 'spiral', 'dive', 'delete', 'lighthouse', 'rain'];
+for (const m of moves) {
+  B.state = 'idle'; B.cool = 99; B.cancelMove(); G.step(30);
+  if (['lighthouse', 'rain'].includes(m)) B.phase = 3; else if (['burn', 'spiral', 'dive', 'delete'].includes(m)) B.phase = 2; else B.phase = 1;
+  B.startMove(m); let k = 0;
+  for (let f = 0; f < 600 && B.state === 'attack'; f++) { G.step(1); if (f % 45 === 20 && k < 3) { await snap('b_' + m + '_' + k); k++; } }
+  out.push([m, 'ended', B.state, Math.round(B.x), Math.round(B.y)]);
+}
+B.phase = 1; B.state = 'idle'; B.startExposed(); G.step(60); await snap('c_exposed');
+B.state = 'idle'; B.cool = 99; B.hp = B.maxHp * 0.3; B.phase = 2; B.pendingPhase = 3; B.state = 'idle';
+for (let i = 0; i < 400; i++) { G.step(3); if (i === 60 || i === 120) await snap('d_cyber_' + i); }
+out.push(['p3', B.phase, G.nhRoom().def.biome, B.state]);
+B.state = 'idle'; B.cool = 99; B.startMove('orbs'); for (let f = 0; f < 60; f++) G.step(1); await snap('d_cyber_orbs');
+B.hp = 1; B.hit({ dmg: 50, poise: 0, dir: 1, x: B.x, y: B.y, crit: true });
+for (let i = 0; i < 40; i++) { G.step(6); if (i % 8 === 0) await snap('f_death_' + i); }
 out.push(['dead', B.state, G.SAVE.flags['boss:saint0'], G.nhRoom().def.biome]);
 return out;

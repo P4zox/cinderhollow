@@ -7,7 +7,7 @@ for (let i = 0; i < 200 && !(G.boss && G.boss.active); i++) S(2, ['right']);
 const b = G.boss; S(200);
 out.start = { state: b.state, cons: b.cons, x: Math.round(b.x) };
 // edges: pin the player at each fog wall / wall and force every movement move
-const moves = ['dash', 'leap', 'thrust', 'combo', 'upslash', 'counter', 'rain', 'well'];
+const moves = ['dash', 'leap', 'thrust', 'combo', 'upslash', 'counter', 'rain', 'well', 'flurry', 'wave'];
 out.edges = [];
 for (const side of ['L', 'R']) {
   G.P.x = side === 'L' ? 2 * 16 + 14 : 46 * 16 + 4; G.P.y = b.floor; S(2);

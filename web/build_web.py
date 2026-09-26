@@ -7,9 +7,11 @@ subprocess.run([sys.executable, os.path.join(ROOT, "tools", "rooms.py")], check=
 CACHE = os.path.join(HERE, ".pngcache"); os.makedirs(CACHE, exist_ok=True)
 def packed_png(path):
     """Lossless re-encode: exact indexed palette (+ per-entry alpha) when a sheet has <= 256 colours. Cached by mtime/size."""
-    st = os.stat(path); key = os.path.join(CACHE, f"{os.path.basename(path)}.{int(st.st_mtime)}.{st.st_size}")
+    import hashlib
+    raw = open(path, "rb").read()   # keyed on content: sheets rebuilt within the same second at the same size must not hit a stale entry
+    key = os.path.join(CACHE, f"{os.path.basename(path)}.{hashlib.sha1(raw).hexdigest()[:16]}")
     if os.path.exists(key): return open(key, "rb").read()
-    raw = open(path, "rb").read(); out = raw
+    out = raw
     try:
         import io
         from PIL import Image
@@ -22,9 +24,15 @@ def packed_png(path):
             if len(buf.getvalue()) < len(raw): out = buf.getvalue()
     except Exception as e:
         print("png pack failed", path, e)
-    for old in os.listdir(CACHE):
-        if old.startswith(os.path.basename(path) + "."): os.remove(os.path.join(CACHE, old))
-    tmp = key + f".tmp{os.getpid()}"; open(tmp, "wb").write(out); os.replace(tmp, key); return out   # atomic: agents build concurrently
+    os.makedirs(CACHE, exist_ok=True)
+    for old in os.listdir(CACHE):   # drop stale versions of this sheet (never another build's in-flight temp file)
+        if old.startswith(os.path.basename(path) + ".") and ".tmp" not in old and not old.endswith(key[-16:]) and ".grid" not in old:
+            try: os.remove(os.path.join(CACHE, old))
+            except OSError: pass
+    tmp = key + f".tmp{os.getpid()}"; open(tmp, "wb").write(out)
+    try: os.replace(tmp, key)   # atomic: agents build concurrently
+    except OSError: pass
+    return out
 bundle = {}
 for fn in sorted(os.listdir(ASSETS)):
     name, ext = os.path.splitext(fn)
@@ -48,8 +56,9 @@ def regrid(name, entry):
     fw = max(f["frame"]["w"] for f in fr); fh = max(f["frame"]["h"] for f in fr)
     cols = max(1, MAXW // fw)
     layout = [(i % cols * fw, i // cols * fh) for i in range(len(fr))]
-    src = os.path.join(ASSETS, name + ".png"); st = os.stat(src)
-    key = os.path.join(CACHE, f"{name}.png.{int(st.st_mtime)}.{st.st_size}.grid{cols}")
+    import hashlib
+    src = os.path.join(ASSETS, name + ".png")
+    key = os.path.join(CACHE, f"{name}.png.{hashlib.sha1(open(src, 'rb').read()).hexdigest()[:16]}.grid{cols}")
     if not os.path.exists(key):
         import io
         from PIL import Image
@@ -64,8 +73,13 @@ def regrid(name, entry):
             pi.save(buf, "PNG", optimize=True, transparency=bytes(c[3] for n, c in cols_))
         else: out.save(buf, "PNG", optimize=True)
         for old in os.listdir(CACHE):
-            if old.startswith(name + ".png.") and ".grid" in old: os.remove(os.path.join(CACHE, old))
-        tmp = key + f".tmp{os.getpid()}"; open(tmp, "wb").write(buf.getvalue()); os.replace(tmp, key)
+            if old.startswith(name + ".png.") and ".grid" in old and ".tmp" not in old:
+                try: os.remove(os.path.join(CACHE, old))
+                except OSError: pass
+        tmp = key + f".tmp{os.getpid()}"; open(tmp, "wb").write(buf.getvalue())
+        try: os.replace(tmp, key)
+        except OSError: pass
+        if not os.path.exists(key): open(key, "wb").write(buf.getvalue())
     entry["png"] = "data:image/png;base64," + base64.b64encode(open(key, "rb").read()).decode()
     for f, (x, y) in zip(fr, layout): f["frame"] = {**f["frame"], "x": x, "y": y}
 for _n, _e in bundle.items():

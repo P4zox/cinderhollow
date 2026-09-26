@@ -509,9 +509,101 @@ def death():
     return fr
 
 
+def combo():
+    """Four-hit staff combo: diagonal cleave, rising backhand, overhead slam into the ground, lunging thrust."""
+    hi = dict(fh=(110.0, 58.0), sa=-150.0, bs=-22.0, lean=-4.0, na=10.0, ha=16.0, hip=(104.0, 118.0), ff=(122.0, FL), bf=(90.0, FL))
+    return [
+        (110, PP(fh=(122.0, 72.0), sa=-128.0, bs=-22.0, lean=2.0, na=14.0, ha=20.0, hip=(106.0, 118.0))),
+        (120, PP(**hi)),
+        (190, PP(**dict(hi, glow=2, eye=2, spark=1))),                                                            # telegraph
+        (70, PP(fh=(150.0, 112.0), sa=30.0, bs=-22.0, lean=22.0, na=28.0, ha=36.0, hip=(112.0, 121.0), ff=(128.0, FL), bf=(94.0, FL),
+                smear=((110.0, 58.0), -150.0, 20.0, 50.0), glow=2, eye=2, wind=-2.0)),                             # hit 1
+        (90, PP(fh=(146.0, 124.0), sa=62.0, bs=-22.0, lean=22.0, na=28.0, ha=36.0, hip=(112.0, 121.0), ff=(128.0, FL), bf=(94.0, FL), glow=2)),
+        (70, PP(fh=(150.0, 94.0), sa=-40.0, bs=-22.0, lean=14.0, na=20.0, ha=26.0, hip=(114.0, 119.0), ff=(132.0, FL), bf=(96.0, FL),
+                smear=((146.0, 124.0), 62.0, 20.0, 50.0), glow=2, eye=2, wind=-1.5)),                              # hit 2
+        (90, PP(fh=(132.0, 58.0), sa=-100.0, bs=-22.0, lean=4.0, na=6.0, ha=8.0, hip=(112.0, 116.0), ff=(132.0, FL), bf=(98.0, FL), at=-6.0)),
+        (120, PP(fh=(128.0, 54.0), sa=-104.0, bs=-22.0, lean=2.0, na=4.0, ha=6.0, hip=(112.0, 116.0), ff=(132.0, FL), bf=(98.0, FL), at=-8.0, glow=2, spark=1)),
+        (60, PP(fh=(150.0, 118.0), sa=56.0, bs=-22.0, lean=28.0, na=34.0, ha=44.0, hip=(116.0, 124.0), ff=(136.0, FL), bf=(100.0, FL),
+                smear=((128.0, 54.0), -104.0, 20.0, 50.0), glow=3, eye=2, burst=2, flare=0.6, wind=-2.5)),         # hit 3: slam
+        (110, PP(fh=(148.0, 120.0), sa=54.0, bs=-22.0, lean=26.0, na=32.0, ha=42.0, hip=(116.0, 124.0), ff=(136.0, FL), bf=(100.0, FL), burst=3, glow=2)),
+        (120, PP(fh=(110.0, 118.0), sa=10.0, bs=-22.0, lean=4.0, na=18.0, ha=26.0, hip=(108.0, 121.0), ff=(128.0, FL), bf=(92.0, FL), glow=2, eye=2)),
+        (60, PP(fh=(160.0, 128.0), sa=16.0, bs=-22.0, lean=34.0, na=36.0, ha=42.0, hip=(126.0, 124.0), ff=(152.0, FL), bf=(104.0, FL),
+                smear=((110.0, 118.0), 10.0, 30.0, 50.0), glow=2, eye=2, wind=-3.0)),                              # hit 4: thrust
+        (90, PP(fh=(162.0, 129.0), sa=17.0, bs=-22.0, lean=35.0, na=37.0, ha=43.0, hip=(127.0, 124.0), ff=(152.0, FL), bf=(104.0, FL), glow=2, wind=-2.0)),
+        (150, PP(fh=(150.0, 118.0), sa=-20.0, bs=-22.0, lean=24.0, na=28.0, ha=34.0, hip=(122.0, 121.0), ff=(146.0, FL), bf=(104.0, FL))),
+        (150, PP(fh=(142.0, 108.0), sa=-70.0, lean=14.0, hip=(114.0, 118.0), ff=(134.0, FL), bf=(100.0, FL))),
+        (150, PP()),
+    ]
+
+
+def leap():
+    """A towering leap and a staff slam that cracks the ground (the engine carries him along the arc on frames 3..8)."""
+    air = dict(hip=(108.0, 110.0), lean=4.0, na=8.0, ha=12.0, bl=30.0, fl=24.0, fh=(118.0, 54.0), sa=-100.0, bs=-18.0, at=-6.0, glow=2, eye=2)
+    return [
+        (110, PP(hip=(106.0, 128.0), lean=18.0, na=28.0, ha=36.0, fh=(132.0, 108.0), sa=-80.0, bs=-18.0)),
+        (120, PP(hip=(106.0, 134.0), lean=22.0, na=32.0, ha=40.0, fh=(126.0, 100.0), sa=-85.0, bs=-18.0, glow=2)),
+        (170, PP(hip=(106.0, 135.0), lean=22.0, na=32.0, ha=40.0, fh=(126.0, 99.0), sa=-85.0, bs=-18.0, glow=3, eye=2, spark=1)),   # telegraph
+        (80, PP(hip=(108.0, 114.0), lean=2.0, na=8.0, ha=10.0, bl=12.0, fl=8.0, fh=(122.0, 60.0), sa=-95.0, bs=-18.0, glow=2, wind=2.0)),
+        (100, PP(**air)),
+        (100, PP(**dict(air, wind=1.0))),
+        (90, PP(**dict(air, fh=(130.0, 70.0), sa=-60.0, lean=10.0, na=16.0, ha=22.0))),
+        (70, PP(**dict(air, fh=(146.0, 96.0), sa=20.0, lean=20.0, na=26.0, ha=34.0, bl=18.0, fl=14.0, smear=((130.0, 70.0), -60.0, 20.0, 50.0)))),
+        (60, PP(hip=(114.0, 126.0), lean=28.0, na=34.0, ha=44.0, fh=(150.0, 122.0), sa=62.0, bs=-18.0, ff=(132.0, FL), bf=(96.0, FL), burst=2,
+                smear=((146.0, 96.0), 20.0, 20.0, 50.0), glow=3, eye=2, flare=0.8, wind=-2.5)),                     # impact
+        (110, PP(hip=(114.0, 127.0), lean=28.0, na=34.0, ha=44.0, fh=(150.0, 123.0), sa=62.0, bs=-18.0, ff=(132.0, FL), bf=(96.0, FL), burst=3, glow=2, flare=0.6)),
+        (140, PP(hip=(112.0, 124.0), lean=24.0, na=30.0, ha=38.0, fh=(148.0, 118.0), sa=40.0, bs=-18.0, ff=(130.0, FL), bf=(96.0, FL))),
+        (140, PP(hip=(110.0, 120.0), lean=16.0, na=26.0, ha=32.0, fh=(144.0, 110.0), sa=-40.0, ff=(128.0, FL), bf=(98.0, FL))),
+        (150, PP(hip=(109.0, 118.0), lean=12.0, fh=(141.0, 106.0), sa=-80.0, ff=(124.0, FL))),
+        (150, PP()),
+    ]
+
+
+def gore():
+    """Antler gore combo: two hooking tosses of the lowered antlers, stepping in."""
+    low = dict(hip=(104.0, 124.0), lean=34.0, na=58.0, ha=78.0, at=32.0, fh=(132.0, 118.0), sa=-120.0, bh=(112.0, 134.0))
+    up1 = dict(hip=(116.0, 118.0), lean=10.0, na=20.0, ha=10.0, at=-14.0, fh=(138.0, 108.0), sa=-100.0, ff=(134.0, FL), bf=(100.0, FL), eye=2, glow=2)
+    up2 = dict(hip=(126.0, 118.0), lean=8.0, na=14.0, ha=6.0, at=-16.0, fh=(148.0, 108.0), sa=-100.0, ff=(146.0, FL), bf=(110.0, FL), eye=2, glow=2)
+    return [
+        (110, PP(hip=(106.0, 120.0), lean=22.0, na=40.0, ha=56.0, at=18.0, fh=(134.0, 114.0), sa=-115.0)),
+        (120, PP(**low)),
+        (120, PP(**dict(low, bl=3.0))),
+        (180, PP(**dict(low, eye=2, glow=2, spark=1))),                                                            # telegraph
+        (60, PP(**dict(up1, wind=-2.0))),
+        (80, PP(**dict(up1, lean=4.0, na=6.0, ha=-6.0, at=-18.0))),
+        (110, PP(**dict(low, hip=(116.0, 122.0), ff=(134.0, FL), bf=(100.0, FL), eye=2))),
+        (60, PP(**dict(up2, wind=-2.0))),
+        (80, PP(**dict(up2, lean=2.0, na=2.0, ha=-10.0, at=-20.0))),
+        (150, PP(hip=(122.0, 118.0), lean=10.0, na=20.0, ha=24.0, fh=(146.0, 106.0), sa=-94.0, ff=(144.0, FL), bf=(108.0, FL))),
+        (150, PP(hip=(114.0, 117.5), lean=11.0, na=22.0, ha=28.0, fh=(144.0, 105.0), sa=-93.0, ff=(132.0, FL), bf=(102.0, FL))),
+        (150, PP()),
+    ]
+
+
+def nova():
+    """Thorn nova: gathers the forest's light into its heart, then flings thorns out in every direction."""
+    g_ = dict(hip=(106.0, 126.0), lean=26.0, na=40.0, ha=56.0, fh=(128.0, 102.0), sa=-70.0, bh=(118.0, 96.0), eye=2)
+    wide = dict(hip=(104.0, 116.0), lean=-10.0, na=-16.0, ha=-30.0, at=-18.0, fh=(152.0, 96.0), sa=-60.0, bh=(70.0, 90.0), hand_open=1.0, jaw=1.0, eye=2, glow=3, flare=0.8)
+    return [
+        (110, PP(hip=(106.0, 120.0), lean=18.0, na=32.0, ha=44.0, fh=(134.0, 104.0), sa=-75.0, bh=(110.0, 104.0))),
+        (120, PP(**dict(g_, glow=2, orb=1))),
+        (120, PP(**dict(g_, glow=2, orb=2, spark=1))),
+        (130, PP(**dict(g_, glow=3, orb=3, spark=2))),
+        (130, PP(**dict(g_, glow=3, orb=3, spark=3))),
+        (170, PP(**dict(g_, glow=3, orb=3, spark=3, jaw=0.3))),                                                    # telegraph
+        (70, PP(**dict(wide, spark=3, wind=2.5))),                                                                 # spawn: the nova
+        (130, PP(**dict(wide, spark=2, wind=2.0))),
+        (150, PP(**dict(wide, jaw=0.5, spark=0, wind=1.0))),
+        (150, PP(hip=(106.0, 117.0), lean=6.0, na=14.0, ha=18.0, bh=(92.0, 110.0), hand_open=0.3, eye=2)),
+        (150, PP(hip=(107.0, 117.0), lean=9.0, na=20.0, ha=25.0)),
+        (150, PP()),
+    ]
+
+
 ANIMS = [("idle", idle), ("walk", walk), ("sweep", sweep), ("thrust", thrust), ("erupt", erupt), ("volley", volley),
          ("charge_prep", charge_prep), ("charge", charge), ("charge_end", charge_end), ("sink", sink), ("rise", rise),
-         ("summon", summon), ("roar", roar), ("stagger", stagger), ("death", death)]
+         ("summon", summon), ("roar", roar), ("stagger", stagger), ("death", death), ("combo", combo), ("leap", leap), ("gore", gore),
+         ("nova", nova)]
+P2_TAGS = ("idle", "roar", "sink")      # the warden_p2 sheet only carries the transformation (phase 2 is the stag)
 
 
 def build():
@@ -521,7 +613,8 @@ def build():
     for p2, name in ((False, "warden"), (True, "warden_p2")):
         if p2 and "--p1only" in sys.argv:
             break
-        anims, infos = render_anims(LAYERS, lambda p, k, s, p2=p2: draw(p, k, s, p2), anims_used, sway_key="hip", loops=("idle", "walk", "charge"))
+        use = [a for a in anims_used if not p2 or a[0] in P2_TAGS]
+        anims, infos = render_anims(LAYERS, lambda p, k, s, p2=p2: draw(p, k, s, p2), use, sway_key="hip", loops=("idle", "walk", "charge"))
         if not p2 and ONLY is None:
             def hs(tag, ks, key="hit_staff", x_min=None, floor=False, pad=1):
                 pts = set()
@@ -540,17 +633,31 @@ def build():
                                 "thrust": {"active": [5, 6], "hit": hs("thrust", [5, 6], x_min=120, floor=True)},
                                 "erupt": {"active": [6, 6], "hit": hs("erupt", [6], x_min=112, floor=True)},
                                 "charge": {"active": [0, 3], "hit": (lambda r: [r[0], r[1], r[2], H_ - r[1]])(antr("charge", [0, 1, 2, 3]))},
-                                "rise": {"active": [5, 6], "hit": hs("rise", [5, 6], x_min=100)}},
+                                "rise": {"active": [5, 6], "hit": hs("rise", [5, 6], x_min=100)},
+                                "combo": {"windows": [{"active": [3, 3], "hit": hs("combo", [3], x_min=112, floor=True)},
+                                                      {"active": [5, 5], "hit": hs("combo", [5], x_min=112)},
+                                                      {"active": [8, 8], "hit": hs("combo", [8], x_min=112, floor=True)},
+                                                      {"active": [11, 12], "hit": hs("combo", [11], x_min=120, floor=True)}]},
+                                "leap": {"active": [8, 9], "hit": hs("leap", [8], x_min=100, floor=True)},
+                                "gore": {"windows": [{"active": [4, 5], "hit": (lambda r: [r[0], r[1], r[2], H_ - r[1]])(antr("gore", [3, 4, 5]))},
+                                                     {"active": [7, 8], "hit": (lambda r: [r[0], r[1], r[2], H_ - r[1]])(antr("gore", [6, 7, 8]))}]}},
                     "spawn": {"erupt": {"frame": 6, "at": spawn_pt(infos["erupt"][6]["butt"])},
                               "volley": {"frame": 6, "at": spawn_pt(infos["volley"][6]["bhand"])},
-                              "summon": {"frame": 6, "at": spawn_pt(infos["summon"][6]["tip"])}},
+                              "summon": {"frame": 6, "at": spawn_pt(infos["summon"][6]["tip"])},
+                              "combo": {"frame": 8, "at": spawn_pt(infos["combo"][8]["tip"])},
+                              "leap": {"frame": 8, "at": spawn_pt(infos["leap"][8]["tip"])},
+                              "nova": {"frame": 6, "at": spawn_pt(infos["nova"][6]["heart"])}},
                     "telegraph": {"sweep": {"frame": 4, "at": spawn_pt(infos["sweep"][4]["tip"])},
                                   "thrust": {"frame": 4, "at": spawn_pt(infos["thrust"][4]["tip"])},
                                   "erupt": {"frame": 5, "at": spawn_pt(infos["erupt"][5]["tip"])},
                                   "volley": {"frame": 4, "at": spawn_pt(infos["volley"][4]["bhand"])},
                                   "charge_prep": {"frame": 5, "at": spawn_pt(infos["charge_prep"][5]["eye"])},
                                   "rise": {"frame": 4, "at": spawn_pt(infos["rise"][4]["tip"])},
-                                  "summon": {"frame": 5, "at": spawn_pt(infos["summon"][5]["tip"])}},
+                                  "summon": {"frame": 5, "at": spawn_pt(infos["summon"][5]["tip"])},
+                                  "combo": {"frame": 2, "at": spawn_pt(infos["combo"][2]["tip"])},
+                                  "leap": {"frame": 2, "at": spawn_pt(infos["leap"][2]["tip"])},
+                                  "gore": {"frame": 3, "at": spawn_pt(infos["gore"][3]["eye"])},
+                                  "nova": {"frame": 5, "at": spawn_pt(infos["nova"][5]["heart"])}},
                     "points": {tag: [{"eye": spawn_pt(i["eye"]), "tip": spawn_pt(i["tip"]), "heart": spawn_pt(i["heart"])} for i in infos[tag]] for tag, _ in ANIMS}}
         tags, flats = K.export(name, LAYERS, anims, meta if not p2 else None, build=BUILD)
         contact(name, tags, flats, per_row=14, scale=2)

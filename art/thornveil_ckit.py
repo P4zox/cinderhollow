@@ -289,3 +289,30 @@ def contact(name, tags, flats, rows=None, scale=3, per_row=16):
             fr.alpha_composite(flats[i])
             sheet.alpha_composite(fr.resize((W * scale, H * scale), Image.NEAREST), ((i - a) * (W + 2) * scale, (r * (H + 12) + 10) * scale))
     sheet.save(os.path.join(ART, "previews", f"{name}_contact.png"))
+
+
+def smooth_tube(L, pts, radii, mat, bias=0, ao=1, flat=1.0):
+    """One continuous normal field along a polyline (no seams between segments, unlike `chain`)."""
+    import enemy_kit as _K
+    xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+    R = max(radii) + 1
+    out = {}
+    segs = list(zip(pts, pts[1:], radii, radii[1:]))
+    for y in range(int(min(ys) - R) - 1, int(max(ys) + R) + 2):
+        for x in range(int(min(xs) - R) - 1, int(max(xs) + R) + 2):
+            px, py = x + .5, y + .5
+            best = None
+            for (a, b, ra, rb) in segs:
+                dx, dy = b[0] - a[0], b[1] - a[1]
+                L2 = dx * dx + dy * dy or 1e-6
+                t = max(0.0, min(1.0, ((px - a[0]) * dx + (py - a[1]) * dy) / L2))
+                qx, qy = a[0] + dx * t, a[1] + dy * t
+                r = ra + (rb - ra) * t
+                ox, oy = px - qx, py - qy
+                q = (ox * ox + oy * oy) / (r * r)
+                if q <= 1 and (best is None or q < best[0]):
+                    best = (q, ox / r, oy / r)
+            if best:
+                nx, ny = best[1] * flat, best[2] * flat
+                out[(x, y)] = _K.norm3(nx, ny, math.sqrt(max(0.05, 1 - nx * nx - ny * ny)))
+    return L.paint(out, mat, bias, ao)

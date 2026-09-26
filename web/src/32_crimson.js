@@ -3,7 +3,7 @@
 // eyes follow you, crypt-cellars of wine and blood. Gate: a blood veil (the ash-veil '%' mechanic, re-skinned) — Ember Dash.
 // Hazards: blood pools (sap HP/FP, slow), crimson downpours in the Court (shelter under balconies), swinging chandeliers,
 // portrait ambushes. Enemies: cm_servant, cm_hound, cm_gargoyle. Mini-boss: the Butler (CM6). Boss: Countess Sanguine (CM7;
-// phase 2 floods the ballroom with a sea of blood). Every top-level name is prefixed cm/CM (all region files share one scope).
+// phase 2 tears the ballroom open to a red sky). Every top-level name is prefixed cm/CM (all region files share one scope).
 Object.assign(AREAS, { crimson: { name: 'The Crimson Manor', ambient: 0.58, amb: 'dust', tint: '#0a0508', map: '#7a2232' } });
 Object.assign(SCALES, { crimson: [0, 2, 3, 7, 8] });
 Object.assign(ROOTS, { crimson: 55 });
@@ -69,7 +69,7 @@ function cmMusicTick() {
 const CM = { roomObj: null };
 function cmReset() {
   Object.assign(CM, { roomObj: room, pools: [], chands: [], ports: [], shots: [], lances: [], waves: [], drops: [], bats: [], splats: [],
-    rain: null, streaks: [], poolT: 0, rainHint: false, veilHint: false, flood: null, back0: null });
+    rain: null, streaks: [], poolT: 0, rainHint: false, veilHint: false, col: null, back0: null, lines: [], debris: [], held: null });
 }
 function cmEnsure() { if (CM.roomObj !== room) cmReset(); }
 function cmFloorY(x, y0) {   // first solid/platform top at or below y0
@@ -325,6 +325,7 @@ SPAWNS.cm_chandelier = (s, c) => {
 function cmChandPos(ch) { return { x: ch.px + Math.sin(ch.ang) * ch.len, y: ch.py + Math.cos(ch.ang) * ch.len }; }
 function cmUpdateChands(dt) {
   for (const ch of CM.chands) {
+    if (ch.gone || ch.fall) continue;
     ch.t += dt;
     ch.ang = ch.amp ? ch.amp * Math.sin((ch.t / ch.period + ch.ph) * Math.PI * 2) : Math.sin(ch.t * 0.8 + ch.px) * 0.02;
     const e = cmChandPos(ch), cx = e.x + Math.sin(ch.ang) * 24, cy = e.y + Math.cos(ch.ang) * 24;
@@ -343,8 +344,9 @@ function cmUpdateChands(dt) {
 function cmDrawChands() {
   const sh = sheet('cm_chandelier');
   for (const ch of CM.chands) {
-    const e = cmChandPos(ch), n = Math.max(1, Math.floor(ch.len / 4));
-    for (let i = 0; i <= n; i++) { const t = i / n, x = lerp(ch.px, e.x, t), y = lerp(ch.py, e.y, t); g.fillStyle = i % 2 ? '#1a1418' : '#4a3e44'; g.fillRect(Math.round(x), Math.round(y), 1, 2); }
+    if (ch.gone) continue;
+    const e0 = cmChandPos(ch), e = ch.fall ? { x: e0.x, y: e0.y + ch.fall.y } : e0, n = Math.max(1, Math.floor(ch.len / 4));
+    if (!ch.fall) for (let i = 0; i <= n; i++) { const t = i / n, x = lerp(ch.px, e.x, t), y = lerp(ch.py, e.y, t); g.fillStyle = i % 2 ? '#1a1418' : '#4a3e44'; g.fillRect(Math.round(x), Math.round(y), 1, 2); }
     if (sh.ok) {
       const t = sh.tag('loop'), f = t.from + (Math.floor(time * 7 + ch.px) % (t.to - t.from + 1));
       drawSprite(sh, f, e.x, e.y, 1, { pivot: [Math.floor(sh.fw / 2), 0], rot: -ch.ang, flash: ch.red > 0 ? ch.red * 0.35 : 0, flashColor: '#ff2030' });
@@ -370,6 +372,11 @@ function cmUpdateShots(dt) {
 }
 function cmDrawShots() {
   for (const s of CM.shots) {
+    if (s.kind === 'spike') {
+      const a = Math.atan2(s.vy, s.vx), c = Math.cos(a), sn = Math.sin(a);
+      for (let k = -6; k <= 5; k++) { g.fillStyle = k > 3 ? '#ffb0a8' : k > -2 ? '#e0303c' : '#8a1020'; g.fillRect(Math.round(s.x + c * k), Math.round(s.y + sn * k), 1, 1); if (k < 2 && k > -4) g.fillRect(Math.round(s.x + c * k - sn), Math.round(s.y + sn * k + c), 1, 1); }
+      addLight(s.x, s.y, 18, '255,50,50', 0.5); continue;
+    }
     if (s.kind !== 'knife') continue;
     const a = Math.atan2(s.vy, s.vx), c = Math.cos(a), sn = Math.sin(a);
     for (let k = -4; k <= 4; k++) { g.fillStyle = k > 1 ? '#f0f0ff' : k > -2 ? '#b8b8cc' : '#3a2a30'; g.fillRect(Math.round(s.x + c * k), Math.round(s.y + sn * k), 1, 1); }
@@ -480,7 +487,7 @@ HOOKS.renderTop.push(() => {
   try { cmMusicTick(); } catch (e) {}
   if (!cmIn()) return;
   if (CM.rain) cmDrawRain();
-  if (room.id === 'CM7' && CM.flood && CM.flood.k > 0) { g.fillStyle = `rgba(40,0,8,${0.04 * CM.flood.k})`; g.fillRect(0, 0, W, H); }
+  if (room.id === 'CM7' && CM.col && CM.col.k > 0) { const r0 = CM.rain; CM.rain = { k: boss && boss.alive ? 0.6 : 0.3 }; cmDrawRain(); CM.rain = r0; }
 });
 
 // ================================================================== enemies
@@ -703,11 +710,19 @@ BOSS_CUTS.butler = b => [
 ];
 PHASE2_LINES.butler = ['The Butler', 'Forgive me, Madam. I must be less… courteous.'];
 
-// ================================================================== COUNTESS SANGUINE (CM7) — rapier, blood whip, bats, lances, doubles
-// Phase 2 (50%): her gown becomes a torrent of blood, blood wings; the ballroom floods (sea of blood, tides), aerial dives + rain.
+// ================================================================== COUNTESS SANGUINE, THE VAMPIRE QUEEN-KNIGHT (CM7)
+// Phase 1: blood-blade combos of 3-5 cuts, blood-charge dashes, sneak attacks out of a bat swarm, blood lances, the
+// Crimson Requiem (a string of near-instant charges across the whole hall, each flagged by a blood-line flash) and a
+// blood-drain grab that heals her (interrupt the wind-up with hits, or mash to break free once caught).
+// Phase 2 (50%): she tears the ballroom apart -- the vault and the upper walls shatter and fall, the red sky and the manor's
+// towers show through, blood rain, falling masonry; blood wings: dives, spike volleys, longer requiems, harder combos.
 BOSS_INFO.sanguine = { name: 'Countess Sanguine', hp: 3200, cinders: 16000, reward: ['w:sanguine_rapier', 'sp:crimson_rite', 'c_countess'],
   quote: '“Every guest leaves something behind. Most leave everything.”' };
-const CM_SG = { flurry: 24, lunge: 40, whip: 34, lance: 30, dbl: 28, dive: 46, drop: 22, splash: 22, tide: 26 };
+const CM_SG = { slash1: 30, slash2: 30, thrust: 34, spin: 30, overhead: 44, charge: 40, chargeend: 30, req: 32, lance: 30, drain: 15, bite: 18,
+  dive: 44, spike: 20, drop: 22, debris: 30, shock: 24 };
+const CM_COMBOS1 = [['slash1', 'slash2', 'thrust'], ['slash1', 'slash2', 'spin'], ['thrust', 'slash2', 'overhead'], ['slash2', 'slash1', 'thrust', 'overhead']];
+const CM_COMBOS2 = [['slash1', 'slash2', 'thrust', 'overhead'], ['slash1', 'spin', 'slash2', 'thrust', 'overhead'], ['thrust', 'slash2', 'slash1', 'spin'],
+  ['slash2', 'slash1', 'spin', 'thrust', 'overhead']];
 class CmSanguine extends BossBase {
   constructor(x, y) {
     super('sanguine', x, y);
@@ -715,95 +730,125 @@ class CmSanguine extends BossBase {
     const meta = ASSETS.sanguine_meta;
     this.sheets = [sheet('sanguine', { meta }), sheet('sanguine_p2', { meta })];
     this.sh = this.sheets[0]; this.anim = new Anim(this.sh, 'idle'); this.state = 'dormant'; this.face = -1;
-    this.stanceMax = 300; this.critRange = 72; this.alt = 0; this.cool = 1; this.q = []; this.dbl = []; this.hidden = false; this.last = null; this.airN = 0; this.skyCd = 0;
-    this.whip = null; this.tideT = 6;
+    this.stanceMax = 320; this.critRange = 80; this.alt = 0; this.cool = 1; this.q = []; this.combo = []; this.hidden = false; this.last = null;
+    this.reqCd = 6; this.grabCd = 4; this.skyCd = 0; this.dirT = 4; this.after = [];
   }
-  get L() { return 2 * TILE + 26; }
-  get R() { return room.pw - TILE - 26; }
-  get maxAlt() { return this.floor - (2 * TILE + 100); }
+  get L() { return 2 * TILE + 30; }
+  get R() { return room.pw - TILE - 30; }
+  get maxAlt() { return this.floor - (2 * TILE + 118); }
+  ambient() { if (this.alive && !this.hidden) addLight(this.x, this.y - 70, 90, '230,80,80', 0.7); }
   fm(tag = this.anim.tag, i = this.anim.i) { const m = this.sh.meta, f = m && m.frames && m.frames[tag]; return f ? f[Math.min(i, f.length - 1)] : null; }
   mpt(key, fb) { const f = this.fm(); return f && f[key] ? metaPoint(this.sh, this, f[key]) : fb; }
   hurtbox() {
-    if (!this.alive || this.hidden || this.state === 'dormant' && !this.active) return null;
+    if (!this.alive || this.hidden || (this.state === 'dormant' && !this.active)) return null;
     const f = this.fm(); if (f && f.hb) return metaRect(this.sh, this, f.hb);
-    return rect(this.x - 12, this.y - 84, this.x + 12, this.y);
+    return rect(this.x - 16, this.y - 106, this.x + 16, this.y);
   }
-  hit(info) { if (this.hidden) return; super.hit(info); }
-  canStagger() { return !this.hidden && this.alt < 4 && ['idle', 'walk', 'attack', 'recover'].includes(this.state) && this.atk !== 'transform'; }
-  setA(tag, loop = false, speed = 1) { this.anim.set(this.sh.has(tag) ? tag : 'idle', loop, speed * (this.phase === 2 ? 1.12 : 1)); }
+  hit(info) {
+    if (this.hidden) return;
+    const hp0 = this.hp;
+    super.hit(info);
+    if (this.state === 'attack' && this.atk === 'grab' && this.anim.i < 4 && this.alive) {   // interrupt the drain grab
+      this.grabDmg = (this.grabDmg || 0) + (hp0 - this.hp) + (info.kind === 'heavy' ? 40 : 0);
+      if (this.grabDmg >= 90 * NGP.hp) this.flinch('Interrupted!');
+    }
+  }
+  canStagger() { return !this.hidden && this.alt < 4 && ['idle', 'walk', 'attack', 'recover', 'charge'].includes(this.state); }
+  setA(tag, loop = false, speed = 1) { this.anim.set(this.sh.has(tag) ? tag : 'idle', loop, speed * (this.phase === 2 ? 1.1 : 1)); }
   later(t, fn) { this.q.push({ t, fn }); }
   wakeCheck() { return P.x > 3 * TILE + 8 && P.x < this.R && P.state !== 'dead'; }
-  activate() { if (this.active || this.cutting) return; super.activate(); }
+  dmg(k) { return BOSS_DMG * CM_SG[k] * (this.phase === 2 ? 1.1 : 1) * NGP.dmg; }
+  flinch(msg) {
+    this.state = 'recover'; this.t = 1.1; this.combo = []; this.setA('stagger'); this.anim.speed = 0.8; sfx.glint();
+    spawnFx(fxOr('parry_flash', 'parry_spark'), this.x, this.y - 70, this.face); if (msg) toast(msg, 1.4);
+  }
   update(dt) {
     this.commonUpdate(dt);
     const an = this.anim; an.update(dt);
     if (!this.active) { if (!this.cutting && this.wakeCheck()) this.activate(); if (!this.cutting) this.facePlayer(); return; }
     if (this.introT > 0) { this.introT -= dt; if (this.introT <= 0) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.6; } }
     if (this.alive) { for (const e of this.q) { e.t -= dt; if (e.t <= 0 && !e.done) { e.done = true; e.fn(); } } this.q = this.q.filter(e => !e.done); }
-    this.skyCd -= dt;
+    this.skyCd -= dt; this.reqCd -= dt; this.grabCd -= dt;
+    for (const a of this.after) a.t -= dt; this.after = this.after.filter(a => a.t > 0);
     switch (this.state) {
-      case 'idle': {
+      case 'idle':
         this.cool -= dt;
         if (an.tag !== 'idle' && an.tag !== 'fly') this.setA(this.alt > 4 ? 'fly' : 'idle', true);
         if (P.state === 'dead') break;
         this.facePlayer();
         if (this.cool <= 0) this.choose();
         break;
-      }
       case 'walk': {
         this.t -= dt; this.cool -= dt; this.facePlayer();
         const d = Math.abs(P.x - this.x), dir = d > this.want ? this.face : -this.face;
-        this.x = clamp(this.x + dir * 64 * this.speed * dt, this.L, this.R);
-        if (this.t <= 0 || Math.abs(d - this.want) < 14) { this.state = 'idle'; this.cool = Math.min(this.cool, 0.15); }
+        this.x = clamp(this.x + dir * 72 * this.speed * dt, this.L, this.R);
+        if (this.t <= 0 || Math.abs(d - this.want) < 14) { this.state = 'idle'; this.cool = Math.min(this.cool, 0.1); }
         break;
       }
       case 'attack': this.updateAttack(dt); break;
+      case 'charge': this.updateCharge(dt); break;
       case 'vanish':
-        if (an.done || !this.sh.has('vanish')) { this.hidden = true; this.state = 'bats'; this.t = 0.42; }
+        if (an.done || !this.sh.has('vanish')) { this.hidden = true; this.state = this.batNext || 'bats'; this.t = 0.4; }
         break;
       case 'bats':
         this.t -= dt;
-        if (this.t <= 0) { this.x = this.batTo; this.hidden = false; this.facePlayer(); this.state = 'appear'; this.setA('appear'); }
+        if (this.t <= 0) { this.x = this.batTo; this.hidden = false; this.facePlayer(); this.state = 'appear'; this.setA('appear', false, 1.25); }
         break;
       case 'appear':
-        if (an.done || !this.sh.has('appear')) { const d = Math.abs(P.x - this.x); this.begin(d < 80 ? 'flurry' : this.phase === 2 && Math.random() < 0.4 ? 'whip' : 'lunge', true); }
+        if (an.done || !this.sh.has('appear')) this.startCombo(this.phase === 2 ? ['thrust', 'slash2', 'slash1'] : ['thrust', 'slash2'], 1.3);
+        break;
+      case 'requiem': this.updateRequiem(dt); break;
+      case 'drain': this.updateDrain(dt); break;
+      case 'recover':
+        this.t -= dt;
+        if (this.t <= 0) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.3; }
         break;
       case 'takeoff':
-        this.alt = approach(this.alt, this.hoverAlt, 220 * dt); this.facePlayer();
-        if (this.alt >= this.hoverAlt - 1) { this.state = 'hover'; this.t = rand(0.5, 0.8); }
+        this.alt = approach(this.alt, this.hoverAlt, 240 * dt); this.facePlayer();
+        if (this.alt >= this.hoverAlt - 1) { this.state = 'hover'; this.t = rand(0.35, 0.6); }
         break;
       case 'hover': {
         this.t -= dt; this.facePlayer();
-        const tx = clamp(P.x - this.face * 70, this.L + 20, this.R - 20);
-        this.x = approach(this.x, tx, 110 * dt); this.alt = approach(this.alt, this.hoverAlt + Math.sin(time * 3) * 4, 60 * dt);
+        this.x = approach(this.x, clamp(P.x - this.face * 80, this.L + 16, this.R - 16), 140 * dt);
+        this.alt = approach(this.alt, this.hoverAlt + Math.sin(time * 3) * 4, 60 * dt);
         if (this.t <= 0) this.airMove();
         break;
       }
       case 'diveprep':
-        this.t -= dt; this.face = this.diveTo.x < this.x ? -1 : 1;
+        this.t -= dt; this.face = this.diveTo < this.x ? -1 : 1;
         if (this.t <= 0) { this.state = 'dive'; this.diveV = null; sfx.bossSwing(); }
         break;
       case 'dive': {
-        if (!this.diveV) { const dx = this.diveTo.x - this.x, dy = this.alt, d = Math.hypot(dx, dy) || 1; this.diveV = { x: dx / d * 430, y: dy / d * 430 }; }
+        if (!this.diveV) { const dx = this.diveTo - this.x, dy = this.alt, d = Math.hypot(dx, dy) || 1; this.diveV = { x: dx / d * 470, y: dy / d * 470 }; }
         this.x = clamp(this.x + this.diveV.x * dt, this.L, this.R); this.alt = Math.max(0, this.alt - this.diveV.y * dt);
-        const f = this.fm(), r = f && f.hit ? metaRect(this.sh, this, f.hit) : rect(this.x - 22, this.y - 70, this.x + 22, this.y);
-        if (!this.hitIds.has(0) && overlap(r, playerHurtbox()) && hurtPlayer(BOSS_DMG * CM_SG.dive * NGP.dmg, this.face, this.atkId, { src: this })) this.hitIds.add(0);
+        if (Math.abs(this.x - (this.lastAfterX ?? -1e9)) > 24) { this.lastAfterX = this.x; this.after.push({ x: this.x, y: this.floor - this.alt, f: an.frame, face: this.face, t: 0.18 }); }
+        const w = metaWindows(this.sh, 'dive')[0], r = w && w.hit ? metaRect(this.sh, this, w.hit) : rect(this.x - 22, this.y - 70, this.x + 30, this.y);
+        if (!this.hitIds.has(0) && (overlap(r, playerHurtbox()) || overlap(this.hurtbox() || r, playerHurtbox())) && hurtPlayer(this.dmg('dive'), this.face, this.atkId, { src: this })) this.hitIds.add(0);
         if (this.alt <= 0 || (this.x <= this.L + 0.5 && this.diveV.x < 0) || (this.x >= this.R - 0.5 && this.diveV.x > 0)) this.land(true);
         break;
       }
-      case 'recover':
-        this.t -= dt;
-        if (this.t <= 0 && (an.done || an.loop)) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.25; }
+      case 'volley': {
+        const sp = this.sh.meta && this.sh.meta.spawn && this.sh.meta.spawn.volley;
+        this.facePlayer();
+        if (!this.fired && an.i >= (sp ? sp.frame : 4)) { this.fired = true; this.spikeVolley(sp ? metaPoint(this.sh, this, sp.at) : { x: this.x, y: this.y - 100 }); }
+        if (an.done || !this.sh.has('volley')) { this.state = 'hover'; this.t = 0.3; this.setA('fly', true); }
+        break;
+      }
+      case 'airrain':
+        this.t -= dt; this.x = approach(this.x, clamp(P.x - this.face * 40, this.L + 20, this.R - 20), 60 * dt);
+        if (!this.fired && this.t < 1.6) { this.fired = true; this.rainVolley(9); }
+        if (this.fired && !this.fired2 && this.t < 0.7) { this.fired2 = true; this.rainVolley(8); }
+        if (this.t <= 0) { this.state = 'hover'; this.t = 0.2; this.setA('fly', true); }
         break;
       case 'descend':
-        this.alt = Math.max(0, this.alt - 160 * dt);
+        this.alt = Math.max(0, this.alt - 180 * dt);
         if (this.alt <= 0) this.land(false);
         break;
-      case 'fall':
-        this.alt = Math.max(0, this.alt - 260 * dt);
-        if (this.alt <= 0) { shake = 6; sfx.boom(); cmSfx.splash(); this.state = 'idle'; this.stagger(); }
+      case 'transform':
+        this.tT += dt;
+        if (Math.random() < 0.9) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 100), vx: rand(-40, 40), vy: -rand(20, 90), g: 60, life: rand(0.6, 1.2), kind: 'blood' });
+        if (this.tT > 0.9 && (an.done || !this.sh.has('transform'))) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.4; this.skyCd = 1.5; this.reqCd = 3; }
         break;
-      case 'transform': this.updateTransform(dt); break;
       case 'stagger':
         this.t -= dt;
         if (an.i === an.n - 1 && this.t > 0.3) an.hold();
@@ -811,310 +856,453 @@ class CmSanguine extends BossBase {
         break;
       case 'dead':
         this.alt = Math.max(0, this.alt - 200 * dt);
-        if (Math.random() < 0.6) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 80), vx: rand(-10, 10), vy: -rand(10, 40), life: rand(0.8, 1.6), kind: 'blood' });
+        if (Math.random() < 0.6) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 90), vx: rand(-10, 10), vy: -rand(10, 40), life: rand(0.8, 1.6), kind: 'blood' });
         if (an.done) an.hold();
         break;
     }
-    this.updateDoubles(dt);
-    if (this.whip && this.state !== 'attack') this.whip = null;
     if (this.alive && this.phase === 1 && this.hp <= this.maxHp * 0.5) this.pendingPhase = true;
-    if (this.pendingPhase && this.alive && ['idle', 'walk', 'recover'].includes(this.state) && this.alt <= 0 && !this.dbl.length) { this.pendingPhase = false; this.enterPhase2(); }
-    if (this.phase === 2 && this.alive) this.tideDirector(dt);
+    if (this.pendingPhase && this.alive && ['idle', 'walk', 'recover'].includes(this.state) && this.alt <= 0 && !CM.held) { this.pendingPhase = false; this.enterPhase2(); }
+    if (this.phase === 2 && this.alive && this.state !== 'transform') this.director(dt);
     this.x = clamp(this.x, this.L, this.R);
     this.alt = clamp(this.alt, 0, this.maxAlt);
     this.y = this.floor - this.alt;
     this.camX = this.x;
-    if (this.alive && this.active && !this.hidden) addLight(this.x, this.y - 60, 60, '230,60,70', 0.45);
+    if (this.alive && this.active && !this.hidden) addLight(this.x, this.y - 70, 70, '230,60,70', 0.45);
   }
   // ---------------------------------------------------------------- choice
   choose() {
     if (this.pendingPhase) return;
     const d = Math.abs(P.x - this.x), p2 = this.phase === 2;
     let w;
-    if (d < 62) w = { flurry: 3, whip: 1.2, batport: 0.8, walkback: 0.6 };
-    else if (d < 170) w = { lunge: 2.4, whip: 2.2, lances: 1.0, batport: 1.0, walk: 0.5 };
-    else w = { lunge: 1.6, lances: 2.0, batport: 1.4, walk: 1.2 };
-    if (this.hp < this.maxHp * 0.8 || p2) w.dance = this.danceCd > time ? 0 : 1.2;
-    if (p2) { w.fly = this.skyCd > 0 ? 0 : 2.2; w.lances = (w.lances || 0) + 0.6; }
+    if (d < 100) w = { combo: 3.2, grab: this.grabCd > 0 ? 0 : 1.3, sneak: 0.5, walkback: 0.4 };
+    else if (d < 220) w = { charge: 2.4, combo: 1.2, sneak: 1.2, lances: 1.0, grab: this.grabCd > 0 ? 0 : 0.5 };
+    else w = { charge: 2.6, lances: 1.6, sneak: 1.4, walk: 0.6 };
+    if ((this.hp < this.maxHp * 0.75 || p2) && this.reqCd <= 0) w.requiem = p2 ? 2.0 : 1.4;
+    if (p2) { w.fly = this.skyCd > 0 ? 0 : 1.8; w.charge = (w.charge || 0) + 0.6; }
     if (w[this.last]) w[this.last] *= 0.25;
     const e = Object.entries(w).filter(([, v]) => v > 0); let r = Math.random() * e.reduce((s, [, v]) => s + v, 0), m = e[0][0];
     for (const [k, v] of e) if ((r -= v) <= 0) { m = k; break; }
     this.last = m; this.begin(m);
   }
-  begin(m, chained) {
-    this.facePlayer(); this.atk = m; this.hitIds = new Set(); this.atkId = ++hazardId; this.fired = {}; this.lungeV = 0; this.whip = null;
-    if (m === 'walk') { this.state = 'walk'; this.want = 90; this.setA('walk', true); this.t = rand(0.6, 1.0); return; }
-    if (m === 'walkback') { this.state = 'walk'; this.want = 150; this.setA('walk', true); this.t = 0.6; return; }
-    if (m === 'batport') { this.state = 'vanish'; this.setA('vanish'); this.batTo = this.blinkX(); cmBatSwarm(this.x, this.y, this.batTo, this.y, 22, 0.5); return; }
-    if (m === 'fly') { this.state = 'takeoff'; this.setA('fly', true); this.hoverAlt = rand(78, 96); this.airN = Math.random() < 0.5 ? 2 : 1; cmSfx.bats(); sfx.jump(); return; }
-    if (m === 'dance') { this.danceCd = time + 9; }
-    const tag = { flurry: 'flurry', lunge: 'lunge', whip: 'whip', lances: 'cast', dance: 'dance' }[m] || m;
-    this.state = 'attack'; this.tag = tag; this.setA(tag);
-    if (chained) this.anim.speed *= 1.15;
+  begin(m) {
+    this.facePlayer(); this.atk = m; this.hitIds = new Set(); this.atkId = ++hazardId; this.fired = false; this.fired2 = false; this.combo = [];
+    if (m === 'walk') { this.state = 'walk'; this.want = 110; this.setA('walk', true); this.t = rand(0.5, 0.9); return; }
+    if (m === 'walkback') { this.state = 'walk'; this.want = 160; this.setA('walk', true); this.t = 0.5; return; }
+    if (m === 'combo') { const L = this.phase === 2 ? CM_COMBOS2 : CM_COMBOS1; return this.startCombo(L[Math.floor(Math.random() * L.length)].slice()); }
+    if (m === 'sneak') { this.state = 'vanish'; this.batNext = 'bats'; this.setA('vanish', false, 1.2); this.batTo = this.blinkX(); cmBatSwarm(this.x, this.y, this.batTo, this.y, 26, 0.45); return; }
+    if (m === 'charge') return this.startCharge();
+    if (m === 'requiem') return this.startRequiem();
+    if (m === 'grab') { this.grabCd = rand(7, 10); this.grabDmg = 0; this.state = 'attack'; this.tag = 'grab'; this.setA('grab'); return; }
+    if (m === 'lances') { this.state = 'attack'; this.tag = 'cast'; this.setA('cast'); return; }
+    if (m === 'fly') { this.state = 'takeoff'; this.setA('fly', true); this.hoverAlt = rand(36, 50); /* low enough that the camera, which follows you on the floor, keeps her in view */ this.airN = 1 + (Math.random() < 0.6 ? 1 : 0); this.didRain = false; this.didVolley = false; cmSfx.bats(); sfx.jump(); return; }
+  }
+  startCombo(list, speed = 1) {
+    this.combo = list; this.comboSpeed = speed; this.chainN = 0;
+    this.nextCut();
+  }
+  nextCut() {
+    const tag = this.combo.shift();
+    if (!tag) { this.state = 'idle'; this.setA('idle', true); this.cool = this.phase === 1 ? rand(0.8, 1.3) : rand(0.45, 0.85); return; }
+    this.facePlayer(); this.hitIds = new Set(); this.atkId = ++hazardId; this.fired = false;
+    this.state = 'attack'; this.atk = 'cut'; this.tag = tag; this.setA(tag, false, (this.comboSpeed || 1) * (this.chainN++ ? 1.08 : 1));
   }
   blinkX() {
-    let tx = clamp(P.x - P.face * 64, this.L + 10, this.R - 10);
-    if (Math.abs(tx - P.x) < 44) tx = clamp(P.x + P.face * 80, this.L + 10, this.R - 10);
+    let tx = clamp(P.x - P.face * 70, this.L + 10, this.R - 10);
+    if (Math.abs(tx - P.x) < 50) tx = clamp(P.x + P.face * 90, this.L + 10, this.R - 10);
     return tx;
   }
-  // ---------------------------------------------------------------- grounded attacks (meta windows)
+  // ---------------------------------------------------------------- grounded cuts, lances, the grab (meta windows)
   updateAttack(dt) {
-    const an = this.anim, sh = this.sh, m = this.atk, tag = this.tag, wins = metaWindows(sh, tag);
+    const an = this.anim, sh = this.sh, tag = this.tag, wins = metaWindows(sh, tag);
     const first = wins.length ? wins[0].active[0] : 4;
-    if (an.i < first - 1 && m !== 'lunge') this.facePlayer();
-    if (m === 'lunge' && an.i < first - 1) this.facePlayer();
+    if (an.i < first) this.facePlayer();
     const tel = sh.meta && sh.meta.telegraph && sh.meta.telegraph[tag];
     if (tel && an.changed && an.i === tel.frame) { const p = metaPoint(sh, this, tel.at); spawnFx('telegraph', p.x, p.y, this.face); sfx.glint(); }
-    else if (!tel && an.changed && an.i === Math.max(0, first - 2) && ['flurry', 'lunge', 'whip'].includes(m)) { spawnFx('telegraph', this.x + this.face * 18, this.y - 62, this.face); sfx.glint(); }
-    // the lunge: a straight dash during the active frames, fixed direction, clamped to the arena
-    if (m === 'lunge') {
-      if (an.changed && an.i === first) { this.lungeV = this.face * (this.phase === 2 ? 420 : 380); sfx.bossSwing(); }
-      if (this.lungeV && an.i <= (wins[0] ? wins[0].active[1] : first + 2)) {
-        const nx = clamp(this.x + this.lungeV * dt, this.L, this.R);
-        if ((this.x - P.x) * this.face > 60) this.lungeV *= Math.pow(0.001, dt);   // already well past you: brake
-        this.x = nx;
-        if (Math.random() < 0.8) particles.push({ x: this.x - this.face * 16, y: this.y - rand(4, 50), vx: -this.face * rand(20, 60), vy: rand(-10, 10), life: 0.35, kind: 'blood' });
-      }
+    const d = Math.abs(P.x - this.x);
+    // close the distance during the wind-up (she presses you), lunge a little into each cut
+    if (this.atk === 'cut') {
+      if (an.i < first && d > 70) this.x = clamp(this.x + this.face * 95 * dt, this.L, this.R);
+      else if (an.i >= first && an.i <= (wins[0] ? wins[0].active[1] : first) && d > 30) this.x = clamp(this.x + this.face * (tag === 'thrust' ? 280 : 110) * dt, this.L, this.R);
+      if (an.changed && an.i === first) sfx.bossSwing();
     }
-    if (m !== 'whip') wins.forEach((w, wi) => {
+    if (tag === 'grab') return this.updateGrab(dt, wins);
+    wins.forEach((w, wi) => {
       if (an.i < w.active[0] || an.i > w.active[1] || this.hitIds.has(wi) || !w.hit) return;
-      if (an.changed && an.i === w.active[0] && m === 'flurry') { sfx.swing(); const q = metaRect(sh, this, w.hit); spawnFx(fxOr('cm_thrust', 'hit'), (q.x0 + q.x1) / 2, (q.y0 + q.y1) / 2, this.face); }
-      const r = metaRect(sh, this, w.hit);
-      if (overlap(r, playerHurtbox())) {
-        const dmg = (m === 'flurry' ? CM_SG.flurry : m === 'lunge' ? CM_SG.lunge : 30) * (this.phase === 2 ? 1.1 : 1) * NGP.dmg;
-        if (hurtPlayer(BOSS_DMG * dmg, P.x < this.x ? -1 : 1, this.atkId * 10 + wi, { parryable: m !== 'dance', src: this })) this.hitIds.add(wi);
-      }
+      if (overlap(metaRect(sh, this, w.hit), playerHurtbox()) && hurtPlayer(this.dmg(tag), P.x < this.x ? -1 : 1, this.atkId * 10 + wi, { parryable: tag !== 'overhead', src: this })) this.hitIds.add(wi);
     });
-    if (m === 'whip') this.updateWhip(dt, wins);
-    if (m === 'lances') {
-      const sp = sh.meta && sh.meta.spawn && sh.meta.spawn.cast;
-      if (!this.fired.cast && an.i >= (sp ? sp.frame : 6)) { this.fired.cast = true; this.castLances(); }
-      if (an.i >= 3 && an.i <= (sp ? sp.frame : 6)) { const h = this.mpt('off', { x: this.x - this.face * 8, y: this.y - 60 }); addLight(h.x, h.y, 24 + an.i * 4, '230,40,50', 0.9); if (Math.random() < 0.6) particles.push({ x: h.x + rand(-6, 6), y: h.y + rand(-6, 6), vx: 0, vy: rand(-20, 20), life: 0.3, kind: 'blood' }); }
+    if (tag === 'overhead') {
+      const sp = sh.meta && sh.meta.spawn && sh.meta.spawn.overhead;
+      if (!this.fired && an.i >= (sp ? sp.frame : 6)) {
+        this.fired = true; const at = sp ? metaPoint(sh, this, sp.at) : { x: this.x + this.face * 50 };
+        const x = clamp(at.x, this.L - 20, this.R + 20);
+        shake = 9; sfx.boom(); spawnFx('shockwave', x, this.floor, 1);
+        for (const dd of [-1, 1]) cmWave(x + dd * 10, this.floor, dd, { dmg: CM_SG.shock, h: 14, v: 200, life: 1.5, src: this });
+        for (let i = 0; i < 18; i++) particles.push({ x, y: this.floor - 2, vx: rand(-120, 120), vy: -rand(60, 200), g: 420, life: rand(0.4, 0.9), kind: i % 3 ? 'blood' : 'rock' });
+        if (this.phase === 2) for (let k = 1; k <= 3; k++) this.later(k * 0.12, () => cmLance(clamp(x + this.face * k * 44, this.L - 16, this.R + 16), this.floor, { dmg: CM_SG.lance, boss: true, src: this, warn: 0.55 }));
+      }
     }
-    if (m === 'dance') {
-      const sp = sh.meta && sh.meta.spawn && sh.meta.spawn.dance;
-      if (!this.fired.dance && an.i >= (sp ? sp.frame : 5)) { this.fired.dance = true; this.summonDoubles(); }
+    if (tag === 'cast') {
+      const sp = sh.meta && sh.meta.spawn && sh.meta.spawn.cast;
+      if (!this.fired && an.i >= (sp ? sp.frame : 4)) { this.fired = true; this.castLances(); }
+      if (an.i >= 1 && an.i < (sp ? sp.frame : 4)) { const h = this.mpt('off', { x: this.x, y: this.y - 80 }); addLight(h.x, h.y, 24 + an.i * 6, '230,40,50', 0.9); }
     }
     if (an.done) {
-      this.whip = null;
-      if (m === 'dance') { this.state = 'idle'; this.cool = 2.2; this.setA('idle', true); return; }
-      if (this.pendingPhase) { this.state = 'idle'; this.cool = 0; this.setA('idle', true); return; }
-      const d = Math.abs(P.x - this.x);
-      if (this.chain < (this.phase === 2 ? 2 : 1) && Math.random() < (this.phase === 2 ? 0.55 : 0.3)) {
-        const nx = m === 'flurry' ? (d < 90 ? 'whip' : 'lunge') : m === 'lunge' ? (d < 80 ? 'flurry' : 'whip') : m === 'whip' ? (d > 110 ? 'lunge' : 'flurry') : null;
-        if (nx) { this.chain++; return this.begin(nx, true); }
-      }
-      this.chain = 0; this.state = 'idle'; this.setA('idle', true);
-      this.cool = this.phase === 1 ? rand(0.9, 1.4) : rand(0.55, 0.95);
-    }
-  }
-  // blood whip: code-drawn lash from her hand, its reach growing over the swing; hits along the whole length
-  updateWhip(dt, wins) {
-    const an = this.anim, w = wins[0] || { active: [6, 8] }, hand = this.mpt('hand', { x: this.x + this.face * 14, y: this.y - 56 });
-    const n = an.n, i = an.i + an.t / Math.max(1, an.ms());
-    let reach = 0, lift = 0;
-    if (i < w.active[0]) { reach = 26 + 6 * i; lift = -28 - 4 * i; }                         // raised, coiling behind her
-    else if (i <= w.active[1] + 1) { const k = clamp((i - w.active[0]) / (w.active[1] + 1 - w.active[0]), 0, 1); reach = lerp(40, this.phase === 2 ? 150 : 132, Math.sqrt(k)); lift = lerp(-30, 44, k); }
-    else { const k = clamp((i - w.active[1] - 1) / Math.max(1, n - w.active[1] - 1), 0, 1); reach = lerp(this.phase === 2 ? 150 : 132, 30, k); lift = lerp(44, 30, k); }
-    if (an.changed && an.i === w.active[0]) cmSfx.whip();
-    const pts = [], tipX = hand.x + this.face * reach, tipY = Math.min(this.floor - 3, hand.y + lift);
-    const lash = i >= w.active[0] && i <= w.active[1] + 1.4;
-    const c1x = hand.x + this.face * reach * 0.4, c1y = lash ? hand.y + 4 : hand.y - 18 - (i < w.active[0] ? 18 : 0);
-    for (let k = 0; k <= 16; k++) { const t = k / 16, a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t; pts.push([a * hand.x + b * c1x + c * tipX, a * hand.y + b * c1y + c * tipY + Math.sin(t * 9 + time * 30) * (1 - t) * 1.2]); }
-    this.whip = { pts, hot: lash };
-    if (this.whip.hot && !this.hitIds.has(0)) {
-      const hb = playerHurtbox();
-      for (const [x, y] of pts.slice(4)) if (overlap(rect(x - 4, y - 4, x + 4, y + 4), hb)) { if (hurtPlayer(BOSS_DMG * CM_SG.whip * (this.phase === 2 ? 1.1 : 1) * NGP.dmg, this.face, this.atkId * 10, { src: this })) this.hitIds.add(0); break; }
+      if (this.combo.length && !this.pendingPhase) return this.nextCut();
+      this.state = 'idle'; this.setA('idle', true);
+      this.cool = this.phase === 1 ? rand(0.8, 1.3) : rand(0.45, 0.85);
     }
   }
   castLances() {
-    const p2 = this.phase === 2, n = p2 ? 6 : 5, pattern = Math.random() < 0.5 ? 'march' : 'track';
-    if (pattern === 'march') {   // a line of spikes marching from her toward you, and past you
+    const p2 = this.phase === 2, pattern = Math.random() < 0.5 ? 'march' : 'track';
+    if (pattern === 'march') {
       const dir = sign(P.x - this.x);
-      for (let k = 0; k < n + 2; k++) { const x = this.x + dir * (44 + k * 38); if (x < this.L - 10 || x > this.R + 10) break; this.later(k * 0.11, () => cmLance(clamp(x, this.L - 16, this.R + 16), this.floor, { dmg: CM_SG.lance, boss: true, src: this, warn: 0.7 })); }
-    } else {                     // three (four) that hunt you, a beat apart
-      for (let k = 0; k < (p2 ? 4 : 3); k++) this.later(k * 0.42, () => { if (!this.alive) return; cmLance(clamp(P.x + P.vx * 0.25, this.L - 16, this.R + 16), this.floor, { dmg: CM_SG.lance, boss: true, src: this, warn: 0.72 }); });
+      for (let k = 0; k < (p2 ? 9 : 7); k++) { const x = this.x + dir * (50 + k * 40); if (x < this.L - 10 || x > this.R + 10) break; this.later(k * 0.1, () => cmLance(clamp(x, this.L - 16, this.R + 16), this.floor, { dmg: CM_SG.lance, boss: true, src: this, warn: 0.62 })); }
+    } else {
+      for (let k = 0; k < (p2 ? 4 : 3); k++) this.later(k * 0.4, () => { if (this.alive) cmLance(clamp(P.x + P.vx * 0.25, this.L - 16, this.R + 16), this.floor, { dmg: CM_SG.lance, boss: true, src: this, warn: 0.68 }); });
     }
-    cmSfx.gurgle(); shake = Math.max(shake, 2);
+    cmSfx.gurgle(); shake = Math.max(shake, 3);
   }
-  // ---------------------------------------------------------------- the dance: blood doubles strike from both sides, then she does
-  summonDoubles() {
-    const n = this.phase === 2 ? 3 : 2, sides = n === 3 ? [-1, 1, -1] : [-1, 1];
-    sides.forEach((s, k) => {
-      const x = clamp(P.x + s * (120 + k * 14), this.L, this.R);
-      if (Math.abs(x - P.x) < 50) return;
-      const sh = this.sh, an = new Anim(sh, sh.has('lunge') ? 'lunge' : 'idle', false); an.speed = 0; an.i = 0;
-      this.dbl.push({ x, y: this.floor, face: P.x < x ? -1 : 1, an, delay: 0.7 + k * 0.42, t: 0, id: ++hazardId, hit: false, a: 0, v: 0 });
-      cmBatSwarm(this.x, this.y, x, this.floor, 6, 0.4);
-    });
-    this.later(0.7 + n * 0.42 + 0.15, () => { if (this.alive && this.state === 'idle') { this.cool = 0; this.begin('lunge', true); } });
-    cmSfx.chime(); shake = Math.max(shake, 3);
+  // ---------------------------------------------------------------- blood charge: a flagged, straight dash; brakes into a rising cut
+  startCharge() {
+    const dir = sign(P.x - this.x), dist = clamp(Math.abs(P.x - this.x) + 100, 170, 360);
+    this.chTo = clamp(this.x + dir * dist, this.L, this.R); this.face = dir;
+    this.state = 'charge'; this.tag = 'charge'; this.setA('charge'); this.hitIds = new Set(); this.atkId = ++hazardId;
+    CM.lines.push({ x0: this.x, y0: this.floor - 18, x1: this.chTo, y1: this.floor - 18, t: 0, warn: 0.5, life: 0.75, w: 3 });
+    cmSfx.whip(); sfx.charge();
   }
-  updateDoubles(dt) {
-    for (const d of this.dbl) {
-      d.t += dt; d.a = Math.min(1, d.a + dt * 3);
-      if (d.t < d.delay) { d.face = P.x < d.x ? -1 : 1; if (d.t > d.delay - 0.35 && !d.warned) { d.warned = true; sfx.glint(); spawnFx('telegraph', d.x + d.face * 18, d.y - 62, d.face); } continue; }
-      if (d.an.speed === 0) { d.an.speed = 1.1; d.an.i = 0; d.an.t = 0; }
-      d.an.update(dt);
-      const wins = metaWindows(this.sh, 'lunge'), w = wins[0] || { active: [5, 7], hit: null };
-      if (d.an.i >= w.active[0] && d.an.i <= w.active[1]) {
-        if (!d.v) { d.v = d.face * 400; sfx.bossSwing(); }
-        d.x = clamp(d.x + d.v * dt, this.L, this.R);
-        if (!d.hit) {
-          const r = w.hit ? metaRect(this.sh, d, w.hit) : rect(d.x, d.y - 60, d.x + d.face * 60, d.y - 20);
-          if (overlap(r, playerHurtbox()) && hurtPlayer(BOSS_DMG * CM_SG.dbl * NGP.dmg, d.face, d.id, { src: this })) d.hit = true;
-        }
+  updateCharge(dt) {
+    const an = this.anim;
+    if (an.i < 2) { this.facePlayer(); this.face = sign(this.chTo - this.x) || this.face; return; }
+    if (an.i >= 4 && an.t > an.ms() * 0.6) { an.i = 2; an.t = 0; }
+    const v = (this.phase === 2 ? 620 : 560) * dt, dir = sign(this.chTo - this.x);
+    this.x = Math.abs(this.chTo - this.x) <= v ? this.chTo : this.x + dir * v;
+    if (Math.abs(this.x - (this.lastAfterX ?? -1e9)) > 30) { this.lastAfterX = this.x; this.after.push({ x: this.x, y: this.y, f: an.frame, face: this.face, t: 0.2 }); }
+    if (Math.random() < 0.9) particles.push({ x: this.x - this.face * 20, y: this.floor - rand(2, 40), vx: -this.face * rand(30, 90), vy: -rand(0, 30), g: 100, life: 0.4, kind: 'blood' });
+    const w = metaWindows(this.sh, 'charge')[0], hb = playerHurtbox();
+    const r = w && w.hit ? metaRect(this.sh, this, w.hit) : rect(this.x, this.y - 50, this.x + this.face * 90, this.y);
+    if (!this.hitIds.has(0) && (overlap(r, hb) || overlap(this.hurtbox() || r, hb)) && hurtPlayer(this.dmg('charge'), this.face, this.atkId, { src: this })) { this.hitIds.add(0); P.vx = this.face * 200; }
+    if (this.x === this.chTo || this.x <= this.L || this.x >= this.R) { this.combo = []; this.tag = 'chargeend'; this.state = 'attack'; this.atk = 'cut'; this.atkId = ++hazardId; this.hitIds = new Set(); this.setA('chargeend'); this.facePlayer(); shake = Math.max(shake, 3); }
+  }
+  // ---------------------------------------------------------------- the drain grab
+  updateGrab(dt, wins) {
+    const an = this.anim, w = wins[0] || { active: [4, 5] };
+    if (an.i <= 3) { const h = this.mpt('off', { x: this.x - this.face * 10, y: this.y - 80 }); addLight(h.x, h.y, 30, '255,40,40', 0.9); if (Math.random() < 0.6) particles.push({ x: h.x + rand(-4, 4), y: h.y + rand(-4, 4), vx: 0, vy: -rand(10, 30), life: 0.3, kind: 'blood' }); }
+    if (an.i >= w.active[0] && an.i <= w.active[1]) {
+      if (an.changed && an.i === w.active[0]) { sfx.bossSwing(); cmSfx.whip(); }
+      this.x = clamp(this.x + this.face * 260 * dt, this.L, this.R);
+      // a claw of living blood lashes from her hand down to your height
+      const h = this.mpt('off', { x: this.x + this.face * 30, y: this.y - 80 }), tip = { x: h.x + this.face * 26, y: this.floor - 14 };
+      this.claw = { h, tip, t: 0.12 };
+      const r = rect(Math.min(h.x, tip.x + this.face * 10), tip.y - 24, Math.max(h.x, tip.x + this.face * 10), this.floor);
+      if (!CM.held && P.state !== 'dead' && P.inv <= 0 && !iframes() && overlap(r, playerHurtbox())) return this.startDrain();
+    }
+    if (an.done) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.6; }
+  }
+  startDrain() {
+    this.state = 'drain'; this.setA('drain', true); this.drT = 0; this.drained = 0; this.struggle = 0;
+    CM.held = { b: this, prev: new Set(held) };
+    hurtPlayer(this.dmg('bite'), this.face, ++hazardId, { src: this }); P.inv = 0;
+    cmSfx.splash(1); shake = 5; hitstop = 0.12;
+    if (!SAVE.hints.cm_drain) { SAVE.hints.cm_drain = 1; toast('She drinks! Mash attack / jump to break free.', 3); }
+  }
+  updateDrain(dt) {
+    this.drT += dt;
+    if (P.state === 'dead') { CM.held = null; this.state = 'idle'; this.setA('idle', true); this.cool = 1; return; }
+    const d = Math.min(P.hp - 1, this.dmg('drain') * dt);
+    if (d > 0) { P.hp -= d; this.drained += d; }
+    const heal = Math.min(this.maxHp * 0.08 - this.drained * 0 - (this.healed || 0), d * 2.6);
+    if (heal > 0) { this.hp = Math.min(this.maxHp, this.hp + heal); this.healed = (this.healed || 0) + heal; }
+    const hand = this.mpt('off', { x: this.x + this.face * 30, y: this.y - 80 });
+    if (Math.random() < 0.8) particles.push({ x: P.x + rand(-3, 3), y: P.y - rand(14, 22), vx: (hand.x - P.x) * 1.5, vy: (hand.y - 10 - P.y) * 1.2 - 30, life: 0.5, kind: 'blood' });
+    addLight(P.x, P.y - 16, 40, '255,40,40', 0.8);
+    if (this.struggle >= 6 || this.drT > 2.6) {
+      const escaped = this.struggle >= 6;
+      CM.held = null; setP('air', 'jump_fall', false); P.vx = -this.face * 170; P.vy = -170; P.inv = 0.7;
+      if (escaped) { this.flinch('Broke free!'); } else { hurtPlayer(this.dmg('bite'), -this.face, ++hazardId, { src: this }); this.state = 'idle'; this.setA('idle', true); this.cool = 0.8; }
+      this.healed = 0;
+    }
+  }
+  holdPlayer() {   // called from the update hook (after the player's own update): she holds you up by the throat
+    const H = CM.held; if (!H || H.b !== this) return;
+    for (const a of ['attack', 'jump', 'roll', 'heavy', 'left', 'right']) { if (held.has(a) && !H.prev.has(a)) this.struggle++; }
+    H.prev = new Set(held);
+    const hand = this.mpt('off', { x: this.x + this.face * 30, y: this.y - 80 });
+    P.x = hand.x + this.face * 3; P.y = Math.min(this.floor, hand.y + 26); P.vx = 0; P.vy = 0; P.ground = false;
+    if (P.state !== 'hurt') setP('hurt', 'hurt'); P.anim.i = 0; P.anim.t = 0; P.face = -this.face;
+    if (this.struggle > 0) { shake = Math.max(shake, 1); }
+  }
+  // ---------------------------------------------------------------- the Crimson Requiem: instant charges across the whole hall
+  startRequiem() {
+    this.reqCd = this.phase === 2 ? rand(9, 12) : rand(12, 15);
+    const n = this.phase === 2 ? 6 : 4;
+    this.req = { n, i: 0, t: 0.35, cur: null, warn: this.phase === 2 ? 0.46 : 0.56 };
+    this.state = 'vanish'; this.batNext = 'requiem'; this.setA('vanish', false, 1.3);
+    cmBatSwarm(this.x, this.y, room.pw / 2, this.floor - 60, 30, 0.6); cmSfx.chime();
+    if (!SAVE.hints.cm_req) { SAVE.hints.cm_req = 1; toast('Watch the blood lines. Roll through the charge — or leap it.', 3.5); }
+  }
+  updateRequiem(dt) {
+    const R = this.req; R.t -= dt;
+    if (!R.cur && R.t <= 0) {
+      if (R.i >= R.n) { this.hidden = false; this.x = clamp(P.x + (P.x < room.pw / 2 ? 110 : -110), this.L, this.R); this.alt = 0; this.facePlayer(); this.state = 'appear2'; this.setA('appear'); this.state = 'recover'; this.t = 1.1; return; }
+      // pick a lane: horizontal along the floor (jump or roll), or (phase 2 / later cuts) a diagonal plunge at your spot
+      const diag = (this.phase === 2 && R.i % 2 === 1) || (this.phase === 1 && R.i === R.n - 1);
+      let c;
+      if (!diag) {
+        const fromL = R.i % 2 === 0 ? P.x > room.pw / 2 : P.x <= room.pw / 2;
+        c = { diag: false, x0: fromL ? this.L : this.R, x1: fromL ? this.R : this.L, a0: 0, a1: 0 };
+      } else {
+        const fromL = P.x > room.pw / 2, tx = clamp(P.x + P.vx * 0.15, this.L + 10, this.R - 10);
+        c = { diag: true, x0: fromL ? this.L : this.R, x1: tx, a0: this.maxAlt, a1: 0 };
       }
-      if (d.an.done) { d.gone = true; cmSfx.splash(0.6); for (let i = 0; i < 18; i++) particles.push({ x: d.x + rand(-10, 10), y: d.y - rand(0, 80), vx: rand(-60, 60), vy: -rand(0, 80), g: 300, life: rand(0.4, 0.8), kind: 'blood' }); }
+      c.t = 0; c.id = ++hazardId; c.warn = R.warn; c.dur = c.diag ? 0.2 : 0.17;
+      CM.lines.push({ x0: c.x0, y0: this.floor - 18 - c.a0, x1: c.x1, y1: this.floor - 18 - c.a1, t: 0, warn: c.warn, life: c.warn + c.dur + 0.15, w: 4 });
+      cmSfx.whip();
+      R.cur = c; R.i++;
     }
-    this.dbl = this.dbl.filter(d => !d.gone);
-    if (!this.alive) this.dbl = [];
+    const c = R.cur; if (!c) return;
+    c.t += dt;
+    if (c.t < c.warn) { this.hidden = true; return; }
+    const k = Math.min(1, (c.t - c.warn) / c.dur), px = this.x, pa = this.alt;
+    this.hidden = false; this.face = sign(c.x1 - c.x0) || 1;
+    if (this.anim.tag !== (c.diag && this.sh.has('dive') ? 'dive' : 'charge')) { this.setA(c.diag && this.sh.has('dive') ? 'dive' : 'charge'); this.anim.i = c.diag ? 4 : 2; sfx.bossSwing(); }
+    this.x = lerp(c.x0, c.x1, k); this.alt = lerp(c.a0, c.a1, k); this.y = this.floor - this.alt;
+    if (Math.abs(this.x - (this.lastAfterX ?? -1e9)) > 34) { this.lastAfterX = this.x; this.after.push({ x: this.x, y: this.floor - this.alt, f: this.anim.frame, face: this.face, t: 0.22 }); }
+    // the swept body: a band along the path, low along the floor (clear it with a well-timed jump) or the plunge line
+    const hb = playerHurtbox(), band = c.diag ? 14 : 0;
+    const sw = c.diag ? rect(Math.min(px, this.x) - 14, this.floor - Math.max(pa, this.alt) - 20, Math.max(px, this.x) + 14, this.floor - Math.min(pa, this.alt) + 2)
+                      : rect(Math.min(px, this.x) - 24, this.floor - 34, Math.max(px, this.x) + 24, this.floor);
+    if (!this.hitIds.has(c.id) && overlap(sw, hb)) {
+      let hitp = true;
+      if (c.diag) { const t = clamp(((P.x - c.x0) * (c.x1 - c.x0)) / Math.max(1, (c.x1 - c.x0) ** 2), 0, 1), ly = this.floor - lerp(c.a0, c.a1, t), lx = lerp(c.x0, c.x1, t); hitp = Math.hypot(P.x - lx, (P.y - 13) - ly) < 22 + band; }
+      if (hitp && hurtPlayer(this.dmg('req'), this.face, c.id, { src: this })) this.hitIds.add(c.id);
+    }
+    if (k >= 1) {
+      shake = Math.max(shake, c.diag ? 6 : 3); cmSfx.splash(0.7);
+      for (let i = 0; i < 12; i++) particles.push({ x: this.x, y: this.floor - this.alt - rand(0, 40), vx: -this.face * rand(40, 140), vy: -rand(20, 120), g: 380, life: rand(0.3, 0.7), kind: 'blood' });
+      R.cur = null; R.t = this.phase === 2 ? 0.16 : 0.26; this.hidden = true;
+    }
   }
-  // ---------------------------------------------------------------- phase 2: flight
+  // ---------------------------------------------------------------- phase 2: the wings
   airMove() {
-    const r = Math.random();
-    if (this.airN > 0 && (r < 0.55 || this.didRain)) { this.airN--; this.startDive(); return; }
-    if (!this.didRain) { this.didRain = true; this.state = 'attack'; this.atk = 'rain'; this.tag = 'rain'; this.fired = {}; this.hitIds = new Set(); this.setA('rain'); this.rainT = 0; this.rainDone = false; this.state = 'airrain'; return; }
+    if (!this.didVolley && Math.random() < 0.6) { this.didVolley = true; this.state = 'volley'; this.fired = false; this.setA('volley'); cmSfx.bats(); return; }
+    if (this.airN > 0) { this.airN--; return this.startDive(); }
+    if (!this.didRain && Math.random() < 0.5) { this.didRain = true; this.state = 'airrain'; this.t = 2.2; this.fired = false; this.fired2 = false; this.setA(this.sh.has('volley') ? 'volley' : 'fly'); return; }
     this.state = 'descend'; this.setA('fly', true);
   }
   startDive() {
     this.atkId = ++hazardId; this.hitIds = new Set();
-    this.diveTo = { x: clamp(P.x + P.vx * 0.2, this.L + 10, this.R - 10) };
+    this.diveTo = clamp(P.x + P.vx * 0.2, this.L + 10, this.R - 10);
     this.state = 'diveprep'; this.t = 0.5; this.setA('dive'); this.anim.speed = 0.6;
-    spawnFx('telegraph', this.x + this.face * 10, this.y - 50, this.face); sfx.glint();
+    CM.lines.push({ x0: this.x, y0: this.y - 40, x1: this.diveTo, y1: this.floor - 8, t: 0, warn: 0.5, life: 0.7, w: 3 });
+    spawnFx('telegraph', this.x + this.face * 20, this.y - 70, this.face); sfx.glint();
+  }
+  spikeVolley(at) {
+    const base = Math.atan2(P.y - 14 - at.y, P.x - at.x), n = this.hp < this.maxHp * 0.25 ? 9 : 7;
+    for (let k = 0; k < n; k++) { const a = base + (k - (n - 1) / 2) * 0.16; cmShot({ kind: 'spike', x: at.x, y: at.y, vx: Math.cos(a) * 250, vy: Math.sin(a) * 250, dmg: this.dmg('spike'), src: this, life: 2.2, r: 3 }); }
+    cmSfx.lance(); shake = Math.max(shake, 3);
   }
   land(dived) {
-    this.alt = 0; this.didRain = false; this.skyCd = rand(5, 8);
-    shake = dived ? 8 : 3; sfx.boom(); cmSfx.splash(dived ? 1.2 : 0.6);
-    if (dived) { for (const dd of [-1, 1]) cmWave(this.x + dd * 14, this.floor, dd, { dmg: CM_SG.splash, h: 13, v: 190, life: 1.6, src: this }); for (let i = 0; i < 24; i++) particles.push({ x: this.x + rand(-20, 20), y: this.floor - 2, vx: rand(-120, 120), vy: -rand(40, 180), g: 420, life: rand(0.4, 0.9), kind: 'blood' }); }
-    this.state = 'recover'; this.t = dived ? 0.85 : 0.3; this.setA(this.sh.has('land') ? 'land' : 'idle', !this.sh.has('land'));
+    this.alt = 0; this.skyCd = rand(4, 7);
+    shake = dived ? 9 : 3; sfx.boom(); cmSfx.splash(dived ? 1.2 : 0.6);
+    if (dived) { for (const dd of [-1, 1]) cmWave(this.x + dd * 14, this.floor, dd, { dmg: CM_SG.shock, h: 13, v: 200, life: 1.5, src: this }); for (let i = 0; i < 26; i++) particles.push({ x: this.x + rand(-20, 20), y: this.floor - 2, vx: rand(-130, 130), vy: -rand(40, 180), g: 420, life: rand(0.4, 0.9), kind: i % 4 ? 'blood' : 'rock' }); }
+    this.state = 'recover'; this.t = dived ? 0.8 : 0.25; this.setA(this.sh.has('land') ? 'land' : 'idle');
   }
-  // the rain: marks bloom on the floor around you, then heavy drops fall on them
   rainVolley(n) {
-    for (let k = 0; k < n; k++) {
-      const x = clamp(k === 0 ? P.x : P.x + rand(-150, 150), this.L - 10, this.R + 10);
-      CM.drops.push({ x, t: -k * 0.06, warn: 0.85, fall: 0.22, id: ++hazardId, y: this.floor });
-    }
+    for (let k = 0; k < n; k++) CM.drops.push({ x: clamp(k === 0 ? P.x : P.x + rand(-160, 160), this.L - 10, this.R + 10), t: -k * 0.06, warn: 0.85, fall: 0.22, id: ++hazardId, y: this.floor });
     cmSfx.gurgle();
   }
-  // ---------------------------------------------------------------- phase 2 transition: the gown dissolves, the ballroom floods
+  director(dt) {   // phase 2: the broken hall keeps falling in, and the red sky rains blood
+    if (!CM.col || CM.col.k < 1 || P.state === 'dead' || CM.held || this.state === 'requiem') return;
+    this.dirT -= dt;
+    if (this.dirT > 0) return;
+    this.dirT = rand(2.8, 4.2) * (this.hp < this.maxHp * 0.25 ? 0.8 : 1);
+    if (Math.random() < 0.55) for (let k = 0; k < (Math.random() < 0.5 ? 2 : 3); k++) cmDebris(clamp(k === 0 ? P.x : P.x + rand(-140, 140), this.L, this.R), this.floor, k * 0.25);
+    else for (let k = 0; k < 4; k++) CM.drops.push({ x: clamp(k === 0 ? P.x : P.x + rand(-120, 120), this.L - 10, this.R + 10), t: -k * 0.12, warn: 0.9, fall: 0.22, id: ++hazardId, y: this.floor });
+  }
+  // ---------------------------------------------------------------- phase change: she tears the ballroom apart
   enterPhase2() {
-    this.phase = 2; this.speed = 1.12; this.stance = 0; this.hidden = false; this.dbl = [];
-    this.state = 'transform'; this.tT = 0; this.facePlayer(); this.whip = null;
-    CM.lances = []; CM.waves = []; CM.drops = [];
+    this.phase = 2; this.speed = 1.12; this.stance = 0; this.hidden = false; this.combo = [];
+    this.state = 'transform'; this.tT = 0; this.facePlayer();
+    CM.lances = []; CM.waves = []; CM.drops = []; CM.lines = [];
     if (this.sheets[1].ok) this.sh = this.sheets[1];
     this.setA(this.sh.has('transform') ? 'transform' : 'idle', !this.sh.has('transform'));
-    cmFloodBegin(this);
-    shake = 8; flashScreen = 0.5; sfx.roar(); cmSfx.gurgle();
+    cmCollapseBegin(this.x, this.y - 80);
+    shake = 10; flashScreen = 0.5; sfx.roar(); cmSfx.rumble();
     bossPhase2Scene(this);
   }
-  updateTransform(dt) {
-    this.tT += dt;
-    if (Math.random() < 0.9) particles.push({ x: this.x + rand(-26, 26), y: this.y - rand(0, 90), vx: rand(-40, 40), vy: -rand(20, 90), g: 60, life: rand(0.6, 1.2), kind: 'blood' });
-    if (this.tT > 0.9 && (this.anim.done || !this.sh.has('transform'))) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.5; this.skyCd = 2; this.tideT = 5; }
-  }
-  tideDirector(dt) {
-    if (!CM.flood || CM.flood.k < 0.95 || P.state === 'dead') return;
-    if (['diveprep', 'dive', 'airrain', 'transform', 'stagger'].includes(this.state) || this.dbl.length || (this.state === 'attack' && ['dance', 'lances'].includes(this.atk))) return;
-    this.tideT -= dt;
-    if (this.tideT > 0 || CM.waves.some(w => w.big)) return;
-    this.tideT = rand(7.5, 10.5) * (this.hp < this.maxHp * 0.25 ? 0.8 : 1);
-    const from = P.x < room.pw / 2 ? 1 : -1, x0 = from < 0 ? this.L - 20 : this.R + 20;
-    cmWave(x0, this.floor, -from, { dmg: CM_SG.tide, h: 22, w: 22, v: 250, life: 4, big: true, tele: 1.1, src: this });
-    cmSfx.wave();
-    if (!SAVE.hints.cm_tide) { SAVE.hints.cm_tide = 1; toast('A tide of blood rises. Jump it, or roll through.', 3); }
-  }
   die() {
-    this.state = 'dead'; this.hidden = false; this.dbl = []; this.whip = null; this.alt = Math.min(this.alt, 60);
+    this.state = 'dead'; this.hidden = false; this.combo = []; this.alt = Math.min(this.alt, 60);
+    if (CM.held) { CM.held = null; setP('air', 'jump_fall', false); P.inv = 0.5; }
     this.setA(this.sh.has('death') ? 'death' : 'stagger'); this.anim.speed = 1;
-    CM.lances = []; CM.waves = []; CM.drops = []; CM.shots = [];
+    CM.lances = []; CM.waves = []; CM.drops = []; CM.shots = []; CM.lines = []; CM.debris = [];
     hazards = []; shake = 12; hitstop = 0.3; slowmo = 1.6; flashScreen = 0.6; sfx.roar(); sfx.felled();
     victoryBanner = { text: 'THE LAST DANCE ENDS', t: 0 };
-    if (CM.flood) CM.flood.target = 0.35;
     this.rewards();
   }
-  stagger() { this.alt = 0; this.hidden = false; this.whip = null; super.stagger(); this.anim.set(this.sh.has('stagger') ? 'stagger' : 'idle', false, 1); }
+  stagger() {
+    if (CM.held && CM.held.b === this) { CM.held = null; setP('air', 'jump_fall', false); P.inv = 0.5; }
+    this.alt = 0; this.hidden = false; this.combo = []; super.stagger(); this.anim.set(this.sh.has('stagger') ? 'stagger' : 'idle', false, 1);
+  }
   draw() {
-    for (const d of this.dbl) {   // blood doubles
-      if (!this.sh.ok) continue;
-      drawSprite(this.sh, d.an.frame, d.x, d.y, d.face, { alpha: 0.72 * d.a, flash: 0.75, flashColor: '#c01828' });
-      addLight(d.x, d.y - 50, 40, '220,40,50', 0.5 * d.a);
+    for (const a of this.after) if (this.sh.ok) drawSprite(this.sh, a.f, a.x, a.y, a.face, { alpha: 0.32 * Math.min(1, a.t / 0.22), flash: 0.85, flashColor: '#8a0c1c' });
+    if (this.claw && (this.claw.t -= 1 / 60) > 0 || this.state === 'drain') {
+      const h = this.mpt('off', { x: this.x + this.face * 30, y: this.y - 80 }), tip = this.state === 'drain' ? { x: P.x, y: P.y - 20 } : this.claw.tip;
+      for (let k = 0; k <= 12; k++) { const t = k / 12, x = lerp(h.x, tip.x, t) + Math.sin(t * 7 + time * 30) * (1 - t) * 1.5, y = lerp(h.y, tip.y, t) + Math.sin(t * Math.PI) * 6;
+        g.fillStyle = k > 9 ? '#ff8078' : '#b01426'; g.fillRect(Math.round(x), Math.round(y), 2, 2); }
+      addLight(tip.x, tip.y, 26, '255,50,50', 0.7);
     }
-    if (this.whip) {
-      const pts = this.whip.pts;
-      for (let k = 0; k < pts.length - 1; k++) {
-        const [x0, y0] = pts[k], [x1, y1] = pts[k + 1], n = Math.ceil(Math.hypot(x1 - x0, y1 - y0));
-        for (let s = 0; s <= n; s++) { const x = Math.round(lerp(x0, x1, s / n)), y = Math.round(lerp(y0, y1, s / n)), th = k < 6 ? 2 : 1;
-          g.fillStyle = '#3a0610'; g.fillRect(x, y, th, th + 1); g.fillStyle = this.whip.hot ? '#e0303c' : '#9a1622'; g.fillRect(x, y, th, th); }
-      }
-      const tip = pts[pts.length - 1]; if (this.whip.hot) { addLight(tip[0], tip[1], 26, '255,60,60', 0.8); g.fillStyle = '#ffb0a8'; g.fillRect(Math.round(tip[0]), Math.round(tip[1]), 1, 1); }
-    }
-    if (this.hidden || this.state === 'dormant' && !this.sh.ok) return;
-    if (!this.sh.ok) { g.fillStyle = '#6a1020'; g.fillRect(Math.round(this.x - 12), Math.round(this.y - 86), 24, 86); return; }
-    const opt = this.flash > 0 ? { flash: this.flash * 0.7 } : this.state === 'stagger' ? { flash: 0.15 + 0.1 * Math.sin(time * 20), flashColor: '#ffd070' } : this.state === 'diveprep' ? { flash: 0.3 + 0.2 * Math.sin(time * 30), flashColor: '#ff4050' } : {};
+    if (this.hidden || (this.state === 'dormant' && !this.sh.ok)) return;
+    if (!this.sh.ok) { g.fillStyle = '#6a1020'; g.fillRect(Math.round(this.x - 16), Math.round(this.y - 106), 32, 106); return; }
+    const pulse = this.state === 'attack' && this.tag === 'grab' && this.anim.i <= 3;
+    const opt = this.flash > 0 ? { flash: this.flash * 0.7 } : this.state === 'stagger' ? { flash: 0.15 + 0.1 * Math.sin(time * 20), flashColor: '#ffd070' }
+      : this.state === 'diveprep' || pulse || (this.state === 'charge' && this.anim.i < 2) ? { flash: 0.25 + 0.2 * Math.sin(time * 30), flashColor: '#ff3040' } : {};
     drawSprite(this.sh, this.anim.frame, this.x, this.y, this.face, opt);
-    if (this.alt > 6 && CM.flood) { g.fillStyle = 'rgba(20,0,4,0.35)'; g.beginPath(); g.ellipse(Math.round(this.x), this.floor - 2, 16 + this.alt * 0.05, 2, 0, 0, 6.3); g.fill(); }
+    if (this.alt > 6) { g.fillStyle = 'rgba(20,0,4,0.35)'; g.beginPath(); g.ellipse(Math.round(this.x), this.floor - 1, 18 + this.alt * 0.05, 2, 0, 0, 6.3); g.fill(); }
   }
 }
-// the airborne rain is its own little state (so the hover drift continues while it rains)
-const _cmSgUpdate = CmSanguine.prototype.update;
-CmSanguine.prototype.update = function (dt) {
-  if (this.state === 'airrain' && this.active && this.alive) {
-    const an = this.anim;
-    this.rainT += dt;
-    const tx = clamp(P.x - this.face * 40, this.L + 20, this.R - 20); this.x = approach(this.x, tx, 60 * dt);
-    const sp = this.sh.meta && this.sh.meta.spawn && this.sh.meta.spawn.rain;
-    if (!this.fired.r1 && an.i >= (sp ? sp.frame : 5)) { this.fired.r1 = true; this.rainVolley(9); }
-    if (!this.fired.r2 && this.fired.r1 && this.rainT > 1.3) { this.fired.r2 = true; this.rainVolley(8); }
-    if (this.rainT > 2.2 && (an.done || !this.sh.has('rain'))) { this.state = 'hover'; this.t = 0.3; this.setA('fly', true); }
-  }
-  _cmSgUpdate.call(this, dt);
-};
 BOSS_SPAWN.sanguine = (cx, fy) => new CmSanguine(cx, fy);
 BOSS_CUTS.sanguine = b => [
-  act(() => { b.anim.set(b.sh.has('dance') ? 'dance' : 'idle', true); b.face = -1; cmSfx.chime(); }),
-  bossPan(b, 50, 1.6),
-  say('', 'In the empty ballroom, someone is still dancing.'),
-  act(() => { holdAnim(b, 'bow'); b.face = P.x < b.x ? -1 : 1; }), wait(1.0),
+  act(() => { b.anim.set('idle', true); b.face = 1; cmSfx.chime(); }),
+  bossPan(b, 60, 1.6),
+  say('', 'Beneath the chandeliers, a queen in black steel keeps the ball for no one.'),
+  act(() => { b.face = P.x < b.x ? -1 : 1; holdAnim(b, 'bow'); }), wait(1.3),
   say('Countess Sanguine', 'A guest. How long it has been since anyone came to my ball uninvited.'),
-  say('Countess Sanguine', 'Dance with me, little ember. Your heart keeps such lovely time.'),
-  act(() => { b.anim.set('idle', true); for (const c of CM.chands) c.red = 1; shake = 5; flashScreen = 0.3; cmSfx.gurgle(); for (let i = 0; i < 30; i++) particles.push({ x: b.x + rand(-30, 30), y: b.y - rand(0, 90), vx: rand(-20, 20), vy: -rand(20, 60), life: rand(0.8, 1.6), kind: 'blood' }); }), wait(1.2),
+  say('Countess Sanguine', 'Kneel, and I will drink you gently. Stand, and I will drink you anyway.'),
+  act(() => { b.anim.set('idle', true); for (const c of CM.chands) c.red = 1; shake = 6; flashScreen = 0.3; cmSfx.gurgle(); for (let i = 0; i < 36; i++) particles.push({ x: b.x + rand(-30, 30), y: b.y - rand(0, 110), vx: rand(-20, 20), vy: -rand(20, 60), life: rand(0.8, 1.6), kind: 'blood' }); }), wait(1.1),
 ];
-PHASE2_LINES.sanguine = ['Countess Sanguine', 'Enough courtesy. Let the whole house bleed for us.'];
+PHASE2_LINES.sanguine = ['Countess Sanguine', 'This house was a cage. Let it fall — and let the sky bleed with me.'];
 
-// ================================================================== the ballroom: flood (sea of blood), the rain of phase 2
-function cmBallroomSetup() {
-  CM.flood = { k: 0, target: 0, t: 0, alt: null };
-  if (SAVE.flags['boss:sanguine']) { CM.flood.k = CM.flood.target = 0.35; cmFloodBuildAlt(); }
-}
-function cmFloodBegin(b) {
-  if (!CM.flood) CM.flood = { k: 0, target: 0, t: 0 };
-  CM.flood.target = 1; cmFloodBuildAlt(); cmSfx.wave();
-  for (const c of CM.chands) c.red = 1;
-}
-function cmFloodBuildAlt() {   // the back wall bleeds: streams of blood pour from every window and seam
-  if (!CM.back0 || CM.flood.alt) return;
-  const c = document.createElement('canvas'); c.width = room.pw; c.height = room.ph; const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
-  x.drawImage(CM.back0, 0, 0);
-  x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(12,0,4,0.42)'; x.fillRect(0, 0, room.pw, room.ph);
-  for (let i = 0; i < 18; i++) {   // thin dark runnels down the walls (kept dark so she stays readable against them)
-    const sx = Math.floor(hash2(i, 31) * room.pw), sy = 2 * TILE + Math.floor(hash2(i, 37) * 4 * TILE), len = 24 + Math.floor(hash2(i, 41) * 90);
-    x.fillStyle = 'rgba(70,4,14,0.8)'; x.fillRect(sx, sy, 1, len);
-    x.fillStyle = 'rgba(120,14,26,0.8)'; x.fillRect(sx, sy + len - 2, 1, 2);
+// ================================================================== telegraph lines (charges, requiem, dives)
+function cmUpdateLines(dt) { for (const l of CM.lines) l.t += dt; CM.lines = CM.lines.filter(l => l.t < l.life); }
+function cmDrawLines() {
+  for (const l of CM.lines) {
+    const k = Math.min(1, l.t / l.warn), live = l.t >= l.warn, a = live ? Math.max(0, 1 - (l.t - l.warn) / (l.life - l.warn)) : 0.25 + 0.6 * k * (0.65 + 0.35 * Math.sin(time * 45));
+    const n = Math.ceil(Math.hypot(l.x1 - l.x0, l.y1 - l.y0) / 2);
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, x = Math.round(lerp(l.x0, l.x1, t)), y = Math.round(lerp(l.y0, l.y1, t));
+      if (!live && (i + Math.floor(time * 30)) % 4 === 3) continue;
+      g.fillStyle = live ? `rgba(255,120,110,${a})` : `rgba(200,20,40,${a * 0.8})`; g.fillRect(x, y - (live ? 1 : 0), 2, live ? 3 : 1);
+      if (!live && k > 0.6) { g.fillStyle = `rgba(255,200,190,${(k - 0.6) * 1.5 * a})`; g.fillRect(x, y, 1, 1); }
+    }
+    if (!live) addLight(lerp(l.x0, l.x1, 0.5), lerp(l.y0, l.y1, 0.5), 60, '255,40,40', 0.3 + 0.4 * k);
   }
-  x.globalCompositeOperation = 'source-over';
-  CM.flood.alt = c;
 }
-function cmFloodAdvance() {   // real time, so the flood keeps rising during the phase-2 scene
-  const F = CM.flood; if (!F) return;
-  const dt = clamp(time - (F.lt ?? time), 0, 0.1); F.lt = time;
-  F.k = approach(F.k, F.target, dt * (F.target > F.k ? 0.45 : 0.15));
-  if (F.alt) room.back = F.k > 0.15 ? F.alt : CM.back0;
+
+// ================================================================== the collapse: the ballroom breaks open to the red sky
+function cmBallroomSetup() {
+  CM.col = null;
+  if (SAVE.flags['boss:sanguine']) { cmCollapseBegin(room.pw / 2, 100, true); }
+}
+function cmJag(x, base, amp, seed) {   // a broken masonry line: big irregular steps with a little chipping
+  const u = x / 28, i = Math.floor(u), f = u - i, a = hash2(i, seed), b = hash2(i + 1, seed), k = f < 0.7 ? a : lerp(a, b, (f - 0.7) / 0.3);
+  return base + Math.round((k - 0.5) * amp * 1.6 + (hash2(x >> 1, seed + 9) - 0.5) * 3);
+}
+function cmCollapseBegin(cx, cy, instant) {
+  if (CM.col || !room || room.id !== 'CM7') return;
+  const mk = () => { const c = document.createElement('canvas'); c.width = room.pw; c.height = room.ph; const x = c.getContext('2d'); x.imageSmoothingEnabled = false; return [c, x]; };
+  const ob = CM.back0 || room.back, of = room.front;
+  // the ruin: the back wall survives only below a broken line (the sky shows above); the vault and the upper side walls are gone
+  const [ab, abx] = mk(), [af, afx] = mk();
+  abx.drawImage(ob, 0, 0); afx.drawImage(of, 0, 0);
+  for (let x = 0; x < room.pw; x += 2) {
+    const yb = cmJag(x, 9 * TILE + 4, 26, 3), yf = x < 2 * TILE || x > room.pw - 2 * TILE ? cmJag(x, 7 * TILE, 20, 5) : 2 * TILE + 2;
+    abx.clearRect(x, 0, 2, yb); afx.clearRect(x, 0, 2, yf);
+  }
+  abx.globalCompositeOperation = 'source-atop'; abx.fillStyle = 'rgba(40,0,8,0.35)'; abx.fillRect(0, 0, room.pw, room.ph);
+  for (let x = 0; x < room.pw; x++) {   // a burning red lip along every broken edge
+    const yb = cmJag(x & ~1, 9 * TILE + 4, 26, 3);
+    abx.fillStyle = 'rgba(150,40,44,0.8)'; abx.fillRect(x, yb, 1, 1); abx.fillStyle = 'rgba(70,8,16,0.8)'; abx.fillRect(x, yb + 1, 1, 1);
+  }
+  abx.globalCompositeOperation = 'source-over';
+  const [wb, wbx] = mk(), [wf, wfx] = mk();
+  wbx.drawImage(ob, 0, 0); wfx.drawImage(of, 0, 0);
+  const C = CM.col = { k: 0, t: 0, lt: time, ab, af, wb, wbx, wf, wfx, ob, of, pieces: [], blocks: [] };
+  // every 32x32 block that loses pixels becomes a falling piece; they break away in a wave from where she stands
+  for (const [src, alt, layer] of [[ob, ab, 'b'], [of, af, 'f']]) {
+    const sc = src.getContext ? src.getContext('2d') : null;
+    for (let by = 0; by < 11 * TILE; by += 32) for (let bx = 0; bx < room.pw; bx += 32) {
+      if (layer === 'f' && by > 9 * TILE) continue;
+      const c = document.createElement('canvas'); c.width = 32; c.height = 32; const x = c.getContext('2d');
+      x.drawImage(src, bx, by, 32, 32, 0, 0, 32, 32); x.globalCompositeOperation = 'destination-out'; x.drawImage(alt, bx, by, 32, 32, 0, 0, 32, 32);
+      let any = false; try { const d = x.getImageData(0, 0, 32, 32).data; for (let i = 3; i < d.length; i += 16) if (d[i] > 0) { any = true; break; } } catch (e) { any = true; }
+      // an irregular broken chunk rather than a square block
+      x.globalCompositeOperation = 'destination-in'; x.beginPath();
+      for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2, r = 11 + hash2(bx + k, by) * 7; k ? x.lineTo(16 + Math.cos(a) * r, 16 + Math.sin(a) * r) : x.moveTo(16 + Math.cos(a) * r, 16 + Math.sin(a) * r); }
+      x.closePath(); x.fill(); x.globalCompositeOperation = 'source-over';
+      if (!any) continue;
+      const dist = Math.hypot(bx + 16 - cx, by + 16 - cy);
+      C.blocks.push({ layer, bx, by, img: c, delay: instant ? 0 : 0.15 + dist / 520 + hash2(bx, by) * 0.25, done: false });
+    }
+  }
+  for (const ch of CM.chands) ch.fallAt = instant ? -1 : 0.4 + Math.abs(ch.px - cx) / 520;
+  if (instant) { C.t = 99; cmCollapseAdvance(); }
+}
+function cmCollapseAdvance() {   // real time, so the hall keeps falling during the phase-2 scene
+  const C = CM.col; if (!C) return;
+  const dt = clamp(time - C.lt, 0, 0.1); C.lt = time; C.t += dt;
+  let changed = false;
+  for (const b of C.blocks) {
+    if (b.done || C.t < b.delay) continue;
+    b.done = true; changed = true;
+    const [wx, alt] = b.layer === 'b' ? [C.wbx, C.ab] : [C.wfx, C.af];
+    wx.clearRect(b.bx, b.by, 32, 32); wx.drawImage(alt, b.bx, b.by, 32, 32, b.bx, b.by, 32, 32);
+    if (C.t < 50) C.pieces.push({ img: b.img, x: b.bx + 16, y: b.by + 16, vx: rand(-30, 30), vy: rand(-20, 30), r: 0, vr: rand(-3, 3), front: b.layer === 'f' });
+  }
+  if (changed) { room.back = C.wb; room.front = C.wf; }
+  C.k = C.blocks.every(b => b.done) ? 1 : 0.5;
+  const fl = 15 * TILE;
+  for (const p of C.pieces) {
+    p.vy += 620 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+    if (p.y > fl - 10 && !p.broke) {
+      p.broke = true; shake = Math.max(shake, 3); if (Math.random() < 0.3) sfx.crumble();
+      for (let i = 0; i < 8; i++) particles.push({ x: p.x + rand(-10, 10), y: fl - 2, vx: rand(-90, 90), vy: -rand(40, 160), g: 420, life: rand(0.4, 0.9), kind: i % 2 ? 'rock' : 'dust' });
+    }
+  }
+  C.pieces = C.pieces.filter(p => !p.broke);
+  for (const ch of CM.chands) if (ch.fallAt !== undefined && C.t > ch.fallAt && !ch.gone) {
+    if (!ch.fall) ch.fall = { y: 0, vy: 0 };
+    if (ch.fallAt < 0) { ch.gone = true; continue; }
+    ch.fall.vy += 620 * dt; ch.fall.y += ch.fall.vy * dt;
+    if (ch.py + ch.len + ch.fall.y > fl - 30) { ch.gone = true; shake = Math.max(shake, 6); sfx.crumble(); cmSfx.chime(); for (let i = 0; i < 20; i++) particles.push({ x: ch.px + rand(-20, 20), y: fl - 4, vx: rand(-120, 120), vy: -rand(40, 180), g: 420, life: rand(0.4, 1), kind: i % 3 ? 'spark' : 'fire' }); }
+  }
+}
+function cmDrawCollapse() {
+  const C = CM.col; if (!C) return;
+  cmCollapseAdvance();
+  for (const p of C.pieces) { g.save(); g.translate(Math.round(p.x), Math.round(p.y)); g.rotate(p.r); g.drawImage(p.img, -16, -16); g.restore(); }
+}
+// falling masonry from the broken walls (phase 2 director)
+function cmDebris(x, fl, delay = 0) { CM.debris.push({ x, fl, t: -delay, warn: 0.9, fall: 0.3, id: ++hazardId, seed: Math.floor(rand(0, 99)) }); }
+function cmUpdateDebris(dt) {
+  for (const d of CM.debris) {
+    d.t += dt;
+    if (d.t >= d.warn + d.fall && !d.hit) {
+      d.hit = true; shake = Math.max(shake, 4); sfx.crumble();
+      for (let i = 0; i < 10; i++) particles.push({ x: d.x + rand(-8, 8), y: d.fl - 3, vx: rand(-100, 100), vy: -rand(40, 150), g: 420, life: rand(0.4, 0.8), kind: i % 2 ? 'rock' : 'dust' });
+      if (overlap(rect(d.x - 13, d.fl - 30, d.x + 13, d.fl), playerHurtbox())) hurtPlayer(BOSS_DMG * CM_SG.debris * NGP.dmg, sign(P.x - d.x), d.id, { src: boss });
+    }
+  }
+  CM.debris = CM.debris.filter(d => d.t < d.warn + d.fall + 0.1);
+}
+function cmDrawDebris() {
+  const ts = tileSheet('crimson');
+  for (const d of CM.debris) {
+    if (d.t < 0) continue;
+    if (d.t < d.warn) {
+      const k = d.t / d.warn;
+      g.fillStyle = `rgba(10,4,8,${0.25 + 0.5 * k})`; g.beginPath(); g.ellipse(Math.round(d.x), d.fl - 1, 5 + 9 * k, 2, 0, 0, 6.3); g.fill();
+      if (Math.random() < 0.4) particles.push({ x: d.x + rand(-8, 8), y: cam.y + rand(0, 20), vx: 0, vy: rand(40, 90), g: 200, life: 0.8, kind: 'dust' });
+    } else {
+      const k = Math.min(1, (d.t - d.warn) / d.fall), y = lerp(cam.y - 30, d.fl - 12, k * k);
+      g.save(); g.translate(Math.round(d.x), Math.round(y)); g.rotate(k * 2 + d.seed);
+      drawTile(g, ts, d.seed % 2 ? 1 : 17, -12, -12); drawTile(g, ts, 3, -4, -6);
+      g.restore();
+    }
+  }
 }
 function cmBallroomUpdate(dt) {
-  const F = CM.flood; if (!F) return;
-  cmFloodAdvance();
-  // rain of phase 2
+  cmUpdateLines(dt); cmUpdateDebris(dt);
+  if (CM.held && boss && boss.holdPlayer) boss.holdPlayer();
   for (const d of CM.drops) {
     d.t += dt;
     if (d.t >= d.warn + d.fall && !d.hit) {
@@ -1124,10 +1312,10 @@ function cmBallroomUpdate(dt) {
     }
   }
   CM.drops = CM.drops.filter(d => d.t < d.warn + d.fall + 0.1);
+  if (CM.col && CM.col.k > 0) addLight(cam.x + W / 2, cam.y - 20, 260, '200,50,50', 0.55);
 }
 function cmBallroomDraw() {
-  const F = CM.flood; if (!F) return;
-  cmFloodAdvance();
+  cmDrawCollapse(); cmDrawDebris(); cmDrawLines();
   const fl = 15 * TILE;
   for (const d of CM.drops) {
     if (d.t < 0) continue;
@@ -1140,18 +1328,8 @@ function cmBallroomDraw() {
       g.fillStyle = '#e0303c'; g.fillRect(Math.round(d.x) - 1, Math.round(y) - 8, 3, 8); g.fillStyle = '#ffb0a8'; g.fillRect(Math.round(d.x), Math.round(y) - 2, 1, 2);
     }
   }
-  if (F.k <= 0.01) return;
-  // the sea: a shallow crimson flood over the ballroom floor
-  const depth = Math.round(9 * F.k), top = fl - depth, x0 = Math.floor(cam.x) - 2, x1 = Math.ceil(cam.x + W) + 2;
-  g.fillStyle = 'rgba(60,0,10,0.9)'; g.fillRect(x0, top + 1, x1 - x0, fl - top + 2);
-  for (let x = x0; x < x1; x += 2) {
-    const o = Math.sin(time * 1.6 + x * 0.07) + 0.6 * Math.sin(time * 2.7 - x * 0.13);
-    g.fillStyle = o > 0.9 ? 'rgba(220,70,80,0.95)' : o > 0 ? 'rgba(160,20,34,0.95)' : 'rgba(110,8,22,0.95)';
-    g.fillRect(x, top + (o > 0.9 ? -1 : 0), 2, 1);
-  }
-  if (Math.random() < 0.25) particles.push({ x: rand(cam.x, cam.x + W), y: top, vx: 0, vy: -rand(10, 30), g: 100, life: 0.4, kind: 'blood' });
-  // wading: ripples round your ankles and hers
-  for (const e of [P, boss && boss.alive && boss.alt < 4 ? boss : null]) { if (!e) continue; const ph = (time * 2 + e.x * 0.01) % 1; g.strokeStyle = `rgba(230,90,100,${0.6 * (1 - ph)})`; g.lineWidth = 1; g.beginPath(); g.ellipse(Math.round(e.x), top + 1, 5 + ph * 10, 1.2 + ph, 0, 0, 6.3); g.stroke(); }
+  // held in her grip: the struggle meter
+  if (CM.held) { const n = Math.min(6, boss && boss.struggle || 0); for (let i = 0; i < 6; i++) { g.fillStyle = i < n ? '#ffd070' : 'rgba(80,20,20,0.8)'; g.fillRect(Math.round(P.x) - 10 + i * 3, Math.round(P.y) - 36, 2, 2); } }
 }
 
 // ================================================================== debug handle (automated tests)

@@ -243,7 +243,76 @@ def eye():
     return [("sf_eye", out)], (32, 32)
 
 
-FX = {"fx_sf_moonstep": moonstep, "fx_sf_shard": shard, "fx_sf_star": star, "fx_sf_burst": burst, "fx_sf_well": well,
+def crescent():
+    out = []
+    for f in range(4):
+        img = blank(40, 48)
+        for i in range(120):
+            t = i / 119
+            a = -1.25 + t * 2.5
+            for w in range(6):
+                r = 20 - w * 0.9 * (1 - abs(t - 0.5) * 1.6)
+                x, y = 10 + math.cos(a) * r, 24 + math.sin(a) * r * 1.05
+                c = S4 if w < 2 else S3 if w < 4 else S2
+                if abs(t - 0.5) > 0.42 and w > 2:
+                    continue
+                put(img, x + f * 0.5, y, c)
+        for k in range(6):
+            put(img, 6 + h01(k, f, 3) * 10, 8 + h01(k, f, 4) * 32, S2)
+        out.append((60, img))
+    return [("sf_crescent", out)], (40, 48)
+
+
+def meteor():
+    out = []
+    for f in range(4):
+        img = blank(32, 32)
+        for y in range(32):
+            for x in range(32):
+                d = math.hypot(x + 0.5 - 16, y + 0.5 - 16)
+                if d < 11 + math.sin(f * 1.7 + math.atan2(y - 16, x - 16) * 5) * 1.2:
+                    put(img, x, y, S1 if d > 9 else S2)
+        for y in range(32):
+            for x in range(32):
+                dx, dy = x + 0.5 - 16, y + 0.5 - 16
+                d = math.hypot(dx, dy)
+                if d < 7:
+                    l = -(dx * 0.6 + dy * 0.7) / 7
+                    rock = [C("2a2f4a"), C("4a5070"), C("6e7494"), C("a8b0d0")]
+                    put(img, x, y, rock[max(0, min(3, int(1.5 + l * 1.6)))])
+                    if 6 <= d:
+                        put(img, x, y, S3)
+        disc(img, 19, 19, 3, S4)
+        disc(img, 19, 19, 1.5, C("ffffff"))
+        out.append((60, img))
+    return [("sf_meteor", out)], (32, 32)
+
+
+def impact():
+    out = []
+    for f in range(7):
+        img = blank(96, 64)
+        r = 6 + f * 7
+        if f < 6:
+            ring(img, 48, 58, r, S3 if f < 3 else S2, 2 if f < 4 else 1, ry=r * 0.4)
+        if f < 4:
+            disc(img, 48, 56, 10 - f * 2, S4)
+            for k in range(14):
+                a = -math.pi * (k + 0.5) / 14
+                L = (14 + f * 8) * (0.6 + 0.4 * h01(k, 1, 7))
+                for i in range(int(L * 0.3), int(L)):
+                    put(img, 48 + math.cos(a) * i, 58 + math.sin(a) * i * 0.8, S4 if i < L * 0.5 else S3)
+        for k in range(16 if f > 1 else 0):
+            put(img, 48 + (h01(k, f, 9) - 0.5) * 80, 58 - h01(k, 3, 9) * 44 + f * 3, S3 if k % 2 else V2)
+        if f >= 3:
+            for x in range(20, 76):
+                if h01(x, f, 2) < 0.5:
+                    put(img, x, 63, C("7a9cf2") if f < 6 else C("3e5cc0"))
+        out.append((50 if f < 3 else 70, img))
+    return [("sf_impact", out)], (96, 64)
+
+
+FX = {"fx_sf_crescent": crescent, "fx_sf_meteor": meteor, "fx_sf_impact": impact, "fx_sf_moonstep": moonstep, "fx_sf_shard": shard, "fx_sf_star": star, "fx_sf_burst": burst, "fx_sf_well": well,
       "fx_sf_arrow": arrow, "fx_sf_pillar": pillar, "fx_sf_wave": wave, "fx_sf_planet": planets, "fx_sf_eye": eye}
 
 

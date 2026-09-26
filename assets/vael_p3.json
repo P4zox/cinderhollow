@@ -1,713 +1,893 @@
 { "frames": [
    {
     "filename": "vael_p3 0.aseprite",
-    "frame": { "x": 0, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 0, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 1.aseprite",
-    "frame": { "x": 176, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 2.aseprite",
-    "frame": { "x": 352, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 3.aseprite",
-    "frame": { "x": 528, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 4.aseprite",
-    "frame": { "x": 704, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 5.aseprite",
-    "frame": { "x": 880, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 6.aseprite",
-    "frame": { "x": 1056, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 7.aseprite",
-    "frame": { "x": 1232, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 8.aseprite",
-    "frame": { "x": 1408, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 9.aseprite",
-    "frame": { "x": 1584, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 10.aseprite",
-    "frame": { "x": 1760, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 11.aseprite",
-    "frame": { "x": 1936, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 12.aseprite",
-    "frame": { "x": 2112, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 13.aseprite",
-    "frame": { "x": 2288, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 150
-   },
-   {
-    "filename": "vael_p3 14.aseprite",
-    "frame": { "x": 2464, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 120
-   },
-   {
-    "filename": "vael_p3 15.aseprite",
-    "frame": { "x": 2640, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 130
-   },
-   {
-    "filename": "vael_p3 16.aseprite",
-    "frame": { "x": 2816, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 230
-   },
-   {
-    "filename": "vael_p3 17.aseprite",
-    "frame": { "x": 2992, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 60
-   },
-   {
-    "filename": "vael_p3 18.aseprite",
-    "frame": { "x": 3168, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 80
-   },
-   {
-    "filename": "vael_p3 19.aseprite",
-    "frame": { "x": 3344, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 120
-   },
-   {
-    "filename": "vael_p3 20.aseprite",
-    "frame": { "x": 3520, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 160
    },
    {
-    "filename": "vael_p3 21.aseprite",
-    "frame": { "x": 3696, "y": 0, "w": 176, "h": 112 },
+    "filename": "vael_p3 1.aseprite",
+    "frame": { "x": 176, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vael_p3 2.aseprite",
+    "frame": { "x": 352, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vael_p3 3.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vael_p3 4.aseprite",
+    "frame": { "x": 704, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vael_p3 5.aseprite",
+    "frame": { "x": 880, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vael_p3 6.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 7.aseprite",
+    "frame": { "x": 1232, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 8.aseprite",
+    "frame": { "x": 1408, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 9.aseprite",
+    "frame": { "x": 1584, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 10.aseprite",
+    "frame": { "x": 1760, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 11.aseprite",
+    "frame": { "x": 1936, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 12.aseprite",
+    "frame": { "x": 2112, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 13.aseprite",
+    "frame": { "x": 2288, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 14.aseprite",
+    "frame": { "x": 2464, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 15.aseprite",
+    "frame": { "x": 2640, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 260
+   },
+   {
+    "filename": "vael_p3 16.aseprite",
+    "frame": { "x": 2816, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 60
    },
    {
-    "filename": "vael_p3 22.aseprite",
-    "frame": { "x": 3872, "y": 0, "w": 176, "h": 112 },
+    "filename": "vael_p3 17.aseprite",
+    "frame": { "x": 2992, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 80
-   },
-   {
-    "filename": "vael_p3 23.aseprite",
-    "frame": { "x": 4048, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 130
-   },
-   {
-    "filename": "vael_p3 24.aseprite",
-    "frame": { "x": 4224, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 280
-   },
-   {
-    "filename": "vael_p3 25.aseprite",
-    "frame": { "x": 4400, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 60
-   },
-   {
-    "filename": "vael_p3 26.aseprite",
-    "frame": { "x": 4576, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 90
    },
    {
-    "filename": "vael_p3 27.aseprite",
-    "frame": { "x": 4752, "y": 0, "w": 176, "h": 112 },
+    "filename": "vael_p3 18.aseprite",
+    "frame": { "x": 3168, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 240
-   },
-   {
-    "filename": "vael_p3 28.aseprite",
-    "frame": { "x": 4928, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 120
    },
    {
-    "filename": "vael_p3 29.aseprite",
-    "frame": { "x": 5104, "y": 0, "w": 176, "h": 112 },
+    "filename": "vael_p3 19.aseprite",
+    "frame": { "x": 3344, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 130
-   },
-   {
-    "filename": "vael_p3 30.aseprite",
-    "frame": { "x": 5280, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 130
-   },
-   {
-    "filename": "vael_p3 31.aseprite",
-    "frame": { "x": 5456, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 130
-   },
-   {
-    "filename": "vael_p3 32.aseprite",
-    "frame": { "x": 5632, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 220
-   },
-   {
-    "filename": "vael_p3 33.aseprite",
-    "frame": { "x": 5808, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 220
-   },
-   {
-    "filename": "vael_p3 34.aseprite",
-    "frame": { "x": 5984, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 60
-   },
-   {
-    "filename": "vael_p3 35.aseprite",
-    "frame": { "x": 6160, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 60
-   },
-   {
-    "filename": "vael_p3 36.aseprite",
-    "frame": { "x": 6336, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 90
-   },
-   {
-    "filename": "vael_p3 37.aseprite",
-    "frame": { "x": 6512, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 300
-   },
-   {
-    "filename": "vael_p3 38.aseprite",
-    "frame": { "x": 6688, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 39.aseprite",
-    "frame": { "x": 6864, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 180
    },
    {
-    "filename": "vael_p3 40.aseprite",
-    "frame": { "x": 7040, "y": 0, "w": 176, "h": 112 },
+    "filename": "vael_p3 20.aseprite",
+    "frame": { "x": 3520, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "vael_p3 21.aseprite",
+    "frame": { "x": 3696, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vael_p3 22.aseprite",
+    "frame": { "x": 3872, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vael_p3 23.aseprite",
+    "frame": { "x": 4048, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 380
+   },
+   {
+    "filename": "vael_p3 24.aseprite",
+    "frame": { "x": 4224, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "vael_p3 25.aseprite",
+    "frame": { "x": 4400, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 120
    },
    {
-    "filename": "vael_p3 41.aseprite",
-    "frame": { "x": 7216, "y": 0, "w": 176, "h": 112 },
+    "filename": "vael_p3 26.aseprite",
+    "frame": { "x": 4576, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vael_p3 27.aseprite",
+    "frame": { "x": 4752, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vael_p3 28.aseprite",
+    "frame": { "x": 4928, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 29.aseprite",
+    "frame": { "x": 5104, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 30.aseprite",
+    "frame": { "x": 5280, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "vael_p3 31.aseprite",
+    "frame": { "x": 5456, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "vael_p3 32.aseprite",
+    "frame": { "x": 5632, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "vael_p3 33.aseprite",
+    "frame": { "x": 5808, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "vael_p3 34.aseprite",
+    "frame": { "x": 5984, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "vael_p3 35.aseprite",
+    "frame": { "x": 6160, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 110
+   },
+   {
+    "filename": "vael_p3 36.aseprite",
+    "frame": { "x": 6336, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "vael_p3 37.aseprite",
+    "frame": { "x": 6512, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 70
+   },
+   {
+    "filename": "vael_p3 38.aseprite",
+    "frame": { "x": 6688, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 130
+   },
+   {
+    "filename": "vael_p3 39.aseprite",
+    "frame": { "x": 6864, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "vael_p3 40.aseprite",
+    "frame": { "x": 7040, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 80
+   },
+   {
+    "filename": "vael_p3 41.aseprite",
+    "frame": { "x": 7216, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 140
    },
    {
     "filename": "vael_p3 42.aseprite",
-    "frame": { "x": 7392, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 7392, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 260
    },
    {
     "filename": "vael_p3 43.aseprite",
-    "frame": { "x": 7568, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 7568, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 60
    },
    {
     "filename": "vael_p3 44.aseprite",
-    "frame": { "x": 7744, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 7744, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 90
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
    },
    {
     "filename": "vael_p3 45.aseprite",
-    "frame": { "x": 7920, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 7920, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 160
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 180
    },
    {
     "filename": "vael_p3 46.aseprite",
-    "frame": { "x": 8096, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 8096, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
    },
    {
     "filename": "vael_p3 47.aseprite",
-    "frame": { "x": 8272, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 8272, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
    },
    {
     "filename": "vael_p3 48.aseprite",
-    "frame": { "x": 8448, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 8448, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 300
    },
    {
     "filename": "vael_p3 49.aseprite",
-    "frame": { "x": 8624, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 8624, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 50
    },
    {
     "filename": "vael_p3 50.aseprite",
-    "frame": { "x": 8800, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 8800, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 50
    },
    {
     "filename": "vael_p3 51.aseprite",
-    "frame": { "x": 8976, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 8976, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 50
    },
    {
     "filename": "vael_p3 52.aseprite",
-    "frame": { "x": 9152, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 9152, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
    },
    {
     "filename": "vael_p3 53.aseprite",
-    "frame": { "x": 9328, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 9328, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 260
-   },
-   {
-    "filename": "vael_p3 54.aseprite",
-    "frame": { "x": 9504, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 60
-   },
-   {
-    "filename": "vael_p3 55.aseprite",
-    "frame": { "x": 9680, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 90
-   },
-   {
-    "filename": "vael_p3 56.aseprite",
-    "frame": { "x": 9856, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
-   },
-   {
-    "filename": "vael_p3 57.aseprite",
-    "frame": { "x": 10032, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 130
-   },
-   {
-    "filename": "vael_p3 58.aseprite",
-    "frame": { "x": 10208, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 130
-   },
-   {
-    "filename": "vael_p3 59.aseprite",
-    "frame": { "x": 10384, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
-   },
-   {
-    "filename": "vael_p3 60.aseprite",
-    "frame": { "x": 10560, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 120
-   },
-   {
-    "filename": "vael_p3 61.aseprite",
-    "frame": { "x": 10736, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 90
-   },
-   {
-    "filename": "vael_p3 62.aseprite",
-    "frame": { "x": 10912, "y": 0, "w": 176, "h": 112 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 160
    },
    {
-    "filename": "vael_p3 63.aseprite",
-    "frame": { "x": 11088, "y": 0, "w": 176, "h": 112 },
+    "filename": "vael_p3 54.aseprite",
+    "frame": { "x": 9504, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 500
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vael_p3 55.aseprite",
+    "frame": { "x": 9680, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vael_p3 56.aseprite",
+    "frame": { "x": 9856, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vael_p3 57.aseprite",
+    "frame": { "x": 10032, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vael_p3 58.aseprite",
+    "frame": { "x": 10208, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 280
+   },
+   {
+    "filename": "vael_p3 59.aseprite",
+    "frame": { "x": 10384, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
+   },
+   {
+    "filename": "vael_p3 60.aseprite",
+    "frame": { "x": 10560, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 300
+   },
+   {
+    "filename": "vael_p3 61.aseprite",
+    "frame": { "x": 10736, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 240
+   },
+   {
+    "filename": "vael_p3 62.aseprite",
+    "frame": { "x": 10912, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vael_p3 63.aseprite",
+    "frame": { "x": 11088, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
    },
    {
     "filename": "vael_p3 64.aseprite",
-    "frame": { "x": 11264, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 11264, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 200
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
    },
    {
     "filename": "vael_p3 65.aseprite",
-    "frame": { "x": 11440, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 11440, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 120
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
    },
    {
     "filename": "vael_p3 66.aseprite",
-    "frame": { "x": 11616, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 11616, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 160
    },
    {
     "filename": "vael_p3 67.aseprite",
-    "frame": { "x": 11792, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 11792, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 260
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 140
    },
    {
     "filename": "vael_p3 68.aseprite",
-    "frame": { "x": 11968, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 11968, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 300
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
    },
    {
     "filename": "vael_p3 69.aseprite",
-    "frame": { "x": 12144, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 12144, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 260
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 380
    },
    {
     "filename": "vael_p3 70.aseprite",
-    "frame": { "x": 12320, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 12320, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 400
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 60
    },
    {
     "filename": "vael_p3 71.aseprite",
-    "frame": { "x": 12496, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 12496, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 100
    },
    {
     "filename": "vael_p3 72.aseprite",
-    "frame": { "x": 12672, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 12672, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
    },
    {
     "filename": "vael_p3 73.aseprite",
-    "frame": { "x": 12848, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 12848, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
    },
    {
     "filename": "vael_p3 74.aseprite",
-    "frame": { "x": 13024, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 13024, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 140
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
    },
    {
     "filename": "vael_p3 75.aseprite",
-    "frame": { "x": 13200, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 13200, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 140
    },
    {
     "filename": "vael_p3 76.aseprite",
-    "frame": { "x": 13376, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 13376, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 160
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 260
    },
    {
     "filename": "vael_p3 77.aseprite",
-    "frame": { "x": 13552, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 13552, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
-    "duration": 180
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
    },
    {
     "filename": "vael_p3 78.aseprite",
-    "frame": { "x": 13728, "y": 0, "w": 176, "h": 112 },
+    "frame": { "x": 13728, "y": 0, "w": 176, "h": 128 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 112 },
-    "sourceSize": { "w": 176, "h": 112 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vael_p3 79.aseprite",
+    "frame": { "x": 13904, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vael_p3 80.aseprite",
+    "frame": { "x": 14080, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 90
+   },
+   {
+    "filename": "vael_p3 81.aseprite",
+    "frame": { "x": 14256, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vael_p3 82.aseprite",
+    "frame": { "x": 14432, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 180
+   },
+   {
+    "filename": "vael_p3 83.aseprite",
+    "frame": { "x": 14608, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 120
+   },
+   {
+    "filename": "vael_p3 84.aseprite",
+    "frame": { "x": 14784, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 160
+   },
+   {
+    "filename": "vael_p3 85.aseprite",
+    "frame": { "x": 14960, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 300
+   },
+   {
+    "filename": "vael_p3 86.aseprite",
+    "frame": { "x": 15136, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 87.aseprite",
+    "frame": { "x": 15312, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vael_p3 88.aseprite",
+    "frame": { "x": 15488, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 150
+   },
+   {
+    "filename": "vael_p3 89.aseprite",
+    "frame": { "x": 15664, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 90.aseprite",
+    "frame": { "x": 15840, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 91.aseprite",
+    "frame": { "x": 16016, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 92.aseprite",
+    "frame": { "x": 16192, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 93.aseprite",
+    "frame": { "x": 16368, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 94.aseprite",
+    "frame": { "x": 16544, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 200
+   },
+   {
+    "filename": "vael_p3 95.aseprite",
+    "frame": { "x": 16720, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 250
+   },
+   {
+    "filename": "vael_p3 96.aseprite",
+    "frame": { "x": 16896, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 300
+   },
+   {
+    "filename": "vael_p3 97.aseprite",
+    "frame": { "x": 17072, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
+    "duration": 350
+   },
+   {
+    "filename": "vael_p3 98.aseprite",
+    "frame": { "x": 17248, "y": 0, "w": 176, "h": 128 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 128 },
+    "sourceSize": { "w": 176, "h": 128 },
     "duration": 700
    }
  ],
@@ -716,17 +896,19 @@
   "version": "1.3.18.6-arm64",
   "image": "vael_p3.png",
   "format": "RGBA8888",
-  "size": { "w": 13904, "h": 112 },
+  "size": { "w": 17424, "h": 128 },
   "scale": "1",
   "frameTags": [
    { "name": "idle", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" },
    { "name": "walk", "from": 6, "to": 13, "direction": "forward", "color": "#000000ff" },
    { "name": "combo", "from": 14, "to": 27, "direction": "forward", "color": "#000000ff" },
-   { "name": "overhead", "from": 28, "to": 39, "direction": "forward", "color": "#000000ff" },
-   { "name": "thrust", "from": 40, "to": 49, "direction": "forward", "color": "#000000ff" },
-   { "name": "chain", "from": 50, "to": 60, "direction": "forward", "color": "#000000ff" },
-   { "name": "stagger", "from": 61, "to": 64, "direction": "forward", "color": "#000000ff" },
-   { "name": "death", "from": 65, "to": 78, "direction": "forward", "color": "#000000ff" }
+   { "name": "string", "from": 28, "to": 45, "direction": "forward", "color": "#000000ff" },
+   { "name": "spin", "from": 46, "to": 55, "direction": "forward", "color": "#000000ff" },
+   { "name": "overhead", "from": 56, "to": 66, "direction": "forward", "color": "#000000ff" },
+   { "name": "thrust", "from": 67, "to": 74, "direction": "forward", "color": "#000000ff" },
+   { "name": "charge", "from": 75, "to": 82, "direction": "forward", "color": "#000000ff" },
+   { "name": "stagger", "from": 83, "to": 86, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 87, "to": 98, "direction": "forward", "color": "#000000ff" }
   ]
  }
 }

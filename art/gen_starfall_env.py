@@ -70,7 +70,10 @@ def main():
     if ase:
         build_strip("tiles_starfall", tiles)
         build_strip("sf_glass", glass)
-        for n, img in (("bg_starfall_far", far), ("bg_starfall_mid", mid)):
+        vf, vm = SE.void_far(), SE.void_mid()
+        pv2 = Image.new("RGBA", (1024, 216), (0, 0, 0, 255)); c2 = vf.copy(); c2.alpha_composite(vm); pv2.paste(c2, (0, 0)); pv2.paste(c2, (512, 0))
+        scale(pv2, 2).save(os.path.join(PREV, "env_starfall_void.png"))
+        for n, img in (("bg_starfall_far", far), ("bg_starfall_mid", mid), ("bg_starfall_void_far", vf), ("bg_starfall_void_mid", vm)):
             asebuild.build(n, 512, 216, ["Layer"], [{"ms": 1000, "cels": {"Layer": img}}], [("loop", 0, 0)])
         for n, (w, h, anims) in props.items():
             build_prop(n, w, h, anims)

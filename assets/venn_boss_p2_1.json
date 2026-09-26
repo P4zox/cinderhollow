@@ -6,7 +6,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 120
+    "duration": 100
    },
    {
     "filename": "venn_boss_p2_1 1.aseprite",
@@ -15,7 +15,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 120
+    "duration": 50
    },
    {
     "filename": "venn_boss_p2_1 2.aseprite",
@@ -24,7 +24,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 130
+    "duration": 60
    },
    {
     "filename": "venn_boss_p2_1 3.aseprite",
@@ -33,7 +33,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 130
+    "duration": 70
    },
    {
     "filename": "venn_boss_p2_1 4.aseprite",
@@ -42,7 +42,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 110
+    "duration": 50
    },
    {
     "filename": "venn_boss_p2_1 5.aseprite",
@@ -51,7 +51,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 110
+    "duration": 60
    },
    {
     "filename": "venn_boss_p2_1 6.aseprite",
@@ -60,7 +60,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 110
+    "duration": 60
    },
    {
     "filename": "venn_boss_p2_1 7.aseprite",
@@ -69,7 +69,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 110
+    "duration": 50
    },
    {
     "filename": "venn_boss_p2_1 8.aseprite",
@@ -78,7 +78,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 110
+    "duration": 60
    },
    {
     "filename": "venn_boss_p2_1 9.aseprite",
@@ -87,7 +87,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 110
+    "duration": 80
    },
    {
     "filename": "venn_boss_p2_1 10.aseprite",
@@ -96,7 +96,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 120
+    "duration": 50
    },
    {
     "filename": "venn_boss_p2_1 11.aseprite",
@@ -105,7 +105,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 130
+    "duration": 60
    },
    {
     "filename": "venn_boss_p2_1 12.aseprite",
@@ -114,7 +114,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 130
+    "duration": 90
    },
    {
     "filename": "venn_boss_p2_1 13.aseprite",
@@ -123,7 +123,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 150
+    "duration": 120
    },
    {
     "filename": "venn_boss_p2_1 14.aseprite",
@@ -132,7 +132,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 90
+    "duration": 50
    },
    {
     "filename": "venn_boss_p2_1 15.aseprite",
@@ -141,7 +141,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 110
+    "duration": 60
    },
    {
     "filename": "venn_boss_p2_1 16.aseprite",
@@ -150,7 +150,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 160
+    "duration": 180
    },
    {
     "filename": "venn_boss_p2_1 17.aseprite",
@@ -159,7 +159,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 200
+    "duration": 130
    },
    {
     "filename": "venn_boss_p2_1 18.aseprite",
@@ -168,16 +168,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
     "sourceSize": { "w": 192, "h": 128 },
-    "duration": 160
-   },
-   {
-    "filename": "venn_boss_p2_1 19.aseprite",
-    "frame": { "x": 3648, "y": 0, "w": 192, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 128 },
-    "sourceSize": { "w": 192, "h": 128 },
-    "duration": 150
+    "duration": 140
    }
  ],
  "meta": {
@@ -185,11 +176,10 @@
   "version": "1.3.18.6-arm64",
   "image": "venn_boss_p2_1.png",
   "format": "RGBA8888",
-  "size": { "w": 3840, "h": 128 },
+  "size": { "w": 3648, "h": 128 },
   "scale": "1",
   "frameTags": [
-   { "name": "absorb", "from": 0, "to": 13, "direction": "forward", "color": "#000000ff" },
-   { "name": "stagger", "from": 14, "to": 19, "direction": "forward", "color": "#000000ff" }
+   { "name": "string", "from": 0, "to": 18, "direction": "forward", "color": "#000000ff" }
   ]
  }
 }

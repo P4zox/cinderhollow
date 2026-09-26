@@ -6,7 +6,7 @@
 // Every top-level name is prefixed sf/SF (all region files share one scope). Art: art/gen_starfall*.py.
 
 // ================================================================== biome
-Object.assign(AREAS, { starfall: { name: 'The Starfall Crater', ambient: 0.3, amb: 'mote', tint: '#05060f', map: '#3c4a78' } });
+Object.assign(AREAS, { starfall: { name: 'The Starfall Crater', ambient: 0.3, amb: 'dust', tint: '#05060f', map: '#3c4a78' } });
 Object.assign(SCALES, { starfall: [0, 2, 4, 7, 11] });   // lydian-ish bells: cold, bright, uneasy
 Object.assign(ROOTS, { starfall: 61.74 });
 Object.assign(PCOL, { star: '215,232,255', nebula: '170,130,255', glass: '140,170,230' });
@@ -79,7 +79,7 @@ HOOKS.update.push(dt => {
 });
 HOOKS.render.push(() => {   // a faint starlit afterimage while the third jump carries you
   if (!P || SFM.trail <= 0) return;
-  drawSprite(sheet('player'), P.anim.frame, P.x, P.y + 4, P.face, { alpha: SFM.trail * 0.6, flash: 1, flashColor: '#bcd4ff' });
+  sfDrawSil(sheet('player'), P.anim.frame, P.x, P.y + 4, P.face, '#bcd4ff', SFM.trail * 0.6);
 });
 
 // ================================================================== starlight gravity + star-glass (tile keyed, any room)
@@ -156,6 +156,17 @@ drawParallax = function () {
     for (const bx of [ox, ox + 512, ox - 512]) sfDrawConstellation(c, bx, oy, 512, 0.7 * dim, 1, foc * (0.6 + 0.4 * SFSKY.flare));
   }
   sfLayer(sheet('bg_starfall_mid'), 0.3, 0.08);
+  if (typeof SFV !== 'undefined' && (SFV.k > 0 || SFV.target > 0)) {
+    sfVoidAdvance();
+    if (SFV.k >= 1) { sfVoidLayers(); return; }
+    if (SFV.k <= 0) return;
+    const R = SFV.k * 560, cx = SFV.x - cam.x, cy = SFV.y - cam.y;
+    g.save(); g.beginPath(); g.arc(cx, cy, Math.max(0.5, R), 0, 6.3); g.clip(); sfVoidLayers(); g.restore();
+    g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = 'rgba(200,220,255,0.85)'; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, Math.max(1, R), 0, 6.3); g.stroke();
+    g.strokeStyle = 'rgba(160,120,255,0.45)'; g.lineWidth = 1; g.beginPath(); g.arc(cx, cy, Math.max(1, R - 5), 0, 6.3); g.stroke();
+    g.globalCompositeOperation = 'source-over';
+  }
 };
 
 // starlight columns + rising motes over '+' cells
@@ -165,6 +176,10 @@ HOOKS.enter.push(def => {
   for (let y = 0; y < def.h; y++) for (let x = 0; x < def.w; x++) if (def.map[y][x] === '+') SFR.stars.push([x, y]);
   if (def.biome !== 'starfall') return;
   if (def.id === 'SF1' && !SAVE.hints.sf1) { SAVE.hints.sf1 = 1; setTimeout(() => { if (room && room.id === 'SF1') toast('Starlight pools here. Inside it you fall softly and leap higher.', 4); }, 1200); }
+});
+HOOKS.update.push(() => {   // ambient drift in the crater: star motes (as 'dust' so they carry no per-mote light)
+  if (!room || room.def.biome !== 'starfall') return;
+  for (let i = particles.length - 1, n = 0; i >= 0 && n < 40; i--, n++) { const p = particles[i]; if (p.amb && p.kind === 'dust') { p.kind = Math.random() < 0.8 ? 'star' : 'nebula'; p.vy = -Math.abs(p.vy || 4); } }
 });
 HOOKS.update.push(dt => {
   if (!room || !SFR.stars.length) return;
@@ -300,6 +315,23 @@ class SfAnim {
   get changed() { return this.a.changed; } set changed(v) { this.a.changed = v; }
   get speed() { return this.a.speed; } set speed(v) { this.a.speed = v; }
 }
+const SF_SIL = new Map();   // cached tinted silhouettes (afterimages): no per-frame tint compositing
+function sfSil(sh, frame, color) {
+  const k = sh.name + ':' + frame + ':' + color; let c = SF_SIL.get(k);
+  if (c) return c;
+  const f = sh.frames[frame]; if (!f || !sh.img.complete) return null;
+  c = document.createElement('canvas'); c.width = f.w; c.height = f.h; const x = c.getContext('2d');
+  x.drawImage(sh.img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h); x.globalCompositeOperation = 'source-atop'; x.fillStyle = color; x.fillRect(0, 0, f.w, f.h);
+  if (SF_SIL.size > 400) SF_SIL.clear();
+  SF_SIL.set(k, c); return c;
+}
+function sfDrawSil(sh, frame, X, Y, face, color, alpha) {
+  const c = sfSil(sh, frame, color); if (!c) return;
+  const flip = face !== sh.native, x = Math.round(X), y = Math.round(Y);
+  g.save(); g.globalAlpha = alpha;
+  if (flip) { g.translate(x, 0); g.scale(-1, 1); g.drawImage(c, -sh.ax, y - sh.ay); } else g.drawImage(c, x - sh.ax, y - sh.ay);
+  g.restore();
+}
 const sfDmg = (d, b) => BOSS_DMG * d * NGP.dmg * (b && b.phase >= 3 ? 1.25 : b && b.phase === 2 ? 1.17 : 1);
 function sfMark(x, y, life, w = 16, col = '190,210,255') { SFA.marks.push({ x, y, life, max: life, w, col }); }
 // a star falls onto (x, floor) after `delay`; marked on the ground first
@@ -369,10 +401,63 @@ function sfDrawMonolith(mo) {   // an obsidian slab risen from the glass; star c
   for (let y = top + 5, i = 0; y < mo.floor - 3; y += 7, i++) g.fillRect(x0 + 6 + (i % 3) * 3, y, 1, 4);
   addLight(mo.x, top + 10, 30, '170,200,255', 0.6);
 }
+// ---- Astrel's crescent: a sword wave that skims the floor (jump or roll it)
+function sfCrescent(b, x, dir) {
+  const fl = b.floor; sfSfx.whoosh(); sfx.spear();
+  hazards.push({ x, y: fl, w: 20, h: 30, dir, dmg: sfDmg(SF_AD.crescent, b), id: ++hazardId, life: 2.2, t: 0,
+    update: (h, dt) => { h.x += dir * (b.phase >= 2 ? 300 : 260) * dt; if (Math.random() < 0.8) particles.push({ x: h.x - dir * rand(4, 14), y: fl - rand(4, 34), vx: -dir * rand(10, 40), vy: -rand(0, 20), life: 0.35, kind: 'star' }); if (h.x < b.L - 30 || h.x > b.R + 30) h.life = 0; },
+    sfDraw: h => { const s = fxSheet('sf_crescent'); if (s.ok) { const t = s.tag('sf_crescent'); drawSprite(s, t.from + Math.floor(time * 14) % 4, h.x, fl, dir, { bottom: true }); } addLight(h.x, fl - 18, 40, '200,220,255', 0.9); } });
+}
+// ---- a meteor out of the void: its impact point is marked, its path is drawn, then it strikes
+function sfMeteor(b, tx, delay, big = false) {
+  const fl = b.floor, dir = b.metDir || 1, travel = big ? 0.75 : 0.45, w = big ? 130 : 42, hh = big ? 86 : 46;
+  const sx = tx - dir * (big ? 300 : 230), sy = fl - (big ? 440 : 320), T = delay + travel;
+  sfMark(tx, fl, T, big ? 100 : 36, big ? '255,215,170' : '205,220,255');
+  const h = { x: tx, y: fl, w, h: hh, dmg: sfDmg(big ? SF_AD.great : SF_AD.meteor, b), id: ++hazardId, life: T + 0.6, t: 0, meteor: true,
+    active: h => h.t > T && h.t < T + 0.14,
+    update: h => {
+      if (h.t > delay && !h.boom && Math.random() < 0.9) { const m = (h.t - delay) / travel; particles.push({ x: lerp(sx, tx, m) + rand(-4, 4), y: lerp(sy, fl, m) + rand(-4, 4), vx: -dir * rand(20, 60), vy: -rand(30, 80), life: 0.4, kind: Math.random() < 0.7 ? 'star' : 'nebula' }); }
+      if (h.t > T && !h.boom) {
+        h.boom = true; spawnFx('sf_impact', tx, fl, 1, null, { bottom: true, speed: big ? 0.7 : 1 });
+        shake = Math.max(shake, big ? 14 : 6); sfSfx.boom(); if (big) { sfx.boom(); flashScreen = Math.max(flashScreen, 0.4); }
+        for (let i = 0; i < (big ? 30 : 12); i++) particles.push({ x: tx + rand(-12, 12), y: fl - 2, vx: rand(-140, 140), vy: -rand(40, 200), g: 420, life: rand(0.5, 1), kind: i % 3 ? 'glass' : 'star' });
+        if (big) for (const dd of [-1, 1]) sfWave(tx + dd * 50, fl, dd, SF_AD.ground, b, 190);
+      }
+    },
+    sfDraw: h => {
+      if (h.boom) return;
+      const k = clamp(h.t / Math.max(0.01, delay), 0, 1);
+      g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(${big ? '255,215,170' : '180,200,255'},${0.06 + 0.32 * k * k})`; g.lineWidth = big ? 3 : 1;
+      g.beginPath(); g.moveTo(sx, sy); g.lineTo(tx, fl); g.stroke(); g.lineWidth = 1; g.globalCompositeOperation = 'source-over';
+      if (h.t > delay) {
+        const m = (h.t - delay) / travel, mx = lerp(sx, tx, m), my = lerp(sy, fl, m), s = fxSheet('sf_meteor');
+        if (s.ok) { const f = s.frames[s.tag('sf_meteor').from + Math.floor(time * 16) % 4], sc = big ? 2.5 : 1; g.drawImage(s.img, f.x, f.y, f.w, f.h, Math.round(mx - f.w * sc / 2), Math.round(my - f.h * sc / 2), f.w * sc, f.h * sc); }
+        addLight(mx, my, big ? 110 : 50, '210,225,255', 1);
+      }
+    } };
+  hazards.push(h);
+}
+
+// ---- phase 2: the crater opens to the void (a ring of light spreads from Astrel; inside it the sky is gone)
+const SFV = { k: 0, target: 0, x: 0, y: 0, last: 0 };
+function sfVoidAdvance() {
+  const dt = clamp(time - SFV.last, 0, 0.25); SFV.last = time;
+  if (SFV.k !== SFV.target) SFV.k = approach(SFV.k, SFV.target, dt * (SFV.target ? 0.42 : 0.25));
+}
+function sfVoidLayers() {
+  g.fillStyle = '#030208'; g.fillRect(0, 0, W, H);
+  sfLayer(sheet('bg_starfall_void_far'), 0.05, 0.02);
+  for (const [k, c] of Object.entries(SF_CONST)) { const foc = SFSKY.focus === k ? SFSKY.k : 0, ox = -((cam.x * 0.04 + SFSKY.rot) % 512 + 512) % 512; for (const bx of [ox, ox + 512, ox - 512]) sfDrawConstellation(c, bx, 0, 512, 0.5, 1, foc * (0.6 + 0.4 * SFSKY.flare)); }
+  const mid = sheet('bg_starfall_void_mid');
+  if (mid.ok) { const t = mid.tag('loop'), f = mid.frames[t.from], ox = -((cam.x * 0.25 + time * 6) % f.w + f.w) % f.w, oy = Math.round(clamp(-cam.y * 0.06, -20, 20)) + Math.sin(time * 0.5) * 3; for (let x = Math.round(ox); x < W; x += f.w) g.drawImage(mid.img, f.x, f.y, f.w, f.h, x, oy + (H - f.h), f.w, f.h); }
+}
+HOOKS.enter.push(() => { SFV.k = 0; SFV.target = 0; });
+HOOKS.death.push(() => { SFV.k = 0; SFV.target = 0; });
+
 // ================================================================== ASTREL, THE FALLEN STAR (SF7) — the hardest optional boss save one
 BOSS_INFO.astrel = { name: 'Astrel, the Fallen Star', hp: 4800, cinders: 26000, reward: ['moonstep', 'w:starblade', 'c_star'], quote: '“I fell so that nothing else would.”' };
-const SF_ASTREL_TAGS = { map: { idle: '', walk: '', dash: '', counter: '', riposte: '', stagger: '', kneel: '', getup: '', combo: '_b', thrust: '_b', upslash: '_b', leap: '_c', cast: '_c', nova: '_c', death: '_c' }, fallback: 'idle' };
-const SF_AD = { combo: [36, 38, 50], thrust: [54], upslash: [46], riposte: [54], leap: [52], dash: 36, line: 30, star: 32, arrow: 30, serpent: 32, pillar: 38, well: 46, wave: 26 };
+const SF_ASTREL_TAGS = { map: { idle: '', walk: '', dash: '', counter: '', riposte: '', stagger: '', kneel: '', getup: '', combo: '_b', thrust: '_b', upslash: '_b', flurry: '_b', leap: '_c', cast: '_c', nova: '_c', death: '_c', wave: '_c' }, fallback: 'idle' };
+const SF_AD = { combo: [33, 35, 47], thrust: [46], upslash: [46], riposte: [54], leap: [52], flurry: [22, 22, 24, 24, 38], wave: [40], crescent: 36, dash: 36, line: 30, star: 32, arrow: 30, serpent: 32, pillar: 38, well: 46, ground: 26, meteor: 34, great: 62 };
 const SF_CONS_NAME = { hunter: ['THE HUNTER', 'Arrows fall from the sky'], serpent: ['THE SERPENT', 'The sky grows light — the serpent coils'], crown: ['THE CROWN', 'The sky grows heavy — pillars rise'] };
 class Astrel extends BossBase {
   constructor(x, y) {
@@ -390,7 +475,7 @@ class Astrel extends BossBase {
     this.state = 'dormant'; this.stanceMax = 330; this.critRange = 46; this.face = -1; this.hidden = false;
     this.ghosts = []; this.log = []; this.cool = 1; this.counterCool = 2.5; this.castCool = 5; this.wellCool = 7; this.leapCool = 2; this.dashCool = 1.2;
     this.cons = null; this.consI = -1; this.consT = 0; this.hazT = 3; this.rotT = 0; this.airT = 0; this.readFx = 0; this.feint = 0; this.chainN = 0;
-    this.nova = null; this.novaCool = 0; this.desperate = false; this.meta = ASSETS.astrel_meta || { hurtbox: [54, 30, 15, 57], attacks: {} };
+    this.nova = null; this.novaCool = 0; this.desperate = false; this.mq = []; this.meta = ASSETS.astrel_meta || { hurtbox: [54, 30, 15, 57], attacks: {} };
   }
   get L() { return 3 * TILE; }
   get R() { return 46 * TILE - 16; }
@@ -419,7 +504,7 @@ class Astrel extends BossBase {
   // ------------------------------------------------------------ update
   update(dt) {
     this.commonUpdate(dt); this.anim.update(dt);
-    for (const gh of this.ghosts) gh.life -= dt; this.ghosts = this.ghosts.filter(gh => gh.life > 0);
+    for (const gh of this.ghosts) gh.life -= dt; this.ghosts = this.ghosts.filter(gh => gh.life > 0); if (this.ghosts.length > 10) this.ghosts.splice(0, this.ghosts.length - 10);
     this.readFx -= dt;
     if (!this.active) { this.facePlayerIdle(); if (!this.cutting && this.wake()) this.activate(); return; }
     if (this.introT > 0) {   // (no cutscene: already seen) she rises from her knee
@@ -429,7 +514,7 @@ class Astrel extends BossBase {
       return;
     }
     if (this.state !== 'dead') { this.readPlayer(dt); this.director(dt); }
-    for (const k of ['counterCool', 'castCool', 'wellCool', 'leapCool', 'dashCool', 'novaCool']) this[k] -= dt;
+    for (const k of ['counterCool', 'castCool', 'wellCool', 'leapCool', 'dashCool', 'novaCool', 'heavyRead']) this[k] = (this[k] || 0) - dt;
     const d = Math.abs(P.x - this.x);
     switch (this.state) {
       case 'idle': case 'walk': {
@@ -498,7 +583,7 @@ class Astrel extends BossBase {
   reactive(d) {
     if (this.cool > 0.45) return false;
     if (P.state === 'heal' && d < 190) { this.tell(); if (d < 110) this.start('thrust'); else this.startDash(); return true; }   // you drink, she comes
-    if (ATK[P.state] && ATK[P.state].kind === 'heavy' && P.charge > 0.08 && d < 140) { this.tell(); this.start('thrust'); return true; }   // you wind up, she cuts it short
+    if (ATK[P.state] && ATK[P.state].kind === 'heavy' && P.charge > 0.08 && d < 140 && this.heavyRead <= 0) { this.heavyRead = 5; if (Math.random() < 0.45) { this.tell(); this.start('thrust'); return true; } }   // you wind up, she sometimes cuts it short
     return false;
   }
   decide(d) {
@@ -508,12 +593,12 @@ class Astrel extends BossBase {
     if (this.airT > 0.18 && d < 100 && P.y < this.y - 22) { this.tell(); return this.start('upslash'); }
     if (this.count('roll', 2.5) >= 2) this.feint = 0.35;   // you roll on reflex: she waits it out
     let w;
-    if (d < 75) w = { combo: 3, thrust: 1, upslash: 0.4, counter: this.counterCool <= 0 ? 0.7 : 0, dash: 0.5, leap: 0.3 };
-    else if (d < 170) w = { thrust: 2.2, dash: this.dashCool <= 0 ? 1.8 : 0.3, leap: this.leapCool <= 0 ? 1.2 : 0, approach: 0.8, cast: this.castCool <= 0 ? (p >= 2 ? 1.2 : 0.8) : 0, well: p >= 2 && this.wellCool <= 0 ? 1 : 0 };
-    else w = { dash: this.dashCool <= 0 ? 2.4 : 0.6, leap: this.leapCool <= 0 ? 1.4 : 0, cast: this.castCool <= 0 ? 1.4 : 0, well: p >= 2 && this.wellCool <= 0 ? 1.2 : 0, approach: 1 };
+    if (d < 75) w = { combo: 2.6, flurry: p >= 2 ? 1.8 : 1.1, thrust: 1, upslash: 0.4, counter: this.counterCool <= 0 ? 0.7 : 0, dash: 0.5, leap: 0.3 };
+    else if (d < 170) w = { wave: 1.2, thrust: 2.0, dash: this.dashCool <= 0 ? 1.8 : 0.3, leap: this.leapCool <= 0 ? 1.2 : 0, approach: 0.8, cast: this.castCool <= 0 ? (p >= 2 ? 1.2 : 0.8) : 0, well: p >= 2 && this.wellCool <= 0 ? 1 : 0 };
+    else w = { wave: 1.4, dash: this.dashCool <= 0 ? 2.4 : 0.6, leap: this.leapCool <= 0 ? 1.4 : 0, cast: this.castCool <= 0 ? 1.4 : 0, well: p >= 2 && this.wellCool <= 0 ? 1.2 : 0, approach: 1 };
     // the mirror: she answers your last move with her own version of it
     if (this.lastMove && time - this.lastMoveT < 3) {
-      const m = { light: 'combo', heavy: 'thrust', air: 'leap', spell: 'cast', art: 'dash', roll: 'dash', heal: 'thrust' }[this.lastMove];
+      const m = { light: Math.random() < 0.5 ? 'combo' : 'flurry', heavy: 'thrust', air: 'leap', spell: 'wave', art: 'dash', roll: 'dash', heal: 'thrust' }[this.lastMove];
       if (w[m] !== undefined && w[m] > 0) { w[m] *= 2.2; if (Math.random() < 0.25) this.tell(); }
     }
     if (w[this.last]) w[this.last] *= 0.35;
@@ -533,7 +618,7 @@ class Astrel extends BossBase {
     this.facePlayer(); this.atk = m; this.last = m; this.hitIds = new Set(); this.atkId = ++hazardId; this.fired = {}; this.air = null;
     this.state = 'attack'; this.play(m, false);
     const wins = metaWindows(this.anim.sheet, m); this.firstActive = wins.length ? wins[0].active[0] : 3;
-    this.hold = ({ combo: 0.1, thrust: 0.22, upslash: 0.08, riposte: 0.02, leap: 0 }[m] || 0) + (this.feint || 0) * (m === 'riposte' ? 0 : 1) - (this.phase >= 3 ? 0.05 : 0);
+    this.hold = ({ combo: 0.1, thrust: 0.22, upslash: 0.08, riposte: 0.02, leap: 0, flurry: 0.14, wave: 0.18 }[m] || 0) + (this.feint || 0) * (m === 'riposte' ? 0 : 1) - (this.phase >= 3 ? 0.05 : 0);
     this.hold = Math.max(0, this.hold); this.feint = 0; this.glinted = false;
     if (m === 'leap') this.leapCool = this.phase >= 2 ? 3.2 : 4.5;
   }
@@ -544,8 +629,8 @@ class Astrel extends BossBase {
     // the readable beat: she holds the frame before each string's first cut while the blade flares
     if (an.i === this.firstActive - 1 && this.hold > 0) {
       this.hold -= dt; an.t = Math.min(an.t, 5);
-      if (!this.glinted) { this.glinted = true; const t = metaPoint(an.sheet, this, [72, 30]); spawnFx('telegraph', t.x, t.y, this.face); sfx.glint(); }
-    } else if (!this.glinted && an.i === Math.max(0, this.firstActive - 1)) { this.glinted = true; spawnFx('telegraph', this.x + this.face * 14, this.y - 40, this.face); sfx.glint(); }
+      if (!this.glinted) { this.glinted = true; const t = metaPoint(an.sheet, this, [92, 62]); spawnFx('telegraph', t.x, t.y, this.face); sfx.glint(); }
+    } else if (!this.glinted && an.i === Math.max(0, this.firstActive - 1)) { this.glinted = true; spawnFx('telegraph', this.x + this.face * 18, this.y - 48, this.face); sfx.glint(); }
     const dmgs = SF_AD[a] || [40];
     wins.forEach((w, wi) => {
       if (an.i < w.active[0] || an.i > w.active[1]) return;
@@ -553,13 +638,15 @@ class Astrel extends BossBase {
       if (a === 'combo') this.x += this.face * 70 * this.spd * dt;
       if (a === 'thrust') this.x += this.face * 380 * dt;
       if (a === 'riposte') this.x += this.face * 90 * dt;
+      if (a === 'flurry') this.x += this.face * (wi === 4 ? 160 : 95) * dt;
       if (this.hitIds.has(wi) || !w.hit) return;
       const r = metaRect(an.sheet, this, w.hit);
       if (this.face > 0) r.x0 = Math.min(r.x0, this.x); else r.x1 = Math.max(r.x1, this.x);   // the whole arc, back to her hand
       if (overlap(r, playerHurtbox()) && hurtPlayer(sfDmg(dmgs[wi] ?? dmgs[0], this), P.x < this.x ? -1 : 1, this.atkId * 10 + wi, { parryable: a !== 'upslash', src: this })) this.hitIds.add(wi);
     });
+    if (a === 'wave' && an.i >= 5 && !this.fired.wave) { this.fired.wave = true; sfCrescent(this, this.x + this.face * 40, this.face); }
     // phase 2+: the great falling-star cut leaves an echo of starlight that cuts again
-    if (a === 'combo' && this.phase >= 2 && an.changed && an.i === 11) sfWave(this.x + this.face * 40, this.floor, this.face, SF_AD.wave, this, 190);
+    if (a === 'combo' && this.phase >= 2 && an.changed && an.i === 11) sfWave(this.x + this.face * 40, this.floor, this.face, SF_AD.ground, this, 190);
     if (an.done) this.endString();
   }
   endString() {
@@ -574,6 +661,8 @@ class Astrel extends BossBase {
       if (a === 'thrust' && r < c) return this.airT > 0.1 ? this.start('upslash') : d < 70 ? this.start('combo') : this.startDash();
       if (a === 'riposte' && r < 0.5) return this.startDash();
       if (a === 'upslash' && r < c) return this.start('leap');
+      if (a === 'flurry' && r < c) return d < 90 ? this.start('upslash') : this.startDash();
+      if (a === 'wave' && r < c) { this.state = 'approach'; this.play('walk', true, 1.5); this.t = 0.7; this.next = 'combo'; return; }
     }
     this.chainN = 0;
     this.state = 'idle'; this.play('idle', true);
@@ -607,7 +696,7 @@ class Astrel extends BossBase {
         this.y = this.floor; this.air = null; an.i = 8; an.t = 0;
         shake = 9; sfSfx.boom(); spawnFx('sf_burst', this.x, this.floor, 1, null, { bottom: true }); spawnFx('shockwave', this.x, this.floor, 1);
         if (!this.hitIds.has(0) && Math.abs(P.x - this.x) < 30 && P.y > this.floor - 30) { if (hurtPlayer(sfDmg(SF_AD.leap[0], this), P.x < this.x ? -1 : 1, this.atkId * 10, { src: this })) this.hitIds.add(0); }
-        for (const dd of [-1, 1]) sfWave(this.x + dd * 14, this.floor, dd, SF_AD.wave, this, this.phase >= 2 ? 200 : 165);
+        for (const dd of [-1, 1]) sfWave(this.x + dd * 14, this.floor, dd, SF_AD.ground, this, this.phase >= 2 ? 200 : 165);
         for (let i = 0; i < 20; i++) particles.push({ x: this.x + rand(-20, 20), y: this.floor - 2, vx: rand(-120, 120), vy: -rand(30, 150), g: 400, life: 0.7, kind: i % 2 ? 'glass' : 'star' });
       }
       return;
@@ -635,7 +724,7 @@ class Astrel extends BossBase {
       const step = 600 * dt, dir = Math.sign(D_.to - this.x);
       this.x = Math.abs(D_.to - this.x) <= step ? D_.to : this.x + dir * step;
       this.ghosts.push({ f: an.frame, x: this.x, y: this.y, face: this.face, life: 0.25, sh: an.sheet });
-      if (!D_.hit && overlap(rect(this.x - 10, this.y - 50, this.x + 10, this.y), playerHurtbox())) { if (hurtPlayer(sfDmg(SF_AD.dash, this), this.face, this.atkId, { src: this })) D_.hit = true; }
+      if (!D_.hit && overlap(rect(this.x - 11, this.y - 62, this.x + 11, this.y), playerHurtbox())) { if (hurtPlayer(sfDmg(SF_AD.dash, this), this.face, this.atkId, { src: this })) D_.hit = true; }
       if (this.x === D_.to) {
         D_.phase = 'rec'; D_.t = 0; an.i = 5; an.t = 0;
         const x0 = Math.min(D_.x0, this.x), x1 = Math.max(D_.x0, this.x), fl = this.floor, delay = this.phase >= 2 ? 0.38 : 0.5, b = this;
@@ -656,16 +745,16 @@ class Astrel extends BossBase {
       if (this.phase >= 2 && Math.abs(P.x - this.x) < 80 && Math.random() < 0.45) this.start('combo'); }
   }
   // ------------------------------------------------------------ the mirror stance
-  startCounter() { this.state = 'counter'; this.play('counter', true); this.t = rand(0.8, 1.2); this.counterCool = this.phase >= 2 ? 4 : 5.5; this.deflected = false; this.facePlayer(); spawnFx('telegraph', this.x + this.face * 6, this.y - 56, this.face); sfSfx.chime(0.8); }
+  startCounter() { this.state = 'counter'; this.play('counter', true); this.t = rand(0.8, 1.2); this.counterCool = this.phase >= 2 ? 4 : 5.5; this.deflected = false; this.facePlayer(); spawnFx('telegraph', this.x + this.face * 6, this.y - 76, this.face); sfSfx.chime(0.8); }
   // ------------------------------------------------------------ casts: falling stars, gravity wells
   startCast(kind) {
     this.state = 'cast'; this.castKind = kind; this.play('cast', false, kind === 'well' ? 1.2 : 1); this.fired = {}; this.facePlayer();
     if (kind === 'rain') this.castCool = this.phase >= 2 ? 5 : 7; else this.wellCool = 9;
-    sfx.charge(); spawnFx('telegraph', this.x, this.y - 80, this.face);
+    sfx.charge(); spawnFx('telegraph', this.x, this.y - 104, this.face);
   }
   updateCast(dt) {
     const an = this.anim;
-    if (an.i >= 4) addLight(this.x + this.face * 2, this.y - 86, 50, '200,220,255', 1);
+    if (an.i >= 4) addLight(this.x - this.face * 2, this.y - 108, 56, '200,220,255', 1);
     if (an.i >= 5 && !this.fired.go) {
       this.fired.go = true; flashScreen = Math.max(flashScreen, 0.15);
       if (this.castKind === 'rain') {
@@ -710,14 +799,16 @@ class Astrel extends BossBase {
     if (!this.cons) return;
     SFSKY.focus = this.cons; SFSKY.k = approach(SFSKY.k, 1, dt * 1.2); SFSKY.flare = approach(SFSKY.flare, this.state === 'nova' ? 1 : 0.3, dt);
     if (this.rotT > 0) { this.rotT -= dt; SFSKY.rot += dt * 220 * Math.sin(Math.PI * clamp(this.rotT / 1.6, 0, 1)); } else SFSKY.rot += dt * 3;
+    if (this.mq && this.mq.length) { const now = time; this.mq = this.mq.filter(q => { if (q.t <= now && this.state !== 'dead') { q.fn(); return false; } return true; }); }
     if (this.state === 'nova' || this.state === 'dead') return;
+    if (this.phase >= 2 && SFV.k >= 1) { this.metT = (this.metT ?? 2) - dt; if (this.metT <= 0) { this.meteorPattern(); this.metT = this.phase >= 3 ? rand(4.2, 5.0) : rand(5.0, 6.0); } }
     this.consT -= dt; if (this.consT <= 0) this.nextCons();
     this.hazT -= dt;
     if (this.hazT <= 0 && this.rotT <= 0) {
       const p = this.phase - 1;
-      if (this.cons === 'hunter') { this.hunterVolley(); this.hazT = [3.6, 2.5, 2.0][p]; }
-      else if (this.cons === 'serpent') { this.serpent(); this.hazT = [6.2, 4.6, 3.8][p]; }
-      else { this.crownPillars(); this.hazT = [5.2, 4.0, 3.3][p]; }
+      if (this.cons === 'hunter') { this.hunterVolley(); this.hazT = [3.6, 3.0, 2.6][p]; }
+      else if (this.cons === 'serpent') { this.serpent(); this.hazT = [6.2, 5.2, 4.4][p]; }
+      else { this.crownPillars(); this.hazT = [5.2, 4.6, 3.9][p]; }
     }
   }
   hunterVolley() {
@@ -747,29 +838,33 @@ class Astrel extends BossBase {
       hazards.push(h);
     }
   }
-  serpent() {
-    const fl = this.floor, dir = Math.random() < 0.5 ? 1 : -1, x0 = dir > 0 ? this.L - 60 : this.R + 60, sp = [150, 175, 200][this.phase - 1];
-    const seg = 13, gap = 11, amp = 13, base = 26, ph0 = rand(0, 6.28), b = this;
-    const yAt = (x, t) => fl - base - amp * Math.sin(x * 0.035 + ph0 + t * 1.6);
+  serpent() {   // a serpent of stars slithers across along a FIXED, shown path: stand under an arch, or leap a low coil
+    const fl = this.floor, dir = Math.random() < 0.5 ? 1 : -1, x0 = dir > 0 ? this.L - 60 : this.R + 60, sp = [150, 170, 190][this.phase - 1];
+    const seg = 9, gap = 11, amp = 18, base = 28, ph0 = rand(0, 6.28), b = this, tele = 1.0;
+    const yAt = x => fl - base - amp * Math.sin(x * 0.03 + ph0);
     sfSfx.beam();
-    const h = { x: x0, y: fl, w: 1, h: 1, dmg: sfDmg(SF_AD.serpent, this), id: ++hazardId, life: 7, t: 0, segs: [],
+    const h = { x: x0, y: fl, w: 1, h: 1, dmg: sfDmg(SF_AD.serpent, this), id: ++hazardId, life: 8, t: 0, segs: [], yAt,
       active: () => false,
       update: (h, dt) => {
-        const hx = x0 + dir * sp * Math.max(0, h.t - 0.8);
+        const hx = x0 + dir * sp * Math.max(0, h.t - tele);
         h.segs = [];
-        for (let i = 0; i < seg; i++) { const x = hx - dir * i * gap; h.segs.push([x, yAt(x, h.t), i === 0 ? 7 : 5.5 - i * 0.2]); }
-        if (h.t > 0.8) for (const [x, y, r] of h.segs) {
+        for (let i = 0; i < seg; i++) { const x = hx - dir * i * gap; h.segs.push([x, yAt(x), i === 0 ? 7 : 5.5 - i * 0.25]); }
+        if (h.t > tele) for (const [x, y, r] of h.segs) {
           if (x < b.L - 30 || x > b.R + 30) continue;
           if (overlap(rect(x - r, y - r, x + r, y + r), playerHurtbox()) && hurtPlayer(h.dmg, dir, h.id, { src: b })) break;
         }
         if ((dir > 0 && hx - seg * gap > b.R + 60) || (dir < 0 && hx + seg * gap < b.L - 60)) h.life = 0;
       },
       sfDraw: h => {
-        if (h.t < 0.8) { const k = h.t / 0.8; sfMark(clamp(x0 + dir * 80, b.L, b.R), fl, 0.05, 30); g.fillStyle = `rgba(200,220,255,${0.4 * k})`; g.fillRect(Math.round(clamp(x0 + dir * 60, b.L, b.R) - 1), Math.round(fl - base - amp), 2, amp * 2); return; }
+        // the path it will follow, faint (bright while it is still coiling)
+        const k = h.t < tele ? h.t / tele : 0.35;
+        g.fillStyle = `rgba(170,190,255,${0.18 + 0.35 * k})`;
+        for (let x = b.L - 20; x < b.R + 20; x += 6) g.fillRect(Math.round(x), Math.round(yAt(x)), 2, 1);
+        if (h.t < tele) return;
         g.globalCompositeOperation = 'lighter';
         for (let i = h.segs.length - 1; i >= 0; i--) {
           const [x, y, r] = h.segs[i];
-          g.fillStyle = `rgba(110,140,255,0.35)`; g.beginPath(); g.arc(Math.round(x), Math.round(y), r + 2, 0, 6.3); g.fill();
+          g.fillStyle = 'rgba(110,140,255,0.35)'; g.beginPath(); g.arc(Math.round(x), Math.round(y), r + 2, 0, 6.3); g.fill();
           g.fillStyle = i === 0 ? 'rgba(255,255,255,0.95)' : 'rgba(200,215,255,0.85)'; g.beginPath(); g.arc(Math.round(x), Math.round(y), Math.max(1.5, r * 0.55), 0, 6.3); g.fill();
           if (i < h.segs.length - 1) { const [x2, y2] = h.segs[i + 1]; g.strokeStyle = 'rgba(150,180,255,0.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke(); }
         }
@@ -790,13 +885,29 @@ class Astrel extends BossBase {
         active: h => h.fx && h.fx.anim.i >= 2 && h.fx.anim.i <= 5 });
     }
   }
+  // ------------------------------------------------------------ phase 2+: the void rains meteors on you (telegraphed, patterned)
+  meteorPattern() {
+    const p3 = this.phase >= 3, w = { barrage: 1.3, march: 1, pincer: 1, ring: 0.8, great: 0.7 };
+    if (w[this.lastMet]) w[this.lastMet] *= 0.25;
+    const e = Object.entries(w); let r = Math.random() * e.reduce((a, [, v]) => a + v, 0), m = 'barrage';
+    for (const [k, v] of e) if ((r -= v) <= 0) { m = k; break; }
+    this.lastMet = m; this.metDir = Math.random() < 0.5 ? 1 : -1;
+    const L = this.L - 20, R = this.R + 20, px = P.x, now = time;
+    SFA.banner = { name: { barrage: 'THE SKY TAKES AIM', march: 'THE SKY MARCHES', pincer: 'THE SKY CLOSES', ring: 'THE SKY ENCIRCLES', great: 'A STAR FALLS' }[m], sub: '', t: 0.8 };
+    if (m === 'barrage') for (let k = 0; k < (p3 ? 4 : 3); k++) this.mq.push({ t: now + k * 0.5, fn: () => sfMeteor(this, clamp(P.x + P.vx * 0.25, L, R), 0.8) });
+    else if (m === 'march') { const side = px < this.mid ? -1 : 1, x0 = side > 0 ? L + 10 : R - 10; for (let k = 0; k < 7; k++) this.mq.push({ t: now + k * 0.2, fn: () => sfMeteor(this, clamp(x0 + side * k * 70, L, R), 0.85) }); }
+    else if (m === 'pincer') [[110, 0], [60, 0.4], [0, 0.8]].forEach(([o, dt]) => this.mq.push({ t: now + dt, fn: () => { for (const s of o ? [-1, 1] : [0]) sfMeteor(this, clamp(px + s * o, L, R), 0.85); } }));
+    else if (m === 'ring') for (const o of [-100, -50, 50, 100]) sfMeteor(this, clamp(px + o, L, R), 1.0);
+    else sfMeteor(this, clamp(px, L + 40, R - 40), p3 ? 1.35 : 1.55, true);
+  }
   // ------------------------------------------------------------ phases
   enterPhase2() {
     this.phase = 2; this.pendingPhase = false; this.stance = 0; this.air = null; this.y = this.floor;
     this.state = 'idle'; this.play('idle', true); this.cool = 0.8; this.facePlayer();
     flashScreen = 0.7; shake = 10; sfSfx.shatter(); sfSfx.chime(0.5);
     for (let i = 0; i < 50; i++) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 80), vx: rand(-80, 80), vy: -rand(20, 120), life: rand(0.6, 1.4), kind: i % 3 ? 'star' : 'nebula' });
-    this.consI = -1; this.nextCons();
+    this.consI = -1; this.nextCons(); this.mq = []; this.metT = 3.5;
+    SFV.target = 1; SFV.x = this.x; SFV.y = this.y - 50; SFV.last = time; sfSfx.boom(); sfSfx.hum();
     bossPhase2Scene(this);
   }
   enterPhase3() {
@@ -832,14 +943,14 @@ class Astrel extends BossBase {
     const N = this.nova, fl = this.floor; N.t += dt;
     for (const mo of SFA.monos) mo.k = approach(mo.k, N.st === 'fall' || N.st === 'done' ? 0 : 1, dt * (N.st === 'fall' || N.st === 'done' ? 0.8 : 1.4));
     if (N.st === 'rise') {
-      const k = Math.min(1, N.t / 1.1); this.x = lerp(N.x0, this.mid, k); this.y = fl - 70 * Math.sin(k * Math.PI / 2); this.air = { nova: true };
+      const k = Math.min(1, N.t / 1.1); this.x = lerp(N.x0, this.mid, k); this.y = fl - 56 * Math.sin(k * Math.PI / 2); this.air = { nova: true };
       if (k >= 1) { N.st = 'charge'; N.t = 0; }
       return;
     }
     if (N.st === 'charge') {
-      this.y = fl - 70 + Math.sin(time * 2) * 2;
+      this.y = fl - 56 + Math.sin(time * 2) * 2;
       const k = N.t / N.T;
-      addLight(this.x, this.y - 30, 60 + 140 * k, '220,230,255', 1);
+      addLight(this.x, this.y - 40, 60 + 140 * k, '220,230,255', 1);
       if (Math.random() < 0.6 + k) { const a = rand(0, 6.28), r = rand(60, 140) * (1 - k * 0.5); particles.push({ x: this.x + Math.cos(a) * r, y: this.y - 30 + Math.sin(a) * r, vx: -Math.cos(a) * r * 1.4, vy: -Math.sin(a) * r * 1.4, life: 0.7, kind: Math.random() < 0.7 ? 'star' : 'nebula' }); }
       if ((N.rainT -= dt) <= 0 && N.t < N.T - 2) { N.rainT = 1.5; sfFallingStar(clamp(P.x + rand(-40, 40), this.L, this.R), fl, 0.9, SF_AD.star, this); }
       if (Math.floor(N.t) !== Math.floor(N.t - dt)) tone(220 + 60 * Math.floor(N.t), 0.3, 0.06, 'triangle', 1.2);
@@ -881,9 +992,9 @@ class Astrel extends BossBase {
     if (this.state === 'dash' && this.dsh && this.dsh.phase === 'go') return;
     if (this.state === 'counter' && !info.crit) {
       if (info.melee) {   // your own blow, turned back on you
-        sfx.parry(); hitstop = 0.16; shake = 4; sfSfx.chime(1.2);
-        spawnFx(fxOr('parry_flash', 'parry_spark'), this.x + this.face * 12, this.y - 36, this.face, null, { tint: '#bcd4ff' });
-        if (P.state !== 'dead') { setP('hurt', 'hurt'); P.vx = -P.face * 150; P.st = Math.max(0, P.st - 22); P.combo = 0; }
+        sfx.parry(); hitstop = Math.max(hitstop, 0.06); shake = Math.max(shake, 3); sfSfx.chime(1.2);
+        spawnFx(fxOr('parry_flash', 'parry_spark'), this.x + this.face * 14, this.y - 46, this.face, null, { tint: '#bcd4ff' });
+        if (P.state !== 'dead') { if (info.kind !== 'heavy') { setP('hurt', 'hurt'); P.combo = 0; } P.vx = -P.face * 150; P.st = Math.max(0, P.st - 22); }
         this.start('riposte'); return;
       }
       if (!this.deflected) { this.deflected = true; sfSfx.glass(); spawnFx(fxOr('parry_flash', 'parry_spark'), info.x, info.y, -info.dir, null, { tint: '#bcd4ff' }); }
@@ -897,14 +1008,14 @@ class Astrel extends BossBase {
     this.state = 'dead'; this.play('death', false, 0.8); this.air = null; this.y = this.floor; this.dsh = null; this.nova = null;
     hazards = []; projectiles = projectiles.filter(p => p.owner === 'player'); SFA.marks = []; SFA.grav = 0; SFA.monos = []; room.dyn = room.dyn.filter(d => !d.sfMono);
     shake = 12; hitstop = 0.3; slowmo = 1.8; flashScreen = 0.8; sfSfx.shatter(); sfx.felled();
-    SFSKY.focus = null; SFA.banner = null;
+    SFSKY.focus = null; SFA.banner = null; this.mq = []; SFV.target = 0;
     victoryBanner = { text: 'THE FALLEN STAR SETS', t: 0 };
     this.rewards();
     setTimeout(() => { if (room && room.id === 'SF7') toast('Starlight gathers at your feet. You feel lighter than air.', 4); }, 9000);
   }
   // ------------------------------------------------------------ drawing
   draw() {
-    for (const gh of this.ghosts) drawSprite(gh.sh, gh.f, gh.x, gh.y, gh.face, { alpha: gh.life * 2.2, flash: 1, flashColor: this.phase >= 2 ? '#e0e8ff' : '#8ea8ff' });
+    for (const gh of this.ghosts) sfDrawSil(gh.sh, gh.f, gh.x, gh.y, gh.face, this.phase >= 2 ? '#e0e8ff' : '#8ea8ff', Math.min(0.6, gh.life * 2.2));
     if (this.hidden) return;
     const s = this.anim.sheet;
     if (!s || !s.ok) { g.fillStyle = '#2a3056'; g.fillRect(Math.round(this.x - 7), Math.round(this.y - 58), 14, 58); return; }
@@ -912,11 +1023,11 @@ class Astrel extends BossBase {
       this.state === 'nova' && this.nova && this.nova.st === 'charge' ? { flash: 0.2 + 0.5 * (this.nova.t / this.nova.T) * (0.6 + 0.4 * Math.sin(time * 18)), flashColor: '#ffffff' } : {};
     drawSprite(s, this.anim.frame, this.x, this.y, this.face, opt);
     if (this.readFx > 0) {   // the read: a glint crosses her mask
-      const hx = this.x + this.face * 3, hy = this.y - 55;
+      const hx = this.x + this.face * 6, hy = this.y - 60;
       g.fillStyle = `rgba(255,255,255,${Math.min(1, this.readFx * 3)})`; g.fillRect(Math.round(hx) - 2, Math.round(hy), 5, 1); g.fillRect(Math.round(hx), Math.round(hy) - 2, 1, 5);
       addLight(hx, hy, 24, '230,240,255', 1);
     }
-    if (this.critable()) { g.fillStyle = '#c6d8ff'; const y = Math.round(this.y - 70 + Math.sin(time * 8) * 1.5); g.fillRect(Math.round(this.x) - 1, y, 3, 3); g.fillRect(Math.round(this.x), y - 1, 1, 5); g.fillRect(Math.round(this.x) - 2, y + 1, 5, 1); }
+    if (this.critable()) { g.fillStyle = '#c6d8ff'; const y = Math.round(this.y - 84 + Math.sin(time * 8) * 1.5); g.fillRect(Math.round(this.x) - 1, y, 3, 3); g.fillRect(Math.round(this.x), y - 1, 1, 5); g.fillRect(Math.round(this.x) - 2, y + 1, 5, 1); }
     if (this.nova && this.nova.st === 'charge') {   // the countdown: a ring of stars going dark one by one
       const N = this.nova, left = Math.ceil(N.T - N.t), cx = this.x, cy = this.y - 30, R = 26;
       for (let i = 0; i < Math.ceil(N.T); i++) { const a = -Math.PI / 2 + i / Math.ceil(N.T) * 6.283, on = i < left; g.fillStyle = on ? '#ffffff' : '#2a3056'; g.fillRect(Math.round(cx + Math.cos(a) * R), Math.round(cy + Math.sin(a) * R), on ? 2 : 1, on ? 2 : 1); }
@@ -927,7 +1038,7 @@ class Astrel extends BossBase {
 BOSS_SPAWN.astrel = (cx, fy) => new Astrel(cx, fy);
 BOSS_CUTS.astrel = b => [
   act(() => { b.hidden = true; b.face = -1; b.play('kneel', true); }),
-  { pan: { x: b.x, y: b.floor - 90 }, dur: 1.0 },
+  { pan: { x: b.x, y: b.floor - 60 }, dur: 1.0 },
   { dur: 1.1, tween: (dt, k) => { const x = b.x + (1 - k) * 120, y = lerp(b.floor - 260, b.floor - 20, k * k); for (let i = 0; i < 4; i++) particles.push({ x: x + rand(-3, 3), y: y + rand(-3, 3), vx: rand(20, 60), vy: -rand(40, 90), life: 0.5, kind: i % 2 ? 'star' : 'nebula' }); addLight(x, y, 60, '220,230,255', 1); } },
   act(() => { b.hidden = false; shake = 12; flashScreen = 0.9; sfSfx.boom(); spawnFx('sf_burst', b.x, b.floor, 1, null, { bottom: true }); for (let i = 0; i < 40; i++) particles.push({ x: b.x + rand(-20, 20), y: b.floor - rand(0, 10), vx: rand(-140, 140), vy: -rand(40, 200), g: 380, life: rand(0.6, 1.2), kind: i % 2 ? 'glass' : 'star' }); }),
   wait(0.8),
@@ -1163,4 +1274,4 @@ BOSS_CUTS.orrery = b => [
 PHASE2_LINES.orrery = ['', 'Two more worlds wake and join its orbit.'];
 
 // ================================================================== debug handle
-try { window.__sf = { SFM, SFX4, SFR, SFSKY, SFA }; window.__sfSolid = (x, y) => solidAtPx(x, y); } catch (e) {}
+try { window.__sf = { SFM, SFX4, SFR, SFSKY, SFA }; window.__sfSolid = (x, y) => solidAtPx(x, y); window.__sfDbg = { particles: () => particles.length, fx: () => fx.length, hazards: () => hazards.length, hs: () => hitstop, sm: () => slowmo, fl: () => flashScreen, sk: () => shake }; } catch (e) {}

@@ -1213,6 +1213,492 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
     "sourceSize": { "w": 224, "h": 176 },
     "duration": 700
+   },
+   {
+    "filename": "warden 135.aseprite",
+    "frame": { "x": 30240, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "warden 136.aseprite",
+    "frame": { "x": 30464, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 137.aseprite",
+    "frame": { "x": 30688, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 190
+   },
+   {
+    "filename": "warden 138.aseprite",
+    "frame": { "x": 30912, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "warden 139.aseprite",
+    "frame": { "x": 31136, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "warden 140.aseprite",
+    "frame": { "x": 31360, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "warden 141.aseprite",
+    "frame": { "x": 31584, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "warden 142.aseprite",
+    "frame": { "x": 31808, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 143.aseprite",
+    "frame": { "x": 32032, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "warden 144.aseprite",
+    "frame": { "x": 32256, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "warden 145.aseprite",
+    "frame": { "x": 32480, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 146.aseprite",
+    "frame": { "x": 32704, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "warden 147.aseprite",
+    "frame": { "x": 32928, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "warden 148.aseprite",
+    "frame": { "x": 33152, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 149.aseprite",
+    "frame": { "x": 33376, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 150.aseprite",
+    "frame": { "x": 33600, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 151.aseprite",
+    "frame": { "x": 33824, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "warden 152.aseprite",
+    "frame": { "x": 34048, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 153.aseprite",
+    "frame": { "x": 34272, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "warden 154.aseprite",
+    "frame": { "x": 34496, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "warden 155.aseprite",
+    "frame": { "x": 34720, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "warden 156.aseprite",
+    "frame": { "x": 34944, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 100
+   },
+   {
+    "filename": "warden 157.aseprite",
+    "frame": { "x": 35168, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 90
+   },
+   {
+    "filename": "warden 158.aseprite",
+    "frame": { "x": 35392, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "warden 159.aseprite",
+    "frame": { "x": 35616, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "warden 160.aseprite",
+    "frame": { "x": 35840, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "warden 161.aseprite",
+    "frame": { "x": 36064, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "warden 162.aseprite",
+    "frame": { "x": 36288, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "warden 163.aseprite",
+    "frame": { "x": 36512, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 164.aseprite",
+    "frame": { "x": 36736, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 165.aseprite",
+    "frame": { "x": 36960, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "warden 166.aseprite",
+    "frame": { "x": 37184, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 167.aseprite",
+    "frame": { "x": 37408, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 168.aseprite",
+    "frame": { "x": 37632, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 180
+   },
+   {
+    "filename": "warden 169.aseprite",
+    "frame": { "x": 37856, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "warden 170.aseprite",
+    "frame": { "x": 38080, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "warden 171.aseprite",
+    "frame": { "x": 38304, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "warden 172.aseprite",
+    "frame": { "x": 38528, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 60
+   },
+   {
+    "filename": "warden 173.aseprite",
+    "frame": { "x": 38752, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 80
+   },
+   {
+    "filename": "warden 174.aseprite",
+    "frame": { "x": 38976, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 175.aseprite",
+    "frame": { "x": 39200, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 176.aseprite",
+    "frame": { "x": 39424, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 177.aseprite",
+    "frame": { "x": 39648, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 110
+   },
+   {
+    "filename": "warden 178.aseprite",
+    "frame": { "x": 39872, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 179.aseprite",
+    "frame": { "x": 40096, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 120
+   },
+   {
+    "filename": "warden 180.aseprite",
+    "frame": { "x": 40320, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "warden 181.aseprite",
+    "frame": { "x": 40544, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "warden 182.aseprite",
+    "frame": { "x": 40768, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 170
+   },
+   {
+    "filename": "warden 183.aseprite",
+    "frame": { "x": 40992, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 70
+   },
+   {
+    "filename": "warden 184.aseprite",
+    "frame": { "x": 41216, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 130
+   },
+   {
+    "filename": "warden 185.aseprite",
+    "frame": { "x": 41440, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 186.aseprite",
+    "frame": { "x": 41664, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 187.aseprite",
+    "frame": { "x": 41888, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
+   },
+   {
+    "filename": "warden 188.aseprite",
+    "frame": { "x": 42112, "y": 0, "w": 224, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 176 },
+    "sourceSize": { "w": 224, "h": 176 },
+    "duration": 150
    }
  ],
  "meta": {
@@ -1220,7 +1706,7 @@
   "version": "1.3.18.6-arm64",
   "image": "warden.png",
   "format": "RGBA8888",
-  "size": { "w": 30240, "h": 176 },
+  "size": { "w": 42336, "h": 176 },
   "scale": "1",
   "frameTags": [
    { "name": "idle", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" },
@@ -1237,7 +1723,11 @@
    { "name": "summon", "from": 96, "to": 105, "direction": "forward", "color": "#000000ff" },
    { "name": "roar", "from": 106, "to": 115, "direction": "forward", "color": "#000000ff" },
    { "name": "stagger", "from": 116, "to": 120, "direction": "forward", "color": "#000000ff" },
-   { "name": "death", "from": 121, "to": 134, "direction": "forward", "color": "#000000ff" }
+   { "name": "death", "from": 121, "to": 134, "direction": "forward", "color": "#000000ff" },
+   { "name": "combo", "from": 135, "to": 150, "direction": "forward", "color": "#000000ff" },
+   { "name": "leap", "from": 151, "to": 164, "direction": "forward", "color": "#000000ff" },
+   { "name": "gore", "from": 165, "to": 176, "direction": "forward", "color": "#000000ff" },
+   { "name": "nova", "from": 177, "to": 188, "direction": "forward", "color": "#000000ff" }
   ]
  }
 }

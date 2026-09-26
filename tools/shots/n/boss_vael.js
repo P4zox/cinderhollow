@@ -1,3 +1,4 @@
+window.__errs = []; console.error = (...a) => { if (window.__errs.length < 5) window.__errs.push(String(a[0] && a[0].stack || a[0]).slice(0, 400)); };
 // King Vael: intro cutscene once, phase 1 moves, phase 2 court (scene + courtiers fighting), phase 3 absorb, death, rewards, fog.
 await boot(); G.give({ stats: { vig: 60, mnd: 30, end: 40, str: 40, dex: 40, fth: 30, arc: 10 } });
 const out = [], log = {};
@@ -29,11 +30,13 @@ await fight(900, 'p2');
 out.push(`court after p2: ${(b.court || []).map(q => q.kind + ':' + q.state + ':' + q.hp).join(', ')}`);
 b.hp = Math.floor(b.maxHp * 0.28);
 await fight(700, 'p3');
+out.push(`void during phase 3: ${!!G.NVR.void} biome ${G.room && G.NVR.void ? 'nv_void' : '-'}`);
 out.push(`phase ${b.phase}, hits on player ${hurt}; x ${Math.round(minX)}..${Math.round(maxX)} in ${L}..${R}: ${minX >= L - 1 && maxX <= R + 1}`);
 out.push('states ' + JSON.stringify(log));
 for (let n = 0; n < 200 && b.alive; n++) { b.hit({ dmg: 300, poise: 0, dir: 1, kind: 'light', x: b.x, y: b.y - 20, melee: true }); G.step(3); G.P.hp = 99999; if (G.state === 'cut') G.step(1, [], ['pause']); }
 for (let i = 0; i < 50; i++) { G.step(10); G.P.hp = 99999; }
 await snap('v_dead');
 await new Promise(r => setTimeout(r, 9000));
+out.push(`void after death: ${!!G.NVR.void}`);
 out.push(`dead ${!b.alive} flag ${!!G.SAVE.flags['boss:vael']} fogs ${JSON.stringify(G.props.filter(p => p.type === 'fog').map(p => p.on()))} spells ${JSON.stringify(G.SAVE.spellsOwned)} charms ${JSON.stringify(G.SAVE.charms)}`);
-return out;
+out.push(JSON.stringify(window.__errs)); return out;

@@ -9,9 +9,9 @@
 #   DU2 Sunward Shrine         448..495 x  84..103   shrine; first sand-surf slope, quicksand pit
 #   DU3 The Colossus Dunes     496..559 x  84..105   dunes over a buried sun-king; sandstorms; c_scarab on the hand
 #   DU4 Sandfall Shaft         560..583 x  84..123   the descent (sand-falls, climb back up)
-#   DU5 Hieroglyph Halls       488..559 x 108..123   sun-altar beams on a timer; w:sun_sceptre
+#   DU5 Hieroglyph Halls       488..559 x 108..123   sun-altar beams on a timer; w:sun_sceptre; shrine before the Scarab Knight
 #   DU6 The Scarab's Pit       448..487 x 108..123   mini-boss: the Scarab Knight
-#   DU7 Antechamber of the Sun 408..447 x 102..127   shrine + the hatch lever (shortcut up to DU1)
+#   DU7 Antechamber of the Sun 408..447 x 102..127   shrine before the Pharaoh + the hatch lever (shortcut up to DU1)
 #   DU8 The Veiled Sanctum     400..455 x 128..145   main boss: the Veiled Pharaoh
 SOLID |= set()          # '-' and '/' are not solid
 
@@ -123,14 +123,14 @@ r.kw['spawns'] = [
 ]
 
 # ---------------------------------------------------------------- DU5 Hieroglyph Halls (sun-altar beams)
-r = Room('DU5', 'Hieroglyph Halls', 'dunes', 488, 108, 72, 16, indoor=True, chests=['w:sun_sceptre'], items=['sp:sunbeam'])
+r = Room('DU5', 'Hieroglyph Halls', 'dunes', 488, 108, 72, 16, indoor=True, shrine='Scarab Gate Shrine', chests=['w:sun_sceptre'], items=['sp:sunbeam'])
 r.walls().open('E', 8, 11).open('W', 8, 11)
 r.fill(0, 0, 71, 1)
 r.fill(0, 12, 71, 15)
 r.fill(30, 9, 41, 11)                                       # the sun dais
 r.fill(33, 6, 38, 6, '=')                                   # a gallery over the dais
 r.fill(8, 8, 12, 8, '=').fill(58, 8, 62, 8, '=')
-for x, y, ch in [(36, 5, 'i'), (35, 8, 'C'), (5, 2, 'x'), (20, 2, 'x'), (50, 2, 'x'), (66, 2, 'x'), (2, 11, 'k'), (69, 11, 'k'),
+for x, y, ch in [(6, 11, 'S'), (36, 5, 'i'), (35, 8, 'C'), (5, 2, 'x'), (20, 2, 'x'), (50, 2, 'x'), (66, 2, 'x'), (2, 11, 'k'), (69, 11, 'k'),
                  (26, 11, 'b'), (46, 11, 'b')]:
     r.put(x, y, ch)
 r.kw['spawns'] = [
@@ -140,10 +140,10 @@ r.kw['spawns'] = [
     {'t': 'du_altar', 'x': 55, 'y': 2, 'air': True, 'ph': 1.1},
     {'t': 'enemy', 'type': 'du_jackal', 'x': 62, 'y': 11},
     {'t': 'enemy', 'type': 'du_priest', 'x': 36, 'y': 8},
-    {'t': 'enemy', 'type': 'du_jackal', 'x': 12, 'y': 11},
+    {'t': 'enemy', 'type': 'du_jackal', 'x': 21, 'y': 11},
     {'t': 'enemy', 'type': 'du_scarab', 'x': 50, 'y': 11},
     {'t': 'du_stele', 'x': 68, 'y': 11, 'lore': 'du_halls'},
-    {'t': 'du_stele', 'x': 4, 'y': 11, 'lore': 'du_pharaoh'},
+    {'t': 'du_stele', 'x': 11, 'y': 11, 'lore': 'du_pharaoh'},
 ]
 
 # ---------------------------------------------------------------- DU6 The Scarab's Pit (mini-boss arena)

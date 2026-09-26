@@ -162,6 +162,32 @@ def burst(f):
     return P.img
 
 
+def pillar(part, v=0):
+    """A segment of a great root pillar (vertical, tileable top-to-bottom), or its thorned tip. 24x32."""
+    P = Pix(24, 32)
+    for y in range(32):
+        taper = 1.0 if part == "seg" else max(0.0, (y - 2) / 30)
+        w = (7.5 + 1.2 * math.sin(y / 32 * 2 * math.pi * 2 + v)) * taper
+        cx = 12 + 1.5 * math.sin(y / 32 * 2 * math.pi + v * 1.3)
+        for x in range(24):
+            d = (x + 0.5 - cx) / max(w, 0.1)
+            if abs(d) <= 1:
+                twist = math.sin((y * 0.55 + x * 0.9) + v)
+                lv = 0.72 - 0.55 * (d + 1) / 2 + 0.12 * twist
+                c = BARK[max(1, min(5, int(lv * 6)))]
+                if abs(d) > 0.86:
+                    c = BARK[1]
+                P.set(x, y, c)
+        if (y + v * 5) % 8 == 3 and w > 2:                 # thorn barbs
+            sd = 1 if (y // 8) % 2 else -1
+            P.set(cx + sd * (w + 1), y - 1, THORN[4]); P.set(cx + sd * (w + 2), y - 2, THORN[5])
+        if (y + v * 3) % 11 == 5 and w > 2:                # veins of spirit-light
+            P.set(cx - 1, y, SPIRIT[3]); P.set(cx, y, SPIRIT[2])
+    if part == "tip":
+        P.set(12, 1, THORN[5]); P.set(12, 2, THORN[4])
+    return outline(P.img, K)
+
+
 def main():
     items = {
         "fx_tv_rootspike": (32, 72, [rootspike(f) for f in range(9)], [("tv_rootspike", 0, 8)], [90, 90, 110, 60, 70, 110, 110, 80, 80]),
@@ -172,6 +198,7 @@ def main():
                        [("rise", 0, 4), ("idle", 5, 6), ("wither", 7, 11)], [60, 60, 70, 90, 100, 200, 200, 110, 110, 110, 120, 140]),
         "fx_tv_orb": (16, 16, [orb(f) for f in range(4)], [("tv_orb", 0, 3)], [90] * 4),
         "fx_tv_burst": (64, 48, [burst(f) for f in range(7)], [("tv_burst", 0, 6)], [50, 60, 70, 80, 90, 100, 110]),
+        "fx_tv_pillar": (24, 32, [pillar("seg", 0), pillar("seg", 1), pillar("tip", 0)], [("seg", 0, 1), ("tip", 2, 2)], [100, 100, 100]),
     }
     rows = []
     for nm, (w, h, frames, tags, ms) in items.items():

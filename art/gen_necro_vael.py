@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""King Vael, the Hollow Crown (agent N) + his spectral court. Built from the user's reference art/concepts/ref_king_vael.png:
+"""SUPERSEDED for Vael (see art/gen_necro_vael2.py) -- still builds his spectral court.  Original notes:
+King Vael, the Hollow Crown (agent N) + his spectral court. Built from the user's reference art/concepts/ref_king_vael.png:
 an undead king in corroded gold-and-bone armour, a spiked crown fused to a skull with pale-blue ghost-fire eyes, a tattered
 purple cape, a massive bone greatsword, spectral chains on his wrists.
 
@@ -511,9 +512,8 @@ def build_exec():
 
 
 if __name__ == "__main__":
-    jobs = [("vael", lambda: build_vael("vael", A_ANIMS, False)), ("vael_b", lambda: build_vael("vael_b", B_ANIMS, False)),
-            ("vael_p3", lambda: build_vael("vael_p3", A_ANIMS, True)), ("vael_b_p3", lambda: build_vael("vael_b_p3", B_ANIMS, True)),
-            ("vael_knight", build_knight), ("vael_priest", build_priest), ("vael_exec", build_exec)]
+    # King Vael himself is now built by art/gen_necro_vael2.py (Morvain's rig); this file only builds his spectral court.
+    jobs = [("vael_knight", build_knight), ("vael_priest", build_priest), ("vael_exec", build_exec)]
     for name, fn in jobs:
         if NG.ONLY and name not in NG.ONLY:
             continue

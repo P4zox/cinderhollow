@@ -21,8 +21,6 @@ async function forced(roomId, tx, move, n, dodge) {
   }
   return hits;
 }
-out.push(['saint thrust stand', await forced('NH7', 10, 'thrust', 6, false), 'dodge', await forced('NH7', 10, 'thrust', 6, true)]);
-out.push(['saint sweep stand', await forced('NH7', 10, 'sweep', 6, false), 'dodge', await forced('NH7', 10, 'sweep', 6, true)]);
 out.push(['enforcer bash stand', await forced('NH5', 8, 'bash', 6, false), 'dodge', await forced('NH5', 8, 'bash', 6, true)]);
 out.push(['enforcer sweep stand', await forced('NH5', 8, 'sweep', 6, false), 'dodge', await forced('NH5', 8, 'sweep', 6, true)]);
 out.push(['enforcer stomp stand', await forced('NH5', 8, 'stomp', 6, false)]);

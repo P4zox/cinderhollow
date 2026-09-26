@@ -12,7 +12,7 @@ Object.assign(PCOL, { nvghost: '150,200,255', nvsoul: '200,230,255', nvchain: '1
 
 const NV_T_A = 50, NV_T_B = 51;
 const NV_BLUE = ['#0d1a3a', '#173463', '#2c5a9c', '#4f8ad0', '#86baf0', '#c4e2ff', '#f2f9ff'];
-const nvIn = () => room && room.def.biome === 'necropolis';
+const nvIn = () => room && (room.def.biome === 'necropolis' || room.def.biome === 'nv_void');
 const nvSfx = {
   toll: (p = 1, v = 1) => { [98, 123.5, 147].forEach((f, i) => tone(f * p, 3.2, 0.16 * v, 'sine', 1, i * 0.03)); tone(49 * p, 3.4, 0.22 * v, 'triangle'); tone(196 * p * 1.007, 2.2, 0.05 * v, 'sine'); noise(0.4, 700, 0.8, 0.22 * v, 'bandpass', 0.4); },
   hum: () => { tone(98, 1.3, 0.05, 'sine', 1.02); tone(147, 1.2, 0.03, 'triangle', 1.01); },
@@ -26,7 +26,7 @@ const nvSfx = {
 // ================================================================== per-room state
 const NVR = { roomObj: null };
 function nvReset() {
-  Object.assign(NVR, { roomObj: room, walks: [], bell: null, bells: [], plats: [], rings: [], waves: [], fires: [], chains: [], souls: [],
+  Object.assign(NVR, { roomObj: room, walks: [], bell: null, bells: [], plats: [], rings: [], waves: [], fires: [], chains: [], souls: [], swords: [], void: null,
     safe: null, stunT: 0, hints: {}, flash: 0 });
 }
 function nvEnsure() { if (NVR.roomObj !== room) nvReset(); }
@@ -153,11 +153,11 @@ SPAWNS.nv_prop = (s, c) => {
   const sh = sheet('nv_props'), hang = s.kind === 'banner';
   const p = { type: 'nv_' + s.kind, x: c.cx, y: hang ? s.y * TILE : c.fy, face: s.face || 1, sh, anim: new Anim(sh, sh.has(tag) ? tag : 'candles', true), hang };
   p.anim.t = rand(0, 500);
-  if (s.kind === 'candles') p.update = () => addLight(p.x, p.y - 8, 34 + Math.sin(time * 9 + p.x) * 2, '140,190,255', 0.7);
-  if (s.kind === 'brazier') p.update = () => { addLight(p.x, p.y - 26, 64 + Math.sin(time * 7 + p.x) * 3, '130,185,255', 0.9); if (Math.random() < 0.25) particles.push({ x: p.x + rand(-4, 4), y: p.y - 24, vx: rand(-4, 4), vy: -rand(14, 30), life: rand(0.5, 1), kind: 'nvghost' }); };
-  if (s.kind === 'throne') p.update = () => addLight(p.x, p.y - 50, 60, '130,185,255', 0.5);
-  if (s.kind === 'statue') p.update = () => addLight(p.x, p.y - 38, 22, '130,185,255', 0.35);
-  p.draw = () => { if (sh.ok) drawSprite(sh, p.anim.frame, p.x, p.y, p.face, hang ? { pivot: [Math.floor(sh.fw / 2), 0] } : { bottom: true }); };
+  if (s.kind === 'candles') p.update = () => !NVR.void && addLight(p.x, p.y - 8, 34 + Math.sin(time * 9 + p.x) * 2, '140,190,255', 0.7);
+  if (s.kind === 'brazier') p.update = () => { if (NVR.void) return; addLight(p.x, p.y - 26, 64 + Math.sin(time * 7 + p.x) * 3, '130,185,255', 0.9); if (Math.random() < 0.25) particles.push({ x: p.x + rand(-4, 4), y: p.y - 24, vx: rand(-4, 4), vy: -rand(14, 30), life: rand(0.5, 1), kind: 'nvghost' }); };
+  if (s.kind === 'throne') p.update = () => !NVR.void && addLight(p.x, p.y - 50, 60, '130,185,255', 0.5);
+  if (s.kind === 'statue') p.update = () => !NVR.void && addLight(p.x, p.y - 38, 22, '130,185,255', 0.35);
+  p.draw = () => { if (NVR.void) return; if (sh.ok) drawSprite(sh, p.anim.frame, p.x, p.y, p.face, hang ? { pivot: [Math.floor(sh.fw / 2), 0] } : { bottom: true }); };
   props.push(p);
 };
 
@@ -316,6 +316,7 @@ function nvUpdateHazards(dt) {
   NVR.souls = NVR.souls.filter(s => s.life > 0);
   for (const c of NVR.chains) { c.t += dt; if (c.update) c.update(c, dt); }
   NVR.chains = NVR.chains.filter(c => !c.done);
+  nvUpdateSwords(dt);
 }
 function nvDrawHazards() {
   for (const f of NVR.fires) {
@@ -349,6 +350,7 @@ function nvDrawHazards() {
     let px = x, py = y; g.fillStyle = NV_BLUE[3]; for (let k = 0; k < 5; k++) { px -= sign(s.vx) * rand(1, 3); py += rand(-1.5, 1.5); g.fillRect(Math.round(px), Math.round(py), 1, 1); }
   }
   for (const c of NVR.chains) if (c.draw) c.draw(c);
+  nvDrawSwords();
 }
 function nvFire(x, floor, opt = {}) {
   NVR.fires.push({ x, y: floor, t: 0, warn: opt.warn ?? 0.9, dur: opt.dur ?? 0.55, w: opt.w ?? 20, h: opt.h ?? 96, dmg: opt.dmg ?? 36, id: ++hazardId, src: opt.src || boss });
@@ -359,7 +361,7 @@ function nvWave(x, floor, dir, opt = {}) {
 function nvSoul(x, y, vx, vy, opt = {}) {
   NVR.souls.push({ x, y, ox: x, oy: y, vx, vy, t: 0, life: opt.life || 2.6, dmg: opt.dmg ?? 26, id: ++hazardId, src: opt.src || boss, home: opt.home || 0, delay: opt.delay || 0 });
 }
-function nvClearHazards() { NVR.fires = []; NVR.waves = []; NVR.souls = []; NVR.chains = []; NVR.rings = NVR.rings.filter(r => r.harmless); }
+function nvClearHazards() { NVR.fires = []; NVR.waves = []; NVR.souls = []; NVR.chains = []; NVR.swords = []; NVR.rings = NVR.rings.filter(r => r.harmless); }
 function nvGroundY(x, y0, maxd = 300) {
   for (let y = Math.max(0, y0); y < Math.min(room.ph, y0 + maxd); y += 2) if (isSolidT(tileAt(Math.floor(x / TILE), Math.floor(y / TILE)))) return Math.floor(y / TILE) * TILE;
   return null;
@@ -826,15 +828,19 @@ HOOKS.hud.push(() => {
 // ================================================================== KING VAEL, THE HOLLOW CROWN (NV7) — 3 phases with his spectral court
 BOSS_INFO.vael = { name: 'King Vael, the Hollow Crown', hp: 3800, cinders: 19000, reward: ['w:vael_greatsword', 'sp:soul_chains', 'c_crown'],
   quote: '“A king is only the grief his court agrees to carry.”' };
-const NV_VB = new Set(['ghostfire', 'summon', 'absorb', 'leap', 'sweep', 'rise']);
+const NV_VB = new Set(['leap', 'chain', 'ghostfire', 'rain', 'nova', 'summon', 'absorb', 'rise']);
 const NV_VM = {
-  combo: { dmg: [46, 44, 58], parry: [true, true, false], band: [0, 140], w: 3 },
-  overhead: { dmg: [68], band: [0, 160], w: 1.6, shake: 9 },
-  thrust: { dmg: [54], parry: [true], band: [90, 240], w: 1.8, lunge: [3, 4], dist: 110 },
-  chain: { band: [150, 340], w: 1.4, cd: 5 },
-  ghostfire: { band: [130, 999], w: 1.3, cd: 6 },
-  sweep: { dmg: [50], band: [0, 120], w: 0.9 },
-  leap: { dmg: [62], band: [220, 999], w: 1.3, cd: 4 },
+  combo: { dmg: [44, 44, 58], parry: [true, true, false], band: [0, 150], w: 2.2 },
+  string: { dmg: [40, 40, 44, 48, 62], parry: [true, true, true, false, false], band: [0, 140], w: 1.6 },
+  spin: { dmg: [52], band: [0, 125], w: 1.1 },
+  overhead: { dmg: [70], band: [30, 170], w: 1.3 },
+  thrust: { dmg: [54], parry: [true], band: [100, 250], w: 1.5, lunge: [3, 4], dist: 120 },
+  charge: { dmg: [48], band: [160, 430], w: 1.1, cd: 5 },
+  leap: { dmg: [62], band: [220, 999], w: 1.2, cd: 4 },
+  chain: { band: [150, 330], w: 1.3, cd: 5 },
+  ghostfire: { band: [110, 999], w: 1.2, cd: 6 },
+  rain: { band: [0, 999], w: 1.1, cd: 9, ph: 2 },
+  nova: { band: [0, 190], w: 1.3, cd: 7, ph: 3 },
 };
 const NV_COURT = {
   knight: { name: 'Spectral Knight', short: 'Knight', sheet: 'vael_knight', hp: 420, walk: 58, prefer: 50, stance: 120, moves: { slash: { dmg: [36], band: [0, 80], w: 2.2 }, bash: { dmg: [28], band: [0, 70], w: 1.2, step: 70 } } },
@@ -973,10 +979,10 @@ class NvVael extends BossBase {
     this.SA = [sheet('vael', { meta: ma }), sheet('vael_p3', { meta: ma })];
     this.SB = [sheet('vael_b', { meta: mb }), sheet('vael_b_p3', { meta: mb })];
     this.sh = this.SA[0]; this.anim = new Anim(this.sh, 'idle'); this.state = 'dormant';
-    this.stanceMax = 460; this.critRange = 70; this.court = []; this.cds = {}; this.nextHitAt = -9; this.ward = 0; this.fireT = 4; this.chain = 0;
+    this.stanceMax = 480; this.critRange = 80; this.court = []; this.cds = {}; this.nextHitAt = -9; this.ward = 0; this.fireT = 4; this.chain = 0;
   }
-  get L() { return TILE + 44; }
-  get R() { return 44 * TILE - 34; }
+  get L() { return TILE + 46; }
+  get R() { return 44 * TILE - 40; }
   get parts() { return [this, ...this.court.filter(q => q.alive && q.state !== 'appear' && q.state !== 'absorbed')]; }
   sheetFor(tag) { const arr = NV_VB.has(tag) ? this.SB : this.SA, s = arr[this.phase >= 3 && arr[1].ok ? 1 : 0]; return s.ok ? s : arr[0]; }
   setA(tag, loop = false, speed = this.speed) {
@@ -984,27 +990,26 @@ class NvVael extends BossBase {
     if (sh !== this.sh || this.anim.s !== sh) { this.sh = sh; this.anim = new Anim(sh, sh.has(tag) ? tag : 'idle', loop, speed); }
     else this.anim.set(sh.has(tag) ? tag : 'idle', loop, speed);
   }
-  hurtbox() { if (!this.alive) return null; const m = this.SA[0].meta; return m && m.hurtbox ? metaRect(this.SA[0], this, m.hurtbox) : rect(this.x - 14, this.y - 80, this.x + 14, this.y); }
-  canStagger() { return !this.air && !['summon', 'absorb', 'rise'].includes(this.state) && !(this.state === 'attack' && ['leap'].includes(this.atk)); }
+  hurtbox() { if (!this.alive) return null; const m = this.SA[0].meta; return m && m.hurtbox ? metaRect(this.SA[0], this, m.hurtbox) : rect(this.x - 22, this.y - 96, this.x + 22, this.y); }
+  canStagger() { return !this.air && !['summon', 'absorb', 'rise'].includes(this.state) && !(this.state === 'attack' && ['leap', 'charge', 'nova'].includes(this.atk)); }
   hit(info) {
     if (this.alive && this.active && (this.state === 'summon' || this.state === 'absorb')) { spawnFx(fxOr('parry_spark', 'hit'), info.x, info.y, info.dir); sfx.block(); return; }
     if (this.ward > 0 && this.active && this.alive) { info = { ...info, dmg: info.dmg * 0.35, poise: info.poise * 0.5 }; spawnFx(fxOr('parry_spark', 'hit'), info.x, info.y, info.dir); }
     super.hit(info);
   }
-  stagger() { super.stagger(); this.setA('stagger', false, 1); this.air = null; this.y = this.floor; }
+  stagger() { super.stagger(); this.setA('stagger', false, 1); this.air = null; this.y = this.floor; this.charging = false; }
   activate() { if (this.active || this.cutting) return; super.activate(); if (this.active && !this.cutting) { this.state = 'idle'; this.setA('idle', true); } }
   wake() { return P.x < 40 * TILE && P.state !== 'dead'; }
-  lead(tag) { const sh = this.sheetFor(tag); return nvLead(sh, tag, nvFirstActive(sh, tag), this.speed); }
+  meta(tag) { return this.sheetFor(tag).meta || {}; }
+  lead(tag) { const sh = this.sheetFor(tag), a = sh.meta && sh.meta.attacks && sh.meta.attacks[tag]; const f = a ? Math.min(...Object.keys(a.frames).map(Number)) : 4; return nvLead(sh, tag, f, this.speed); }
   update(dt) {
     this.commonUpdate(dt);
     this.ward = Math.max(0, this.ward - dt);
     for (const k in this.cds) this.cds[k] -= dt;
     this.anim.update(dt);
     for (const q of this.court) q.update(dt);
-    this.court = this.court.filter(q => !(q.state === 'dead' && q.anim.done && q.goneT !== undefined && (q.goneT -= dt) < -2) );
     if (!this.active) {
-      if (this.state === 'dormant' && this.anim.tag !== 'rise') { this.setA('rise', false); this.anim.i = 0; }
-      if (this.anim.tag === 'rise') { this.anim.i = 0; this.anim.t = 0; }
+      if (this.state === 'dormant') { if (this.anim.tag !== 'rise') this.setA('rise', false, 0); this.anim.i = 0; this.anim.t = 0; }
       if (!this.cutting && this.wake()) this.activate();
       return;
     }
@@ -1017,13 +1022,13 @@ class NvVael extends BossBase {
         if (P.state === 'dead') break;
         if (this.pendingPhase) { this.beginPhase(this.pendingPhase); break; }
         if (this.cool <= 0) this.choose(d, fd);
-        else if (d > 150) { this.state = 'walk'; this.setA('walk', true); this.t = 0.5; }
+        else if (d > 140) { this.state = 'walk'; this.setA('walk', true); this.t = 0.5; }
         break;
       case 'walk':
         this.facePlayer(); this.t -= dt; this.cool -= dt;
-        this.x = clamp(this.x + this.face * 50 * this.speed * dt, this.L, this.R);
-        if (this.anim.changed && this.anim.i % 4 === 1) { shake = Math.max(shake, 1.2); sfx.step(); }
-        if (this.t <= 0 || d < 110) { this.state = 'idle'; this.setA('idle', true); this.cool = Math.min(this.cool, 0.2); }
+        this.x = clamp(this.x + this.face * 56 * this.speed * dt, this.L, this.R);
+        if (this.anim.changed && this.anim.i % 4 === 1) { shake = Math.max(shake, 1.5); sfx.step(); }
+        if (this.t <= 0 || d < 100 || this.pendingPhase) { this.state = 'idle'; this.setA('idle', true); this.cool = Math.min(this.cool, 0.2); }
         break;
       case 'attack': this.updateAttack(dt); break;
       case 'summon': this.updateSummon(dt); break;
@@ -1034,130 +1039,146 @@ class NvVael extends BossBase {
         if (this.anim.done || this.t <= 0) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.4; }
         break;
       case 'dead':
-        if (Math.random() < 0.6) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 90), vx: 0, vy: -rand(15, 45), life: rand(1, 2), kind: 'nvsoul' });
+        if (Math.random() < 0.6) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 100), vx: 0, vy: -rand(15, 45), life: rand(1, 2), kind: 'nvsoul' });
         if (this.anim.done) this.anim.hold();
         break;
     }
-    // phase thresholds are taken when the King is free
     if (this.alive && this.phase === 1 && this.hp <= this.maxHp * 0.66 && !this.pendingPhase) this.pendingPhase = 2;
     if (this.alive && this.phase === 2 && this.hp <= this.maxHp * 0.3 && !this.pendingPhase) this.pendingPhase = 3;
-    if (this.pendingPhase && this.alive && this.state === 'walk') { this.state = 'idle'; }
-    // phase 3: the crown's ghost-fire seeks the player
+    // phase 3: in the void the crown's fire hunts the player
     if (this.phase >= 3 && this.alive && ['idle', 'walk', 'attack'].includes(this.state)) {
-      this.fireT -= dt; if (this.fireT <= 0) { this.fireT = rand(3.2, 4.4); nvFire(clamp(P.x + P.vx * 0.3, this.L, this.R), this.floor, { warn: 0.95, dmg: 34, src: this }); }
+      this.fireT -= dt; if (this.fireT <= 0) { this.fireT = rand(2.6, 3.6); nvFire(clamp(P.x + P.vx * 0.35, this.L - 30, this.R + 30), this.floor, { warn: 0.9, dmg: 34, src: this }); }
     }
     if (!this.air) this.x = clamp(this.x, this.L, this.R);
-    if (this.alive) { this.camX = (this.x + P.x) / 2; }
+    if (this.alive) this.camX = (this.x + P.x) / 2;
   }
   choose(d, fd) {
     const ph = this.phase, w = {};
     for (const [k, M] of Object.entries(NV_VM)) {
+      if (M.ph && ph < M.ph) continue;
       if (d < M.band[0] || d > M.band[1] || this.cds[k] > 0) continue;
-      w[k] = M.w * (k === this.last ? 0.3 : 1);
+      w[k] = M.w * (k === this.last ? 0.25 : 1);
     }
-    if (fd < -20 && d < 130) { w.sweep = 3.5; delete w.combo; delete w.thrust; }
-    if (ph >= 2) { w.ghostfire = (w.ghostfire || 0) * 1.3; }
-    if (ph >= 3) { if (w.combo) w.combo *= 1.3; if (w.chain) w.chain *= 1.4; }
-    // with the court fighting, the King gives them room: more ranged work while two courtiers are engaged
-    if (ph === 2 && this.court.filter(q => q.alive && q.state === 'attack').length) { if (w.combo) w.combo *= 0.5; }
-    let m = nvPick(w);
+    if (fd < -20 && d < 130) { w.spin = 3.5; delete w.combo; delete w.string; delete w.thrust; delete w.overhead; }
+    if (ph >= 2 && w.string) w.string *= 1.4;
+    if (ph >= 3) { for (const k of ['string', 'chain', 'charge', 'nova']) if (w[k]) w[k] *= 1.5; }
+    if (ph === 2 && this.court.some(q => q.alive && q.state === 'attack')) { if (w.combo) w.combo *= 0.5; if (w.string) w.string *= 0.5; }
+    const m = nvPick(w);
     if (!m) { this.state = 'walk'; this.setA('walk', true); this.t = 0.5; return; }
     this.startMove(m);
   }
   startMove(m) {
     this.facePlayer(); this.last = m; this.atk = m; this.hitIds = new Set(); this.atkId = ++hazardId; this.fired = {}; this.air = null; this.y = this.floor;
-    this.state = 'attack'; this.setA(m, false, this.speed);
-    const M = NV_VM[m] || {}; if (M.cd) this.cds[m] = M.cd * (this.phase >= 3 ? 0.7 : 1);
+    this.state = 'attack'; this.setA(m, false, this.speed); this.charging = m === 'charge'; this.chargeT = 0;
+    const M = NV_VM[m] || {}; if (M.cd) this.cds[m] = M.cd * (this.phase >= 3 ? 0.65 : 1);
     this.nextHitAt = time + this.lead(m);
   }
+  groupOf(tag, i) { const a = this.sh.meta.attacks[tag]; const fs = Object.keys(a.frames).map(Number).sort((x, y) => x - y); let g = 0; for (let k = 1; k < fs.length && fs[k] <= i; k++) if (fs[k] - fs[k - 1] > 1) g++; return g; }
   updateAttack(dt) {
-    const an = this.anim, sh = this.sh, a = this.atk, M = NV_VM[a] || {}, wins = metaWindows(sh, a), first = nvFirstActive(sh, a);
-    if (an.i < first - 1 && a !== 'leap') this.facePlayer();
-    const tel = sh.meta && sh.meta.telegraph && sh.meta.telegraph[a];
-    if (tel && an.changed && an.i === tel.frame) { const p = metaPoint(sh, this, tel.at); spawnFx('telegraph', p.x, p.y, this.face); sfx.glint(); if (a === 'combo' || a === 'overhead') addLight(p.x, p.y, 40, '140,190,255', 1); }
+    const an = this.anim, sh = this.sh, a = this.atk, M = NV_VM[a] || {}, ph = this.phase;
+    const atk = sh.meta.attacks && sh.meta.attacks[a];
+    const first = atk ? Math.min(...Object.keys(atk.frames).map(Number)) : 99;
+    if (an.i < first - 1 && a !== 'leap' && !this.charging) this.facePlayer();
+    for (const tel of (sh.meta.telegraph && sh.meta.telegraph[a]) || []) if (an.changed && an.i === tel.frame) { const p = metaPoint(sh, this, tel.at); spawnFx('telegraph', p.x, p.y, this.face); sfx.glint(); addLight(p.x, p.y, 40, '140,190,255', 1); }
     // thrust lunge
     if (M.lunge && an.i >= M.lunge[0] && an.i <= M.lunge[1]) { let T = 0; for (let i = M.lunge[0]; i <= M.lunge[1]; i++) T += an.ms(i); T = T / 1000 / an.speed; this.x = clamp(this.x + this.face * M.dist / T * dt, this.L, this.R); }
-    // leap arc
+    // shoulder charge: loop the rush frames until past the player or at the wall
+    if (a === 'charge' && this.charging && an.i >= 2) {
+      this.chargeT += dt;
+      this.x += this.face * 265 * this.speed * dt;
+      if (an.changed) { shake = Math.max(shake, 2.5); sfx.step(); particles.push({ x: this.x - this.face * 30, y: this.floor, vx: -this.face * 50, vy: -rand(10, 40), life: 0.5, kind: 'dust' }); }
+      const past = (this.x - P.x) * this.face > 70, wall = this.x <= this.L || this.x >= this.R;
+      if (wall) { this.x = clamp(this.x, this.L, this.R); shake = 9; sfx.boom(); spawnFx('shockwave', this.x + this.face * 30, this.floor, 1); this.charging = false; an.i = 6; an.t = 0; }
+      else if (past || this.chargeT > 1.7) { this.charging = false; an.i = 6; an.t = 0; }
+      else if (an.i >= 5 && an.t > an.ms() * 0.8) { an.i = 2; an.t = 0; this.hitIds.delete(0); }
+    }
+    // leap arc (frame 2 takes off, frame 5 lands)
     if (a === 'leap') {
-      const Lp = sh.meta.leap || { rise: 3, land: 9 };
-      if (an.changed && an.i === Lp.rise && !this.air) { const T = nvLead(sh, a, Lp.land, an.speed) - nvLead(sh, a, Lp.rise, an.speed); this.air = { x0: this.x, tx: clamp(P.x - this.face * 16, this.L, this.R), t: 0, T: Math.max(0.25, T) }; nvSfx.whoosh(); sfx.jump(); }
-      if (this.air) { this.air.t += dt; const k = Math.min(1, this.air.t / this.air.T); this.x = lerp(this.air.x0, this.air.tx, k); this.y = this.floor - Math.sin(k * Math.PI) * 96; if (k >= 1) { this.air = null; this.y = this.floor; } }
+      if (an.changed && an.i === 2 && !this.air) { const T = nvLead(sh, a, 5, an.speed) - nvLead(sh, a, 2, an.speed); this.air = { x0: this.x, tx: clamp(P.x - this.face * 20, this.L, this.R), t: 0, T: Math.max(0.25, T) }; nvSfx.whoosh(); sfx.jump(); }
+      if (this.air) { this.air.t += dt; const k = Math.min(1, this.air.t / this.air.T); this.x = lerp(this.air.x0, this.air.tx, k); this.y = this.floor - Math.sin(k * Math.PI) * 92; if (k >= 1) { this.air = null; this.y = this.floor; } }
     }
-    wins.forEach((w, wi) => {
-      if (an.i < w.active[0] || an.i > w.active[1]) return;
-      if (an.changed && an.i === w.active[0]) { sfx.bossSwing(); nvSfx.whoosh(); if (M.shake) shake = Math.max(shake, M.shake); }
-      if (this.hitIds.has(wi) || !w.hit) return;
-      if (overlap(metaRect(sh, this, w.hit), playerHurtbox())) {
-        const dmg = (M.dmg ? (M.dmg[wi] ?? M.dmg[0]) : 44) * (this.phase >= 3 ? 1.15 : 1) * NGP.dmg;
-        if (hurtPlayer(BOSS_DMG * dmg, P.x < this.x ? -1 : 1, this.atkId * 10 + wi, { parryable: !!(M.parry && M.parry[wi]), src: this })) this.hitIds.add(wi);
+    // strikes (per-frame rects from the art; one hit per strike of a string)
+    const r0 = atk && atk.frames[String(an.i)];
+    if (r0) {
+      const gi = this.groupOf(a, an.i);
+      if (an.changed && (an.i === first || !atk.frames[String(an.i - 1)])) { sfx.bossSwing(); nvSfx.whoosh(); }
+      if (!this.hitIds.has(gi) && overlap(metaRect(sh, this, r0), playerHurtbox())) {
+        const dmg = (M.dmg ? (M.dmg[gi] ?? M.dmg[M.dmg.length - 1]) : 44) * (ph >= 3 ? 1.15 : 1) * NGP.dmg;
+        if (hurtPlayer(BOSS_DMG * dmg, P.x < this.x ? -1 : 1, this.atkId * 10 + gi, { parryable: !!(M.parry && M.parry[gi]), src: this })) { this.hitIds.add(gi); if (a === 'charge') P.vx = this.face * 220; }
       }
-    });
-    // impacts, chains, ghost-fire
-    const sp = sh.meta && sh.meta.spawn && sh.meta.spawn[a];
-    if (a === 'combo' && an.changed && an.i === 12 && this.phase >= 3) nvWave(this.x + this.face * 60, this.floor, this.face, { speed: 200, dmg: 30, src: this });
-    if ((a === 'overhead' || a === 'leap') && sp && an.i >= sp.frame && !this.fired.impact) {
-      this.fired.impact = true;
-      const x = clamp(a === 'leap' ? this.x + this.face * 14 : metaPoint(sh, this, sp.at).x, this.L - 20, this.R + 20);
-      sfx.boom(); shake = Math.max(shake, 10); spawnFx('shockwave', x, this.floor, 1); nvSfx.ghost();
-      for (let i = 0; i < 16; i++) particles.push({ x: x + rand(-12, 12), y: this.floor - 2, vx: rand(-110, 110), vy: -rand(40, 170), g: 400, life: rand(0.4, 0.8), kind: i % 2 ? 'rock' : 'nvsoul' });
-      const dirs = a === 'leap' || this.phase >= 3 ? [-1, 1] : [this.face];
-      for (const dd of dirs) nvWave(x, this.floor, dd, { speed: 185, dmg: 30, src: this, life: 2.2 });
-      if (a === 'leap') { const r = rect(x - 40, this.floor - 30, x + 40, this.floor); if (overlap(r, playerHurtbox())) hurtPlayer(BOSS_DMG * 40 * NGP.dmg, sign(P.x - x), this.atkId * 10 + 7, { src: this }); }
-      if (this.phase >= 2 && a === 'overhead') for (let k = 1; k <= 2; k++) nvFire(clamp(x + this.face * k * 70, this.L, this.R), this.floor, { warn: 0.5 + k * 0.25, dmg: 32, src: this });
     }
-    if (a === 'chain' && sp && an.i >= sp.frame && !this.fired.chain) {
-      this.fired.chain = true;
-      nvThrowShackle(this, metaPoint(sh, this, sp.at), { spectral: true, max: 300, dmg: 26, onHit: () => { this.chainHit = true; } });
-    }
-    if (a === 'ghostfire' && sp && an.i >= sp.frame && !this.fired.fire) {
-      this.fired.fire = true; nvSfx.ghost(); flashScreen = 0.1;
-      const n = this.phase >= 3 ? 5 : 3, step = this.phase >= 3 ? 44 : 56;
-      for (let k = 0; k < n; k++) nvFire(clamp(this.x + this.face * (70 + k * step), this.L, this.R), this.floor, { warn: 0.7 + k * 0.18, dmg: 36, src: this });
-      if (this.phase >= 2) { const at = metaPoint(sh, this, sp.at); for (let k = -1; k <= 1; k += 2) { const ang = Math.atan2(P.y - 16 - at.y, P.x - at.x) + k * 0.3; nvSoul(at.x, at.y, Math.cos(ang) * 120, Math.sin(ang) * 120, { dmg: 24, home: 1.0, src: this }); } }
+    // spawns: impacts, chains, ghost fire, sword rain, the crown nova
+    const sp = sh.meta.spawn && sh.meta.spawn[a];
+    if (sp && an.i >= sp.frame && !this.fired.sp) {
+      this.fired.sp = true; const at = metaPoint(sh, this, sp.at);
+      if (a === 'overhead' || a === 'string' || a === 'leap') {
+        const x = clamp(at.x, this.L - 30, this.R + 30);
+        sfx.boom(); shake = Math.max(shake, 10); nvSfx.ghost(); spawnFx('shockwave', x, this.floor, 1);
+        for (let i = 0; i < 16; i++) particles.push({ x: x + rand(-12, 12), y: this.floor - 2, vx: rand(-110, 110), vy: -rand(40, 170), g: 400, life: rand(0.4, 0.8), kind: i % 2 ? 'rock' : 'nvsoul' });
+        for (const dd of [-1, 1]) nvWave(x, this.floor, dd, { speed: 190, dmg: 30, src: this, life: 2.2 });
+        if (a === 'leap') { const r = rect(x - 44, this.floor - 34, x + 44, this.floor); if (overlap(r, playerHurtbox())) hurtPlayer(BOSS_DMG * 40 * NGP.dmg, sign(P.x - x), this.atkId * 10 + 7, { src: this }); }
+        if (ph >= 2 && a === 'overhead') for (let k = 1; k <= 3; k++) nvFire(clamp(x + this.face * k * 64, this.L - 30, this.R + 30), this.floor, { warn: 0.45 + k * 0.22, dmg: 32, src: this });
+      } else if (a === 'chain') {
+        nvThrowShackle(this, at, { spectral: true, max: 310, dmg: 26, onHit: () => { this.chainHit = true; } });
+      } else if (a === 'ghostfire') {
+        nvSfx.ghost(); flashScreen = 0.1;
+        const n = ph >= 3 ? 6 : ph === 2 ? 5 : 4;
+        for (let k = 0; k < n; k++) nvFire(clamp(this.x + this.face * (56 + k * 30), this.L - 30, this.R + 30), this.floor, { warn: 0.6 + k * 0.15, dmg: 36, src: this, w: 26 });
+        if (ph >= 2) for (let k = -1; k <= 1; k += 2) { const ang = Math.atan2(P.y - 16 - at.y, P.x - at.x) + k * 0.3; nvSoul(at.x, at.y, Math.cos(ang) * 120, Math.sin(ang) * 120, { dmg: 24, home: 1.0, src: this }); }
+      } else if (a === 'rain') {
+        nvSfx.toll(1.3, 0.5); flashScreen = 0.15;
+        const n = ph >= 3 ? 9 : 7;
+        for (let k = 0; k < n; k++) nvSwordFall(clamp(P.x + (k - (n - 1) / 2) * 38 + rand(-8, 8), this.L - 30, this.R + 30), this.floor, 0.85 + Math.abs(k - (n - 1) / 2) * 0.16 + rand(0, 0.1), this);
+      } else if (a === 'nova') {
+        sfx.roar(); nvSfx.toll(0.7, 0.8); shake = 10; flashScreen = 0.3;
+        nvRing(this.x, this.y - 56, { dmg: 34, src: this, speed: 210, max: 280, stun: 0, boss: true });
+        for (const dd of [-1, 1]) nvWave(this.x + dd * 20, this.floor, dd, { speed: 160, dmg: 28, src: this, life: 2.4 });
+      }
     }
     if (an.done) {
-      this.air = null; this.y = this.floor; this.nextHitAt = -9;
+      this.air = null; this.y = this.floor; this.nextHitAt = -9; this.charging = false;
       if (this.pendingPhase) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.1; return; }
-      const ph = this.phase, maxChain = ph >= 3 ? 3 : 1, pc = ph >= 3 ? 0.7 : ph === 2 ? 0.4 : 0.3, d = Math.abs(P.x - this.x);
-      if (a === 'chain' && this.chainHit) { this.chainHit = false; this.chain++; return this.startMove('combo'); }
+      const maxChain = ph >= 3 ? 3 : 1, pc = ph >= 3 ? 0.7 : ph === 2 ? 0.4 : 0.3, d = Math.abs(P.x - this.x);
+      if (a === 'chain' && this.chainHit) { this.chainHit = false; this.chain++; return this.startMove(ph >= 2 ? 'string' : 'combo'); }
       if (this.chain < maxChain && Math.random() < pc && P.state !== 'dead') {
-        const nx = d < 130 ? (a === 'combo' ? (ph >= 3 ? 'overhead' : 'thrust') : 'combo') : d < 240 ? 'thrust' : (this.cds.ghostfire > 0 ? 'leap' : 'ghostfire');
+        const nx = d < 130 ? (a === 'combo' || a === 'string' ? (ph >= 3 ? 'spin' : 'overhead') : 'combo') : d < 250 ? (a === 'thrust' ? 'charge' : 'thrust') : (this.cds.leap > 0 ? 'ghostfire' : 'leap');
         if (nx !== a && !(this.cds[nx] > 0)) { this.chain++; return this.startMove(nx); }
       }
       this.chain = 0; this.state = 'idle'; this.setA('idle', true);
-      this.cool = ph === 1 ? rand(0.9, 1.5) : ph === 2 ? rand(1.0, 1.6) : rand(0.35, 0.7);
+      this.cool = ph === 1 ? rand(0.9, 1.4) : ph === 2 ? rand(0.9, 1.5) : rand(0.3, 0.6);
     }
   }
-  // ---------------------------------------------------------------- phase 2: the spectral court rises
+  // ---------------------------------------------------------------- phase changes
   beginPhase(ph) {
-    this.pendingPhase = 0; this.chain = 0; this.air = null; this.y = this.floor; this.stance = 0; nvClearHazards();
+    this.pendingPhase = 0; this.chain = 0; this.air = null; this.y = this.floor; this.stance = 0; this.charging = false; nvClearHazards();
     if (ph === 2) { this.phase = 2; this.state = 'summon'; this.setA('summon', false, 1); this.summoned = false; this.phaseScene(2); }
-    else { this.phase = 3; this.speed = 1.22; this.state = 'absorb'; this.setA('absorb', false, 1); this.absorbed = false; this.phaseScene(3); }
+    else { this.state = 'absorb'; this.setA('absorb', false, 1); this.absorbed = false; this.phaseScene(3); }
   }
   spawnCourt() {
     if (this.summoned) return; this.summoned = true;
     const fl = this.floor, px = P.x, side = this.x < px ? 1 : -1;
-    const spots = [['knight', clamp(px + side * 70, this.L, this.R)], ['exec', clamp(px - side * 90, this.L, this.R)], ['priest', clamp(this.x - side * 60, this.L, this.R)]];
+    const spots = [['knight', clamp(px + side * 70, this.L, this.R)], ['exec', clamp(px - side * 90, this.L, this.R)], ['priest', clamp(this.x - side * 70, this.L, this.R)]];
     for (const [k, x] of spots) { const q = new NvCourtier(this, k, x, fl); this.court.push(q); for (let i = 0; i < 18; i++) particles.push({ x: x + rand(-10, 10), y: fl - rand(0, 50), vx: rand(-20, 20), vy: -rand(20, 70), life: rand(0.6, 1.2), kind: 'nvsoul' }); }
     nvSfx.toll(0.8, 0.8); shake = 7; flashScreen = 0.35;
   }
   updateSummon(dt) {
     const an = this.anim, sp = this.sh.meta && this.sh.meta.spawn && this.sh.meta.spawn.summon;
-    if (!this.summoned && an.i >= (sp ? sp.frame : 7)) this.spawnCourt();
+    if (!this.summoned && an.i >= (sp ? sp.frame : 6)) this.spawnCourt();
     if (an.done) { this.spawnCourt(); this.state = 'idle'; this.setA('idle', true); this.cool = 1.2; }
   }
   updateAbsorb(dt) {
     const an = this.anim;
-    if (an.i >= 2 && an.i <= 6) for (const q of this.court) if (q.alive && q.state !== 'absorbed') {   // souls stream into the King
+    if (an.i >= 2 && an.i <= 5) for (const q of this.court) if (q.alive && q.state !== 'absorbed') {
       for (let i = 0; i < 3; i++) { const t = Math.random(); particles.push({ x: lerp(q.x, this.x, t) + rand(-5, 5), y: lerp(q.y - 30, this.y - 70, t) + rand(-5, 5), vx: (this.x - q.x) * 0.8, vy: -rand(0, 20), life: 0.4, kind: 'nvsoul' }); }
     }
-    if (!this.absorbed && an.i >= 7) {
-      this.absorbed = true; let gain = 0;
+    if (!this.absorbed && an.i >= 6) {
+      this.absorbed = true; this.phase = 3; this.speed = 1.2; let gain = 0;
       for (const q of this.court) if (q.alive) { gain += q.hp * 0.5; q.hp = 0; q.state = 'absorbed'; }
       gain = Math.min(gain, this.maxHp * 0.1); this.hp = Math.min(this.maxHp, this.hp + gain); this.displayHp = this.hp;
-      flashScreen = 0.7; shake = 12; sfx.roar(); nvSfx.toll(0.7, 1);
+      flashScreen = 1; shake = 14; sfx.roar(); nvSfx.toll(0.6, 1);
       spawnFx('roar_ring', this.x, this.y - 70, 1, null, { tint: '#9cc8ff' });
-      this.setA('absorb', false, 1); this.anim.i = 7;   // switch to the blazing sheet mid-animation
+      nvVoid(true);
+      const i = an.i; this.setA('absorb', false, 1); this.anim.i = i;   // the blazing sheet from here on
     }
     if (an.done) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.5; this.court = this.court.filter(q => q.state !== 'absorbed'); }
   }
@@ -1165,52 +1186,54 @@ class NvVael extends BossBase {
     const key = 'cutp' + ph + ':vael';
     const hasCourt = this.court.some(q => q.alive);
     const line = ph === 2 ? ['King Vael', 'Rise, my court. Your king has need of you once more.']
-      : hasCourt ? ['King Vael', 'Come back to me… all of you. I will not fall alone.'] : ['King Vael', 'Alone again. Then let the crown burn.'];
+      : hasCourt ? ['King Vael', 'Come back to me… all of you. I will not fall alone.'] : ['King Vael', 'Alone again. Then let the crown burn — and the world with it.'];
     if (SAVE.flags[key]) { toast(line[1], 2.2); return; }
     SAVE.flags[key] = 1;
     playCutscene([
       { pan: { x: this.x, y: this.y - 60 }, dur: 0.5 },
       say(line[0], line[1], { dur: 2.4 }),
-      { until: () => ph === 2 ? this.summoned || this.anim.done : this.absorbed, max: 3.0 },
-      wait(0.7),
+      { until: () => ph === 2 ? this.summoned || this.anim.done : this.absorbed, max: 3.2 },
+      wait(ph === 3 ? 1.1 : 0.7),
       { pan: { x: P.x, y: P.y - 30 }, dur: 0.4 },
     ], () => { if (ph === 2) this.spawnCourt(); });
   }
-  ambient(dt) {   // cutscenes: keep the court and the phase animation moving (updateCutscene only advances boss.anim)
+  ambient(dt) {
     if (state === 'cut') {
       for (const q of this.court) { q.anim.update(dt); q.alpha = Math.min(1, q.alpha + dt * 1.5); if (q.state === 'appear' && q.anim.done) { q.state = 'idle'; q.setA('idle'); } }
       if (this.state === 'summon') this.updateSummon(0);
       if (this.state === 'absorb') this.updateAbsorb(dt);
     }
-    if (this.alive) addLight(this.x + this.face * 8, this.y - 82, this.phase >= 3 ? 90 : 60, '140,190,255', this.phase >= 3 ? 0.9 : 0.6);
+    if (this.alive) {
+      addLight(this.x + this.face * 14, this.y - 84, this.phase >= 3 ? 100 : 60, '140,190,255', this.phase >= 3 ? 1 : 0.6);
+      if (NVR.void) addLight(this.x, this.y - 50, 120, '120,150,210', 0.7);
+    }
   }
   die() {
-    this.state = 'dead'; this.setA('death', false, 1); this.air = null; this.y = this.floor;
+    this.state = 'dead'; this.setA('death', false, 1); this.air = null; this.y = this.floor; this.charging = false;
     for (const q of this.court) if (q.alive) q.die();
     nvClearHazards(); projectiles = projectiles.filter(p => p.owner === 'player');
     shake = 12; hitstop = 0.3; slowmo = 1.6; flashScreen = 0.6; sfx.roar(); sfx.felled();
-    setTimeout(() => nvSfx.toll(0.7, 1), 900);
+    setTimeout(() => { nvSfx.toll(0.7, 1); if (room && room.id === 'NV7') { nvVoid(false); flashScreen = 0.5; } }, 2600);
     victoryBanner = { text: 'THE HOLLOW CROWN FALLS', t: 0 };
     this.rewards();
   }
   draw() {
-    for (const q of this.court) if (q.x < this.x - 1e9) q.draw();
     for (const q of this.court) q.draw();
     const opt = this.flash > 0 ? { flash: this.flash * 0.7 } : this.state === 'stagger' ? { flash: 0.15 + 0.1 * Math.sin(time * 20), flashColor: '#ffd070' } : {};
     if (!this.sh.ok) { g.fillStyle = '#6a5a2a'; g.fillRect(Math.round(this.x - 16), Math.round(this.y - 84), 32, 84); return; }
     drawSprite(this.sh, this.anim.frame, this.x, this.y, this.face, opt);
-    if (this.ward > 0 && this.alive) {   // the Confessor's ward: a pale shell around the King
+    if (this.ward > 0 && this.alive) {
       const a = Math.min(1, this.ward) * (0.35 + 0.15 * Math.sin(time * 12));
-      g.strokeStyle = `rgba(170,215,255,${a})`; g.lineWidth = 1; g.beginPath(); g.ellipse(Math.round(this.x), Math.round(this.y - 44), 30, 50, 0, 0, 6.3); g.stroke();
+      g.strokeStyle = `rgba(170,215,255,${a})`; g.lineWidth = 1; g.beginPath(); g.ellipse(Math.round(this.x), Math.round(this.y - 52), 36, 58, 0, 0, 6.3); g.stroke();
       g.fillStyle = `rgba(120,180,255,${a * 0.18})`; g.fill();
-      addLight(this.x, this.y - 44, 70, '140,190,255', 0.5);
+      addLight(this.x, this.y - 52, 80, '140,190,255', 0.5);
     }
   }
 }
 BOSS_SPAWN.vael = (cx, fy) => new NvVael(cx, fy);
 BOSS_CUTS.vael = b => [
   act(() => { b.setA('rise', false, 0); b.anim.i = 0; b.anim.t = 0; b.face = -1; }),
-  bossPan(b, 60, 1.6),
+  bossPan(b, 64, 1.6),
   say('', 'Beneath his city of the dead, a king kneels before an empty throne.'),
   say('King Vael', 'My bells still toll. My court still kneels. My crown… still weighs.'),
   act(() => { b.facePlayer(); b.setA('rise', false, 1); b.anim.i = 2; nvSfx.chain(); }),
@@ -1220,6 +1243,62 @@ BOSS_CUTS.vael = b => [
     for (let i = 0; i < 30; i++) particles.push({ x: b.x + rand(-40, 40), y: b.y - rand(0, 110), vx: 0, vy: -rand(20, 60), life: rand(0.8, 1.6), kind: 'nvsoul' }); }),
   wait(1.2),
 ];
+
+// ================================================================== the spectral sword rain
+function nvSwordFall(x, floor, warn, src) {
+  NVR.swords.push({ x, y: floor, t: 0, warn, id: ++hazardId, src, landed: false });
+}
+function nvUpdateSwords(dt) {
+  for (const s of NVR.swords) {
+    s.t += dt;
+    if (!s.landed && s.t >= s.warn + 0.12) {
+      s.landed = true; shake = Math.max(shake, 2); if (Math.random() < 0.4) nvSfx.ghost();
+      for (let i = 0; i < 6; i++) particles.push({ x: s.x + rand(-4, 4), y: s.y - 2, vx: rand(-60, 60), vy: -rand(20, 90), g: 300, life: 0.5, kind: 'nvsoul' });
+    }
+    if (s.t >= s.warn + 0.06 && s.t < s.warn + 0.3 && overlap(rect(s.x - 6, s.y - 46, s.x + 6, s.y), playerHurtbox())) hurtPlayer(BOSS_DMG * 32 * NGP.dmg, sign(P.x - s.x), s.id, { src: s.src });
+    if (s.t > s.warn + 1.1) s.done = true;
+  }
+  NVR.swords = NVR.swords.filter(s => !s.done);
+}
+function nvDrawSwords() {
+  for (const s of NVR.swords) {
+    const x = Math.round(s.x);
+    if (s.t < s.warn) {   // the mark: a pale line from above, a glyph on the floor
+      const k = s.t / s.warn, a = 0.15 + 0.45 * k * (0.6 + 0.4 * Math.sin(time * 24));
+      g.fillStyle = `rgba(150,200,255,${a})`;
+      for (let y = s.y - 150; y < s.y; y += 5) g.fillRect(x, Math.round(y), 1, 2);
+      g.beginPath(); g.ellipse(x, s.y - 1, 3 + 5 * k, 1.5, 0, 0, 6.3); g.fill();
+      continue;
+    }
+    const fall = Math.min(1, (s.t - s.warn) / 0.12), tipY = s.y - 150 * (1 - fall) + 4, fade = s.t > s.warn + 0.7 ? 1 - (s.t - s.warn - 0.7) / 0.4 : 1;
+    g.globalAlpha = Math.max(0, fade);
+    g.fillStyle = '#a2cdf8'; g.fillRect(x - 1, Math.round(tipY - 38), 3, 36);
+    g.fillStyle = '#eef8ff'; g.fillRect(x, Math.round(tipY - 38), 1, 36);
+    g.fillStyle = '#63a0e6'; g.fillRect(x - 4, Math.round(tipY - 40), 9, 2); g.fillRect(x - 1, Math.round(tipY - 47), 3, 7);
+    g.globalAlpha = 1;
+    addLight(x, tipY - 20, 40, '150,200,255', 0.7 * fade);
+  }
+}
+
+// ================================================================== the void (phase 3): nothing left but the King, his fire and you
+Object.assign(SCALES, { nv_void: [0, 1, 3, 6, 8] }); Object.assign(ROOTS, { nv_void: 38.9 });
+Object.assign(AREAS, { nv_void: { name: 'The Hollow Throne', ambient: 0.55, amb: 'ghost', tint: '#000000', map: '#44507e' } });
+function nvVoid(on) {
+  if (!room) return;
+  if (on && !NVR.void) {
+    NVR.void = { def: room.def, back: room.back, front: room.front };
+    room.def = { ...room.def, biome: 'nv_void' };
+    const mk = () => { const c = document.createElement('canvas'); c.width = room.pw; c.height = room.ph; return c; };
+    const back = mk(), front = mk(), fx = front.getContext('2d');
+    const fl = 13 * TILE;   // the arena floor: a faint line, nothing more
+    fx.fillStyle = 'rgba(70,90,140,0.55)'; fx.fillRect(0, fl, room.pw, 1);
+    fx.fillStyle = 'rgba(40,52,90,0.4)'; for (let x = 0; x < room.pw; x += 3) fx.fillRect(x, fl + 2, 1, 1);
+    room.back = back; room.front = front;
+    particles = particles.filter(p => !p.amb);
+  } else if (!on && NVR.void) {
+    room.def = NVR.void.def; room.back = NVR.void.back; room.front = NVR.void.front; NVR.void = null;
+  }
+}
 // the court's HUD is drawn with the executioners' (above); the King's court list:
 if (window.__game) Object.assign(window.__game, { NVR, nvToll, nvFire, nvRing, nvWave, nvSoul, nvThrowShackle });
 HOOKS.playerHurt.push((dmg, opt) => { if (window.__nvLog && nvIn()) { const s = opt.src; window.__nvLog.push([Math.round(dmg), s ? (s.name || s.type || s.kind) + ':' + (s.state === 'attack' ? s.atk : s.state) + ':' + (s.anim ? s.anim.i : '') : 'env', P.state]); } return dmg; });

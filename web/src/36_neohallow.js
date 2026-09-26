@@ -994,235 +994,249 @@ BOSS_CUTS.enforcer = b => [
 ];
 PHASE2_LINES.enforcer = ['', 'The riot shield shears away. Its reactor vents run red.'];
 
-// ================================================================== SAINT-0, THE NULL SAINT (NH7)
-// A towering white-and-chrome AI angel: faceless visor, six wings of floating holographic panels, a halo of data rings,
-// an energy lance. The body is a sprite (saint0 / saint0_wire, one rig -> identical proportions in every frame); the
-// wings, halo and lance are drawn live from per-frame meta points (grip + lance angle, head, back, core).
-// Phase 1: lance thrusts and sweeps, panel-wing blades, orbital lasers.  Phase 2 (66%): it deletes the floor and
-// spawns firewalls.  Phase 3 (33%): it drags you into cyberspace (inverted wireframe arena) and becomes wireframe.
+// ================================================================== SAINT-0, THE NULL SAINT (NH7) — an ophanim of chrome and light
+// A colossal machine eye (cyber-lens iris behind a six-blade chrome diaphragm) inside three interlocking, tumbling rings
+// studded with smaller eyes, six wings of light-feathers and a halo of data. Built live from part sheets (saint0_socket,
+// saint0_iris, saint0_lid, saint0_lens + *_wire for cyberspace), so its proportions can never drift.
+// THE FIGHT: laser-beam parkour (laser limbo, ceiling grids, a lock-on gaze you break behind hard-light cover, a floor
+// purge you ride out on moving hard-light platforms, rotating lighthouse beams), and DEFLECTION: WHITE orbs can be struck
+// (or parried) back into the eye — three reflections overload it (stagger + critical). RED orbs cannot be touched.
+// The diaphragm is armour: shut it takes 30% damage, wide open 150%; it opens after each pattern cycle (EXPOSED).
+// Phase 2 (66%) adds the purge, spirals, dives and floor deletion; phase 3 (33%) drags you into cyberspace.
 BOSS_INFO.saint0 = { name: 'SAINT-0, the Null Saint', hp: 4500, cinders: 22000, reward: ['w:saint_lance', 'sp:null_field', 'c_neon'],
-  quote: '“THE HALLOW IS SAVED. AS DATA.”' };
-const NH_S0 = { P2: 0.66, P3: 0.33, FLOOR_X0: 4, FLOOR_X1: 36 };
-const NH_S0_ANIM = { thrust: 'thrust', sweep: 'sweep', wings: 'wings', orbital: 'cast', delete: 'delete', firewall: 'delete', rain: 'cast', ring: 'wings' };
-const NH_S0_DMG = { thrust: 50, sweep: 44 };
+  quote: '“BE NOT AFRAID. BE ARCHIVED.”' };
+const NH_S0 = { P2: 0.66, P3: 0.33, X0: 5 * TILE + 10, X1: 36 * TILE - 6, YTOP: 50, FLOOR_X0: 4, FLOOR_X1: 36, AX0: 3 * TILE, AX1: 39 * TILE, R: 22 };
+const NH_S0_RINGS = [
+  { R: 42, n: 6, a: 0.35, b: 0.2, sa: 0.52, sb: 0.33, spin: 0.9 },
+  { R: 53, n: 8, a: 1.25, b: 1.0, sa: -0.36, sb: 0.24, spin: -0.7 },
+  { R: 63, n: 8, a: 0.95, b: 2.2, sa: 0.22, sb: -0.4, spin: 0.55 },
+];
+const NH_S0_EXPOSE = [0, 3, 4, 4];   // moves between exposures, per phase
+const nhS0D = (d, b) => BOSS_DMG * d * NGP.dmg * (b && b.phase === 3 ? 1.12 : 1);
 class NhSaint extends BossBase {
   constructor(x, y) {
     super('saint0', x, y);
     this.hp = this.maxHp = this.displayHp = Math.round(BOSS_INFO.saint0.hp * NGP.hp);
-    const meta = ASSETS.saint0_meta;
-    this.sheets = [sheet('saint0', { meta }), sheet('saint0_wire', { meta })];
-    this.sh = this.sheets[0]; this.anim = new Anim(this.sh, 'idle'); this.state = 'dormant';
-    Object.assign(this, { stanceMax: 440, critRange: 84, hoverH: 7, descend: 1, wing: 0, halo: 0, lanceOn: false, visible: false, alpha: 1,
-      q: [], cool: 1, last: null, speed: 1, chain: 0, panelsOut: 0, regrow: 0, glitchT: 0, cds: {}, face: -1, bob: 0, aim: null });
-    this.y = this.floor - this.hoverH - 150;
+    this.parts = null;   // (BossBase uses .parts for multi-part bosses: keep it unset)
+    this.sh = sheet('saint0_lid'); this.anim = new Anim(this.sh, 'aperture', false); this.state = 'dormant';
+    Object.assign(this, { stanceMax: 380, critRange: 90, open: 0, openT: 0.35, ringK: 0, wing: 0, halo: 0, visible: false, alpha: 1,
+      q: [], cool: 1.2, last: null, speed: 1, cds: {}, bob: 0, glitchT: 0, look: { x: 0, y: 0 }, since: 0, fx: nhS0NewFx(),
+      tx: x, ty: y - 90, vx: 0, vy: 0, descend: 1, face: -1, floating: true });
+    this.x = x; this.y = y - 90;
   }
-  get L() { return NH_S0.FLOOR_X0 * TILE + 26; }
-  get R() { return NH_S0.FLOOR_X1 * TILE - 10; }
-  fm(tag = this.anim.tag, i = this.anim.i) { const m = this.sh.meta, f = m && m.frames && m.frames[tag]; return f ? f[Math.min(i, f.length - 1)] : null; }
-  pt(p, fb) { return p ? metaPoint(this.sh, this, p) : fb; }
-  grip() { const f = this.fm(); return this.pt(f && f.g, { x: this.x + this.face * 20, y: this.y - 70 }); }
-  lanceAng() {
-    if (this.lockP && this.state === 'attack' && this.move === 'thrust') {   // aimed at where you stood when it glinted
-      const G = this.grip(), d = Math.max(28, (this.lockP.x - G.x) * this.face), a = clamp(Math.atan2(this.lockP.y - G.y, d), 0.05, 1.1);
-      return this.face > 0 ? a : Math.PI - a;
-    }
-    const f = this.fm(), a = (f ? f.a : 100) * Math.PI / 180; return this.face === this.sh.native ? a : Math.PI - a;
-  }
-  lanceLen() {
-    const f = this.fm(); let L = (f ? f.l : 90) * (this.state === 'attack' && this.move === 'thrust' && this.inActive() ? 1.15 : 1);
-    const a = this.lanceAng(), sn = Math.sin(a); if (sn > 0.05) { const G = this.grip(); L = Math.min(L, (this.floor - 2 - G.y) / sn); }   // never through the floor
-    return Math.max(20, L);
-  }
-  head() { const f = this.fm(); return this.pt(f && f.h, { x: this.x + this.face * 4, y: this.y - 126 }); }
-  back() { const f = this.fm(); return this.pt(f && f.b, { x: this.x - this.face * 6, y: this.y - 100 }); }
-  core() { const f = this.fm(); return this.pt(f && f.c, { x: this.x + this.face * 3, y: this.y - 92 }); }
-  win(tag = this.anim.tag) { const a = this.sh.meta && this.sh.meta.attacks && this.sh.meta.attacks[tag]; return a ? a.active : tag === 'thrust' ? [6, 8] : [5, 7]; }
-  inActive() { const w = this.win(); return this.anim.i >= w[0] && this.anim.i <= w[1]; }
-  spawnFrame(tag) { const s = this.sh.meta && this.sh.meta.spawn && this.sh.meta.spawn[tag]; return s ? s.frame : 4; }
-  hurtbox() {
-    if (!this.alive || !this.visible || this.alpha < 0.5 || this.descend > 0.2) return null;
-    const m = this.sh.meta; return m && m.hurtbox ? metaRect(this.sh, this, m.hurtbox) : rect(this.x - 16, this.y - 124, this.x + 16, this.y - 12);
-  }
-  hit(info) { if (!this.visible || this.alpha < 0.5) return; super.hit(info); if (this.alive) this.glitchT = Math.max(this.glitchT, 0.12); }
-  canStagger() { return this.descend <= 0 && ['idle', 'glide', 'attack'].includes(this.state) && !(this.state === 'attack' && ['orbital', 'delete', 'firewall', 'rain'].includes(this.move)); }
-  setA(tag, loop = false) { this.anim.set(this.sh.has(tag) ? tag : 'idle', loop, this.speed); }
+  get L() { return NH_S0.X0; }
+  get R() { return NH_S0.X1; }
+  get cyb() { return nhCyber(); }
+  hurtbox() { if (!this.alive || !this.visible || this.alpha < 0.5 || this.descend > 0.2) return null; const r = NH_S0.R; return rect(this.x - r, this.y - r, this.x + r, this.y + r); }
+  canStagger() { return ['idle', 'attack', 'exposed'].includes(this.state) && !this.pendingPhase; }
   later(t, fn) { this.q.push({ t, fn }); }
+  facePlayer() { this.face = P.x < this.x ? -1 : 1; }
   activate() {
     if (this.active || this.cutting) return;
     this.visible = true; super.activate();
-    if (this.active && !this.cutting) { this.descend = 0; this.wing = 1; this.halo = 1; this.lanceOn = true; if (this.state === 'dormant') { this.state = 'idle'; this.setA('idle', true); this.cool = 0.9; } }   // intro already seen: start fighting
+    if (this.active && !this.cutting) {   // intro already seen: unfold at once and start fighting
+      this.descend = 0; this.ringK = 1; this.wing = 1; this.halo = 1; this.openT = 0.35;
+      if (this.state === 'dormant') { this.state = 'idle'; this.cool = 0.9; }
+    }
   }
   wakeCheck() { return P.x > 6 * TILE && P.ground && P.state !== 'dead'; }
-  swapSheet(k) { if (this.sheets[k] && this.sheets[k].ok) { const a = this.anim; this.sh = this.sheets[k]; this.anim = new Anim(this.sh, a.tag, a.loop, a.speed); this.anim.i = Math.min(a.i, this.anim.n - 1); } }
+  // ---------------------------------------------------------------- damage: the diaphragm is armour
+  hit(info) {
+    if (!this.alive) return;
+    if (!this.active) { if (!this.cutting) this.activate(); return; }
+    const k = info.crit ? 1 : 0.3 + this.open * 1.2;
+    if (this.open < 0.3 && !info.crit) { sfx.block(); tone(980, 0.12, 0.04, 'square', 0.7); spawnFx(fxOr('parry_spark', 'hit'), info.x, info.y, info.dir); }
+    super.hit({ ...info, dmg: info.dmg * k });
+    if (this.alive) this.glitchT = Math.max(this.glitchT, 0.12);
+  }
+  deflectHit(x, y) {   // a reflected white orb strikes the eye
+    if (!this.alive || !this.active) return;
+    const dmg = Math.round(95 * (1 + 0.5 * this.open) * (D ? Math.max(1, D.light / 60) : 1));
+    this.hp = Math.max(0, this.hp - dmg); this.flash = 1; this.glitchT = 0.3;
+    this.dmgShown = this.dmgT > 0 ? this.dmgShown + dmg : dmg; this.dmgT = 2.2;
+    hitstop = Math.max(hitstop, 0.08); shake = Math.max(shake, 6); sfx.bigHit(); nhSfx.glitch(0.9);
+    spawnFx(fxOr('nh_blast', 'hit'), x, y, 1); popup(x, y - 10, dmg, '#b8f6ff');
+    for (let i = 0; i < 18; i++) particles.push({ x, y, vx: rand(-140, 140), vy: rand(-140, 80), g: 200, life: rand(0.3, 0.7), kind: i % 2 ? 'nh_white' : 'nh_mote' });
+    if (this.hp <= 0) return this.die();
+    if (this.stanceImmune > 0 || this.state === 'stagger') return;
+    this.stance += 135; this.overload = (this.overload || 0) + 1;
+    if (this.stance >= this.stanceMax && this.canStagger()) this.stagger();
+  }
+  stagger() {
+    const y = this.y; this.cancelMove(); super.stagger(); this.y = y; this.glitchT = 0.5; this.openT = 1; this.overload = 0;
+    toast('OVERLOAD — the eye is open', 1.6); nhSfx.glitch(1.2); tone(220, 0.8, 0.12, 'sawtooth', 0.4);
+  }
+  critable() { return this.state === 'stagger' && this.y > this.floor - 40 && !this.critDone; }
+  // ---------------------------------------------------------------- update
   update(dt) {
     this.commonUpdate(dt);
-    const an = this.anim; an.update(dt);
-    this.bob += dt; this.glitchT = Math.max(0, this.glitchT - dt); this.regrow = Math.max(0, this.regrow - dt);
-    if (this.regrow <= 0 && this.panelsOut > 0 && !NHR.blades.length) this.panelsOut = Math.max(0, this.panelsOut - dt * 8);
-    const sink = this.state === 'stagger' ? 5 : 0;
-    this.y = this.floor - this.hoverH + sink - Math.sin(this.bob * 1.7) * 2.5 - this.descend * 150;
-    if (!this.active) { if (!this.cutting && this.wakeCheck()) this.activate(); return; }
+    this.anim.update(dt);
+    this.bob += dt; this.glitchT = Math.max(0, this.glitchT - dt);
+    this.open = approach(this.open, this.openT, dt * (this.openT > this.open ? 2.6 : 1.8));
+    // the iris tracks the player
+    const lx = clamp((P.x - this.x) / 18, -7, 7), ly = clamp((P.y - 16 - this.y) / 24, -6, 6);
+    this.look.x = lerp(this.look.x, lx, Math.min(1, dt * 6)); this.look.y = lerp(this.look.y, ly, Math.min(1, dt * 6));
+    if (!this.active) { this.y = this.floor - 90 - this.descend * 160; if (!this.cutting && this.wakeCheck()) this.activate(); return; }
     if (this.alive) { for (const e of this.q) { e.t -= dt; if (e.t <= 0 && !e.done) { e.done = true; e.fn(); } } this.q = this.q.filter(e => !e.done); }
     for (const k in this.cds) this.cds[k] -= dt;
     switch (this.state) {
       case 'idle': {
-        this.cool -= dt; if (an.tag !== 'idle') this.setA('idle', true); this.facePlayer();
-        if (P.state === 'dead') break;
-        const d = Math.abs(P.x - this.x);
-        if (this.cool <= 0) this.choose();
-        else if (d > 210) this.startGlide(null, 0.5);
+        this.cool -= dt; this.openT = 0.35; this.facePlayer();
+        const side = this.x < P.x ? -1 : 1;
+        this.tx = clamp(P.x + side * 120, this.L, this.R); this.ty = 84 + Math.sin(this.bob * 0.9) * 8;
+        if (P.state !== 'dead' && this.cool <= 0) this.choose();
         break;
       }
-      case 'glide': this.updateGlide(dt); break;
-      case 'attack': this.updateAttack(dt); break;
-      case 'blink': this.updateBlink(dt); break;
-      case 'stagger':
-        this.t -= dt; if (an.i === an.n - 1 && this.t > 0.3) an.hold();
-        if (an.done || this.t <= 0) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.4; }
+      case 'attack': this.mt += dt; this.updateMove(dt); break;
+      case 'exposed':
+        this.mt += dt; this.openT = 1; this.ty = this.floor - 46;
+        if (Math.random() < 0.3) particles.push({ x: this.x + rand(-20, 20), y: this.y - rand(10, 30), vx: rand(-10, 10), vy: -rand(20, 50), life: 0.8, kind: 'dust' });
+        if (this.mt >= this.mv.dur) { this.state = 'idle'; this.cool = 0.5; this.openT = 0.35; }
         break;
-      case 'cyberWait': if (state === 'play') { if (!nhCyber()) nhEnterCyber(this); this.state = 'idle'; this.setA('idle', true); this.cool = 0.9; this.stanceImmune = 2; } break;
+      case 'stagger':
+        this.t -= dt; this.ty = this.floor - 24; this.tx = this.x; this.openT = 1;
+        this.y = approach(this.y, this.ty, 260 * dt);
+        if (this.t <= 0) { this.state = 'idle'; this.cool = 0.4; this.openT = 0.35; this.stance = 0; }
+        break;
+      case 'cyberWait': if (state === 'play') { if (!nhCyber()) nhEnterCyber(this); this.state = 'idle'; this.cool = 0.9; this.stanceImmune = 2; } break;
       case 'dead':
-        this.deadT = (this.deadT || 0) + dt;
-        if (Math.random() < 0.7) particles.push({ x: this.x + rand(-26, 26), y: this.y - rand(10, 130), vx: rand(-20, 20), vy: -rand(20, 60), life: rand(0.6, 1.4), kind: Math.random() < 0.5 ? 'nh_mote' : 'nh_white' });
-        this.wing = Math.max(0, this.wing - dt * 0.5); this.halo = Math.max(0, this.halo - dt * 0.6); this.lanceOn = this.deadT < 0.6;
+        this.deadT = (this.deadT || 0) + dt; this.ringK += dt * 0.6; this.wing = Math.max(0, this.wing - dt * 0.6); this.halo = Math.max(0, this.halo - dt);
+        if (Math.random() < 0.8) particles.push({ x: this.x + rand(-40, 40), y: this.y + rand(-40, 40), vx: rand(-40, 40), vy: -rand(10, 60), life: rand(0.6, 1.4), kind: Math.random() < 0.5 ? 'nh_mote' : 'nh_white' });
         if (this.deadT > 1.6 && !this.exited) { this.exited = true; if (nhCyber()) { nhExitCyber(); flashScreen = 0.8; nhSfx.glitch(1.2); } }
-        if (an.done) an.hold();
         break;
     }
+    // float toward the target point (smoothly), always inside the arena
+    if (this.state !== 'stagger' && this.alive && !(this.state === 'attack' && this.mv && this.mv.manual)) {
+      const sp = this.state === 'exposed' ? 160 : 190 * this.speed;
+      this.vx = approach(this.vx, clamp((this.tx - this.x) * 3, -sp, sp), 520 * dt); this.vy = approach(this.vy, clamp((this.ty - this.y) * 3, -sp, sp), 520 * dt);
+      this.x += this.vx * dt; this.y += this.vy * dt;
+    }
+    this.x = clamp(this.x, this.L, this.R); this.y = clamp(this.y, NH_S0.YTOP - 4, this.floor - 24);
     if (this.alive && this.phase === 1 && this.hp <= this.maxHp * NH_S0.P2) this.pendingPhase = 2;
     if (this.alive && this.phase === 2 && this.hp <= this.maxHp * NH_S0.P3) this.pendingPhase = 3;
-    if (this.pendingPhase && this.alive && ['idle', 'glide'].includes(this.state)) { const p = this.pendingPhase; this.pendingPhase = 0; p === 2 ? this.enterPhase2() : this.enterPhase3(); }
-    this.x = clamp(this.x, this.L, this.R);
+    if (this.pendingPhase && this.alive && this.state === 'idle') { const p = this.pendingPhase; this.pendingPhase = 0; p === 2 ? this.enterPhase2() : this.enterPhase3(); }
   }
   // ---------------------------------------------------------------- choosing
   choose() {
-    const d = Math.abs(P.x - this.x), ph = this.phase, near = d < 130;
-    let w;
-    if (ph === 1) w = near ? { thrust: 2.0, sweep: 2.3, wings: 0.8, orbital: 0.7, glide: 0.5 } : { thrust: 1.6, wings: 1.4, orbital: 1.2, glide: 1.1 };
-    else if (ph === 2) w = near ? { thrust: 1.8, sweep: 2.0, wings: 1.0, orbital: 0.8, delete: 1.3, firewall: 0.9 } : { thrust: 1.5, wings: 1.3, orbital: 1.1, delete: 1.3, firewall: 1.1, glide: 0.6 };
-    else w = near ? { sweep: 1.8, thrust: 1.0, blink: 1.4, ring: 1.1, wings: 0.8, rain: 1.0 } : { blink: 2.2, rain: 1.3, ring: 0.9, wings: 1.1, orbital: 0.9, thrust: 0.6 };
-    for (const k of ['delete', 'firewall', 'rain', 'ring', 'orbital', 'wings']) if (w[k] && this.cds[k] > 0) w[k] = 0;
-    if (w[this.last]) w[this.last] *= 0.3;
+    const ph = this.phase;
+    if (this.since >= NH_S0_EXPOSE[ph]) return this.startExposed();
+    let w = ph === 1 ? { orbs: 2.2, volley: 1.5, limbo: 1.3, grid: 1.2, gaze: 1.1 }
+      : ph === 2 ? { orbs: 1.5, volley: 1.1, limbo: 1.0, grid: 1.0, gaze: 1.0, burn: 1.4, spiral: 1.2, dive: 1.2, delete: 0.8 }
+      : { orbs: 1.1, volley: 1.0, limbo: 1.0, grid: 0.9, gaze: 1.0, burn: 1.1, spiral: 1.2, dive: 1.2, lighthouse: 1.5, rain: 1.0 };
+    for (const k in w) if (this.cds[k] > 0) w[k] = 0;
+    if (NHR.dels.some(d => d.st !== 'solid')) { w.burn = 0; w.delete = 0; }
+    if (w[this.last]) w[this.last] *= 0.25;
     const e = Object.entries(w).filter(([, v]) => v > 0); let r = Math.random() * e.reduce((s, [, v]) => s + v, 0), m = e[0][0];
     for (const [k, v] of e) if ((r -= v) <= 0) { m = k; break; }
-    this.last = m; this.chain = 0; this.begin(m);
+    this.last = m; this.startMove(m);
   }
-  begin(m) {
-    const d = Math.abs(P.x - this.x);
-    if (m === 'glide') return this.startGlide(null, 0.9);
-    if (m === 'blink') return this.startBlink();
-    if (m === 'thrust' && d > 165) return this.startGlide('thrust', 0);
-    if (m === 'sweep' && d > 112) return this.startGlide('sweep', 0);
-    const cd = { delete: 7.5, firewall: 6.5, rain: 5.5, ring: 5, orbital: 4, wings: 4.5 }[m]; if (cd) this.cds[m] = cd;
-    this.startAttack(m);
+  startMove(m) {
+    const cd = { gaze: 9, burn: 11, delete: 9, lighthouse: 8, rain: 6, spiral: 5, dive: 4, limbo: 5, grid: 4 }[m]; if (cd) this.cds[m] = cd;
+    this.state = 'attack'; this.move = m; this.mt = 0; this.mv = {}; this.atkId = ++hazardId; this.facePlayer();
+    const side = this.x < P.x ? -1 : 1, fb = this.fx;
+    if (m === 'orbs' || m === 'volley' || m === 'spiral') { this.tx = clamp(P.x + side * 115, this.L, this.R); this.ty = m === 'spiral' ? 76 : 88; }
+    const away = P.x < (this.L + this.R) / 2 ? 1 : -1;
+    if (m === 'limbo') { this.tx = clamp(P.x + away * 150, this.L, this.R); this.ty = 64; }
+    if (m === 'grid') { this.tx = clamp(P.x + away * 90, this.L, this.R); this.ty = 56; }
+    if (m === 'gaze') { this.tx = clamp(P.x + away * 190, this.L, this.R); this.ty = NH_S0.YTOP; nhS0Covers(this); }
+    if (m === 'burn') { this.tx = clamp(P.x + away * 110, this.L, this.R); this.ty = 58; nhS0Plats(this); toast('FLOOR PURGE — get off the floor', 1.8); nhSfx.alarm(); }
+    if (m === 'dive') { this.tx = clamp(P.x + side * 60, this.L, this.R); this.ty = 58; }
+    if (m === 'lighthouse') { this.tx = clamp(P.x + away * 90, this.L, this.R); this.ty = 72; }
+    if (m === 'rain') { this.ty = 60; }
+    if (m === 'delete') { this.ty = 70; }
+    nhSfx.voice(3);
   }
-  afterMove() {
-    const ph = this.phase, maxChain = ph === 1 ? 1 : ph === 2 ? 2 : 3, pc = ph === 1 ? 0.25 : ph === 2 ? 0.45 : 0.6;
-    if (!this.pendingPhase && this.chain < maxChain && Math.random() < pc && P.state !== 'dead') {
-      this.chain++; const d = Math.abs(P.x - this.x);
-      const next = ph === 3 && Math.random() < 0.5 ? 'blink' : d < 110 ? (this.move === 'thrust' ? 'sweep' : 'thrust') : (Math.random() < 0.5 ? 'thrust' : 'wings');
-      if (next === 'wings' && this.cds.wings > 0) { this.state = 'idle'; this.setA('idle', true); this.cool = 0.3; return; }
-      return this.begin(next);
-    }
-    this.chain = 0; this.state = 'idle'; this.setA('idle', true);
-    this.cool = ph === 1 ? rand(1.0, 1.5) : ph === 2 ? rand(0.7, 1.1) : rand(0.35, 0.7);
+  endMove() {
+    this.state = 'idle'; this.since++; this.mv = {}; this.openT = 0.35;
+    this.cool = this.phase === 1 ? rand(0.8, 1.2) : this.phase === 2 ? rand(0.55, 0.9) : rand(0.35, 0.6);
   }
-  // ---------------------------------------------------------------- movement
-  startGlide(next, t) {
-    const side = P.x < this.x ? 1 : -1, dist = next === 'sweep' ? 64 : next === 'thrust' ? 104 : rand(90, 140);
-    let tx = P.x + side * dist;
-    if (tx < this.L + 10 || tx > this.R - 10) tx = P.x - side * dist;
-    this.glideTo = clamp(tx, this.L, this.R); this.next = next; this.t = 1.6; this.state = 'glide'; this.setA('glide', true);
+  cancelMove() {
+    const f = this.fx; f.beams = []; f.grid = []; f.limbo = []; f.gaze = null; f.lighthouse = null; this.mv = {};
+    for (const c of f.covers) c.gone = true; for (const pl of f.plats) pl.fade = true; f.burn = null; NHR.rains = [];
   }
-  updateGlide(dt) {
-    this.t -= dt; const dx = this.glideTo - this.x;
-    this.face = Math.abs(dx) > 6 ? sign(dx) : (P.x < this.x ? -1 : 1);
-    this.x += clamp(dx * 3, -190 * this.speed, 190 * this.speed) * dt;
-    if (Math.random() < 0.5) particles.push({ x: this.x - this.face * rand(6, 20), y: this.y - rand(10, 60), vx: -this.face * rand(20, 60), vy: rand(-8, 8), life: 0.5, kind: nhCyber() ? 'nh_dark' : 'nh_mote' });
-    if (Math.abs(dx) < 5 || this.t <= 0) { this.facePlayer(); if (this.next) { const n = this.next; this.next = null; this.startAttack(n); } else { this.state = 'idle'; this.setA('idle', true); this.cool = Math.min(this.cool, 0.25); } }
+  startExposed() {
+    this.since = 0; this.state = 'exposed'; this.mt = 0; this.mv = { dur: this.phase === 3 ? 2.1 : 2.6 }; this.openT = 1; this.tx = this.x;
+    toast('The eye opens', 1.2); nhSfx.chime(); tone(140, 0.9, 0.08, 'sawtooth', 0.5);
   }
-  startBlink() { this.state = 'blink'; this.bt = 0; this.bph = 'out'; nhSfx.glitch(0.8); this.glitchT = 0.3; }
-  updateBlink(dt) {
-    this.bt += dt;
-    if (this.bph === 'out') {
-      this.alpha = Math.max(0, 1 - this.bt / 0.25);
-      if (this.bt >= 0.3) {
-        const side = P.x > (this.L + this.R) / 2 ? -1 : 1, prefer = Math.random() < 0.5 ? side : -side;
-        let nx = P.x + prefer * 84; if (nx < this.L || nx > this.R) nx = P.x - prefer * 84;
-        this.x = clamp(nx, this.L, this.R); this.facePlayer(); this.bph = 'in'; this.bt = 0; nhSfx.glitch(0.6); this.glitchT = 0.25;
-        for (let i = 0; i < 20; i++) particles.push({ x: this.x + rand(-20, 20), y: this.y - rand(10, 120), vx: rand(-40, 40), vy: rand(-40, 40), life: 0.4, kind: 'nh_dark' });
-      }
-    } else {
-      this.alpha = Math.min(1, this.bt / 0.2);
-      if (this.bt >= 0.22) { this.alpha = 1; this.startAttack('thrust'); this.anim.speed = this.speed * 1.2; }
-    }
-  }
-  // ---------------------------------------------------------------- attacks
-  startAttack(m) {
-    if (m !== 'ring') this.facePlayer();
-    this.state = 'attack'; this.move = m; this.atkId = ++hazardId; this.fired = {}; this.hitOnce = false;
-    this.setA(NH_S0_ANIM[m] || m, false); this.aim = null; this.lockP = null;
-    if (m === 'orbital' || m === 'rain') { nhSfx.voice(4); }
-  }
-  updateAttack(dt) {
-    const an = this.anim, m = this.move, tag = an.tag, w = this.win(tag);
-    if (m === 'thrust' || m === 'sweep') {
-      const tel = (this.sh.meta && this.sh.meta.telegraph && this.sh.meta.telegraph[tag]) || { frame: Math.max(0, w[0] - 2) };
-      if (an.i < tel.frame) this.facePlayer();
-      if (an.changed && an.i === tel.frame && !this.fired.tel) {
-        this.fired.tel = true; const G = this.grip(), a = this.lanceAng(), L = this.lanceLen();
-        spawnFx('telegraph', G.x + Math.cos(a) * L, G.y + Math.sin(a) * L, this.face); sfx.glint();
-        if (m === 'thrust') {   // lock the thrust line onto the player (angled down: the saint towers over you)
-          this.lockP = { x: P.x, y: P.y - 12 }; this.aim = { t: 0.45 };
-        }
-      }
-      if (an.changed && an.i === w[0]) { sfx.bossSwing(); tone(880, 0.2, 0.04, 'sawtooth', 0.4); }
-      if (an.i >= w[0] && an.i <= w[1]) {
-        if (m === 'thrust') this.x = clamp(this.x + this.face * 270 * dt, this.L, this.R);
-        else this.x = clamp(this.x + this.face * 50 * dt, this.L, this.R);
-        this.lanceHit(NH_S0_DMG[m] * (this.phase === 3 ? 1.1 : 1), m === 'thrust');
-      }
-    } else {
-      const sf = this.spawnFrame(tag);
-      if (an.i >= 1 && an.i < sf) { const C = this.core(); addLight(C.x, C.y, 30 + an.i * 8, nhCyber() ? '40,40,120' : '120,230,255', 0.9); if (Math.random() < 0.5) particles.push({ x: C.x + rand(-30, 30), y: C.y + rand(-30, 30), vx: 0, vy: 0, life: 0.3, kind: 'nh_mote' }); }
-      if (an.i >= sf && !this.fired.spawn) {
-        this.fired.spawn = true;
-        if (m === 'wings') nhLaunchBlades(this);
-        else if (m === 'orbital') nhOrbital(this);
-        else if (m === 'delete') nhDeleteFloor(this);
-        else if (m === 'firewall') nhFirewall(this);
-        else if (m === 'rain') nhRain(this);
-        else if (m === 'ring') nhRings(this);
-      }
-    }
-    if (this.aim) { this.aim.t -= dt; if (this.aim.t <= 0) this.aim = null; }
-    if (an.done) this.afterMove();
-  }
-  lanceHit(dmg, parry) {
-    if (this.hitOnce) return;
-    const G = this.grip(), a = this.lanceAng(), L = this.lanceLen(), hb = playerHurtbox(), c = Math.cos(a), s = Math.sin(a);
-    for (let k = -18; k <= L; k += 6) {
-      const x = G.x + c * k, y = G.y + s * k;
-      if (overlap(rect(x - 4, y - 4, x + 4, y + 4), hb)) {
-        if (hurtPlayer(nhBD(dmg), P.x < this.x ? -1 : 1, this.atkId, { parryable: parry, src: this })) this.hitOnce = true;
-        return;
-      }
-    }
+  // ---------------------------------------------------------------- the moves
+  updateMove(dt) {
+    const m = this.move, t = this.mt, mv = this.mv, ph = this.phase, f = this.fx;
+    const done = () => this.endMove();
+    if (m === 'orbs') {
+      this.openT = t < 0.7 ? 0.65 : 0.4;
+      const plan = ph === 1 ? [[0.75, 3, [1]]] : ph === 2 ? [[0.75, 5, [1, 3]], [1.45, 3, [1]]] : [[0.7, 7, [2, 4]], [1.3, 5, [2]]];
+      plan.forEach(([at, n, whites], k) => { if (t >= at && !mv['v' + k]) { mv['v' + k] = 1; nhS0Fan(this, n, whites); } });
+      if (t > plan[plan.length - 1][0] + 0.9) done();
+    } else if (m === 'volley') {
+      const n = [0, 4, 6, 8][ph], gap = ph === 3 ? 0.24 : 0.3;
+      if (!mv.list) { mv.list = nhS0PickLenses(this, n); mv.i = 0; }
+      while (mv.i < mv.list.length && t >= 0.35 + mv.i * gap) { f.beams.push({ kind: 'lens', lens: mv.list[mv.i], t: 0, warn: 0.6, on: 0.14, tx: P.x + P.vx * 0.1, ty: P.y - 13, id: ++hazardId, dmg: 24 }); mv.i++; tone(1400, 0.12, 0.03, 'square', 1.3); }
+      this.openT = 0.5;
+      if (t > 0.35 + n * gap + 0.9) done();
+    } else if (m === 'limbo') {
+      const beats = [0, 3, 4, 5][ph], sp = [0, 1.35, 1.05, 0.85][ph], warn = ph === 3 ? 0.7 : 0.85;
+      if (!mv.seq) { mv.seq = []; for (let i = 0; i < beats; i++) mv.seq.push(Math.random() < 0.5 ? 'low' : 'high'); if (!mv.seq.includes('low')) mv.seq[0] = 'low'; if (beats > 2 && !mv.seq.includes('high')) mv.seq[1] = 'high'; mv.i = 0; }
+      while (mv.i < beats && t >= 0.6 + mv.i * sp) { const low = mv.seq[mv.i] === 'low'; f.limbo.push({ y: this.floor - (low ? 8 : 38), low, t: 0, warn, on: 0.32, id: ++hazardId, dmg: 32 }); mv.i++; tone(low ? 660 : 990, 0.2, 0.04, 'triangle', low ? 1.4 : 0.7); }
+      this.openT = 0.55;
+      if (t > 0.6 + beats * sp + 0.6) done();
+    } else if (m === 'grid') {
+      const pats = ph === 1 ? [0, 1] : ph === 2 ? [0, 1, 0] : [0, 1, 0, 1], warn = [0, 0.85, 0.75, 0.65][ph], step = warn + 0.55;
+      if (!mv.i) mv.i = 0;
+      while (mv.i < pats.length && t >= 0.5 + mv.i * step) { nhS0Grid(this, pats[mv.i], warn); mv.i++; }
+      if (ph >= 2 && t >= 0.9 && !mv.orb) { mv.orb = 1; nhS0Fan(this, 1, [0]); }
+      this.openT = 0.45;
+      if (t > 0.5 + pats.length * step + 0.5) done();
+    } else if (m === 'gaze') {
+      const track = [0, 2.2, 1.9, 1.6][ph];
+      if (t >= 0.5 && !f.gaze) { f.gaze = { t: 0, track, lock: 0.35, fire: 0.55, x: P.x, y: P.y - 13, id: ++hazardId, dmg: 48 }; nhSfx.charge(); toast('LOCK-ON — hide behind the hard-light', 1.6); }
+      this.openT = f.gaze ? 0.85 : 0.5;
+      if (f.gaze && f.gaze.t > track + 0.35 + 0.55 + 0.5) { f.gaze = null; for (const c of f.covers) c.gone = true; done(); }
+    } else if (m === 'burn') {
+      const warn = 1.8, dur = ph === 3 ? 3.8 : 3.4;
+      if (!f.burn) f.burn = { t: 0, warn, dur, tick: 0 };
+      if (t > warn && (mv.shot || 0) < Math.floor((t - warn) / 1.0) && t < warn + dur - 0.4) { mv.shot = (mv.shot || 0) + 1; nhS0Aimed(this, ph === 3 && mv.shot % 2 ? 'white' : 'red'); }
+      this.openT = 0.5;
+      if (t > warn + dur) { f.burn = null; for (const pl of f.plats) pl.fade = true; if (t > warn + dur + 0.2) done(); }
+    } else if (m === 'spiral') {
+      this.openT = 0.6; mv.a = (mv.a ?? Math.atan2(P.y - this.y, P.x - this.x)) + dt * (ph === 3 ? 3.6 : 3.0);
+      if (t > 0.5 && t < 2.6) { mv.e = (mv.e || 0) + dt; while (mv.e > 0.11) { mv.e -= 0.11; mv.n = (mv.n || 0) + 1; for (const arm of ph === 3 ? [0, Math.PI] : [0]) nhS0Orb(this, mv.a + arm, 95, mv.n % 5 === 0 ? 'white' : 'red'); } }
+      if (t > 3.1) done();
+    } else if (m === 'dive') {
+      if (!mv.st) { mv.st = 'lock'; mv.lx = P.x; }
+      if (mv.st === 'lock') { mv.lx = lerp(mv.lx, P.x, Math.min(1, dt * 4)); this.openT = 0.8; if (t > (ph === 3 ? 0.8 : 1.0)) { mv.st = 'hold'; mv.h = t; tone(1800, 0.25, 0.05, 'square', 0.5); } }
+      else if (mv.st === 'hold') { if (t - mv.h > 0.28) { mv.st = 'dive'; mv.manual = true; mv.x0 = this.x; mv.y0 = this.y; mv.d = 0; nhSfx.missile(); } }
+      else if (mv.st === 'dive') {
+        const tx = clamp(mv.lx, this.L, this.R), ty = this.floor - 24, L = Math.hypot(tx - mv.x0, ty - mv.y0) || 1;
+        mv.d = Math.min(L, mv.d + 400 * dt); this.x = mv.x0 + (tx - mv.x0) * mv.d / L; this.y = mv.y0 + (ty - mv.y0) * mv.d / L;
+        if (overlap(this.hurtbox() || rect(0, 0, 0, 0), playerHurtbox())) hurtPlayer(nhS0D(40, this), P.x < this.x ? -1 : 1, this.atkId, { src: this });
+        if (mv.d >= L) { mv.st = 'stuck'; mv.s = t; shake = 10; nhSfx.thud(); spawnFx('shockwave', this.x, this.floor, 1); for (const d of [-1, 1]) f.limbo.push({ wave: true, x: this.x, vx: d * 170, y: this.floor, t: 0, id: ++hazardId, dmg: 26 }); }
+      } else if (mv.st === 'stuck') { this.openT = 0.95; this.tx = this.x; this.ty = this.floor - 24; mv.manual = false; if (t - mv.s > 1.25) done(); }
+    } else if (m === 'lighthouse') {
+      if (t >= 0.5 && !f.lighthouse) { const a0 = Math.atan2(P.y - 13 - this.y, P.x - this.x) + Math.PI / 2; f.lighthouse = { t: 0, warn: 0.85, dur: 3.2, a: a0, w: (Math.random() < 0.5 ? 1 : -1) * 1.25, L: 180, id: ++hazardId, dmg: 34 }; nhSfx.beam(); }
+      this.openT = 0.75;
+      if (f.lighthouse && f.lighthouse.t > f.lighthouse.warn + f.lighthouse.dur) { f.lighthouse = null; done(); }
+    } else if (m === 'rain') {
+      if (!mv.r) { mv.r = 1; nhRain(this); }
+      this.openT = 0.6; if (t > 3.0) done();
+    } else if (m === 'delete') {
+      if (t > 0.6 && !mv.d) { mv.d = 1; nhDeleteFloor(this); if (ph >= 2) this.later(0.9, () => { if (this.alive && this.state === 'attack') nhS0Fan(this, 3, [1]); }); }
+      this.openT = 0.6; if (t > 2.4) done();
+    } else done();
   }
   // ---------------------------------------------------------------- phases
   enterPhase2() {
-    this.phase = 2; this.speed = 1.12; this.stance = 0; this.state = 'idle'; this.setA('idle', true); this.cool = 0.9; this.glitchT = 0.6;
-    nhSfx.glitch(1.2); shake = 8; flashScreen = 0.4; this.cds.delete = 0;
+    this.phase = 2; this.speed = 1.12; this.stance = 0; this.glitchT = 0.6; this.cancelMove(); this.cool = 0.9; this.since = 0;
+    nhSfx.glitch(1.2); shake = 8; flashScreen = 0.4;
     bossPhase2Scene(this);
   }
   enterPhase3() {
-    this.phase = 3; this.speed = 1.24; this.stance = 0; this.q = []; this.state = 'cyberWait'; this.setA('cast', false); this.glitchT = 1;
-    NHR.blades = []; NHR.marks = []; NHR.walls = []; NHR.rains = []; NHR.rings = []; this.panelsOut = 0;
+    this.phase = 3; this.speed = 1.24; this.stance = 0; this.q = []; this.cancelMove(); this.state = 'cyberWait'; this.glitchT = 1; this.since = 0;
+    for (const p of props) if (p.type === 'nh_orb') p.taken = true;
     if (!SAVE.flags['cutp3:saint0']) {
       SAVE.flags['cutp3:saint0'] = 1;
       playCutscene([
-        { pan: { x: this.x, y: this.floor - 70 }, dur: 0.5 },
-        act(() => { nhSfx.glitch(1.4); shake = 10; NH.cutGlitch = 1.2; }),
+        { pan: { x: this.x, y: this.y }, dur: 0.5 },
+        act(() => { nhSfx.glitch(1.4); shake = 10; NH.cutGlitch = 1.2; this.openT = 1; }),
         say('SAINT-0', 'ARCHIVE BREACH. RELOCATING THREAT TO CYBERSPACE.', { dur: 2.6 }),
         { do: () => { nhEnterCyber(this); }, always: true },
         wait(0.9),
@@ -1230,194 +1244,370 @@ class NhSaint extends BossBase {
       ], () => {});
     } else nhEnterCyber(this);
   }
-  stagger() { this.aim = null; super.stagger(); this.glitchT = 0.3; }
+  swapSheet() {}
   die() {
-    this.state = 'dead'; this.setA('death'); this.anim.speed = 1; this.q = []; this.alpha = 1; this.deadT = 0;
-    NHR.blades = []; NHR.marks = []; NHR.beams = []; NHR.walls = []; NHR.rains = []; NHR.rings = []; hazards = [];
+    this.state = 'dead'; this.q = []; this.cancelMove(); this.deadT = 0; this.openT = 1; this.anim.set('death', false);
+    for (const p of props) if (p.type === 'nh_orb') p.taken = true;
     for (const d of NHR.dels) if (d.st !== 'solid') { d.st = 'back'; d.t = 0; }
-    shake = 14; hitstop = 0.35; slowmo = 1.8; flashScreen = 0.7; sfx.felled(); nhSfx.glitch(1.5); nhSfx.beam();
+    NHR.rains = []; hazards = [];
+    shake = 14; hitstop = 0.35; slowmo = 1.8; flashScreen = 0.8; sfx.felled(); nhSfx.glitch(1.5); nhSfx.beam();
     victoryBanner = { text: 'SAINT-0 // NULLED', t: 0 };
     this.rewards();
   }
   // ---------------------------------------------------------------- drawing
   draw() {
     if (!this.visible && !this.cutting) return;
-    const cyb = nhCyber(), a = this.alpha * (this.state === 'dead' ? Math.max(0, 1 - Math.max(0, (this.deadT || 0) - 1.2) / 1.2) : 1);
+    const cyb = nhCyber(), fade = this.state === 'dead' ? Math.max(0, 1 - Math.max(0, (this.deadT || 0) - 0.9) / 1.2) : 1, a = this.alpha * fade;
     if (a <= 0.01) return;
-    nhDrawWings(this, a, cyb);
-    const opt = this.flash > 0 ? { flash: this.flash * 0.6, flashColor: cyb ? '#ff3fc0' : '#bff6ff' } : this.state === 'stagger' ? { flash: 0.15 + 0.1 * Math.sin(time * 20), flashColor: '#ffd070' } : {};
-    opt.alpha = a;
-    if (this.sh.ok) nhDrawSliced(this.sh, this.anim.frame, this.x, this.y, this.face, opt, this.glitchT > 0 || (this.state === 'dead' && this.deadT > 0.4) || (cyb && hash2(Math.floor(time * 12), 7) < 0.12));
-    else { nhRect(this.x - 12, this.y - 120, 24, 110, cyb ? '#0b1030' : '#d9e1ee'); nhRect(this.x - 6, this.y - 130, 12, 10, '#d9e1ee'); nhRect(this.x - 4, this.y - 126, 8, 2, NH_CY[4]); }
-    if (this.lanceOn && a > 0.3) nhDrawLance(this, a, cyb);
-    nhDrawHalo(this, a, cyb);
-    if (this.aim && this.move === 'thrust') {   // aim line: where the thrust will go
-      const G = this.grip(), a = this.lanceAng(), c = Math.cos(a), sn = Math.sin(a); g.fillStyle = cyb ? 'rgba(20,20,80,0.5)' : 'rgba(255,90,210,0.55)';
-      for (let s = 0; s < 200; s += 3) { const x = G.x + c * s, y = G.y + sn * s; if (y > this.floor) break; g.fillRect(Math.round(x), Math.round(y), 2, 1); }
-    }
-    if (this.alive && !cyb) { const C = this.core(); addLight(C.x, C.y + 20, 130, '150,225,255', 0.85); const H_ = this.head(); addLight(H_.x, H_.y, 44, '150,235,255', 0.8); }
+    const jx = this.glitchT > 0 ? Math.round((Math.random() - 0.5) * 6) : 0;
+    nhS0DrawRings(this, false, a, cyb);
+    nhS0DrawWings(this, a, cyb);
+    nhS0DrawEye(this, jx, a, cyb);
+    nhS0DrawRings(this, true, a, cyb);
+    nhS0DrawHalo(this, a, cyb);
+    if (this.alive && !cyb) { addLight(this.x, this.y + 30, 120, '150,225,255', 0.5); addLight(this.x + this.look.x, this.y + this.look.y, 40, '255,90,210', 0.6 + this.open * 0.4); }
+    if (this.critable()) { g.fillStyle = '#ffd070'; const y = Math.round(this.y - 34 + Math.sin(time * 8) * 1.5); g.fillRect(Math.round(this.x) - 1, y, 3, 3); g.fillRect(Math.round(this.x), y - 1, 1, 5); g.fillRect(Math.round(this.x) - 2, y + 1, 5, 1); }
   }
 }
-function nhDrawSliced(sh, frame, x, y, face, opt, glitch) {
-  if (!glitch) return drawSprite(sh, frame, x, y, face, opt);
-  const f = sh.frames[frame], n = 5, flip = face !== sh.native;
-  const X = Math.round(x), Y = Math.round(y), ax = sh.ax, ay = sh.ay;
-  g.save(); g.globalAlpha = opt.alpha ?? 1;
-  for (let k = 0; k < n; k++) {
-    const sy = Math.floor(f.h * k / n), sh2 = Math.floor(f.h * (k + 1) / n) - sy, dx = Math.round((hash2(k, Math.floor(time * 24)) - 0.5) * 8);
-    if (flip) { g.save(); g.translate(X + dx, 0); g.scale(-1, 1); g.drawImage(sh.img, f.x, f.y + sy, f.w, sh2, -ax, Y - ay + sy, f.w, sh2); g.restore(); }
-    else g.drawImage(sh.img, f.x, f.y + sy, f.w, sh2, X - ax + dx, Y - ay + sy, f.w, sh2);
-  }
-  g.restore();
-  if (hash2(Math.floor(time * 20), 1) < 0.5) { g.globalAlpha = 0.35 * (opt.alpha ?? 1); g.globalCompositeOperation = 'lighter'; drawSprite(sh, frame, x + 2, y, face, { flash: 1, flashColor: '#ff3fc0', alpha: 0.3 }); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; }
+function nhS0NewFx() { return { beams: [], grid: [], limbo: [], gaze: null, lighthouse: null, covers: [], plats: [], burn: null }; }
+// ---- ring geometry: three circles tumbling in 3D around the eye, projected; studded with lenses
+function nhS0RingPt(b, i, s) {
+  const r = NH_S0_RINGS[i], al = r.a + r.sa * b.bob, be = r.b + r.sb * b.bob, R = r.R * Math.min(1.5, b.ringK);
+  let x = Math.cos(s) * R, y = Math.sin(s) * R, z = 0;
+  const y1 = y * Math.cos(al), z1 = y * Math.sin(al); y = y1; z = z1;
+  const x2 = x * Math.cos(be) + z * Math.sin(be), z2 = -x * Math.sin(be) + z * Math.cos(be);
+  return { x: b.x + x2, y: b.y + y, z: z2 };
 }
-// ---- the six panel wings (drawn behind the body)
-function nhWingPanels(b) {
-  // six wings, three to each side of the back, fanning up and out (screen space, so they read as an angel from either side)
-  const B = b.back(), out = [], k = b.wing, lose = Math.min(3, Math.ceil(b.panelsOut / 6 - 0.001));
-  for (let wi = 0; wi < 6; wi++) {
-    const side = wi < 3 ? -1 : 1, j = wi % 3, base = side < 0 ? [-104, -134, -163][j] : [-76, -46, -17][j];
-    const fold = side < 0 ? -97 : -83, ang0 = lerp(fold, base, k) + Math.sin(b.bob * 1.3 + wi * 0.9) * 3 * k + b.face * 4;
-    let px = B.x, py = B.y, ang = ang0;
-    for (let i = 0; i < 4 - lose; i++) {
-      ang += side * 6 * k;   // each wing curls outward
-      const r = ang * Math.PI / 180, ux = Math.cos(r), uy = Math.sin(r), len = (17 - i * 1.8) * (0.35 + 0.65 * k), step = 5 + (13 - i * 1.5) * k;
-      px += ux * step; py += uy * step;
-      out.push({ x: px, y: py, ux, uy, len, wid: 7 - i * 0.8, wi, i });
-      px += ux * len * 0.5; py += uy * len * 0.5;
+function nhS0LensPt(b, i, j) { const r = NH_S0_RINGS[i]; return nhS0RingPt(b, i, j / r.n * 6.283 + r.spin * b.bob); }
+function nhS0PickLenses(b, n) {   // front-facing lenses, spread over the rings
+  const all = [];
+  NH_S0_RINGS.forEach((r, i) => { for (let j = 0; j < r.n; j++) all.push({ i, j }); });
+  all.sort(() => Math.random() - 0.5);
+  return all.slice(0, n);
+}
+function nhS0DrawRings(b, front, a, cyb) {
+  if (b.ringK <= 0.02) return;
+  const ls = sheet(cyb ? 'saint0_lens_wire' : 'saint0_lens'), fade = b.state === 'dead' ? Math.max(0, 1 - (b.deadT || 0) * 0.7) : 1;
+  NH_S0_RINGS.forEach((r, i) => {
+    const n = Math.ceil(6.283 * r.R * Math.min(1.5, b.ringK) / 1.1);
+    for (let q = 0; q < n; q++) {
+      const s = q / n * 6.283, p = nhS0RingPt(b, i, s); if ((p.z >= 0) !== front) continue;
+      const lit = 0.5 + 0.5 * p.z / r.R, tick = (q + Math.floor(b.bob * r.spin * 20)) % 14 === 0;
+      g.globalAlpha = a * fade * (front ? 1 : 0.55);
+      g.fillStyle = cyb ? (front ? '#0b1030' : '#6b76b0') : tick ? NH_CY[4] : lit > 0.66 ? '#e6ecf5' : lit > 0.33 ? '#9ba7c0' : '#4c5572';
+      g.fillRect(Math.round(p.x), Math.round(p.y), front ? 2 : 1, front ? 2 : 1);
+      if (!cyb && front && q % 3 === 0) { const d = Math.hypot(p.x - b.x, p.y - b.y) || 1; g.fillStyle = NH_CY[2]; g.fillRect(Math.round(p.x - (p.x - b.x) / d * 2), Math.round(p.y - (p.y - b.y) / d * 2), 1, 1); }
     }
-  }
-  return out;
+    g.globalAlpha = 1;
+    if (!ls.ok || b.ringK < 0.9) return;
+    for (let j = 0; j < r.n; j++) {
+      const p = nhS0LensPt(b, i, j); if ((p.z >= 0) !== front) continue;
+      const firing = b.fx.beams.some(bm => bm.kind === 'lens' && bm.lens.i === i && bm.lens.j === j);
+      const blink = hash2(Math.floor(time * 1.7 + j * 7 + i * 3), i + 5) < 0.07 || b.ringK < 0.9 || b.state === 'exposed' || b.state === 'stagger';
+      const fr = firing ? ls.first('fire') + Math.floor(time * 16) % 2 : blink ? ls.first('blink') + 1 : ls.first('open');
+      drawSprite(ls, fr, p.x, p.y, 1, { center: true, alpha: a * fade * (front ? 1 : 0.5) });
+      if (firing && !cyb) addLight(p.x, p.y, 20, '120,230,255', 0.9);
+    }
+  });
+}
+// ---- six wings of light-feathers: two raised, two spread, two lowered (screen space: symmetric from any side)
+function nhS0DrawWings(b, a, cyb) {
+  // six wings, each a fan of overlapping light-feathers rooted just outside the casing: a pair raised, a pair spread,
+  // a pair lowered (screen space, symmetric, so it reads the same from either side)
+  if (b.wing <= 0.02) return;
+  const k = b.wing;
+  [[-122, 1.0], [-58, 1.0], [-168, 0.85], [-12, 0.85], [150, 0.7], [30, 0.7]].forEach(([base, sz], wi) => {
+    const side = Math.cos(base * Math.PI / 180) < 0 ? -1 : 1, flap = Math.sin(b.bob * 1.8 + (wi >> 1) * 0.7) * 6;
+    const ang = lerp(side < 0 ? -100 : -80, base, k) + flap * k, ar = ang * Math.PI / 180;
+    const rx = b.x + Math.cos(ar) * 30, ry = b.y + Math.sin(ar) * 30;
+    for (let fi = 4; fi >= 0; fi--) {   // back feathers first
+      const fa = (ang + (fi - 2) * 11 * k * (wi >= 4 ? -side : side)) * Math.PI / 180, ux = Math.cos(fa), uy = Math.sin(fa);
+      const len = (50 - Math.abs(fi - 2) * 8) * sz * (0.3 + 0.7 * k), mid = len / 2 + 2;
+      const fl = hash2(wi * 7 + fi, Math.floor(time * 9)) < 0.04 ? 0.35 : 1;
+      nhPanel(rx + ux * mid, ry + uy * mid, ux, uy, len, 7 * sz, a * Math.min(1, k * 1.3) * (0.7 + 0.3 * (fi === 2)), cyb, (wi + fi) % 4 === 1, fl);
+    }
+    if (!cyb) addLight(rx + Math.cos(ar) * 20, ry + Math.sin(ar) * 20, 30, (wi % 2) ? '255,70,200' : '80,210,255', 0.35 * k);
+  });
 }
 function nhPanel(x, y, ux, uy, len, wid, a, cyb, mg, flick) {
   const nx = -uy, ny = ux, hl = len / 2, hw = wid / 2;
-  const c = [[x - ux * hl - nx * hw, y - uy * hl - ny * hw], [x + ux * hl - nx * hw, y + uy * hl - ny * hw], [x + ux * hl + nx * hw, y + uy * hl + ny * hw], [x - ux * hl + nx * hw, y - uy * hl + ny * hw]];
-  if (!cyb) { g.globalAlpha = 0.22 * a * flick; g.fillStyle = mg ? NH_MG[2] : NH_CY[2]; g.beginPath(); g.moveTo(c[0][0], c[0][1]); for (let i = 1; i < 4; i++) g.lineTo(c[i][0], c[i][1]); g.closePath(); g.fill(); }
+  const c = [[x - ux * hl, y - uy * hl], [x + ux * hl * 0.2 - nx * hw, y + uy * hl * 0.2 - ny * hw], [x + ux * hl, y + uy * hl], [x + ux * hl * 0.2 + nx * hw, y + uy * hl * 0.2 + ny * hw]];   // a feather: a long diamond
+  if (!cyb) { g.globalAlpha = 0.24 * a * flick; g.fillStyle = mg ? NH_MG[2] : NH_CY[2]; g.beginPath(); g.moveTo(c[0][0], c[0][1]); for (let i = 1; i < 4; i++) g.lineTo(c[i][0], c[i][1]); g.closePath(); g.fill(); }
   g.globalAlpha = a * flick;
   const edge = cyb ? '#0b1030' : mg ? NH_MG[3] : NH_CY[3], hi = cyb ? '#2c3a9a' : mg ? NH_MG[4] : NH_CY[4];
-  nhLine(c[0][0], c[0][1], c[1][0], c[1][1], edge); nhLine(c[2][0], c[2][1], c[3][0], c[3][1], edge);
-  nhLine(c[1][0], c[1][1], c[2][0], c[2][1], hi); nhLine(c[3][0], c[3][1], c[0][0], c[0][1], edge);
-  nhLine(x - ux * hl * 0.6, y - uy * hl * 0.6, x + ux * hl * 0.3, y + uy * hl * 0.3, hi, 2);
+  nhLine(c[0][0], c[0][1], c[1][0], c[1][1], edge); nhLine(c[1][0], c[1][1], c[2][0], c[2][1], hi);
+  nhLine(c[2][0], c[2][1], c[3][0], c[3][1], edge); nhLine(c[3][0], c[3][1], c[0][0], c[0][1], edge);
+  nhLine(c[0][0], c[0][1], c[2][0], c[2][1], hi, 2);
   g.globalAlpha = 1;
 }
-function nhDrawWings(b, a, cyb) {
-  if (b.wing <= 0.02) return;
-  for (const p of nhWingPanels(b)) {
-    const fl = hash2(p.wi * 7 + p.i, Math.floor(time * 10)) < 0.06 ? 0.3 : 1;
-    nhPanel(p.x, p.y, p.ux, p.uy, p.len, p.wid, a * Math.min(1, b.wing * 1.4), cyb, (p.wi + p.i) % 3 === 1, fl);
-    if (!cyb && p.i === 0) addLight(p.x, p.y, 24, (p.wi % 2) ? '255,70,200' : '80,210,255', 0.35 * b.wing);
+function nhS0DrawEye(b, jx, a, cyb) {
+  const w = cyb ? '_wire' : '', so = sheet('saint0_socket' + w), ir = sheet('saint0_iris' + w), li = sheet('saint0_lid' + w);
+  const x = b.x + jx, y = b.y;
+  if (so.ok) drawSprite(so, so.first('idle'), x, y, 1, { center: true, alpha: a });
+  if (ir.ok) { const f = ir.first('spin') + Math.floor(time * (6 + b.open * 10)) % 8; drawSprite(ir, f, x + b.look.x, y + b.look.y, 1, { center: true, alpha: a, flash: b.flash * 0.6, flashColor: '#ffffff' }); }
+  if (li.ok) {
+    const fr = b.state === 'dead' ? li.first('death') + Math.min(5, Math.floor((b.deadT || 0) / 0.12)) : li.first('aperture') + Math.round(clamp(b.open, 0, 1) * 6);
+    drawSprite(li, fr, x, y, 1, { center: true, alpha: a, flash: b.flash * 0.5, flashColor: cyb ? '#ff3fc0' : '#dff6ff' });
   }
+  if (!so.ok) { g.fillStyle = '#d9e1ee'; g.beginPath(); g.arc(x, y, 30, 0, 6.3); g.fill(); g.fillStyle = NH_MG[2]; g.beginPath(); g.arc(x + b.look.x, y + b.look.y, 10 * (0.3 + b.open), 0, 6.3); g.fill(); }
+  if (b.state === 'stagger' || b.state === 'exposed') { g.globalAlpha = 0.3 + 0.2 * Math.sin(time * 20); g.fillStyle = b.state === 'stagger' ? '#ffd070' : NH_MG[3]; for (let i = 0; i < 24; i++) { const t = i / 24 * 6.283 + time; g.fillRect(Math.round(x + Math.cos(t) * 37), Math.round(y + Math.sin(t) * 37), 2, 1); } g.globalAlpha = 1; }
 }
-// ---- the halo: three counter-rotating data rings above the head
-function nhDrawHalo(b, a, cyb) {
+function nhS0DrawHalo(b, a, cyb) {
   if (b.halo <= 0.02) return;
-  const H_ = b.head(), cx = H_.x - b.face * 2, cy = H_.y - 13, k = b.halo;
+  const cx = b.x, cy = b.y - 50 - Math.sin(b.bob * 1.3) * 2, k = b.halo;
   for (let ri = 0; ri < 3; ri++) {
-    const rx = (10 + ri * 5) * (0.4 + 0.6 * k), ry = 2.5 + ri * 1.2, sp = [1.6, -1.1, 2.3][ri] * (b.phase === 3 ? 1.6 : 1), off = time * sp;
-    const col = cyb ? '#0b1030' : ri === 1 ? NH_MG[3] : NH_CY[3], n = Math.floor(18 + ri * 8);
+    const rx = (14 + ri * 7) * (0.4 + 0.6 * k), ry = 2.5 + ri * 1.3, sp = [1.4, -1.0, 2.1][ri] * (b.phase === 3 ? 1.6 : 1), off = time * sp, n = 22 + ri * 9;
     g.globalAlpha = a * k;
     for (let i = 0; i < n; i++) {
-      const t = i / n * 6.283 + off, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry + ri * 0.5;
-      const tick = (i % 5 === 0);
-      g.fillStyle = tick ? (cyb ? '#ff3fc0' : '#ffffff') : col;
+      const t = i / n * 6.283 + off, x = cx + Math.cos(t) * rx, y = cy + Math.sin(t) * ry + ri, tick = i % 5 === 0;
+      g.fillStyle = tick ? (cyb ? '#ff3fc0' : '#ffffff') : cyb ? '#0b1030' : ri === 1 ? NH_MG[3] : NH_CY[3];
       if (i % 2 === 0 || tick) g.fillRect(Math.round(x), Math.round(y), 1, tick ? 2 : 1);
     }
   }
   g.globalAlpha = 1;
-  if (!cyb) addLight(cx, cy, 40, '150,235,255', 0.8 * k);
-}
-// ---- the energy lance
-function nhDrawLance(b, a, cyb) {
-  const G = b.grip(), ang = b.lanceAng(), L = b.lanceLen(), c = Math.cos(ang), s = Math.sin(ang), nx = -s, ny = c;
-  const hot = b.state === 'attack' && ['thrust', 'sweep'].includes(b.move) && b.inActive();
-  g.globalAlpha = a;
-  for (let k = -24; k <= L; k++) {
-    const x = G.x + c * k, y = G.y + s * k, j = Math.sin(k * 0.5 + time * 40) * (hot ? 0.8 : 0.3);
-    if (!cyb) { g.fillStyle = 'rgba(19,163,201,0.55)'; g.fillRect(Math.round(x + nx * (1.6 + j)), Math.round(y + ny * (1.6 + j)), 1, 1); g.fillRect(Math.round(x - nx * (1.6 - j)), Math.round(y - ny * (1.6 - j)), 1, 1); }
-    g.fillStyle = cyb ? '#0b1030' : k < 0 ? NH_NV[5] : NH_CY[4]; g.fillRect(Math.round(x), Math.round(y), 1, 1);
-    if (!cyb && k > 0 && k % 11 === Math.floor(time * 30) % 11) { g.fillStyle = NH_MG[4]; g.fillRect(Math.round(x + nx), Math.round(y + ny), 1, 1); }
-  }
-  // the blade head: a long diamond of light
-  const tx = G.x + c * L, ty = G.y + s * L;
-  for (let k = -10; k <= 8; k++) {
-    const w = k < 0 ? (10 + k) * 0.28 : (8 - k) * 0.35, x = tx + c * k, y = ty + s * k;
-    for (let q = -Math.round(w); q <= Math.round(w); q++) { g.fillStyle = cyb ? (Math.abs(q) === Math.round(w) ? '#0b1030' : '#dfe7f0') : Math.abs(q) === Math.round(w) ? NH_CY[3] : '#ffffff'; g.fillRect(Math.round(x + nx * q), Math.round(y + ny * q), 1, 1); }
-  }
-  if (hot && !cyb) for (let i = 0; i < 3; i++) { const k = rand(0, L); nhRect(G.x + c * k - c * 10, G.y + s * k, 1, 1, NH_CY[5]); }
-  g.globalAlpha = 1;
-  if (!cyb) { addLight(tx, ty, hot ? 60 : 36, '150,235,255', hot ? 1 : 0.7); addLight(G.x + c * L * 0.5, G.y + s * L * 0.5, 50, '80,210,255', 0.45); }
+  if (!cyb) addLight(cx, cy, 44, '150,235,255', 0.8 * k);
 }
 
-// ---- phase-1 tools: panel blades, orbital lasers
-function nhLaunchBlades(b) {
-  const n = b.phase === 1 ? 6 : b.phase === 2 ? 8 : 10, panels = nhWingPanels(b).filter(p => p.i >= 2).slice(0, n);
-  while (panels.length < n) panels.push({ x: b.back().x, y: b.back().y - 20, ux: 0, uy: -1 });
-  panels.forEach((p, k) => {
-    const sa = (-160 + 140 * k / Math.max(1, n - 1)) * Math.PI / 180, sr = 64 + (k % 2) * 16;
-    NHR.blades.push({ x: p.x, y: p.y, ux: p.ux, uy: p.uy, st: 'orbit', t: 0, delay: 0.55 + k * (b.phase === 3 ? 0.12 : 0.17), sx: b.x + Math.cos(sa) * sr, sy: b.y - 88 + Math.sin(sa) * sr * 0.6, vx: 0, vy: 0, id: ++hazardId, src: b, mg: k % 3 === 1 });
-  });
-  b.panelsOut = 24; b.regrow = 1.5; nhSfx.glitch(0.6); tone(1320, 0.3, 0.05, 'triangle', 0.5);
+// ---- orbs: WHITE = strike or parry it back into the eye; RED = can't be touched, dodge it
+function nhS0Orb(b, ang, sp, kind) {
+  const x = b.x + Math.cos(ang) * 30, y = b.y + Math.sin(ang) * 30;
+  const o = { type: 'nh_orb', kind, x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, t: 0, life: 4.2, id: ++hazardId, reflected: false, face: 1, anim: { update() {} }, src: b };
+  const reflect = () => {
+    if (o.reflected || o.kind !== 'white') return;
+    o.reflected = true; o.t = 0; o.life = 2.5; const B = boss; const aa = Math.atan2((B ? B.y : o.y - 100) - o.y, (B ? B.x : o.x) - o.x);
+    o.vx = Math.cos(aa) * 320; o.vy = Math.sin(aa) * 320; sfx.parry(); hitstop = Math.max(hitstop, 0.07); shake = Math.max(shake, 3);
+    spawnFx(fxOr('parry_flash', 'parry_spark'), o.x, o.y, 1); if (!SAVE.hints.nh_deflected) { SAVE.hints.nh_deflected = 1; toast('Deflected! Send the white light home.', 2.4); }
+  };
+  o.hurtbox = () => (o.kind === 'white' && !o.reflected && o.t > 0.12) ? rect(o.x - 7, o.y - 7, o.x + 7, o.y + 7) : null;
+  o.onHit = () => reflect(); o.onParried = () => reflect();
+  o.update = dt => {
+    o.t += dt; o.life -= dt;
+    if (o.reflected) {
+      const B = boss;
+      if (B && B.kind === 'saint0' && B.alive) {
+        const aa = Math.atan2(B.y - o.y, B.x - o.x), cur = Math.atan2(o.vy, o.vx); let d = aa - cur; while (d > Math.PI) d -= 6.283; while (d < -Math.PI) d += 6.283;
+        const na = cur + clamp(d, -7 * dt, 7 * dt); o.vx = Math.cos(na) * 330; o.vy = Math.sin(na) * 330;
+        if (Math.hypot(B.x - o.x, B.y - o.y) < NH_S0.R + 6) { o.taken = true; B.deflectHit(o.x, o.y); return; }
+      }
+    } else if (overlap(rect(o.x - 4, o.y - 4, o.x + 4, o.y + 4), playerHurtbox())) {
+      if (hurtPlayer(nhS0D(o.kind === 'white' ? 26 : 30, o.src), sign(o.vx) || 1, o.id, { parryable: o.kind === 'white', src: o })) { o.taken = true; nhSpark(o.x, o.y, o.kind === 'white' ? 'cy' : 'rd'); return; }
+    }
+    o.x += o.vx * dt; o.y += o.vy * dt;
+    if (!o.reflected && (solidAtPx(o.x, o.y) || o.life <= 0)) { o.taken = true; nhSpark(o.x, o.y, o.kind === 'white' ? 'cy' : 'rd', 5); }
+    if (o.reflected && (o.life <= 0 || o.y < 0)) o.taken = true;
+    if (!nhCyber()) addLight(o.x, o.y, o.kind === 'white' ? 30 : 22, o.kind === 'white' ? '220,245,255' : '255,50,80', 0.9);
+  };
+  o.draw = () => {};
+  props.push(o);
+  if (kind === 'white' && !SAVE.hints.nh_white) { SAVE.hints.nh_white = 1; toast('WHITE light can be struck back. RED cannot.', 3.2); }
+  return o;
 }
-function nhOrbital(b) {
-  const n = b.phase === 1 ? 3 : b.phase === 2 ? 5 : 6;
-  for (let k = 0; k < n; k++) b.later(k * (b.phase === 3 ? 0.26 : 0.33), () => {
-    const x = clamp(P.x + P.vx * 0.3 + (k ? rand(-26, 26) : 0), 3 * TILE + 12, 37 * TILE - 12);
-    NHR.marks.push({ x, t: 0, delay: b.phase === 3 ? 0.85 : 0.95, y0: TILE, y1: b.floor, w: 22, dmg: 40, src: b });
-    tone(1760, 0.15, 0.03, 'sine', 0.8);
-  });
-  flashScreen = Math.max(flashScreen, 0.2);
+function nhS0Fan(b, n, whites) {
+  const aim = Math.atan2(P.y - 14 - b.y, P.x - b.x), spread = b.phase === 3 ? 0.2 : 0.24, sp = [0, 115, 130, 150][b.phase];
+  for (let k = 0; k < n; k++) nhS0Orb(b, aim + (k - (n - 1) / 2) * spread, sp, whites.includes(k) ? 'white' : 'red');
+  nhSfx.shot(); tone(520, 0.2, 0.05, 'triangle', 1.6);
 }
-// ---- phase 2: deleting the floor, firewalls
-function nhDeleteFloor(b) {
-  const tiles = NHR.dels.filter(d => d.st === 'solid'); if (tiles.length < 12) return;
-  const seg = b.phase >= 3 ? 5 : 4, maxSeg = b.phase >= 3 ? 3 : 2 + (Math.random() < 0.5 ? 1 : 0);
-  const x0 = NH_S0.FLOOR_X0, x1 = NH_S0.FLOOR_X1 - seg + 1, ptx = clamp(Math.floor(P.x / TILE), x0, NH_S0.FLOOR_X1);
-  const starts = [clamp(ptx - irand(0, seg - 1), x0, x1)];
-  for (let tries = 0; tries < 40 && starts.length < maxSeg; tries++) { const s = irand(x0, x1); if (starts.every(o => s + seg + 3 <= o || o + seg + 3 <= s)) starts.push(s); }
-  for (const d of NHR.dels) if (d.st === 'solid' && starts.some(s => d.x >= s && d.x < s + seg)) { d.st = 'warn'; d.t = 1.25; }
-  nhSfx.glitch(0.9); toast('SECTOR DELETION', 1.2); shake = Math.max(shake, 3);
-}
-function nhFirewall(b) {
-  const x0 = 3 * TILE + 8, x1 = 37 * TILE - 8, fromL = P.x > (x0 + x1) / 2;
-  const mk = (left) => NHR.walls.push({ kind: 'fire', x: left ? x0 : x1, x0: x0 - 10, x1: x1 + 10, y: b.floor, vx: (left ? 1 : -1) * (b.phase === 3 ? 108 : 92), h: 42, t: 0, k: 0, dmg: 32, id: ++hazardId, src: b });
-  mk(fromL); if (b.phase >= 3 || Math.random() < 0.4) b.later(1.1, () => mk(!fromL));
-  nhSfx.alarm(); toast('FIREWALL', 1.0);
-}
-// ---- phase 3: binary rain, null rings
-function nhRain(b) {
-  const x0 = 3 * TILE + 8, x1 = 37 * TILE - 8, waves = 2, step = 30;
-  for (let w = 0; w < waves; w++) b.later(w * 0.9, () => {
-    const gap = clamp(P.x + rand(-70, 70), x0 + 30, x1 - 30), gw = 56;
-    for (let x = x0 + rand(0, step); x < x1; x += step) if (Math.abs(x - gap) > gw / 2) NHR.rains.push({ x, y0: TILE, y1: b.floor, t: 0, warn: 0.95, on: 0.6, dmg: 34, id: ++hazardId, src: b });
-    tone(2200, 0.2, 0.03, 'square', 0.5);
-  });
-}
-function nhRings(b) {
-  for (let k = 0; k < 2; k++) b.later(k * 0.6, () => { NHR.rings.push({ x: b.x, y: b.floor - 8, r: 10, v: 165, max: 420, dmg: 36, id: ++hazardId, src: b }); nhSfx.thud(); spawnFx('shockwave', b.x, b.floor, 1); });
-}
-// ---- blades + the deletable floor
-function nhUpdateSaintFx(dt, B) {
-  for (const s of NHR.blades) {
-    s.t += dt;
-    if (s.st === 'orbit') { s.x = lerp(s.x, s.sx, Math.min(1, dt * 6)); s.y = lerp(s.y, s.sy, Math.min(1, dt * 6)); const a = Math.atan2(P.y - 14 - s.y, P.x - s.x); s.ux = lerp(s.ux, Math.cos(a), dt * 4); s.uy = lerp(s.uy, Math.sin(a), dt * 4); if (s.t >= s.delay) { s.st = 'aim'; s.t = 0; s.tx = P.x + P.vx * 0.15; s.ty = P.y - 12; tone(1560, 0.1, 0.03, 'square', 1.2); } }
-    else if (s.st === 'aim') { const a = Math.atan2(s.ty - s.y, s.tx - s.x); s.ux = Math.cos(a); s.uy = Math.sin(a); if (s.t >= 0.36) { s.st = 'fly'; s.t = 0; s.vx = s.ux * 330; s.vy = s.uy * 330; sfx.swing(); } }
-    else if (s.st === 'fly') {
-      s.x += s.vx * dt; s.y += s.vy * dt;
-      if (overlap(rect(s.x - 5, s.y - 5, s.x + 5, s.y + 5), playerHurtbox())) { if (hurtPlayer(nhBD(26), sign(s.vx), s.id, { parryable: true, src: B })) { s.st = 'dead'; nhSpark(s.x, s.y, 'cy'); } else if (P.state === 'parry') { s.st = 'dead'; nhSpark(s.x, s.y, 'cy', 12); } }
-      if (s.t > 1.6 || solidAtPx(s.x, s.y)) { s.st = 'dead'; nhSpark(s.x, s.y, s.mg ? 'mg' : 'cy', 5); }
+function nhS0Aimed(b, kind) { nhS0Orb(b, Math.atan2(P.y - 14 - b.y, P.x - b.x), 120, kind); nhSfx.shot(); }
+function nhS0DrawOrbs() {
+  const cyb = nhCyber();
+  for (const o of props) {
+    if (o.type !== 'nh_orb') continue;
+    const x = Math.round(o.x), y = Math.round(o.y), pulse = 0.5 + 0.5 * Math.sin(time * 18 + o.id);
+    if (o.kind === 'white') {
+      const ring = o.reflected ? 7 : 5 + pulse * 2;
+      g.fillStyle = cyb ? '#0b1030' : o.reflected ? NH_CY[4] : NH_CY[3];
+      for (let i = 0; i < 16; i++) { const t = i / 16 * 6.283 + time * 4; g.fillRect(Math.round(x + Math.cos(t) * ring), Math.round(y + Math.sin(t) * ring), 1, 1); }
+      g.fillStyle = cyb ? '#2c3a9a' : '#ffffff'; g.fillRect(x - 2, y - 3, 5, 7); g.fillRect(x - 3, y - 2, 7, 5);
+      g.fillStyle = cyb ? '#ffffff' : NH_CY[4]; g.fillRect(x - 1, y - 1, 2, 2);
+      if (o.reflected) for (let k = 1; k < 6; k++) { g.globalAlpha = 1 - k * 0.17; g.fillStyle = '#ffffff'; g.fillRect(Math.round(x - o.vx * 0.012 * k), Math.round(y - o.vy * 0.012 * k), 2, 2); g.globalAlpha = 1; }
+    } else {
+      g.fillStyle = cyb ? '#c21d97' : NH_RD[1]; g.fillRect(x - 2, y - 2, 5, 5);
+      g.fillStyle = cyb ? '#ff3fc0' : NH_RD[2]; for (let i = 0; i < 6; i++) { const t = i / 6 * 6.283 + time * 6; g.fillRect(Math.round(x + Math.cos(t) * 4), Math.round(y + Math.sin(t) * 4), 1, 1); }
+      g.fillStyle = cyb ? '#ffffff' : NH_RD[3]; g.fillRect(x - 1, y - 1, 2, 2);
     }
   }
-  NHR.blades = NHR.blades.filter(s => s.st !== 'dead');
-  // the floor: warn -> gone -> back (only once nothing stands inside the tile) -> solid
+}
+// ---- hard-light cover (gaze) and moving hard-light platforms (purge)
+function nhS0Covers(b) {
+  const f = b.fx; f.covers = [];
+  for (let col of [11, 20, 29]) {
+    let x = col * TILE; if (Math.abs(x + 8 - P.x) < 22) x += (P.x < x + 8 ? 2 : -2) * TILE;
+    // hard-light cover stops the gaze but not you: walk into its shadow (it never blocks or traps a body)
+    f.covers.push({ x0: x + 3, x1: x + 13, y0: b.floor - 3 * TILE, y1: b.floor, k: 0, gone: false, t: 0 });
+  }
+}
+function nhS0Plats(b) {
+  const f = b.fx; f.plats = [];
+  [8, 19, 30].forEach((col, i) => {
+    const pl = { cx: col * TILE + 8, w: 4 * TILE, y0: 8 * TILE, k: 0, fade: false, ph: i * 2.1, x: col * TILE + 8, vx: 0 };
+    pl.dyn = { get x0() { return pl.x - pl.w / 2; }, get x1() { return pl.x + pl.w / 2; }, y0: pl.y0, y1: pl.y0 + 6, on: () => pl.k > 0.6 && !!P && P.y <= pl.y0 + 0.5 };
+    room.dyn.push(pl.dyn); f.plats.push(pl);
+  });
+}
+function nhS0Grid(b, par, warn) {
+  for (let x = 4 * TILE + 8 + par * 16; x <= 36 * TILE + 8; x += 32) b.fx.grid.push({ x, t: 0, warn, on: 0.45, id: ++hazardId, dmg: 28 });   // the two patterns interleave: step 16px between them
+  tone(1200, 0.3, 0.03, 'square', 1.2);
+}
+// ---- beam helper: distance from the player's body to a segment
+function nhS0SegHit(x0, y0, x1, y1, w) {
+  const hb = playerHurtbox(), n = Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 5);
+  for (let i = 0; i <= n; i++) { const x = lerp(x0, x1, i / n), y = lerp(y0, y1, i / n); if (overlap(rect(x - w, y - w, x + w, y + w), hb)) return true; }
+  return false;
+}
+function nhS0Trace(x0, y0, ang, max, covers) {
+  const c = Math.cos(ang), s = Math.sin(ang);
+  for (let d = 8; d < max; d += 3) {
+    const x = x0 + c * d, y = y0 + s * d;
+    if (solidAtPx(x, y) || y > room.ph || x < 0 || x > room.pw) return { x, y, d };
+    if (covers) for (const cv of covers) if (cv.k > 0.7 && !cv.gone && x >= cv.x0 && x < cv.x1 && y >= cv.y0 && y < cv.y1) return { x, y, d, cover: true };
+  }
+  return { x: x0 + c * max, y: y0 + s * max, d: max };
+}
+function nhUpdateSaintFx(dt, B) {
+  const f = B.fx;
+  // lens beams (volley)
+  for (const bm of f.beams) {
+    bm.t += dt; const p = nhS0LensPt(B, bm.lens.i, bm.lens.j); bm.x = p.x; bm.y = p.y;
+    bm.ang = Math.atan2(bm.ty - p.y, bm.tx - p.x); bm.end = nhS0Trace(p.x, p.y, bm.ang, 460);
+    if (bm.t >= bm.warn && bm.t < bm.warn + bm.on && nhS0SegHit(p.x, p.y, bm.end.x, bm.end.y, 3)) hurtPlayer(nhS0D(bm.dmg, B), sign(Math.cos(bm.ang)) || 1, bm.id, { src: B });
+    if (bm.t >= bm.warn && !bm.snd) { bm.snd = 1; nhSfx.zap(0.7); }
+  }
+  f.beams = f.beams.filter(bm => bm.t < bm.warn + bm.on + 0.1);
+  // laser limbo (low: jump it; high: stay down) + dive shock waves
+  for (const l of f.limbo) {
+    l.t += dt;
+    if (l.wave) { l.x += l.vx * dt; if (l.x < NH_S0.AX0 || l.x > NH_S0.AX1 || l.t > 2.5) l.dead = true; if (overlap(rect(l.x - 6, l.y - 12, l.x + 6, l.y), playerHurtbox())) hurtPlayer(nhS0D(l.dmg, B), sign(l.vx), l.id, { src: B }); continue; }
+    if (l.t >= l.warn && l.t < l.warn + l.on && overlap(rect(NH_S0.AX0, l.y - 3, NH_S0.AX1, l.y + 3), playerHurtbox())) hurtPlayer(nhS0D(l.dmg, B), P.x < B.x ? -1 : 1, l.id, { src: B });
+    if (l.t >= l.warn && !l.snd) { l.snd = 1; nhSfx.beam(); shake = Math.max(shake, 3); }
+    if (l.t > l.warn + l.on + 0.1) l.dead = true;
+  }
+  f.limbo = f.limbo.filter(l => !l.dead);
+  // ceiling grid columns
+  for (const c of f.grid) {
+    c.t += dt;
+    if (c.t >= c.warn && c.t < c.warn + c.on && overlap(rect(c.x - 4, TILE, c.x + 4, B.floor), playerHurtbox())) hurtPlayer(nhS0D(c.dmg, B), P.x < c.x ? -1 : 1, c.id, { src: B });
+    if (c.t >= c.warn && !c.snd) { c.snd = 1; if (Math.abs(c.x - P.x) < 120) nhSfx.zap(0.5); }
+  }
+  f.grid = f.grid.filter(c => c.t < c.warn + c.on + 0.05);
+  // the gaze: track -> lock -> fire, stopped by solid cover
+  const gz = f.gaze;
+  if (gz) {
+    gz.t += dt;
+    if (gz.t < gz.track) { gz.x = lerp(gz.x, P.x, Math.min(1, dt * 3.2)); gz.y = lerp(gz.y, P.y - 13, Math.min(1, dt * 3.2)); }
+    gz.ang = Math.atan2(gz.y - B.y, gz.x - B.x); gz.end = nhS0Trace(B.x, B.y, gz.ang, 640, f.covers);
+    if (gz.t >= gz.track + gz.lock && gz.t < gz.track + gz.lock + gz.fire) {
+      if (!gz.snd) { gz.snd = 1; nhSfx.beam(); shake = 8; flashScreen = 0.25; }
+      if (nhS0SegHit(B.x, B.y, gz.end.x, gz.end.y, 6)) hurtPlayer(nhS0D(gz.dmg, B), P.x < B.x ? -1 : 1, gz.id, { src: B });
+      if (Math.random() < 0.8) particles.push({ x: gz.end.x, y: gz.end.y, vx: rand(-80, 80), vy: -rand(20, 140), g: 300, life: 0.4, kind: 'nh_white' });
+    }
+  }
+  // covers + platforms materialise / fade; platforms drift and carry you
+  for (const c of f.covers) { c.k = approach(c.k, c.gone ? 0 : 1, dt * 3); if (c.gone && c.k <= 0) c.dead = true; }
+  f.covers = f.covers.filter(c => !c.dead);
+  for (const pl of f.plats) {
+    pl.k = approach(pl.k, pl.fade ? 0 : 1, dt * 2.4); pl.ph += dt;
+    const nx = pl.cx + Math.sin(pl.ph * 1.9) * 26; pl.vx = (nx - pl.x) / Math.max(dt, 1e-4); pl.x = nx;
+    if (P.ground && pl.k > 0.6 && Math.abs(P.y - pl.y0) < 1.5 && Math.abs(P.x - pl.x) < pl.w / 2 + 3) P.pushVx = (P.pushVx || 0) + pl.vx;
+    if (pl.fade && pl.k <= 0) pl.dead = true;
+  }
+  f.plats = f.plats.filter(pl => !pl.dead);
+  // the purge: after the warning, the arena floor burns (the entry ledge and the far ledge stay safe)
+  const bu = f.burn;
+  if (bu) {
+    bu.t += dt;
+    if (bu.t >= bu.warn && P.ground && P.state !== 'dead') {
+      const tx = Math.floor(P.x / TILE), ty = Math.floor((P.y + 1) / TILE);
+      if (ty === 11 && tx >= NH_S0.FLOOR_X0 && tx <= NH_S0.FLOOR_X1) { bu.tick -= dt; if (bu.tick <= 0) { bu.tick = 0.45; hurtPlayer(nhS0D(18, B), P.x < B.x ? -1 : 1, 'purge' + Math.floor(bu.t / 0.45), { src: B }); } }
+    }
+  }
+  // lighthouse beams
+  const lh = f.lighthouse;
+  if (lh) {
+    lh.t += dt; if (lh.t >= lh.warn) lh.a += lh.w * dt;
+    if (lh.t >= lh.warn) for (const off of [0, Math.PI]) { const a = lh.a + off; if (nhS0SegHit(B.x, B.y, B.x + Math.cos(a) * lh.L, B.y + Math.sin(a) * lh.L, 3)) hurtPlayer(nhS0D(lh.dmg, B), P.x < B.x ? -1 : 1, lh.id + '_' + Math.floor(lh.t / 0.4), { src: B }); }
+  }
+  // the deletable floor: warn -> gone -> back (only once nothing stands inside the tile) -> solid
   for (const d of NHR.dels) {
     const idx = d.y * room.w + d.x;
     if (d.st === 'warn') { d.t -= dt; if (d.t <= 0) { d.st = 'gone'; d.t = B.phase >= 3 ? 3.6 : 4.4; room.grid[idx] = T_EMPTY; for (let i = 0; i < 5; i++) particles.push({ x: d.x * TILE + rand(0, 16), y: d.y * TILE + rand(0, 8), vx: rand(-30, 30), vy: -rand(20, 80), g: 200, life: 0.6, kind: nhCyber() ? 'nh_dark' : 'nh_pink' }); } }
     else if (d.st === 'gone') { d.t -= dt; if (d.t <= 0 || !B.alive) { d.st = 'back'; d.t = 0; } }
-    else if (d.st === 'back') {
-      if (!overlap(rect(d.x * TILE, d.y * TILE - 1, d.x * TILE + 16, d.y * TILE + 16), playerHurtbox())) { d.st = 'solid'; d.flick = 0.3; room.grid[idx] = NH_T_DEL; }
-    }
+    else if (d.st === 'back') { if (!overlap(rect(d.x * TILE, d.y * TILE - 1, d.x * TILE + 16, d.y * TILE + 16), playerHurtbox())) { d.st = 'solid'; d.flick = 0.3; room.grid[idx] = NH_T_DEL; } }
     if (d.flick > 0) d.flick -= dt;
   }
+}
+function nhDrawSaintFx(B) {
+  const f = B.fx, cyb = nhCyber(), cBeam = cyb ? '#0b1030' : NH_CY[4], cGlow = cyb ? 'rgba(20,30,90,0.45)' : 'rgba(63,224,255,0.45)';
+  // platforms + covers
+  for (const pl of f.plats) {
+    const x = Math.round(pl.x - pl.w / 2), y = pl.y0, w = pl.w, k = pl.k; if (k < 0.03) continue;
+    g.globalAlpha = 0.4 * k; g.fillStyle = cyb ? '#9aa8d8' : NH_CY[2]; g.fillRect(x + 1, y + 1, w - 2, 4);
+    g.globalAlpha = k; g.fillStyle = cyb ? '#0b1030' : NH_CY[4]; g.fillRect(x, y, w, 1); g.fillStyle = cyb ? '#2c3a9a' : NH_CY[3]; g.fillRect(x, y + 5, w, 1);
+    for (let i = 3; i < w - 3; i += 6) { g.fillStyle = hash2(i, Math.floor(time * 5)) < 0.5 ? (cyb ? '#ff3fc0' : NH_CY[5]) : (cyb ? '#2c3a9a' : NH_CY[3]); g.fillRect(x + i, y + 2, 3, 1); }
+    g.globalAlpha = 1; if (!cyb) addLight(pl.x, y + 2, 50, '80,220,255', 0.5 * k);
+  }
+  for (const c of f.covers) {
+    if (c.k < 0.03) continue; const x = Math.round(c.x0), hgt = c.y1 - c.y0;
+    g.globalAlpha = 0.35 * c.k; g.fillStyle = cyb ? '#9aa8d8' : NH_CY[1]; g.fillRect(x, c.y0, c.x1 - c.x0, hgt);
+    g.globalAlpha = c.k; g.fillStyle = cyb ? '#0b1030' : NH_CY[3]; g.fillRect(x, c.y0, 1, hgt); g.fillRect(c.x1 - 1, c.y0, 1, hgt); g.fillRect(x, c.y0, c.x1 - c.x0, 1);
+    for (let yy = c.y0 + ((time * 30) % 6); yy < c.y1; yy += 6) { g.fillStyle = cyb ? '#2c3a9a' : NH_CY[4]; g.fillRect(x + 2, Math.round(yy), c.x1 - c.x0 - 4, 1); }
+    g.globalAlpha = 1; if (!cyb) addLight((c.x0 + c.x1) / 2, c.y0 + 20, 40, '80,210,255', 0.5 * c.k);
+  }
+  // lens beams
+  for (const bm of f.beams) {
+    if (!bm.end) continue;
+    if (bm.t < bm.warn) { const k = bm.t / bm.warn; g.globalAlpha = 0.3 + 0.5 * k; g.fillStyle = cyb ? '#1a2360' : NH_MG[3]; const L = bm.end.d; for (let d = 6; d < L; d += 4) g.fillRect(Math.round(bm.x + Math.cos(bm.ang) * d), Math.round(bm.y + Math.sin(bm.ang) * d), 1, 1); g.globalAlpha = 1; }
+    else { nhS0BeamLine(bm.x, bm.y, bm.end.x, bm.end.y, 1.5, cBeam, cGlow); if (!cyb) addLight(bm.end.x, bm.end.y, 30, '120,230,255', 0.9); }
+  }
+  // limbo beams (floor-to-wall): LOW = cyan with up chevrons (jump), HIGH = magenta with down chevrons (stay down)
+  for (const l of f.limbo) {
+    if (l.wave) { const x = Math.round(l.x); g.fillStyle = cyb ? '#0b1030' : NH_CY[3]; g.fillRect(x - 2, l.y - 12, 4, 12); g.fillStyle = cyb ? '#2c3a9a' : NH_CY[5]; g.fillRect(x - 1, l.y - 14, 2, 14); continue; }
+    const col = l.low ? (cyb ? '#1a2360' : NH_CY[3]) : (cyb ? '#c21d97' : NH_MG[3]);
+    if (l.t < l.warn) {
+      const k = l.t / l.warn; g.globalAlpha = 0.35 + 0.5 * k * (0.5 + 0.5 * Math.sin(time * 30)); g.fillStyle = col;
+      for (let x = NH_S0.AX0; x < NH_S0.AX1; x += 5) g.fillRect(x, Math.round(l.y), 3, 1);
+      for (let x = NH_S0.AX0 + 20; x < NH_S0.AX1; x += 48) { const d = l.low ? -1 : 1; for (let i = 0; i < 3; i++) g.fillRect(x - 2 + i, Math.round(l.y) + d * (4 + i), 5 - i * 2, 1); }
+      g.globalAlpha = 1;
+    } else if (l.t < l.warn + l.on) { nhS0BeamLine(NH_S0.AX0, l.y, NH_S0.AX1, l.y, 2, l.low ? cBeam : (cyb ? '#ff3fc0' : NH_MG[4]), l.low ? cGlow : 'rgba(255,63,192,0.45)'); if (!cyb) for (let x = NH_S0.AX0; x < NH_S0.AX1; x += 70) addLight(x, l.y, 40, l.low ? '80,210,255' : '255,60,190', 0.7); }
+  }
+  // grid columns
+  for (const c of f.grid) {
+    const x = Math.round(c.x);
+    if (c.t < c.warn) { if (Math.floor(time * 24) % 2) { g.fillStyle = cyb ? '#1a2360' : NH_MG[3]; for (let y = TILE + 2; y < B.floor; y += 4) g.fillRect(x, y, 1, 2); } g.fillStyle = cyb ? '#0b1030' : NH_NV[5]; g.fillRect(x - 4, TILE, 9, 3); }
+    else if (c.t < c.warn + c.on) { nhS0BeamLine(x, TILE + 2, x, B.floor, 2, cyb ? '#0b1030' : NH_MG[5], cyb ? 'rgba(20,30,90,0.45)' : 'rgba(255,63,192,0.5)'); if (!cyb) addLight(x, B.floor - 60, 40, '255,60,190', 0.7); }
+  }
+  // gaze reticle + beam
+  const gz = f.gaze;
+  if (gz && gz.end) {
+    const locked = gz.t >= gz.track, firing = gz.t >= gz.track + gz.lock && gz.t < gz.track + gz.lock + gz.fire;
+    if (!firing) {
+      g.fillStyle = locked ? (Math.floor(time * 30) % 2 ? '#ffffff' : NH_RD[2]) : (cyb ? 'rgba(160,20,60,0.6)' : 'rgba(255,50,80,0.55)');
+      for (let d = 30; d < gz.end.d; d += 3) g.fillRect(Math.round(B.x + Math.cos(gz.ang) * d), Math.round(B.y + Math.sin(gz.ang) * d), 1, 1);
+      const x = Math.round(gz.x), y = Math.round(gz.y), r = locked ? 5 : 8 + Math.sin(time * 10) * 2;
+      for (let i = 0; i < 16; i++) { const t = i / 16 * 6.283 + time * 3; if (i % 4 !== 0) g.fillRect(Math.round(x + Math.cos(t) * r), Math.round(y + Math.sin(t) * r), 1, 1); }
+    } else { nhS0BeamLine(B.x, B.y, gz.end.x, gz.end.y, 5, cyb ? '#0b1030' : '#ffffff', cyb ? 'rgba(200,30,140,0.6)' : 'rgba(255,90,210,0.6)'); if (!cyb) addLight(gz.end.x, gz.end.y, 70, '255,200,240', 1); }
+  }
+  // lighthouse
+  const lh = f.lighthouse;
+  if (lh) for (const off of [0, Math.PI]) {
+    const a = lh.a + off, x1 = B.x + Math.cos(a) * lh.L, y1 = B.y + Math.sin(a) * lh.L;
+    if (lh.t < lh.warn) { g.fillStyle = cyb ? 'rgba(20,30,90,0.5)' : 'rgba(63,224,255,0.5)'; for (let d = 30; d < lh.L; d += 4) g.fillRect(Math.round(B.x + Math.cos(a) * d), Math.round(B.y + Math.sin(a) * d), 1, 1); }
+    else nhS0BeamLine(B.x, B.y, x1, y1, 2.5, cBeam, cGlow);
+  }
+  // the purge warning / burn on the floor
+  const bu = f.burn;
+  if (bu) for (let tx = NH_S0.FLOOR_X0; tx <= NH_S0.FLOOR_X1; tx++) {
+    const px = tx * TILE, py = 11 * TILE;
+    if (bu.t < bu.warn) { if (Math.floor(time * (6 + bu.t * 8)) % 2) { g.fillStyle = cyb ? '#c21d97' : NH_RD[2]; g.fillRect(px + 4, py - 3, 8, 1); g.fillRect(px + 6, py - 5, 4, 1); } }
+    else { g.fillStyle = cyb ? 'rgba(194,29,151,0.6)' : 'rgba(255,48,80,0.55)'; g.fillRect(px, py - 2, 16, 3); if (hash2(tx, Math.floor(time * 18)) < 0.4) { g.fillStyle = cyb ? '#ff3fc0' : '#ffd0d8'; let yy = py - 2, xx = px + (hash2(tx, 3) * 14 | 0); for (let k = 0; k < 5; k++) { g.fillRect(xx, yy, 1, 2); xx += Math.round(rand(-1.5, 1.5)); yy -= 2; } } if (!cyb && tx % 3 === 0) addLight(px + 8, py - 4, 26, '255,50,90', 0.5); }
+  }
+  nhS0DrawOrbs();
+}
+function nhS0BeamLine(x0, y0, x1, y1, w, core, glow) {
+  const n = Math.ceil(Math.hypot(x1 - x0, y1 - y0)), dx = (x1 - x0) / (n || 1), dy = (y1 - y0) / (n || 1), nx = -dy, ny = dx;
+  g.fillStyle = glow;
+  for (let i = 0; i <= n; i += 1) { const x = x0 + dx * i, y = y0 + dy * i, j = Math.sin(i * 0.5 + time * 50) * 0.6; for (let q = -Math.ceil(w + 1); q <= Math.ceil(w + 1); q++) if (Math.abs(q) > w - 1) g.fillRect(Math.round(x + nx * (q + j)), Math.round(y + ny * (q + j)), 1, 1); }
+  g.fillStyle = core;
+  for (let i = 0; i <= n; i++) { const x = x0 + dx * i, y = y0 + dy * i; for (let q = -Math.floor(w - 1); q <= Math.floor(w - 1); q++) g.fillRect(Math.round(x + nx * q), Math.round(y + ny * q), 1, 1); }
 }
 function nhDrawDelFloor() {
   if (!NHR.dels.length) return;
@@ -1435,36 +1625,43 @@ function nhDrawDelFloor() {
         g.globalAlpha = 1; addLight(px + 8, py, 18, '255,50,120', 0.5 * k);
       }
     } else {
-      // missing data: a dotted outline where the tile was
       if (Math.floor(time * 6 + d.x) % 3 === 0) continue;
       g.globalAlpha = 0.45; g.fillStyle = cyb ? '#1a2360' : NH_MG[2];
-      for (let i = 0; i < 16; i += 3) { g.fillRect(px + i, py, 1, 1); g.fillRect(px + i, py + 15, 1, 1); }
-      for (let i = 0; i < 16; i += 3) { g.fillRect(px, py + i, 1, 1); g.fillRect(px + 15, py + i, 1, 1); }
+      for (let i = 0; i < 16; i += 3) { g.fillRect(px + i, py, 1, 1); g.fillRect(px + i, py + 15, 1, 1); g.fillRect(px, py + i, 1, 1); g.fillRect(px + 15, py + i, 1, 1); }
       g.globalAlpha = 1;
     }
   }
 }
-function nhDrawSaintFx(B) {
-  const cyb = nhCyber();
-  for (const s of NHR.blades) {
-    if (s.st === 'aim') { g.fillStyle = cyb ? 'rgba(20,24,80,0.5)' : 'rgba(255,80,200,0.5)'; const L = Math.hypot(s.tx - s.x, s.ty - s.y); for (let k = 6; k < L; k += 4) g.fillRect(Math.round(s.x + s.ux * k), Math.round(s.y + s.uy * k), 1, 1); }
-    nhPanel(s.x, s.y, s.ux, s.uy, 12, 5, 1, cyb, s.mg, s.st === 'aim' && Math.floor(time * 20) % 2 ? 0.6 : 1);
-    if (!cyb) addLight(s.x, s.y, 20, s.mg ? '255,70,200' : '80,210,255', 0.6);
-  }
+// ---- phase 2 floor deletion + phase 3 binary rain (shared helpers)
+function nhDeleteFloor(b) {
+  const tiles = NHR.dels.filter(d => d.st === 'solid'); if (tiles.length < 12) return;
+  const seg = b.phase >= 3 ? 5 : 4, maxSeg = b.phase >= 3 ? 3 : 2 + (Math.random() < 0.5 ? 1 : 0);
+  const x0 = NH_S0.FLOOR_X0, x1 = NH_S0.FLOOR_X1 - seg + 1, ptx = clamp(Math.floor(P.x / TILE), x0, NH_S0.FLOOR_X1);
+  const starts = [clamp(ptx - irand(0, seg - 1), x0, x1)];
+  for (let tries = 0; tries < 40 && starts.length < maxSeg; tries++) { const s = irand(x0, x1); if (starts.every(o => s + seg + 3 <= o || o + seg + 3 <= s)) starts.push(s); }
+  for (const d of NHR.dels) if (d.st === 'solid' && starts.some(s => d.x >= s && d.x < s + seg)) { d.st = 'warn'; d.t = 1.25; }
+  nhSfx.glitch(0.9); toast('SECTOR DELETION', 1.2); shake = Math.max(shake, 3);
+}
+function nhRain(b) {
+  const x0 = 3 * TILE + 8, x1 = 37 * TILE - 8, waves = 2, step = 30;
+  for (let w = 0; w < waves; w++) b.later(w * 0.9, () => {
+    const gap = clamp(P.x + rand(-70, 70), x0 + 30, x1 - 30), gw = 56;
+    for (let x = x0 + rand(0, step); x < x1; x += step) if (Math.abs(x - gap) > gw / 2) NHR.rains.push({ x, y0: TILE, y1: b.floor, t: 0, warn: 0.95, on: 0.6, dmg: 34, id: ++hazardId, src: b });
+    tone(2200, 0.2, 0.03, 'square', 0.5);
+  });
 }
 // ---- cyberspace: swap the built room's biome (the ROOMS def is untouched: a rebuilt room is always normal again)
 function nhEnterCyber(b) {
-  if (!room || nhCyber()) { if (b) b.swapSheet(1); return; }
+  if (!room || nhCyber()) return;
   room.def = Object.assign(Object.create(room.def), { biome: 'neohallow_cyber' });
   for (const d of NHR.dels) { d.st = 'solid'; d.t = 0; room.grid[d.y * room.w + d.x] = NH_T_DEL; }
   renderRoomLayers(room);
-  if (b) { b.swapSheet(1); b.glitchT = 0.8; }
+  if (b) b.glitchT = 0.8;
   flashScreen = 0.9; shake = 10; NH.cutGlitch = 1.0; nhSfx.glitch(1.5);
 }
 function nhExitCyber() {
   if (!room || !nhCyber()) return;
   room.def = Object.getPrototypeOf(room.def); renderRoomLayers(room); NH.cutGlitch = 0.8;
-  if (boss && boss.kind === 'saint0') boss.swapSheet(0);
 }
 function nhDrawCyberTop() {
   if (NH.cutGlitch > 0) { NH.cutGlitch = Math.max(0, NH.cutGlitch - 1 / 60); nhGlitchScreen(Math.min(1, NH.cutGlitch)); }
@@ -1472,24 +1669,26 @@ function nhDrawCyberTop() {
   g.fillStyle = 'rgba(20,30,80,0.05)'; for (let y = Math.floor(time * 20) % 4; y < H; y += 4) g.fillRect(0, y, W, 1);
   if (hash2(Math.floor(time * 8), 11) < 0.06) nhGlitchScreen(0.25, 9);
 }
-HOOKS.death.push(() => { if (room && room.id === 'NH7') { NHR.blades = []; NHR.marks = []; NHR.walls = []; NHR.rains = []; NHR.rings = []; NHR.missiles = []; } });
 BOSS_SPAWN.saint0 = (cx, fy) => new NhSaint(cx, fy);
 BOSS_CUTS.saint0 = b => [
-  act(() => { b.visible = true; b.descend = 1; b.wing = 0; b.halo = 0; b.lanceOn = false; b.face = -1; b.anim.set('idle', true); b.y = b.floor - b.hoverH - 150; }),
-  { pan: { x: b.x - 20, y: b.floor - 90 }, dur: 1.0 },
-  { dur: 2.4, tween: (dt, k) => { const e = k * k * (3 - 2 * k); b.descend = 1 - e; b.y = b.floor - b.hoverH - b.descend * 150; if (Math.random() < 0.8) particles.push({ x: b.x + rand(-14, 14), y: rand(16, b.floor), vx: 0, vy: rand(20, 60), life: 0.8, kind: 'nh_white' }); addLight(b.x, b.floor - 80, 90, '150,235,255', 1); } },
+  act(() => { b.visible = true; b.descend = 1; b.ringK = 0; b.wing = 0; b.halo = 0; b.open = 0; b.openT = 0; b.x = 26 * TILE; b.y = b.floor - 90 - 160; }),
+  { pan: { x: 26 * TILE, y: b.floor - 90 }, dur: 1.0 },
+  { dur: 2.2, tween: (dt, k) => { const e = k * k * (3 - 2 * k); b.descend = 1 - e; b.y = b.floor - 90 - b.descend * 160; if (Math.random() < 0.8) particles.push({ x: b.x + rand(-16, 16), y: rand(16, b.floor), vx: 0, vy: rand(20, 60), life: 0.8, kind: 'nh_white' }); addLight(b.x, b.floor - 80, 90, '150,235,255', 1); } },
   act(() => { b.descend = 0; nhSfx.chime(); }),
-  { dur: 1.3, tween: (dt, k) => { b.wing = k; b.halo = k; if (Math.random() < 0.3) tone(880 + k * 900, 0.05, 0.03, 'square'); } },
+  { dur: 1.5, tween: (dt, k) => { b.ringK = k; if (Math.random() < 0.25) tone(660 + k * 1200, 0.05, 0.03, 'square'); } },
   act(() => nhSfx.voice(5)),
   say('SAINT-0', 'QUERY: ONE EMBER. UNINDEXED. ORIGIN — THE SUNKEN HALLOW.'),
+  act(() => { b.openT = 0.8; tone(110, 1.2, 0.1, 'sawtooth', 2); }),
+  { dur: 1.0, tween: (dt, k) => { b.wing = k; b.halo = k; } },
   act(() => nhSfx.voice(6)),
   say('SAINT-0', 'I READ THE SCRIBE’S LOST ARCHIVE. EVERY NAME YOUR HALLOW FORGOT, I KEPT.'),
   act(() => nhSfx.voice(6)),
-  say('SAINT-0', 'THE HALLOW IS SAVED. AS DATA. YOU ARE A CORRUPTED FILE.'),
-  act(() => { holdAnim(b, 'cast'); b.lanceOn = true; nhSfx.beam(); flashScreen = 0.5; shake = 6; }), wait(0.9),
-  { do: () => { b.descend = 0; b.wing = 1; b.halo = 1; b.lanceOn = true; b.visible = true; }, always: true },
+  say('SAINT-0', 'BE NOT AFRAID. BE ARCHIVED.'),
+  act(() => { nhSfx.beam(); flashScreen = 0.5; shake = 6; b.openT = 0.35; }), wait(0.7),
+  { do: () => { b.descend = 0; b.ringK = 1; b.wing = 1; b.halo = 1; b.visible = true; b.openT = 0.35; }, always: true },
 ];
-PHASE2_LINES.saint0 = ['SAINT-0', 'DEFRAGMENTING ENVIRONMENT. NON-ESSENTIAL SECTORS WILL BE DELETED.'];
+PHASE2_LINES.saint0 = ['SAINT-0', 'DEFRAGMENTING. THE FLOOR IS NON-ESSENTIAL.'];
+HOOKS.death.push(() => { if (room && room.id === 'NH7') NHR.rains = []; });
 
 // ================================================================== lore terminal in the Vestibule (the link to the Hollow Scribe)
 const NH_LORE = [
@@ -1511,4 +1710,5 @@ SPAWNS.nh_lore = (s, c) => {
 HOOKS.playerHurt.push((dmg, opt) => { if (window.__nhLog && nhIn()) window.__nhLog.push([Math.round(dmg), boss ? boss.state + ':' + (boss.move || boss.atk || '') + ':' + boss.anim.tag + ':' + boss.anim.i : '-', opt.src && opt.src.type || (opt.src === boss ? 'boss' : 'env'), Math.round(P.x - (boss ? boss.x : 0)), P.state]); return dmg; });
 
 // ================================================================== debug handles
+if (window.__game) window.__nhFan = nhS0Fan;
 if (window.__game) Object.assign(window.__game, { NHR, NH, nhEnterCyber, nhExitCyber, nhDeleteFloor, nhReinforce, nhRoom: () => room, nhGod: v => { SETTINGS.god = v; }, get nhTime() { return time; } });

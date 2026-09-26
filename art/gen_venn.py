@@ -348,16 +348,254 @@ def anim_death():
                             dissolve=(i + 1) / 8 * 1.05)))
     return seq(K)
 
+
+# ================================================================ round 2: the physical kit, AOE, the desperate dance
+def anim_string():
+    # five cuts: forward, back-hand rise, overhead, a low skim, the falling slam
+    S = dict(**WIND_OUT)
+    K = [
+        (100, dict(lean=-3, bob=-1, scy=SC((104, 72), -130, 30), hf=(92, 86), **WIND_UP)),
+        (50, dict(lean=5, scy=SC((112, 76), -34, 32), hf=(98, 80), fx=(("smear",),), **S)),
+        (60, dict(lean=8, bob=1, scy=SC((114, 82), 24, 34), hf=(100, 84), stride=0.7, fx=(("smear",),), **S)),
+        (70, dict(lean=7, bob=1, scy=SC((112, 86), 48, 34), hf=(100, 87), stride=0.6)),
+        (50, dict(lean=6, bob=1, scy=SC((113, 84), 30, 34, bs=-1), hf=(100, 86), stride=0.4, fx=(("smear",),))),
+        (60, dict(lean=0, scy=SC((110, 72), -50, 31, bs=-1), hf=(98, 76), fx=(("smear",),))),
+        (60, dict(lean=-5, bob=-1, scy=SC((104, 64), -125, 26, bs=-1), hf=(95, 70), **WIND_UP)),
+        (50, dict(lean=4, scy=SC((110, 70), -64, 30), hf=(98, 74), fx=(("smear",),), **S)),
+        (60, dict(lean=9, bob=1, scy=SC((114, 80), 18, 34), hf=(100, 84), stride=0.8, fx=(("smear",),), **S)),
+        (80, dict(lean=4, crouch=0.15, scy=SC((100, 90), 22, 40), hf=(94, 90), stride=0.2)),
+        (50, dict(lean=8, crouch=0.2, scy=SC((108, 92), 13, 40), hf=(100, 92), stride=0.8, fx=(("smear",),))),
+        (60, dict(lean=10, crouch=0.2, scy=SC((116, 92), 9, 40), hf=(104, 92), stride=1.0, fx=(("smear",), ("dust", 150, 1.2)))),
+        (90, dict(lean=6, crouch=0.1, scy=SC((110, 86), 20, 36), hf=(98, 88))),
+        (120, dict(lean=-8, bob=-2, scy=SC((101, 64), -165, 26), hf=(92, 70), eyes=0.6, **WIND_UP)),
+        (50, dict(lean=5, scy=SC((110, 70), -70, 30), hf=(98, 74), fx=(("smear",),), **S)),
+        (60, dict(lean=15, crouch=0.4, scy=SC((114, 88), 40, 32), hf=(102, 90), fx=(("smear",), ("dust", 140, 2.5)), **S)),
+        (180, dict(lean=14, crouch=0.42, scy=SC((114, 90), 44, 30), hf=(102, 91), fx=(("dust", 130, 2.5),))),
+        (130, dict(lean=6, crouch=0.2, scy=SC((110, 86), 10, 32), hf=(97, 88))),
+        (140, dict(lean=1, scy=SC((108, 82), -60, 33), hf=(94, 89))),
+    ]
+    return seq(K)
+
+
+def anim_spin():
+    # the spinning reap: the blade circles her at the waist, in front, behind, in front again
+    K = [(110, dict(lean=-4, crouch=0.1, scy=SC((98, 84), 168, 30, bs=-1, front=False), hf=(90, 86), wind=3)),
+         (160, dict(lean=-6, crouch=0.15, scy=SC((97, 86), 172, 30, bs=-1, front=False), hf=(90, 88), wind=4, eyes=0.5))]
+    for i in range(6):
+        fr = i % 2 == 0
+        K.append((55, dict(lean=3 if fr else -3, crouch=0.12, wind=-5 if fr else 5,
+                           scy=SC((110, 82), 8, 34) if fr else SC((94, 82), 172, 34, bs=-1, front=False),
+                           hf=(100, 84) if fr else (90, 84), fx=(("spinring", i),))))
+    K += [(120, dict(lean=4, crouch=0.1, scy=SC((110, 84), 20, 34), hf=(98, 88), fx=(("dust", 96, 2.0),))),
+          (140, dict(lean=1, scy=SC((108, 82), -60, 33), hf=(94, 89)))]
+    return seq(K)
+
+
+def anim_vault():
+    # she plants the butt ahead, vaults high over it and cuts down as she lands (the engine carries her)
+    K = [
+        (110, dict(lean=8, crouch=0.2, scy=SC((110, 88), -120, 16, bs=-1), hf=(100, 88))),
+        (130, dict(lean=10, crouch=0.3, scy=SC((112, 90), -110, 18, bs=-1), hf=(101, 90), eyes=0.5)),
+        (100, dict(lean=-2, bob=-2, scy=SC((106, 76), -120, 24), hf=(96, 80), wind=4, lift=4)),
+        (110, dict(lean=-6, bob=-3, scy=SC((102, 66), -150, 26), hf=(93, 72), wind=3, lift=4)),
+        (110, dict(lean=-8, bob=-3, scy=SC((101, 64), -166, 26), hf=(92, 70), wind=2, lift=3, fire=1)),
+        (50, dict(lean=6, scy=SC((110, 70), -70, 30), hf=(98, 74), wind=-4, lift=-2, fx=(("smear",),), **WIND_OUT)),
+        (60, dict(lean=14, crouch=0.4, scy=SC((114, 88), 36, 32), hf=(102, 90), wind=-5, fx=(("smear",), ("dust", 140, 2.2)), **WIND_OUT)),
+        (170, dict(lean=13, crouch=0.42, scy=SC((114, 90), 42, 30), hf=(102, 91), fx=(("dust", 130, 2.2),))),
+        (130, dict(lean=6, crouch=0.2, scy=SC((110, 86), 10, 32), hf=(97, 88))),
+        (140, dict(lean=1, scy=SC((108, 82), -60, 33), hf=(94, 89))),
+    ]
+    return seq(K)
+
+
+def anim_hook():
+    # the long hooked reach that drags you in, and the rising cut that meets you
+    K = [
+        (110, dict(lean=-4, scy=SC((100, 74), -150, 30), hf=(92, 84), **WIND_UP)),
+        (170, dict(lean=-6, bob=-1, scy=SC((99, 72), -160, 28), hf=(91, 82), eyes=0.5, **WIND_UP)),
+        (55, dict(lean=10, stride=1.0, scy=SC((116, 82), -8, 44), hf=(104, 82), fx=(("smear",),), **WIND_OUT)),
+        (110, dict(lean=12, stride=1.0, scy=SC((117, 84), 4, 44), hf=(105, 84), fx=(("smear",),), **WIND_OUT)),
+        (110, dict(lean=4, stride=0.5, scy=SC((106, 84), 6, 42), hf=(96, 84))),
+        (110, dict(lean=-2, scy=SC((102, 84), 8, 40), hf=(94, 85))),
+        (90, dict(lean=6, crouch=0.2, scy=SC((110, 88), 30, 40, bs=-1), hf=(98, 88))),
+        (50, dict(lean=2, scy=SC((113, 80), -24, 36, bs=-1), hf=(100, 82), fx=(("smear",),))),
+        (60, dict(lean=-6, bob=-2, scy=SC((108, 68), -88, 30, bs=-1), hf=(98, 72), fx=(("smear",),))),
+        (110, dict(lean=-7, bob=-2, scy=SC((104, 64), -128, 26, bs=-1), hf=(96, 70))),
+        (140, dict(lean=-3, scy=SC((106, 74), -95, 32), hf=(93, 86))),
+        (150, dict(scy=IDLE_SC(), hf=(93, 89.5))),
+    ]
+    return seq(K)
+
+
+def anim_lowsweep():
+    # a skimming cut along the floor: jump it
+    K = [
+        (100, dict(lean=4, crouch=0.2, scy=SC((96, 88), 26, 40), hf=(90, 88))),
+        (170, dict(lean=6, crouch=0.3, scy=SC((94, 90), 22, 40), hf=(88, 90), eyes=0.5)),
+        (50, dict(lean=10, crouch=0.3, scy=SC((106, 92), 14, 40), hf=(98, 92), stride=0.8, fx=(("smear",),))),
+        (60, dict(lean=12, crouch=0.3, scy=SC((116, 92), 8, 40), hf=(104, 92), stride=1.0, fx=(("smear",), ("dust", 150, 2.0)))),
+        (130, dict(lean=8, crouch=0.2, scy=SC((114, 90), 16, 38), hf=(102, 90), stride=0.6)),
+        (130, dict(lean=3, scy=SC((110, 84), -40, 33), hf=(96, 88))),
+        (140, dict(scy=IDLE_SC(), hf=(93, 89.5))),
+    ]
+    return seq(K)
+
+
+def anim_thrust():
+    # a low spear-thrust of the scythe's head (the blade hanging like a hook), then the blade rips upward
+    K = [
+        (110, dict(lean=-4, crouch=0.15, scy=SC((96, 90), 8, 48), hf=(88, 90))),
+        (170, dict(lean=-6, crouch=0.2, scy=SC((94, 91), 8, 50), hf=(86, 91), eyes=0.5)),
+        (50, dict(lean=10, crouch=0.2, stride=1.0, scy=SC((110, 92), 6, 42), hf=(100, 92), fx=(("smear",),))),
+        (80, dict(lean=13, crouch=0.2, stride=1.0, scy=SC((116, 92), 6, 40), hf=(104, 92), fx=(("smear",),))),
+        (80, dict(lean=11, crouch=0.15, stride=0.8, scy=SC((115, 90), 16, 40, bs=-1), hf=(104, 90))),
+        (50, dict(lean=2, scy=SC((113, 78), -50, 34, bs=-1), hf=(100, 80), fx=(("smear",),))),
+        (60, dict(lean=-6, bob=-2, scy=SC((107, 66), -110, 28, bs=-1), hf=(97, 71), fx=(("smear",),))),
+        (120, dict(lean=-7, bob=-2, scy=SC((104, 64), -130, 26, bs=-1), hf=(95, 70))),
+        (140, dict(lean=-2, scy=SC((106, 74), -95, 32), hf=(93, 86))),
+        (150, dict(scy=IDLE_SC(), hf=(93, 89.5))),
+    ]
+    return seq(K)
+
+
+def anim_gust():
+    # wings beat forward: a gust of rootfire
+    K = [
+        (120, dict(scy=IDLE_SC(), hf=(93, 88), wl=(286, 0.8, 1.0), wr=(-106, 0.8, 0.85))),
+        (130, dict(lean=-4, scy=IDLE_SC(-1), hf=(92, 86), wl=(300, 0.7, 1.05), wr=(-118, 0.7, 0.9), eyes=1, fire=1)),
+        (140, dict(lean=-6, scy=IDLE_SC(-1), hf=(92, 86), wl=(306, 0.65, 1.05), wr=(-122, 0.65, 0.9), fire=1.5)),
+        (60, dict(lean=6, scy=IDLE_SC(), hf=(96, 86), wl=(214, 1.3, 1.05), wr=(-30, 1.3, 0.9), wind=-6, fx=(("gust", 0.5),))),
+        (80, dict(lean=10, scy=IDLE_SC(1), hf=(98, 88), wl=(190, 1.4, 1.05), wr=(-6, 1.4, 0.9), wind=-8, fx=(("gust", 1.0),))),
+        (130, dict(lean=6, scy=IDLE_SC(), hf=(96, 88), wl=(206, 1.2, 1.0), wr=(-24, 1.2, 0.85), wind=-4)),
+        (140, dict(lean=2, scy=IDLE_SC(), hf=(94, 89), wl=(236, 1.0, 1.0), wr=(-56, 1.0, 0.8))),
+        (150, dict(scy=IDLE_SC(), hf=(93, 89.5))),
+    ]
+    return seq(K)
+
+
+def anim_plant():
+    # she drives the butt of the scythe into the floor: roots answer (lines, rows, the cage)
+    K = [
+        (110, dict(bob=-1, scy=SC((106, 70), -90, 26), hf=(96, 76), head=(0, -0.5))),
+        (130, dict(bob=-3, scy=SC((106, 60), -90, 22, fo=-7), head=(0, -1), eyes=1, fire=1, wl=(250, 1.2, 1.0), wr=(-70, 1.2, 0.85))),
+        (160, dict(bob=-3, scy=SC((106, 58), -90, 22, fo=-7), head=(0, -1), fire=1.5, wl=(244, 1.3, 1.02), wr=(-64, 1.3, 0.88), fx=(("glowheart", 0.6),))),
+        (60, dict(crouch=0.3, lean=8, scy=SC((107, 86), -88, 35, fo=-6), wl=(214, 1.3, 1.0), wr=(-34, 1.3, 0.85), fx=(("dust", 107, 2.0), ("roots", 1.0)))),
+    ]
+    for i in range(5):
+        K.append((100, dict(crouch=0.3, lean=8, scy=SC((107, 86), -88, 35, fo=-6), wl=(218 + 2 * (i % 2), 1.25, 1.0), wr=(-38, 1.25, 0.85),
+                            fire=1.2, fx=(("roots", 0.8 - i * 0.1),))))
+    K += [(130, dict(crouch=0.15, lean=3, scy=SC((107, 80), -88, 32), hf=(96, 84))),
+          (150, dict(scy=IDLE_SC(), hf=(93, 89.5)))]
+    return seq(K)
+
+
+def anim_nova():
+    # wings close about her like a bud of fire -- then open all at once
+    K = [
+        (120, dict(crouch=0.1, scy=SC((106, 80), -86, 32), hf=(96, 80), wl=(290, 0.6, 0.9), wr=(-110, 0.6, 0.75))),
+        (130, dict(crouch=0.25, scy=SC((105, 82), -86, 32), hf=(98, 82), wl=(320, 0.4, 0.8), wr=(-140, 0.4, 0.7), head=(0, 1), fx=(("glowheart", 0.5),))),
+        (160, dict(crouch=0.3, scy=SC((105, 83), -86, 32), hf=(99, 82), wl=(330, 0.35, 0.78), wr=(-150, 0.35, 0.68), head=(0, 1.5), fire=1.5, fx=(("glowheart", 1.0),))),
+        (180, dict(crouch=0.3, scy=SC((105, 83), -86, 32), hf=(99, 82), wl=(332, 0.33, 0.78), wr=(-152, 0.33, 0.68), head=(0, 1.5), fire=2, fx=(("glowheart", 1.3),))),
+        (60, dict(bob=-3, scy=SC((106, 76), -86, 30), hf=(90, 74), wl=(200, 1.5, 1.1), wr=(-20, 1.5, 0.95), head=(-0.5, -1.5), eyes=1, fx=(("novaring", 0.4),))),
+        (70, dict(bob=-3, scy=SC((106, 76), -86, 30), hf=(90, 74), wl=(196, 1.55, 1.1), wr=(-16, 1.55, 0.95), head=(-0.5, -1.5), fx=(("novaring", 0.8),))),
+        (120, dict(bob=-2, scy=SC((106, 78), -86, 31), hf=(91, 78), wl=(210, 1.4, 1.05), wr=(-30, 1.4, 0.9), fx=(("novaring", 1.0),))),
+        (140, dict(scy=SC((107, 80), -84, 32), hf=(93, 86), wl=(236, 1.1, 1.0), wr=(-56, 1.1, 0.8))),
+        (150, dict(scy=IDLE_SC(), hf=(93, 89.5))),
+    ]
+    return seq(K)
+
+
+def anim_whip():
+    # two roots lash out of her back and slam the floor ahead, near then far
+    K = [
+        (120, dict(lean=-3, scy=SC((106, 80), -80, 33), hf=(92, 86), wl=(280, 0.8, 0.95), wr=(-100, 0.8, 0.8))),
+        (160, dict(lean=-6, scy=SC((106, 80), -80, 33), hf=(92, 86), wl=(292, 0.7, 0.95), wr=(-110, 0.7, 0.8), eyes=1, fire=1)),
+        (55, dict(lean=4, scy=SC((107, 81), -76, 33), hf=(95, 86), whips=0.45, wl=(250, 0.9, 0.95), wr=(-70, 0.9, 0.8))),
+        (80, dict(lean=6, scy=SC((107, 81), -76, 33), hf=(96, 86), whips=0.7, wl=(244, 0.9, 0.95), wr=(-64, 0.9, 0.8), fx=(("dust", 150, 1.5),))),
+        (100, dict(lean=5, scy=SC((107, 81), -76, 33), hf=(95, 86), whips=0.55)),
+        (60, dict(lean=0, scy=SC((107, 81), -78, 33), hf=(94, 86), whips=0.25)),
+        (55, dict(lean=6, scy=SC((107, 81), -76, 33), hf=(96, 86), whips=1.0, wl=(240, 1.0, 0.95), wr=(-60, 1.0, 0.8))),
+        (90, dict(lean=8, scy=SC((107, 81), -76, 33), hf=(97, 86), whips=1.1, fx=(("dust", 176, 2.0),))),
+        (110, dict(lean=5, scy=SC((107, 81), -78, 33), hf=(95, 87), whips=0.6)),
+        (130, dict(lean=2, scy=SC((107, 81), -80, 33), hf=(93, 88), whips=0.2)),
+        (150, dict(scy=IDLE_SC(), hf=(93, 89.5))),
+    ]
+    return seq(K)
+
+
+def anim_cut3():
+    # phase 3: one quick, desperate cut (the blink patterns and the afterimages use it)
+    K = [
+        (170, dict(lean=-4, scy=SC((102, 70), -150, 27), hf=(91, 84), eyes=1, **WIND_UP)),
+        (45, dict(lean=6, scy=SC((112, 76), -40, 32), hf=(98, 80), fx=(("smear",),), **WIND_OUT)),
+        (55, dict(lean=9, bob=1, scy=SC((114, 82), 24, 34), hf=(100, 84), stride=0.8, fx=(("smear",),), **WIND_OUT)),
+        (110, dict(lean=8, bob=1, scy=SC((113, 86), 50, 34), hf=(100, 88), stride=0.8)),
+        (120, dict(lean=3, scy=SC((110, 84), 10, 33), hf=(96, 88))),
+    ]
+    return seq(K)
+
+
+def anim_plunge():
+    # phase 3: from above, the scythe comes straight down (the engine drops her)
+    K = [
+        (90, dict(bob=-3, lean=-8, scy=SC((101, 64), -168, 26), hf=(92, 70), wl=(276, 0.9, 1.0), wr=(-96, 0.9, 0.85), lift=3, eyes=1)),
+        (120, dict(bob=-3, lean=-9, scy=SC((101, 63), -172, 26), hf=(92, 69), wl=(262, 1.0, 1.0), wr=(-82, 1.0, 0.85), lift=3, fire=1)),
+        (50, dict(bob=-1, lean=6, scy=SC((110, 72), -70, 30), hf=(98, 76), wl=(230, 1.1, 1.0), wr=(-50, 1.1, 0.85), lift=-2, fx=(("smear",),))),
+        (60, dict(lean=12, scy=SC((114, 82), 30, 34), hf=(101, 84), wl=(216, 1.2, 1.0), wr=(-40, 1.2, 0.85), lift=-4, fx=(("smear",),))),
+        (80, dict(crouch=0.4, lean=14, scy=SC((114, 90), 58, 32), hf=(102, 92), fx=(("smear",), ("dust", 130, 2.0)))),
+        (150, dict(crouch=0.42, lean=12, scy=SC((113, 92), 62, 30), hf=(102, 93), fx=(("dust", 120, 2.5),))),
+        (140, dict(crouch=0.1, lean=3, scy=SC((108, 82), -50, 33), hf=(94, 89))),
+    ]
+    return seq(K)
+
+
+def anim_beam():
+    # phase 3: the last flame gathered at her breast and loosed in a line of white fire
+    K = [
+        (120, dict(scy=PLANT(84), hn=(106, 84), hn_dir=0)),
+        (130, dict(scy=PLANT(83), hn=(110, 78), hn_dir=0, fx=(("glowheart", 0.6),))),
+        (140, dict(scy=PLANT(83), hn=(114, 78), hn_dir=0, fx=(("glowheart", 1.0), ("orb", 2.0)), eyes=1)),
+        (160, dict(scy=PLANT(83), hn=(115, 78), hn_dir=0, fx=(("glowheart", 1.2), ("orb", 3.5), ("gather", 20, 0.7)))),
+    ]
+    for i in range(6):
+        K.append((70, dict(lean=-4 - (i % 2), scy=PLANT(83), hn=(116, 78), hn_dir=0, wind=4, fx=(("orb", 4.5 + (i % 2)),))))
+    K += [(120, dict(lean=-2, scy=PLANT(84), hn=(110, 82), hn_dir=20, fx=(("orb", 2.0),))),
+          (140, dict(scy=SC((106, 80), -80, 33), hf=(93, 89)))]
+    return seq(K)
+
+
+def anim_grab():
+    # phase 3: she lets the scythe hang in the air and reaches for you -- an embrace that burns
+    FLOAT = lambda dy=0: SC((88, 70 + dy), -100, 30, hand="none", front=False)
+    K = [
+        (110, dict(lean=-4, scy=FLOAT(), hn=(104, 84), hf=(96, 84), eyes=1)),
+        (170, dict(lean=-6, scy=FLOAT(-1), hn=(102, 82), hf=(95, 82), fire=1)),
+        (60, dict(lean=16, crouch=0.25, stride=1.0, scy=FLOAT(1), hn=(118, 92), hn_dir=10, hf=(109, 92), hf_dir=10, fx=(("grab",),))),
+        (90, dict(lean=18, crouch=0.28, stride=1.0, scy=FLOAT(1), hn=(119, 94), hn_dir=10, hf=(110, 93), hf_dir=10, fx=(("grab",),))),
+    ]
+    for i in range(6):   # the embrace (loops while she holds you)
+        K.append((110, dict(lean=6, crouch=0.1, scy=FLOAT(round(0.6 * math.sin(i))), hn=(110, 80), hn_dir=180, hf=(106, 82), hf_dir=180,
+                            head=(0.5, 1.5), fire=1.5 + 0.5 * (i % 2), fx=(("glowheart", 0.8 + 0.3 * (i % 2)),))))
+    K += [(70, dict(lean=-4, bob=-2, scy=FLOAT(), hn=(114, 70), hf=(92, 72), fx=(("novaring", 0.6),))),
+          (130, dict(lean=-2, scy=FLOAT(), hn=(106, 84), hf=(94, 84))),
+          (150, dict(scy=IDLE_SC(), hf=(93, 89.5)))]
+    return seq(K)
+
 ANIMS = {"idle": (anim_idle, True), "glide": (anim_glide, True), "sweep": (anim_sweep, False), "reap": (anim_reap, False),
          "rising": (anim_rising, False), "heal": (anim_heal, False), "cast": (anim_cast, False),
          "stagger": (anim_stagger, False), "summon": (anim_summon, False),
          "lance": (anim_lance, False), "absorb": (anim_absorb, False), "dive": (anim_dive, False),
          "transform": (anim_transform, False), "blink": (anim_blink, False), "flurry": (anim_flurry, False),
-         "slam": (anim_slam, False), "death": (anim_death, False)}
+         "slam": (anim_slam, False), "death": (anim_death, False),
+         "string": (anim_string, False), "spin": (anim_spin, False), "vault": (anim_vault, False), "hook": (anim_hook, False),
+         "lowsweep": (anim_lowsweep, False), "thrust": (anim_thrust, False), "gust": (anim_gust, False), "plant": (anim_plant, False),
+         "nova": (anim_nova, False), "whip": (anim_whip, False), "cut3": (anim_cut3, False), "plunge": (anim_plunge, False),
+         "beam": (anim_beam, False), "grab": (anim_grab, False)}
 # which tags each phase's sheets carry
-PHASE_TAGS = {1: ["idle", "glide", "sweep", "reap", "rising", "heal", "cast", "stagger", "summon"],
-              2: ["idle", "glide", "sweep", "reap", "rising", "cast", "lance", "absorb", "dive", "stagger", "transform"],
-              3: ["idle", "glide", "flurry", "blink", "slam", "stagger", "death"]}
+PHASE_TAGS = {1: ["idle", "glide", "sweep", "reap", "rising", "heal", "cast", "stagger", "summon", "string", "spin", "vault", "hook", "lowsweep", "thrust"],
+              2: ["idle", "glide", "sweep", "reap", "rising", "cast", "lance", "absorb", "dive", "stagger", "transform", "string", "spin", "vault", "hook", "lowsweep", "thrust",
+                  "gust", "plant", "nova", "whip"],
+              3: ["idle", "glide", "flurry", "blink", "slam", "stagger", "death", "string", "spin", "cut3", "plunge", "beam", "cast", "grab"]}
 
 
 
@@ -413,6 +651,43 @@ def apply_fx(FX, info, p, prev, fi, phase):
         elif k == "glowheart":
             c = info["heart"]
             fx_orb(F, c, 1.5 + 2.5 * f[1], fi)
+        elif k == "spinring":
+            # the blade's circle about her waist: the front half over her, the back half under
+            j = info["j"]; c = (j["Wa"][0], j["Wa"][1] + 4); i = f[1]
+            pts = set()
+            for a in range(0, 360, 3):
+                front = math.sin(math.radians(a)) > 0
+                if (a // 60 + i) % 3 == 0:
+                    continue
+                q = (c[0] + math.cos(math.radians(a)) * 46, c[1] + math.sin(math.radians(a)) * 7)
+                for dy in (0, 1):
+                    F.put([(q[0], q[1] + dy)], "L" if front and dy == 0 else "F3", 255 if front else 130)
+                    pts.add(R.ipt((q[0], q[1] + dy)))
+            info["extra_hit"] |= pts
+        elif k == "gust":
+            for tp in info.get("wing_tips", []):
+                for s_ in range(int(8 * f[1])):
+                    F.put([(tp[0] + s_ * 2 + R.hash01(s_, fi, 61) * 3, tp[1] + R.hash01(s_, fi, 62) * 4 - 2)], "F2" if s_ % 2 else "F3", 190)
+        elif k == "novaring":
+            c = info["heart"]; rr = 8 + 40 * f[1]
+            for a in range(0, 360, 4):
+                q = R.add(c, (math.cos(math.radians(a)) * rr, math.sin(math.radians(a)) * rr * 0.9))
+                if q[1] <= FLOOR:
+                    F.put([q], "L" if f[1] < 0.6 else "F3", 255 if f[1] < 0.9 else 190)
+        elif k == "roots":
+            j = info["j"]
+            for side in (-1, 1):
+                for n in range(3):
+                    x = j["Hm"][0] + 12 + side * (14 + n * 16)
+                    h = int(3 + 6 * f[1] * (1 - n * 0.25))
+                    for y in range(FLOOR - h, FLOOR + 1):
+                        F.put([(x, y)], "C3" if y > FLOOR - h + 1 else "F2")
+                    F.put([(x, FLOOR - h - 1)], "F3")
+        elif k == "grab":
+            for q in (info["hand_n"], info["hand_f"]):
+                for dx in range(-5, 6):
+                    for dy in range(-6, int(FLOOR - q[1]) + 1):
+                        info["extra_hit"].add(R.ipt((q[0] + dx, q[1] + dy)))
         elif k == "healburst":
             j = info["j"]
             c = (j["Ch"][0], j["Ch"][1] + 4)
@@ -469,13 +744,18 @@ def preview_strip(name, frames, scale=4, bg=(92, 92, 98, 255)):
 ATTACKS = {  # tag -> active windows (frame index ranges, inclusive) whose hit rects come from the blade/smear/lances
     "sweep": [(3, 5)], "reap": [(2, 4), (6, 8)], "rising": [(3, 5)], "lance": [(3, 6)], "dive": [(7, 9)],
     "flurry": [(1, 2), (5, 6), (9, 10)], "slam": [(5, 6)],
+    "string": [(1, 2), (4, 5), (7, 8), (10, 11), (14, 15)], "spin": [(2, 7)], "vault": [(5, 6)], "hook": [(2, 3), (7, 8)],
+    "lowsweep": [(2, 3)], "thrust": [(2, 3), (5, 6)], "whip": [(2, 3), (6, 7)], "cut3": [(1, 2)], "plunge": [(2, 4)], "grab": [(2, 3)],
 }
-TELEGRAPH = {"sweep": [2], "reap": [1], "rising": [2], "lance": [2], "dive": [6], "flurry": [0, 4, 8], "slam": [4]}
-SPAWN = {"rising": 4, "cast": 6, "heal": 8, "dive": 9, "slam": 6, "absorb": 4, "lance": 4, "summon": 9, "transform": 9}
+TELEGRAPH = {"sweep": [2], "reap": [1], "rising": [2], "lance": [2], "dive": [6], "flurry": [0, 4, 8], "slam": [4],
+             "string": [0, 13], "spin": [1], "vault": [1, 4], "hook": [1], "lowsweep": [1], "thrust": [1, 4], "whip": [1],
+             "cut3": [0], "plunge": [1], "grab": [1], "gust": [2], "nova": [3], "beam": [3], "plant": [2]}
+SPAWN = {"rising": 4, "cast": 6, "heal": 8, "dive": 9, "slam": 6, "absorb": 4, "lance": 4, "summon": 9, "transform": 9,
+         "gust": 4, "plant": 3, "nova": 4, "beam": 4, "grab": 10, "vault": 6, "plunge": 4, "string": 15}
 
 
 def hit_pts(inf):
-    pts = set(inf.get("blade_px", ())) | set(inf.get("smear", ())) | set(inf.get("lance_px", ()))
+    pts = set(inf.get("blade_px", ())) | set(inf.get("smear", ())) | set(inf.get("lance_px", ())) | set(inf.get("whip_px", ())) | set(inf.get("extra_hit", ()))
     pts = {q for q in pts if q[1] <= FLOOR}
     if pts:    # the shaft sweeps the space between her hands and the blade too
         pts.add(R.ipt(inf["hand_n"]))
@@ -513,6 +793,9 @@ def main():
             print("built", t, ph, len(fr), flush=True)
             # per-phase hit rects (phase 2 blades are longer; lances only exist there)
             if t in ATTACKS:
+                if t in ("whip", "grab"):
+                    for k in range(len(inf)):
+                        inf[k] = dict(inf[k]); inf[k]["blade_px"] = set(); inf[k]["smear"] = set()
                 wins = []
                 for a, b in ATTACKS[t]:
                     rects = {}

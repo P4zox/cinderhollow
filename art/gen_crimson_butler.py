@@ -37,7 +37,7 @@ def a_idle():
     for i in range(6):
         b = (0.0, 0.35, 0.7, 0.9, 0.7, 0.35)[i]
         fr.append((190, P_(P=(55.5, 50.5 + b * 0.3), C=(56.4, 33.2 + b * 0.8), Hd=(58.4, 24.6 + b * 0.9),
-                           hf=(64.0, 51.5 + b * 0.4), wang=52 + b * 1.2)))
+                           hf=(65.0, 50.5 + b * 0.4), wang=38 + b * 1.2)))
     return fr
 
 
@@ -63,11 +63,18 @@ def a_walk():
         sway = math.sin(2 * math.pi * ph)
         fr.append((115, P_(P=(55.8, 51.1 + bob * 0.5), C=(57.0, 33.8 + bob * 0.5),
                            Hd=(59.0, 25.2 + bob * 0.5), ff=(56.0 + xf, F_ - lf), fb=(56.0 + xb, F_ - lb),
-                           hf=(64.4 + 0.6 * sway, 51.4), wang=54 + 2 * sway)))
+                           hf=(65.4 + 0.6 * sway, 50.4), wang=40 + 2 * sway)))
     return fr
 
 
 STAND = dict(P=(55.5, 50.5), C=(56.4, 33.2), Hd=(58.4, 24.6))
+REST = dict(hf=(65.0, 50.5), wang=38)          # blade resting low and forward, tip just clear of the floor
+
+
+def tip(hf, wang, u=None):
+    """Point along the serving blade (default: its tip) — used to place the telegraph glints."""
+    u = B.BLADE["end"] if u is None else u
+    return (hf[0] + u * math.cos(math.radians(wang)), hf[1] + u * math.sin(math.radians(wang)))
 
 
 def a_slash():
@@ -78,19 +85,19 @@ def a_slash():
     rise = dict(P=(58.6, 51.4), C=(62.0, 34.2), Hd=(65.0, 26.0), hup=(0.3, -1), fb=(50.5, F_), ff=(67.5, F_))
     return [
         (110, P_(P=(55.2, 51.0), C=(55.9, 33.6), Hd=(57.8, 25.0), hf=(63.0, 42.0), wang=-38)),
-        (140, P_(**wind, hf=(54.5, 20.0), wang=-146, wl="WeaponBack")),
-        (270, P_(**dict(wind, C=(54.0, 34.0), Hd=(55.4, 25.5)), hf=(53.8, 19.4), wang=-152, wl="WeaponBack", eye=2,
-                 brow=1, glint=(26.4, 4.8))),
+        (140, P_(**wind, hf=(54.5, 20.0), wang=-156, wl="WeaponBack")),
+        (270, P_(**dict(wind, C=(54.0, 34.0), Hd=(55.4, 25.5)), hf=(53.8, 19.4), wang=-160, wl="WeaponBack", eye=2,
+                 brow=1, glint=tip((53.8, 19.4), -160, 38.5))),
         (60, P_(**step, hf=(74.0, 46.0), wang=36, wind=4,
-                smear=dict(g0=(53.8, 19.4), a0=-152, mid=(68.0, 24.0), start=0.1))),
-        (100, P_(**step, hf=(70.0, 55.0), wang=92, wind=2, smear=dict(g0=(74.0, 46.0), a0=36, u0=24, taper=0.4))),
+                smear=dict(g0=(53.8, 19.4), a0=-160, mid=(68.0, 24.0), start=0.1))),
+        (100, P_(**step, hf=(68.0, 54.0), wang=50, wind=2, smear=dict(g0=(74.0, 46.0), a0=36, u0=30, taper=0.4))),
         (110, P_(**coil, hf=(61.0, 57.0), wang=168)),
         (60, P_(**rise, hf=(76.0, 41.0), wang=-14, wind=4,
                 smear=dict(g0=(61.0, 57.0), a0=168, mid=(70.0, 58.0), start=0.12))),
-        (100, P_(**rise, hf=(71.0, 31.0), wang=-68, wind=2, smear=dict(g0=(76.0, 41.0), a0=-14, u0=24, taper=0.3))),
+        (100, P_(**rise, hf=(71.0, 34.0), wang=-52, wind=2, smear=dict(g0=(76.0, 41.0), a0=-14, u0=30, taper=0.3))),
         (150, P_(P=(56.8, 51.0), C=(58.4, 33.8), Hd=(60.6, 25.4), hup=(0.15, -1), fb=(50.5, F_), ff=(65.0, F_ - 2.5),
                  hf=(66.0, 44.0), wang=-12)),
-        (170, P_(**STAND, hf=(64.0, 51.0), wang=48)),
+        (170, P_(**STAND, **REST)),
     ]
 
 
@@ -104,14 +111,14 @@ def a_thrust():
         (130, P_(**back, hf=(59.0, 42.0), wang=-3)),
         (140, P_(**dict(back, P=(52.0, 52.6), C=(51.4, 35.6), Hd=(52.9, 27.0)), hf=(56.0, 41.6), wang=-2)),
         (290, P_(**dict(back, P=(51.8, 52.8), C=(51.0, 35.9), Hd=(52.5, 27.3)), hf=(55.5, 41.6), wang=-2, eye=2,
-                 brow=1, glint=(86.5, 40.6))),
+                 brow=1, glint=tip((55.5, 41.6), -2, 38.5))),
         (60, P_(P=(56.8, 52.6), C=(59.8, 35.6), Hd=(62.8, 27.4), hup=(0.2, -1), fb=(50.0, F_), ff=(71.0, F_ - 3.5),
                 hf=(73.0, 45.0), wang=10, wind=3, thrust=dict(u0=8, u1=30, offs=(-2, 2)))),
         (80, P_(**lunge, hf=(81.0, 48.0), wang=17, wind=4, thrust=dict(u0=6, u1=34, offs=(-3, 3)))),
         (150, P_(**lunge, hf=(81.5, 48.3), wang=17, wind=2, thrust=dict(u0=14, u1=30, offs=(-2, 2), flash=31))),
         (150, P_(P=(57.4, 53.2), C=(60.8, 36.4), Hd=(63.6, 28.0), hup=(0.2, -1), fb=(50.0, F_), ff=(70.0, F_ - 3.0),
                  hf=(73.0, 46.0), wang=12)),
-        (170, P_(**STAND, hf=(64.0, 51.0), wang=46)),
+        (170, P_(**STAND, **REST)),
     ]
 
 
@@ -144,7 +151,7 @@ def a_flourish():
         (120, P_(**low, hf=(55.0, 42.0), wang=-176, wingB=0.6, wingF=0.55, wl="WeaponBack")),
         (140, P_(**low, hf=(48.0, 44.0), wang=180, wingB=1.0, wingF=1.0, wl="WeaponBack")),
         (270, P_(**dict(low, C=(55.0, 35.6), Hd=(56.6, 27.0)), hf=(47.0, 44.5), wang=180, wingB=1.0, wingF=1.0,
-                 wl="WeaponBack", eye=2, brow=1, glint=(16.5, 44.5))),
+                 wl="WeaponBack", eye=2, brow=1, glint=tip((47.0, 44.5), 180, 38.5))),
         (70, P_(**spin, hf=(46.0, 52.0), wang=176, wingB=1.0, wingF=1.0, wl="WeaponBack", wind=3)),
         (60, P_(**spin, face=-1, hf=(47.0, 55.0), wang=178, wingB=1.0, wingF=1.0, wl="WeaponBack", wind=4,
                 flat=[dict(ring_n, th0=10, th1=-150, w=3.0, fade=0.6)])),
@@ -155,7 +162,7 @@ def a_flourish():
         (80, P_(**spin, hf=(71.0, 57.0), wang=10, wingB=0.95, wingF=0.95, wind=4,
                 flat=[dict(ring_n, th0=182, th1=14, w=6.0), dict(ring_n, th0=0, th1=-178, w=3.5, fade=0.4)])),
         (120, P_(**low, hf=(68.0, 50.0), wang=38, wingB=0.6, wingF=0.55)),
-        (140, P_(**STAND, hf=(65.0, 51.0), wang=46, wingB=0.25, wingF=0.2)),
+        (140, P_(**STAND, **REST, wingB=0.25, wingF=0.2)),
         (170, P_(**STAND)),
     ]
 
@@ -168,7 +175,7 @@ def vanish_post(s, seed, fi, center, eye):
 
 def a_vanish():
     """f0-3: the body breaks into a swarm of bats (f3 nearly empty); the engine teleports him; f4-7 he re-forms."""
-    base = dict(P=(55.3, 51.4), C=(55.8, 34.2), Hd=(57.8, 25.6), hup=(0.05, -1), hf=(63.5, 52.0), wang=56)
+    base = dict(P=(55.3, 51.4), C=(55.8, 34.2), Hd=(57.8, 25.6), hup=(0.05, -1), hf=(64.5, 51.2), wang=38)
     cen = (56.0, 44.0)
     eye = (60, 25)
     fr = []
@@ -183,16 +190,16 @@ def a_vanish():
 def a_backstep():
     ls = dict(fb=(50.5, F_), ff=(61.5, F_))
     return [
-        (90, P_(P=(55.0, 53.6), C=(56.6, 36.4), Hd=(59.0, 27.8), hup=(0.15, -1), **ls, hf=(63.0, 53.0), wang=52)),
+        (90, P_(P=(55.0, 53.6), C=(56.6, 36.4), Hd=(59.0, 27.8), hup=(0.15, -1), **ls, hf=(64.0, 52.0), wang=37)),
         (80, up(P_(P=(54.2, 51.6), C=(53.8, 34.4), Hd=(55.4, 25.9), hup=(-0.12, -1), fb=(49.5, F_), ff=(61.0, F_ - 2.5),
                    hf=(61.5, 50.0), wang=48, wingB=0.2, wingF=0.2, dust=1, wind=-3), 1)),
         (110, up(P_(P=(54.0, 51.0), C=(53.2, 34.0), Hd=(54.6, 25.6), hup=(-0.15, -1), fb=(49.0, F_ - 2.0),
                     ff=(59.5, F_ - 3.5), hf=(61.0, 48.5), wang=44, wingB=0.35, wingF=0.3, wind=-5), 5)),
         (100, up(P_(P=(54.4, 51.0), C=(54.2, 33.8), Hd=(56.0, 25.2), hup=(-0.05, -1), fb=(49.5, F_ - 0.5),
                     ff=(60.5, F_ - 2.0), hf=(62.0, 49.5), wang=48, wingB=0.25, wingF=0.2, wind=-3), 2)),
-        (110, P_(P=(55.0, 54.0), C=(56.4, 36.8), Hd=(58.8, 28.2), hup=(0.12, -1), **ls, hf=(63.0, 53.5), wang=54,
+        (110, P_(P=(55.0, 54.0), C=(56.4, 36.8), Hd=(58.8, 28.2), hup=(0.12, -1), **ls, hf=(64.0, 52.5), wang=37,
                  dust=1)),
-        (160, P_(**STAND, hf=(64.0, 51.5), wang=52, dust=2)),
+        (160, P_(**STAND, **REST, dust=2)),
     ]
 
 
@@ -210,7 +217,7 @@ def kneel(P, C, Hd, **kw):
     """One knee down: the back knee on the floor behind, the back foot's toe planted further back; the front leg
     (IK) folds up in front.  Knee and foot are placed so both leg segments keep their exact length."""
     up_ = (C[0] - P[0], C[1] - P[1])
-    hB = K.basis(P, up_)(-1.5, 0.8)
+    hB = K.basis(P, up_)(B.HIP_B, 0.8)
     L = B.LEG
     ky = F_ - 2.2
     kx = hB[0] - math.sqrt(max(0.0, L * L - (ky - hB[1]) ** 2))
@@ -259,9 +266,27 @@ def a_death():
     return fr
 
 
-TAGDEFS = [("idle", a_idle), ("walk", a_walk), ("slash", a_slash), ("thrust", a_thrust), ("serve", a_serve),
-           ("flourish", a_flourish), ("vanish", a_vanish), ("backstep", a_backstep), ("stagger", a_stagger),
-           ("death", a_death)]
+STANCE = 1.5      # every planted stance is this much wider per foot than the pose keys (a stronger, wider base)
+
+
+def widen(fn):
+    """Spread both feet by STANCE (the same offset in every frame, so no foot ever slides between frames).
+    Kneeling frames keep their IK-exact back knee/foot and only move the front foot."""
+    def g():
+        out = []
+        for ms, p in fn():
+            q = dict(p)
+            if q.get("kb") is None:
+                q["fb"] = (q["fb"][0] - STANCE, q["fb"][1])
+            q["ff"] = (q["ff"][0] + STANCE, q["ff"][1])
+            out.append((ms, q))
+        return out
+    return g
+
+
+TAGDEFS = [("idle", widen(a_idle)), ("walk", a_walk), ("slash", widen(a_slash)), ("thrust", widen(a_thrust)),
+           ("serve", widen(a_serve)), ("flourish", widen(a_flourish)), ("vanish", widen(a_vanish)),
+           ("backstep", widen(a_backstep)), ("stagger", widen(a_stagger)), ("death", widen(a_death))]
 COUNTS = dict(idle=6, walk=8, slash=10, thrust=9, serve=10, flourish=12, vanish=8, backstep=6, stagger=4, death=10)
 LOOPS = ("idle", "walk")
 
@@ -276,7 +301,7 @@ def check_proportions():
             if abs(t - 17.3) > 1.0 or abs(n - 8.9) > 1.0:
                 bad.append((tag, k, round(t, 1), round(n, 1)))
             up_ = (p["C"][0] - p["P"][0], p["C"][1] - p["P"][1])
-            for a, ft in ((-1.5, p["fb"]), (1.3, p["ff"])):
+            for a, ft in ((B.HIP_B, p["fb"]), (B.HIP_F, p["ff"])):
                 hip = K.basis(p["P"], up_)(a * p["face"], 0.8)
                 d = math.dist(hip, (ft[0], ft[1] - 1.6))
                 if d > 2 * B.LEG + 0.3:
@@ -319,7 +344,7 @@ def build_meta(infos):
         },
         "notes": "The Butler (mini-boss). Faces right, anchor = feet (x 56). 'hit' = union of the per-frame 'rects' over "
                  "the inclusive active range (each reaches the floor). slash: two windows (descending diagonal f3, "
-                 "rising cut f6). thrust: fencing lunge drawn in place, the front foot lands ~24px ahead of the anchor "
+                 "rising cut f6). thrust: fencing lunge drawn in place, the front foot lands ~26px ahead of the anchor "
                  "(the engine may slide him forward ~12-20px over f4-f5). flourish: coat-wings open (f1-3, hold f3), "
                  "he spins twice (mirrored frames 5 and 7): the hit covers BOTH sides of him on f6-f8. serve: three "
                  "silver knives released from the off hand on f6 at spawn.at, fanned at dirs_deg (0 = straight ahead, "

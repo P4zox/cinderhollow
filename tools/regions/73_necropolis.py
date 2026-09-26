@@ -90,14 +90,14 @@ for x, y, ch in [(3, 1, 'x'), (16, 1, 'x'), (9, 41, 'b')]:
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- NV4 The Tolling Streets (bridges, a bell-hung platform, the sealed stair's gate)
-r = Room('NV4', 'The Tolling Streets', 'necropolis', 58, 91, 72, 20, indoor=True, chests=['w:gravechain'],
+r = Room('NV4', 'The Tolling Streets', 'necropolis', 58, 91, 72, 20, indoor=True, chests=['w:gravechain'], shrine='Yard Gate Shrine',
          bells=dict(every=5.5, warn=1.4),
          spawns=[dict(t='nv_bell', x=31, y=2),
                  dict(t='nv_plat', x=36, y=17, w=3, dx=7),
-                 dict(t='enemy', type='nv_noble', x=10, y=16), dict(t='enemy', type='nv_noble', x=50, y=16),
+                 dict(t='enemy', type='nv_noble', x=12, y=16), dict(t='enemy', type='nv_noble', x=50, y=16),
                  dict(t='enemy', type='nv_ringer', x=66, y=16), dict(t='enemy', type='nv_hound', x=30, y=16),
                  dict(t='enemy', type='nv_ringer', x=27, y=8),
-                 _nv_deco('statue', 5, 16), _nv_deco('coffin', 15, 16), _nv_deco('banner', 12, 2), _nv_deco('banner', 48, 2),
+                 _nv_deco('statue', 9, 16), _nv_deco('coffin', 17, 16), _nv_deco('banner', 12, 2), _nv_deco('banner', 48, 2),
                  _nv_deco('brazier', 33, 16), _nv_deco('brazier', 54, 16), _nv_deco('candles', 68, 16), _nv_deco('skulls', 64, 16),
                  _nv_deco('candles', 31, 8), _nv_deco('skulls', 17, 8)])
 r.walls().open('W', 13, 16).open('E', 13, 16)
@@ -118,7 +118,7 @@ r.put(62, 1, 'G').put(65, 4, 'L')
 r.fill(57, 2, 58, 2, '=')
 r.fill(66, 14, 68, 14, '=').fill(69, 11, 70, 11, '=').fill(68, 8, 69, 8, '=')      # climb from the street to the ledge
 r.fill(57, 0, 61, 1, '.')                                 # open to the stair above
-for x, y, ch in [(40, 2, 'x'), (6, 2, 'x'), (67, 2, 'x'), (52, 16, 'b')]:
+for x, y, ch in [(40, 2, 'x'), (6, 2, 'x'), (67, 2, 'x'), (52, 16, 'b'), (5, 16, 'S')]:   # shrine before the Headsman's Yard
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- NV5 The Headsman's Yard (the Twin Executioners)
@@ -136,12 +136,12 @@ r = Room('NV6', 'The Hollow Court', 'necropolis', -14, 93, 36, 18, indoor=True, 
          spawns=[dict(t='enemy', type='nv_noble', x=12, y=14), dict(t='enemy', type='nv_noble', x=20, y=7),
                  dict(t='enemy', type='nv_ringer', x=8, y=7),
                  _nv_deco('banner', 6, 2), _nv_deco('banner', 18, 2), _nv_deco('banner', 29, 2),
-                 _nv_deco('statue', 3, 14), _nv_deco('brazier', 15, 14), _nv_deco('candles', 33, 14), _nv_deco('coffin', 23, 14)])
+                 _nv_deco('statue', 31, 14), _nv_deco('brazier', 15, 14), _nv_deco('candles', 33, 14), _nv_deco('coffin', 23, 14)])
 r.walls().open('W', 11, 14).open('E', 11, 14)
 r.fill(0, 15, 35, 17).fill(0, 0, 35, 1)
 r.fill(4, 8, 24, 8).fill(24, 9, 24, 10)                  # the gallery of the court
 r.fill(25, 12, 27, 12, '=').fill(25, 9, 27, 9, '=')     # up to the gallery
-r.put(30, 14, 'S').put(14, 7, 'i').put(5, 7, 'C').put(21, 14, 'C').put(26, 14, 'g').put(10, 7, 'g')
+r.put(5, 14, 'S').put(14, 7, 'i').put(5, 7, 'C').put(21, 14, 'C').put(26, 14, 'g').put(10, 7, 'g')   # the Court Shrine sits by the throne-room door
 for x, y, ch in [(12, 2, 'x'), (24, 2, 'x')]:
     r.put(x, y, ch)
 

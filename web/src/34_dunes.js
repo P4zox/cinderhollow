@@ -14,7 +14,7 @@ const duRoom = () => room && room.def.biome === 'dunes';
 // per-room lists are reset lazily: SPAWNS run before HOOKS.enter, so whichever touches a new room first resets them
 function duFresh() {
   if (DU.roomRef === room) return;
-  DU.roomRef = room; DU.falls = []; DU.altars = []; DU.storm = null; DU.colossus = null; DU.zones = []; DU.shots = []; DU.haz = []; DU.marks = [];
+  DU.roomRef = room; DU.falls = []; DU.altars = []; DU.storm = null; DU.colossus = null; DU.zones = []; DU.shots = []; DU.haz = []; DU.marks = []; DU.blasters = [];
 }
 const duDmg = d => BOSS_DMG * d * NGP.dmg;
 const duFx = (...n) => fxOr(...n.map(k => k && (k.startsWith('fx_') ? k.slice(3) : k)));
@@ -322,9 +322,10 @@ function duDrawBeam(x, y0, y1, k = 1, w = 8, warn = false) {   // a vertical sha
 SPAWNS.du_storm = (s, c) => { duFresh(); DU.storm = { t: 3, st: 'calm', dir: s.dir || 1, k: 0, n: 0 }; };
 function duUpdateStorm(dt) {
   const S = DU.storm; if (!S) return;
-  if (S.boss) {   // the boss storm: always up, gusts swing back and forth
+  if (S.boss) {   // the boss storm: always up, gusts swing back and forth; sand walls + lightning
     S.k = approach(S.k, S.on ? 1 : 0, dt * 0.7); S.t += dt;
     if (S.t > 4.5) { S.t = 0; S.dir *= -1; }
+    duStormBoss(S, dt);
   } else {
     S.t -= dt;
     if (S.t <= 0) {
@@ -338,18 +339,27 @@ function duUpdateStorm(dt) {
   }
   const k = S.k; if (k <= 0.01) return;
   if (P.state !== 'dead' && P.state !== 'hook' && P.state !== 'rest') P.pushVx = (P.pushVx || 0) + S.dir * (P.ground ? 52 : 72) * k * (S.boss ? 0.7 : 1);
-  for (let i = 0; i < Math.round(9 * k); i++) particles.push({ x: S.dir > 0 ? cam.x - 10 : cam.x + W + 10, y: cam.y + rand(0, H), vx: S.dir * rand(180, 320), vy: rand(-10, 30), life: rand(1.2, 2.2), kind: Math.random() < 0.6 ? 'sand' : 'sandd' });
+  for (let i = 0; i < Math.round((S.boss ? 16 : 9) * k); i++) particles.push({ x: S.dir > 0 ? cam.x - 10 : cam.x + W + 10, y: cam.y + rand(0, H), vx: S.dir * rand(180, 320), vy: rand(-10, 30), life: rand(1.2, 2.2), kind: Math.random() < 0.6 ? 'sand' : 'sandd' });
 }
 function duDrawStormOverlay() {
   const S = DU.storm; if (!S || S.k <= 0.01) return;
-  const k = S.k;
+  const k = S.k, n = S.boss ? 70 : 26;
   g.fillStyle = S.boss ? `rgba(46,28,12,${0.42 * k})` : `rgba(150,104,52,${0.3 * k})`; g.fillRect(0, 0, W, H);
-  g.save(); g.globalAlpha = 0.5 * k;
-  for (let i = 0; i < 26; i++) {
-    const y = (i * 37 + Math.floor(time * 12) * 5) % H, len = 20 + (i * 13) % 50, x = ((i * 97 + time * 400 * S.dir) % (W + 80) + W + 80) % (W + 80) - 40;
+  if (S.boss) {   // drifting bands of thicker sand rolling through the dark
+    for (let i = 0; i < 4; i++) {
+      const y = ((i * 71 + time * 9 * (i + 1)) % (H + 60)) - 30, x = ((time * 160 * S.dir + i * 173) % (W * 2) + W * 2) % (W * 2) - W / 2;
+      const gr = g.createLinearGradient(0, y - 24, 0, y + 24);
+      gr.addColorStop(0, 'rgba(120,80,40,0)'); gr.addColorStop(0.5, `rgba(150,104,56,${0.28 * k})`); gr.addColorStop(1, 'rgba(120,80,40,0)');
+      g.fillStyle = gr; g.fillRect(x - 200, y - 24, 400, 48);
+    }
+  }
+  g.save(); g.globalAlpha = 0.55 * k;
+  for (let i = 0; i < n; i++) {
+    const y = (i * 37 + Math.floor(time * 12) * 5) % H, len = 20 + (i * 13) % 50, x = ((i * 97 + time * (400 + (i % 5) * 60) * S.dir) % (W + 80) + W + 80) % (W + 80) - 40;
     g.fillStyle = i % 3 ? 'rgba(230,190,120,0.6)' : 'rgba(120,80,40,0.6)'; g.fillRect(Math.round(x), y, len, 1);
   }
   g.restore();
+  if (S.flash > 0) { g.fillStyle = `rgba(200,215,255,${0.35 * S.flash})`; g.fillRect(0, 0, W, H); }
 }
 // ---- the buried colossus (DU3): a sun-king's face the size of a house, painted into the room's back layer
 SPAWNS.du_colossus = (s, c) => { duFresh(); DU.colossus = { x: s.x * TILE + 8, y: (s.y + 1) * TILE }; };
@@ -385,6 +395,7 @@ HOOKS.update.push(dt => {
   duEnemySand(dt);
   duUpdateZones(dt);
   duUpdateShots(dt);
+  duUpdateBlasters(dt);
   DU.safeT -= dt;
   if (DU.safeT <= 0 && duSafeHere()) { DU.safe = { x: P.x, y: P.y }; DU.safeT = 0.25; }
   if (DU.safe) P.safe = DU.safe;
@@ -416,6 +427,8 @@ HOOKS.render.push(() => {
     if (a.st === 'fire') duDrawBeam(a.x, a.y, a.bot, 1, 8);
   }
   duDrawShots();
+  duDrawStormWalls();
+  duDrawBlasters();
   // sun shafts through the rifts (open dune rooms only)
   if (!['DU5', 'DU6', 'DU7', 'DU8'].includes(room.id) && !(DU.storm && DU.storm.k > 0.5)) {
     g.save(); g.globalCompositeOperation = 'lighter';
@@ -470,6 +483,101 @@ function duDrawShots() {
   for (const h of DU.haz) if (!(h.delay > 0) && h.draw) h.draw(h);
   for (const s of DU.shots) if (s.draw) s.draw(s); else { g.fillStyle = '#ffe9a0'; g.fillRect(Math.round(s.x) - 2, Math.round(s.y) - 2, 4, 4); addLight(s.x, s.y, 30, '255,210,120', 0.8); }
 }
+// ---- the sun-skulls (Pharaoh): {x, y, ang, a1?, sweep?, delay, tel, fire, w}. appear 0.3s -> charge (aim line) -> fire -> vanish
+const DU_SK = { appear: 0.3, vanish: 0.25 };
+function duBlaster(o) { const b = { t: -(o.delay || 0), tel: 0.8, fire: 0.5, w: 9, dmg: duDmg(32), ...o, a0: o.ang, id: ++hazardId }; DU.blasters.push(b); sfx.glint(); return b; }
+function duBeamLen(x, y, a, max = 760) { const dx = Math.cos(a), dy = Math.sin(a); let L = 12; while (L < max && !solidAtPx(x + dx * L, y + dy * L)) L += 6; return L; }
+function duSkullMouth(b) { return { x: b.x + Math.cos(b.ang) * 16 - Math.sin(b.ang) * 2, y: b.y + Math.sin(b.ang) * 16 + Math.cos(b.ang) * 2 }; }
+function duUpdateBlasters(dt) {
+  const hb = playerHurtbox();
+  for (const b of DU.blasters) {
+    const prev = b.t; b.t += dt;
+    if (b.t < 0) continue;
+    const t0 = DU_SK.appear, t1 = t0 + b.tel, t2 = t1 + b.fire;
+    if (prev < 0) { for (let i = 0; i < 10; i++) particles.push({ x: b.x + rand(-14, 14), y: b.y + rand(-10, 10), vx: rand(-20, 20), vy: rand(-20, 20), life: 0.5, kind: 'sand' }); }
+    if (b.t >= t1 && prev < t1) { sfx.fire(); sfx.pillar(); shake = Math.max(shake, 3); }
+    if (b.t < t1) { b.ang = b.a0; addLight(b.x, b.y, 24 + 20 * clamp((b.t - t0) / b.tel, 0, 1), '255,200,110', 0.9); continue; }
+    if (b.t < t2) {
+      const k = (b.t - t1) / b.fire;
+      if (b.sweep) b.ang = lerp(b.a0, b.a1, k * k * (3 - 2 * k));
+      const m = duSkullMouth(b), L = duBeamLen(m.x, m.y, b.ang), dx = Math.cos(b.ang), dy = Math.sin(b.ang);
+      b.L = L;
+      for (let d = 6; d <= L; d += 6) { const px = m.x + dx * d, py = m.y + dy * d;
+        if (overlap(rect(px - b.w, py - b.w, px + b.w, py + b.w), hb)) { hurtPlayer(b.dmg, dx >= 0 ? 1 : -1, b.id + '_' + Math.floor((b.t - t1) / 0.3), { src: b, parryable: false }); break; } }
+      for (let d = 30; d < L; d += 50) addLight(m.x + dx * d, m.y + dy * d, 46, '255,230,160', 1);
+      if (Math.random() < 0.7) duSand(m.x + dx * L, m.y + dy * L, 2, 6, 80);
+    }
+  }
+  DU.blasters = DU.blasters.filter(b => b.t < DU_SK.appear + b.tel + b.fire + DU_SK.vanish);
+}
+function duDrawBlasters() {
+  const sh = fxSheet('du_skull');
+  for (const b of DU.blasters) {
+    if (b.t < 0) continue;
+    const t0 = DU_SK.appear, t1 = t0 + b.tel, t2 = t1 + b.fire, m = duSkullMouth(b);
+    const left = Math.cos(b.ang) < -0.01, face = left ? -1 : 1, rot = left ? Math.PI - b.ang : b.ang;
+    let tag = 'charge', fi = 0;
+    if (b.t < t0) { tag = 'appear'; fi = Math.floor(b.t / t0 * 4); }
+    else if (b.t < t1) { tag = 'charge'; fi = Math.floor(b.t * 10); }
+    else if (b.t < t2) { tag = 'fire'; fi = Math.floor(b.t * 14); }
+    else { tag = 'vanish'; fi = Math.floor((b.t - t2) / DU_SK.vanish * 3); }
+    if (b.t >= t0 && b.t < t1) {   // telegraph: a dotted aim line (and the far edge of a sweep)
+      const k = (b.t - t0) / b.tel, lines = b.sweep ? [b.a0, b.a1] : [b.a0];
+      g.save(); g.globalAlpha = 0.35 + 0.45 * k * (0.6 + 0.4 * Math.sin(time * 40));
+      for (const a of lines) { const L = duBeamLen(m.x, m.y, a), dx = Math.cos(a), dy = Math.sin(a);
+        for (let d = 8; d < L; d += 6) { g.fillStyle = d % 12 < 6 ? '#fff4c8' : '#e6a84c'; g.fillRect(Math.round(m.x + dx * d), Math.round(m.y + dy * d), 2, 2); } }
+      g.restore();
+    }
+    if (b.t >= t1 && b.t < t2 && b.L) duDrawRay(m.x, m.y, b.ang, b.L, b.w / 8);
+    if (sh.ok && sh.has(tag)) { const tg = sh.tag(tag), n = tg.to - tg.from + 1; drawSprite(sh, tg.from + Math.min(n - 1, Math.max(0, tag === 'appear' || tag === 'vanish' ? fi : fi % n)), b.x, b.y, face, { center: true, rot }); }
+    else { g.fillStyle = '#e8b848'; g.beginPath(); g.arc(b.x, b.y, 9, 0, 6.3); g.fill(); }
+  }
+}
+// ---- the Pharaoh's storm: sweeping walls of sand and lightning strikes
+function duStormBoss(S, dt) {
+  if (!S.on) { S.walls = []; return; }
+  S.wallT -= dt; S.boltT -= dt; S.flash = Math.max(0, S.flash - dt * 3);
+  if (S.wallT <= 0 && S.k > 0.6) {
+    S.wallT = rand(7, 10); const dir = Math.random() < 0.5 ? -1 : 1;
+    S.walls.push({ x: dir > 0 ? S.L - 90 : S.R + 90, dir, v: 150, w: 46, warn: 1.3, id: ++hazardId, t: 0 });
+    sfx.howl(); if (!SAVE.hints.du_wall) { SAVE.hints.du_wall = 1; toast('A wall of sand! Roll through it or be swept away.', 3.5); }
+  }
+  for (const w of S.walls) {
+    w.t += dt;
+    if (w.warn > 0) { w.warn -= dt; if (Math.random() < 0.9) particles.push({ x: w.x + w.dir * 60 + rand(-20, 20), y: S.floor - rand(0, 200), vx: w.dir * rand(40, 120), vy: rand(-10, 10), life: 0.8, kind: 'sandd' }); shake = Math.max(shake, 1.2); continue; }
+    w.x += w.dir * w.v * dt;
+    if (Math.abs(P.x - w.x) < w.w / 2 + 5 && P.state !== 'dead') {
+      if (P.state !== 'roll') { P.pushVx = (P.pushVx || 0) + w.dir * 190; hurtPlayer(duDmg(14), w.dir, w.id + '_' + Math.floor(w.t / 0.5), { parryable: false }); }
+    }
+    for (let i = 0; i < 4; i++) particles.push({ x: w.x + rand(-w.w / 2, w.w / 2), y: S.floor - rand(0, 260), vx: w.dir * rand(150, 260), vy: rand(-20, 20), life: 0.6, kind: Math.random() < 0.5 ? 'sand' : 'sandd' });
+  }
+  S.walls = S.walls.filter(w => w.warn > 0 || (w.dir > 0 ? w.x < S.R + 120 : w.x > S.L - 120));
+  if (S.boltT <= 0 && S.k > 0.5) {
+    S.boltT = rand(2.2, 3.8); S.flash = 1; flashScreen = Math.max(flashScreen, 0.25);
+    const x = clamp(P.x + rand(-60, 60), S.L - 20, S.R + 20), fl = S.floor, pts = [];
+    for (let y = 0; y <= fl; y += 14) pts.push([x + rand(-7, 7), y]);
+    pts[pts.length - 1] = [x, fl];
+    duMark(x, fl, 0.7, 22, '200,220,255');
+    duHaz({ x, y: fl, w: 18, h: fl, dmg: duDmg(30), delay: 0.7, life: 0.3, onStart: () => { sfx.boom(); shake = Math.max(shake, 5); S.flash = 1; duSand(x, fl, 12, 10, 120); },
+      draw: h => { const a = h.life / 0.3; g.save(); g.globalCompositeOperation = 'lighter';
+        for (const [w_, col] of [[5, `rgba(140,170,255,${0.4 * a})`], [2, `rgba(240,248,255,${a})`]]) { g.strokeStyle = col; g.lineWidth = w_; g.beginPath(); pts.forEach(([px, py], i) => i ? g.lineTo(px, py) : g.moveTo(px, py)); g.stroke(); }
+        g.restore(); addLight(x, fl - 60, 120, '200,220,255', a); } });
+  }
+}
+function duDrawStormWalls() {
+  const S = DU.storm; if (!S || !S.walls) return;
+  for (const w of S.walls) {
+    if (w.warn > 0) continue;
+    const X = Math.round(w.x), top = cam.y - 10, bot = S.floor + 4;
+    for (let i = -w.w / 2; i < w.w / 2; i += 2) {
+      const k = 1 - Math.abs(i) / (w.w / 2);
+      g.fillStyle = `rgba(${150 + 40 * k},${104 + 30 * k},${52 + 10 * k},${0.35 + 0.55 * k})`; g.fillRect(X + i, top, 2, bot - top);
+    }
+    g.fillStyle = 'rgba(250,220,160,0.7)';
+    for (let i = 0; i < 18; i++) g.fillRect(X + ((i * 13 + Math.floor(time * 60)) % w.w) - w.w / 2, top + ((i * 53 + Math.floor(time * 300)) % (bot - top)), w.dir * 8, 1);
+  }
+}
+
 // a sun-flare pillar: warning sigil on the floor, then a column of light from the sky
 function duSunFlare(x, floor, delay, dmg, w = 9, src = null) {
   duMark(x, floor, delay + 0.05, w * 2 + 4);
@@ -787,35 +895,42 @@ BOSS_CUTS.scarab = b => [
 PHASE2_LINES.scarab = ['', 'The Scarab Knight’s carapace splits. Something skitters inside.'];
 
 // ================================================================== THE VEILED PHARAOH (main boss, DU8 The Veiled Sanctum)
-// The last sun-king, who would not be buried. Phase 1: khopesh strings (parry the first two), a sceptre sun-beam that sweeps
-// down across the floor in front of him (roll through it, or get behind him), sand-coffins that rise where you stand and
-// slam shut, sand-soldiers, and a sun-disc that hunts you. Phase 2 (50%): the SANDSTORM -- the sanctum goes dark and the
-// wind never stops; he sinks into the sand and strikes out of the storm (only his amber eye gives him away), sun-eye beams
-// cut down through the dark, and patches of the floor turn to quicksand.
+// The last sun-king, who would not be buried: a massive mummified god-king in gold plate. Phase 1: a four-cut khopesh string
+// (parry the first cuts), a lunging hooked thrust, a was-sceptre slam that sends shockwaves and sand spikes both ways, a sceptre
+// sun-beam that sweeps down across the floor, sand-coffins, sand-soldiers, a hunting sun-disc and the SUN-SKULLS: golden jackal
+// masks that appear around the sanctum, charge (aim lines) and fire beams across it -- crossing pairs, wall volleys (low: jump,
+// high: stay down), falling rain and a sweeping beam. Phase 2 (50%): the SANDSTORM -- the sanctum goes dark, walls of sand sweep
+// across it, lightning cracks down through the storm, he sinks into the sand and strikes out of it (only his amber eye gives him
+// away), sun-eye beams cut down through the dark, patches of the floor turn to quicksand; the skull patterns get nastier.
 BOSS_INFO.pharaoh = { name: 'The Veiled Pharaoh', hp: 4000, cinders: 21000, reward: ['w:pharaoh_khopesh', 'sp:sandstorm', 'c_sun'],
   quote: 'He counted every grain of his desert. He never counted the dusk.' };
-const DU_PH_RANGED = new Set(['beam', 'coffin', 'summon', 'disc', 'eyes']);
+const DU_PH_RANGED = new Set(['beam', 'coffin', 'summon', 'disc', 'eyes', 'command']);
 class DuPharaoh extends MetaBoss {
   get L() { return 16 * TILE + 28; }
   get R() { return 55 * TILE - 28; }
   constructor(x, y) {
     super('pharaoh', x, y, {
-      sheets: ['pharaoh_a'], stanceMax: 380, walkSpeed: 38, prefer: 70, p2at: 0.5, p2speed: 1.15, p2tag: 'summon', critRange: 56,
-      introTag: 'idle', cool1: [0.9, 1.5], cool2: [0.6, 1.1], victory: 'THE LAST SUN SETS', deathParticle: 'sand',
+      sheets: ['pharaoh_a'], stanceMax: 420, walkSpeed: 44, prefer: 80, p2at: 0.5, p2speed: 1.15, p2tag: 'command', critRange: 64,
+      introTag: 'idle', cool1: [0.45, 0.9], cool2: [0.25, 0.6], victory: 'THE LAST SUN SETS', deathParticle: 'sand',
       weights(d, p2) {
         const soldiers = enemies.filter(e => e.alive && e.type === 'du_soldier').length;
-        const far = { beam: 2, coffin: 1.6, disc: this.discOut() ? 0 : 1.4, summon: soldiers < (p2 ? 2 : 3) && this.summonCd <= 0 ? 1.1 : 0, walk: 1.6 };
-        if (p2) Object.assign(far, { strike: 2.4, eyes: 1.8, sink: this.sinkCd <= 0 ? 1.4 : 0, beam: 1.1, walk: 0.8 });
-        if (this.rangedRun >= 2) { for (const k of DU_PH_RANGED) if (far[k]) far[k] *= 0.2; far.walk = (far.walk || 0) + 2; if (p2) far.strike = (far.strike || 0) + 2; }
-        if (d < 80) return p2 ? { combo: 2.6, eyes: 1.0, sink: this.sinkCd <= 0 ? 1.0 : 0, backstep: 0.8, strike: 1.0, coffin: 0.5 }
-                              : { combo: 3.2, beam: 0.6, coffin: 0.5, backstep: 0.8 };
-        if (d < 170) return { combo: 1.1, ...far };
+        const far = { beam: 1.6, coffin: 1.3, disc: this.discOut() ? 0 : 1.1, summon: soldiers < (p2 ? 2 : 3) && this.summonCd <= 0 ? 0.9 : 0,
+                      command: this.skullCd <= 0 ? 2.0 : 0, lunge: 1.8, walk: 1.0 };
+        if (p2) Object.assign(far, { strike: 2.2, eyes: 1.5, sink: this.sinkCd <= 0 ? 1.2 : 0, beam: 1.0, walk: 0.5, command: this.skullCd <= 0 ? 2.4 : 0 });
+        if (this.rangedRun >= 2) { for (const k of DU_PH_RANGED) if (far[k]) far[k] *= 0.2; far.lunge = (far.lunge || 0) + 2.5; if (p2) far.strike = (far.strike || 0) + 2; }
+        if (d < 90) return p2 ? { combo: 2.6, slam: 1.6, eyes: 0.8, sink: this.sinkCd <= 0 ? 0.8 : 0, backstep: 0.6, strike: 1.0, coffin: 0.5 }
+                              : { combo: 3.0, slam: 1.8, coffin: 0.5, backstep: 0.6, lunge: 0.4 };
+        if (d < 180) return { combo: 0.9, slam: 1.0, ...far };
         return far;
       },
-      chains: { combo: d => d > 100 ? 'beam' : null, backstep: d => d > 110 ? 'coffin' : 'disc', strike: d => d < 80 ? 'combo' : null },
+      chains: { combo: d => d > 110 ? 'lunge' : 'slam', lunge: d => d < 90 ? 'combo' : 'command', slam: d => d < 90 ? 'combo' : 'command',
+                command: d => d > 120 ? 'lunge' : 'combo', backstep: d => d > 110 ? (Math.random() < 0.5 ? 'command' : 'coffin') : 'disc',
+                strike: d => d < 80 ? 'combo' : 'slam', coffin: d => d < 100 ? 'slam' : null, disc: d => d > 120 ? 'lunge' : null },
       moves: {
-        combo: { dmg: [40, 44, 58], parry: true, step: 60, fx: null },
-        beam: { dmg: [] }, coffin: { dmg: [] }, summon: { dmg: [] }, disc: { dmg: [] },
+        combo: { dmg: [38, 40, 56, 44], parry: true, step: 70, fx: null },
+        lunge: { dmg: [50], parry: true, step: 520, shake: 4 },
+        slam: { dmg: [62], shake: 9 },
+        beam: { dmg: [] }, coffin: { dmg: [] }, summon: { dmg: [] }, disc: { dmg: [] }, command: { dmg: [] },
         vanish: { dmg: [] }, emerge: { dmg: [54], shake: 7 },
       },
       wake() { return P.x > 17 * TILE + 8 && P.ground; },
@@ -826,7 +941,7 @@ class DuPharaoh extends MetaBoss {
     });
     this.meta = ASSETS.pharaoh_meta || {}; this.smap = this.meta.sheets || {};
     for (const n of new Set([...Object.values(this.smap), ...this.sheets])) sheet(n).configure({ meta: this.meta });   // sheets preloaded bare get the shared meta
-    this.face = -1; this.summonCd = 0; this.sinkCd = 0; this.recent = []; this.vis = 1; this.eye = 0.3; this.hidden = false;
+    this.face = -1; this.summonCd = 0; this.sinkCd = 0; this.skullCd = 2; this.recent = []; this.vis = 1; this.eye = 0.3; this.hidden = false;
     this.setS('dormant', this.hasTag('rise') ? 'rise' : 'idle', false); this.anim.speed = 0; this.state = 'dormant';   // a standing sarcophagus until woken
   }
   hasTag(tag) { return this.smap[tag] ? sheet(this.smap[tag], { meta: this.meta }).has(tag) : this.sh.has(tag); }
@@ -854,9 +969,10 @@ class DuPharaoh extends MetaBoss {
     super.start(m);
     if (m === 'beam') { this.beam = { a0: -0.95, a1: 0.42, on: false, t: 0 }; }
     if (m === 'summon') this.summonCd = 9;
+    if (m === 'command') this.skullCd = this.phase === 2 ? 4.5 : 6.5;
   }
   update(dt) {
-    this.summonCd -= dt; this.sinkCd -= dt;
+    this.summonCd -= dt; this.sinkCd -= dt; this.skullCd -= dt;
     if (this.state === 'backstep') {   // a gliding retreat across the sand (his feet never leave it)
       this.commonUpdate(dt); this.anim.update(dt); this.bs.t += dt;
       const k = Math.min(1, this.bs.t / 0.55); this.x = clamp(this.bs.x0 - this.face * 90 * Math.sin(k * Math.PI / 2), this.L, this.R);
@@ -880,6 +996,10 @@ class DuPharaoh extends MetaBoss {
       if (an.changed && an.i === this.ev('coffin', 6) && !this.fired.c) { this.fired.c = true; if (a === 'coffin') this.coffins(); else this.sinkZones(); }
     }
     if (a === 'summon' && an.changed && an.i === this.ev('summon', 7) && !this.fired.s) { this.fired.s = true; this.summonSoldiers(); }
+    if (a === 'command' && an.changed && an.i === this.ev('command', 5) && !this.fired.k) { this.fired.k = true; this.skulls(); }
+    if (a === 'command' && an.i < this.ev('command', 5)) addLight(this.x + this.face * 20, this.y - 130, 40 + an.i * 10, '255,210,110', 1);
+    if (a === 'slam' && an.changed && an.i === this.ev('slam', 7) && !this.fired.m) { this.fired.m = true; this.slamImpact(); }
+    if (a === 'lunge' && an.i >= 4 && an.i <= 6 && Math.random() < 0.8) duSand(this.x - this.face * 10, this.floor, 2, 8, 50);
     if (a === 'disc' && an.changed && an.i === this.ev('disc', 7) && !this.fired.d) { this.fired.d = true; this.throwDisc(); }
     if (a === 'disc' && an.i < this.ev('disc', 7)) { const p = this.sceptreTip(); addLight(p.x, p.y, 30 + an.i * 6, '255,210,110', 1); }
     super.updateAttack(dt);
@@ -956,6 +1076,50 @@ class DuPharaoh extends MetaBoss {
         if (sh.ok) { const t = sh.tag(Object.keys(sh.tags)[0]), n = t.to - t.from + 1; drawSprite(sh, t.from + Math.floor(s.t * 14) % n, s.x, s.y, 1, { center: true, alpha: a }); }
         else { g.fillStyle = `rgba(255,220,120,${a})`; g.beginPath(); g.arc(s.x, s.y, 8, 0, 6.3); g.fill(); } } });
   }
+  slamImpact() {   // the was-sceptre strikes the sand: twin shockwaves and a march of sand spikes both ways
+    const p = this.sceptreTip(), cx = clamp(p.x, this.L - 20, this.R + 20), fl = this.floor;
+    sfx.boom(); sfx.crumble(); shake = 10; flashScreen = 0.15;
+    spawnFx('shockwave', cx, fl, 1); duSand(cx, fl, 26, 20, 150);
+    for (const dd of [-1, 1]) hazards.push({ x: cx, y: fl, vx: dd * 200, w: 16, h: 16, dmg: duDmg(30), id: ++hazardId, life: 1.7, wave: true, dir: dd, color: 'root' });
+    const n = this.phase === 2 ? 6 : 4;
+    for (const dd of [-1, 1]) for (let k = 1; k <= n; k++) this.sandSpike(cx + dd * k * 34, 0.12 + k * 0.1);
+  }
+  sandSpike(x, delay) {
+    if (x < this.L - 30 || x > this.R + 30) return;
+    const fl = this.floor;
+    duMark(x, fl, delay, 16, '230,190,110');
+    duHaz({ x, y: fl, w: 14, h: 40, dmg: duDmg(34), delay, life: 0.55, src: this, onStart: () => { duSand(x, fl, 8, 6, 120); if (Math.random() < 0.5) sfx.crumble(); },
+      active: h => h.t > 0.04 && h.t < 0.3,
+      draw: h => { const k = h.t < 0.1 ? h.t / 0.1 : Math.max(0, 1 - (h.t - 0.3) / 0.25), hh = Math.round(40 * k), X = Math.round(x);
+        g.fillStyle = '#6a4418'; g.beginPath(); g.moveTo(X - 7, fl); g.lineTo(X, fl - hh); g.lineTo(X + 7, fl); g.fill();
+        g.fillStyle = '#d6a048'; g.beginPath(); g.moveTo(X - 4, fl); g.lineTo(X - 1, fl - hh + 2); g.lineTo(X + 1, fl); g.fill();
+        g.fillStyle = '#fff0b0'; g.fillRect(X - 1, fl - hh, 2, 2); } });
+  }
+  // the sun-skulls: golden jackal masks that appear around the sanctum, charge, then fire beams across it
+  skulls(force) {
+    sfx.howl(); flashScreen = 0.2; shake = 4;
+    const p2 = this.phase === 2, fl = this.floor, L = this.L, R = this.R, px = P.x;
+    const pats = p2 ? ['cross', 'volley', 'rain', 'sweep', 'crossrain'] : ['cross', 'volley', 'rain'];
+    let pat = pats[Math.floor(Math.random() * pats.length)];
+    if (pat === this.lastPat) pat = pats[(pats.indexOf(pat) + 1) % pats.length];
+    if (force) pat = force;
+    this.lastPat = pat; DU.lastPattern = pat;
+    const aimAt = (x, y, tx, ty) => Math.atan2(ty - y, tx - x);
+    const cross = (d0) => { for (const s of [-1, 1]) { const x = clamp(px + s * 150, L - 10, R + 10), y = fl - 132; duBlaster({ x, y, ang: aimAt(x, y, px, fl - 12), delay: d0, tel: 0.95, fire: 0.6 }); } };
+    const rain = (d0, n) => { const s = Math.random() < 0.5 ? -1 : 1; for (let k = 0; k < n; k++) { const x = clamp(px + s * (k - (n - 1) / 2) * 56, L - 10, R + 10); duBlaster({ x, y: fl - 146, ang: Math.PI / 2, delay: d0 + k * 0.24, tel: 0.75, fire: 0.38 }); } };
+    if (pat === 'cross') cross(0);
+    else if (pat === 'rain') rain(0, p2 ? 6 : 5);
+    else if (pat === 'crossrain') { cross(0); rain(1.1, 4); }
+    else if (pat === 'volley') {
+      const n = p2 ? 5 : 4, s0 = Math.random() < 0.5 ? -1 : 1;
+      for (let k = 0; k < n; k++) { const side = k % 2 ? -s0 : s0, low = k % 2 === 0, x = side < 0 ? L - 20 : R + 20, y = low ? fl - 10 : fl - 46;
+        duBlaster({ x, y, ang: side < 0 ? 0 : Math.PI, delay: k * 0.85, tel: 0.8, fire: 0.45, low }); }
+      if (!SAVE.hints.du_volley) { SAVE.hints.du_volley = 1; toast('Low beams: jump them. High beams: stay on the ground.', 3.5); }
+    } else if (pat === 'sweep') {
+      const s = px < (L + R) / 2 ? 1 : -1, x = clamp(px + s * 30, L, R);
+      duBlaster({ x, y: fl - 150, ang: Math.PI / 2 + s * 0.62, a1: Math.PI / 2 - s * 0.62, delay: 0, tel: 1.1, fire: 1.3, w: 10, sweep: true });
+    }
+  }
   sinkZones() {
     sfx.crumble(); shake = 4; this.sinkCd = 8;
     const xs = [P.x, P.x + rand(70, 110) * (Math.random() < 0.5 ? -1 : 1)];
@@ -994,7 +1158,7 @@ class DuPharaoh extends MetaBoss {
   canStagger() { return !this.hidden && this.state !== 'buried' && !(this.state === 'attack' && ['vanish', 'summon'].includes(this.atk)); }
   p2Storm() {
     flashScreen = 0.5; shake = 8; sfx.howl(); sfx.roar();
-    DU.storm = { boss: true, on: true, t: 0, dir: this.face > 0 ? -1 : 1, k: 0 };
+    DU.storm = { boss: true, on: true, t: 0, dir: this.face > 0 ? -1 : 1, k: 0, wallT: 5, boltT: 2.5, walls: [], bolts: [], flash: 0, L: this.L, R: this.R, floor: this.floor };
     AREAS.dunes.ambient = 0.8; this.stormAmb = true;
     toast('The sandstorm swallows the sanctum', 3);
     for (const e of enemies) if (e.alive && e.type === 'du_soldier') { e.die({ dir: 0 }); duSand(e.x, e.y - 10, 12); }
@@ -1014,7 +1178,7 @@ class DuPharaoh extends MetaBoss {
   }
   eyePt() { const e = this.meta.eye && this.meta.eye[this.anim.tag]; const pt = e ? e[Math.min(this.anim.i, e.length - 1)] : null; return pt ? metaPoint(this.sh, this, pt) : { x: this.x + this.face * 6, y: this.y - 92 }; }
   pDeath() {
-    victoryBanner = { text: this.victory, t: 0 }; duClearZones(); DU.shots = []; DU.haz = [];
+    victoryBanner = { text: this.victory, t: 0 }; duClearZones(); DU.shots = []; DU.haz = []; DU.blasters = [];
     if (DU.storm) DU.storm.on = false; AREAS.dunes.ambient = DU_AMB.DU8;
     for (const e of enemies) if (e.alive && e.type === 'du_soldier') { e.die({ dir: 0 }); duSand(e.x, e.y - 10, 12); }
     setTimeout(() => toast('“…so this is the dusk.”', 4), 2600);
@@ -1043,10 +1207,10 @@ class DuPharaoh extends MetaBoss {
     }
   }
 }
-function duDrawRay(x, y, a, L) {   // the sceptre beam: layered light along a line, flaring where it strikes the sand
-  const dx = Math.cos(a), dy = Math.sin(a), fl = 1 + Math.sin(time * 60) * 0.15;
+function duDrawRay(x, y, a, L, ws = 1) {   // a sun-beam: layered light along a line, flaring where it strikes the sand
+  const dx = Math.cos(a), dy = Math.sin(a), fl = (1 + Math.sin(time * 60) * 0.15) * ws;
   g.save(); g.globalCompositeOperation = 'lighter';
-  for (const [w, col] of [[9 * fl, 'rgba(255,140,40,0.28)'], [6 * fl, 'rgba(255,196,90,0.5)'], [3, 'rgba(255,246,214,0.95)']]) {
+  for (const [w, col] of [[14 * fl, 'rgba(255,140,40,0.22)'], [9 * fl, 'rgba(255,196,90,0.45)'], [4 * ws, 'rgba(255,246,214,0.95)']]) {
     g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x, y); g.lineTo(x + dx * L, y + dy * L); g.stroke();
   }
   g.restore();
@@ -1078,4 +1242,5 @@ if (typeof window !== 'undefined' && window.__game) window.__game.du = {
   get DU() { return DU; }, slopeY: x => { const h = duSlopeY(room, x); return h && h.y; }, inQs: () => duInQs(P),
   storm(on = true) { if (DU.storm) { DU.storm.st = on ? 'storm' : 'calm'; DU.storm.t = on ? 6 : 9; DU.storm.k = on ? 1 : 0; } },
   zone: (x, life = 4) => duZone(x, boss ? boss.floor : P.y, 1, life, 0.05),
+  skulls: pat => boss && boss.skulls && boss.skulls(pat),
 };

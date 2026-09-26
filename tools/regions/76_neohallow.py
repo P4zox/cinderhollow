@@ -11,7 +11,7 @@
 #   NH1 Glitch Terminus   1000..1035 x  0..15   arrival rooftop: return portal + Terminus Shrine
 #   NH2 Neon Rooftops     1036..1091 x  0..15   laser grids on timers, a security drone, a cyborg, a turret
 #   NH3 The Maglev Line   1092..1155 x  0..15   a maglev car shuttles across the data abyss; laser gate on the ride
-#   NH4 Server Cathedral  1156..1191 x -14..15  terminals raise hard-light stairs; c_hack alcove; B-closet shard
+#   NH4 Server Cathedral  1156..1191 x -14..15  terminals raise hard-light stairs; c_hack alcove; B-closet shard; shrine
 #   NH5 Enforcer's Plaza  1192..1235 x -14..1   mini-boss: the Enforcer Mech
 #   NH6 Null Vestibule    1236..1259 x -14..1   Vestibule Shrine + the plasma katana
 #   NH7 The Null Sanctum  1260..1299 x -12..1   main boss: SAINT-0, the Null Saint (deletable floor over the abyss)
@@ -134,7 +134,7 @@ _nh_paint(r, [
 # Climb (basic jumps only, every step <= 3 rows): floor 25 -> catwalk 22 -> hard-light 19 -> 16 -> {vault balcony 13 | 13}
 # -> the exit balcony (row 13, east). The STAIR terminal (ground) raises the hard-light steps; the VAULT terminal (exit
 # balcony) opens the energy door of the vault alcove (c_hack); the vault's cracked back wall hides a shard.
-r = Room('NH4', 'Server Cathedral', 'neohallow', 1156, -14, 36, 30, indoor=True, items=['shard'], chests=['c_hack'],
+r = Room('NH4', 'Server Cathedral', 'neohallow', 1156, -14, 36, 30, indoor=True, shrine='Server Shrine', items=['shard'], chests=['c_hack'],
          spawns=[dict(t='nh_term', x=4, y=24, links=['a'], label='STAIR'),
                  dict(t='nh_plat', x=13, y=19, w=4, id='a', on=False),
                  dict(t='nh_plat', x=18, y=16, w=3, id='a', on=False),
@@ -143,7 +143,7 @@ r = Room('NH4', 'Server Cathedral', 'neohallow', 1156, -14, 36, 30, indoor=True,
                  dict(t='nh_door', x=9, y=12, h=4, id='c', open=False),
                  dict(t='nh_laser', x=21, y=24, y0=2, y1=24, period=3.8, on=1.1, phase=0.0),
                  dict(t='enemy', type='nh_cyborg', x=26, y=24),
-                 dict(t='enemy', type='nh_turret', x=33, y=12),
+                 dict(t='enemy', type='nh_turret', x=31, y=24),
                  dict(t='enemy', type='nh_drone', x=16, y=7, air=True),
                  _nh_deco('rack', 8, 24), _nh_deco('rack', 13, 24), _nh_deco('rack', 29, 24), _nh_deco('rack', 33, 24),
                  _nh_deco('lamp', 28, 12), _nh_deco('glyph', 18, 24), _nh_deco('lamp', 12, 12)])
@@ -182,6 +182,7 @@ _nh_paint(r, [
     "####################################",  # 29
 ])
 r.put(6, 12, 'C')                            # c_hack
+r.put(34, 12, 'S')                           # Server Shrine: the last rest before the Enforcer's Plaza
 r.put(1, 12, 'i')                            # shard, in the closet behind the cracked wall
 
 # ---------------------------------------------------------------- NH5 Enforcer's Plaza (mini-boss)

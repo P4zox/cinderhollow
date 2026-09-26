@@ -1,237 +1,147 @@
 { "frames": [
    {
     "filename": "pharaoh_a 0.aseprite",
-    "frame": { "x": 0, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 0, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 1.aseprite",
-    "frame": { "x": 160, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 192, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 2.aseprite",
-    "frame": { "x": 320, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 384, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 3.aseprite",
-    "frame": { "x": 480, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 576, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 4.aseprite",
-    "frame": { "x": 640, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 768, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 5.aseprite",
-    "frame": { "x": 800, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 960, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 6.aseprite",
-    "frame": { "x": 960, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 1152, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 7.aseprite",
-    "frame": { "x": 1120, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 1344, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 170
    },
    {
     "filename": "pharaoh_a 8.aseprite",
-    "frame": { "x": 1280, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 1536, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
    },
    {
     "filename": "pharaoh_a 9.aseprite",
-    "frame": { "x": 1440, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 1728, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
    },
    {
     "filename": "pharaoh_a 10.aseprite",
-    "frame": { "x": 1600, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 1920, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
    },
    {
     "filename": "pharaoh_a 11.aseprite",
-    "frame": { "x": 1760, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 2112, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
    },
    {
     "filename": "pharaoh_a 12.aseprite",
-    "frame": { "x": 1920, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 2304, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
    },
    {
     "filename": "pharaoh_a 13.aseprite",
-    "frame": { "x": 2080, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 2496, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
    },
    {
     "filename": "pharaoh_a 14.aseprite",
-    "frame": { "x": 2240, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 2688, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
    },
    {
     "filename": "pharaoh_a 15.aseprite",
-    "frame": { "x": 2400, "y": 0, "w": 160, "h": 128 },
+    "frame": { "x": 2880, "y": 0, "w": 192, "h": 160 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 192, "h": 160 },
+    "sourceSize": { "w": 192, "h": 160 },
     "duration": 140
-   },
-   {
-    "filename": "pharaoh_a 16.aseprite",
-    "frame": { "x": 2560, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 700
-   },
-   {
-    "filename": "pharaoh_a 17.aseprite",
-    "frame": { "x": 2720, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 500
-   },
-   {
-    "filename": "pharaoh_a 18.aseprite",
-    "frame": { "x": 2880, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 240
-   },
-   {
-    "filename": "pharaoh_a 19.aseprite",
-    "frame": { "x": 3040, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 200
-   },
-   {
-    "filename": "pharaoh_a 20.aseprite",
-    "frame": { "x": 3200, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 180
-   },
-   {
-    "filename": "pharaoh_a 21.aseprite",
-    "frame": { "x": 3360, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 160
-   },
-   {
-    "filename": "pharaoh_a 22.aseprite",
-    "frame": { "x": 3520, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 200
-   },
-   {
-    "filename": "pharaoh_a 23.aseprite",
-    "frame": { "x": 3680, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 240
-   },
-   {
-    "filename": "pharaoh_a 24.aseprite",
-    "frame": { "x": 3840, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 200
-   },
-   {
-    "filename": "pharaoh_a 25.aseprite",
-    "frame": { "x": 4000, "y": 0, "w": 160, "h": 128 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 160, "h": 128 },
-    "sourceSize": { "w": 160, "h": 128 },
-    "duration": 200
    }
  ],
  "meta": {
@@ -239,12 +149,11 @@
   "version": "1.3.18.6-arm64",
   "image": "pharaoh_a.png",
   "format": "RGBA8888",
-  "size": { "w": 4160, "h": 128 },
+  "size": { "w": 3072, "h": 160 },
   "scale": "1",
   "frameTags": [
    { "name": "idle", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" },
-   { "name": "walk", "from": 8, "to": 15, "direction": "forward", "color": "#000000ff" },
-   { "name": "rise", "from": 16, "to": 25, "direction": "forward", "color": "#000000ff" }
+   { "name": "walk", "from": 8, "to": 15, "direction": "forward", "color": "#000000ff" }
   ]
  }
 }

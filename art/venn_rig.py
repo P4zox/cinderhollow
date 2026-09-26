@@ -434,7 +434,7 @@ NEUTRAL = dict(
     hn=(106, 92), hf=(92, 92), hn_dir=80, hf_dir=95, eln=(0.3, 1), elf=(-0.4, 1),
     scy=None, wind=0.0, lift=0.0,
     veil=1.0, eyes=0.0, halo=1.0, halo_broken=0.0, fire=0.0,
-    wl=(264, 1.0, 0.9), wr=(-84, 1.0, 0.75), wsway=4.0, wings=None, lances=0.0,
+    wl=(264, 1.0, 0.9), wr=(-84, 1.0, 0.75), wsway=4.0, wings=None, lances=0.0, whips=0.0, whip_side=1,
     flask=None, flask_k=1.0, fx=(), dissolve=0.0, hood=0.0, keepveil=False,
 )
 
@@ -644,6 +644,31 @@ def draw_wings(Lw, FXb, FXg, j, p, fi, info, phase):
     Lw.paint(n_dome(root, 3.2, 3.8), "C", bias=-1)
     info["wing_px"] = allpx
     info["wing_tips"] = tips
+
+
+def draw_whips(Lw, FXg, j, p, fi, info):
+    k = p["whips"]
+    if k <= 0:
+        return
+    root = j["X"](REST["Wr"])
+    px = set()
+    for i, (reach, r0) in enumerate(((0.55, 2.4), (1.0, 2.8))):
+        far = 24 + 56 * reach * k
+        end = (root[0] + far * (1 if p["whip_side"] > 0 else 0.6) + 6, FLOOR - 1)
+        top = (root[0] + 4 + i * 6, root[1] - 30 - 10 * k)
+        pts = bezier(root, top, (end[0] - 18, top[1] + 4), end, 70)
+        nm, par = tube(pts, r0, 0.6, ex=0.9)
+        Lw.paint(nm, "C", bias=0, ao=0)
+        px |= set(nm)
+        for q in pts[5::8]:
+            if hash01(*ipt(q), 150 + i) > 0.5:
+                Lw.decal([ipt(q)], "E2")
+        top_e = {q for q in nm if par[q] > 0.35 and (q[0], q[1] - 1) not in nm}
+        flame_tongues(FXg, top_e, (0, -1), fi, 152 + i, length=2.4, cols=("F1", "F2", "F3"), density=0.55)
+        e = ipt(end)
+        for dx in range(-6, 7):
+            FXg.put([(e[0] + dx, FLOOR)], "F3" if abs(dx) < 3 else "F2")
+    info["whip_px"] = px
 
 
 def draw_lances(Lw, FXg, j, p, fi, info):
@@ -1139,10 +1164,11 @@ def render(p, fi, sec, phase, prev=None):
     j = joints(p, sec)
     L = {n: Layer(n) for n in SHADED}
     FX = {n: FXLayer(n) for n in FXL}
-    info = {"j": j, "smear": set(), "wing_px": set(), "lance_px": set(), "blade_px": set()}
+    info = {"j": j, "smear": set(), "wing_px": set(), "lance_px": set(), "blade_px": set(), "whip_px": set(), "extra_hit": set()}
     if phase >= 2 and p["wings"] is not False and p["wl"][2] > 0.05:
         draw_wings(L["Wings"], FX["FXBack"], FX["Glow"], j, p, fi, info, phase)
     draw_lances(L["Wings"], FX["Glow"], j, p, fi, info)
+    draw_whips(L["Wings"], FX["Glow"], j, p, fi, info)
     draw_halo(FX["Halo"], j, p, fi, phase)
     if p["veil"] < 0.999:
         draw_hair(L["Hair"], j, p, fi, phase)
@@ -1152,6 +1178,8 @@ def render(p, fi, sec, phase, prev=None):
     geo = scythe_geo(sc, phase) if sc else None
     if geo and sc.get("hand") == "f":           # the far hand holds the scythe (near hand busy: flask, spell)
         hf, hn = geo["g"], p["hn"]
+    elif geo and sc.get("hand") == "none":      # the scythe hangs in the air behind her (the embrace)
+        hf, hn = p["hf"], p["hn"]
     else:
         hn = geo["g"] if geo else p["hn"]
         hf = geo["fh"] if (geo and geo["fh"] is not None) else p["hf"]

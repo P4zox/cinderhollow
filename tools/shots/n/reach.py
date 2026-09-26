@@ -169,7 +169,7 @@ C2 = G('C2', 40, 10)
 PLAT = {G('NV4', 35, 16): G('NV4', 46, 16), G('NV4', 46, 16): G('NV4', 35, 16)}
 TARGETS = {'NV1 east': G('NV1', 22, 21), 'NV2 shrine': G('NV2', 7, 10), 'NV3 top alcove': G('NV3', 17, 5),
            'NV3 bottom': G('NV3', 5, 41), 'NV4 chest': G('NV4', 29, 8), 'NV4 east': G('NV4', 66, 16), 'NV4 west': G('NV4', 3, 16),
-           'NV4 lever': G('NV4', 65, 4), 'NV5 mid': G('NV5', 18, 10), 'NV6 shrine': G('NV6', 29, 14), 'NV6 gallery': G('NV6', 14, 7),
+           'NV4 lever': G('NV4', 65, 4), 'NV5 mid': G('NV5', 18, 10), 'NV6 shrine': G('NV6', 6, 14), 'NV6 gallery': G('NV6', 14, 7),
            'NV7 throne': G('NV7', 20, 12), 'NV1 item': G('NV1', 10, 21), 'NV2 item': G('NV2', 14, 7), 'C2': C2}
 fails = 0
 for label, opt in [('no tidebreath, gates shut', {}), ('tidebreath', {'swim': 1}),
