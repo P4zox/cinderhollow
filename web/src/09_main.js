@@ -100,7 +100,8 @@ function enterRoom(id, px, py, opt = {}) {
   if (SAVE.remnant && SAVE.remnant.room === id) props.push(makeProp('remnant', SAVE.remnant.x, SAVE.remnant.y));
   if (px !== undefined) { P.x = px; P.y = py; P.safe = { x: clamp(px, 24, room.pw - 24), y: py }; P.safeT = 0.4; }
   if (!SAVE.visited[id]) { SAVE.visited[id] = 1; if (def.secret) toast('You discovered a secret'); }
-  if (def.biome !== prevBiome || opt.card) areaCard = { name: AREAS[def.biome].name, sub: def.name, t: 0 };
+  if (regionEnter(def, prevBiome, opt)) {}   // first visit to a region: cinematic title (29_ui2.js; seen regions persist in SAVE.seenAreas)
+  else if (def.biome !== prevBiome || opt.card) areaCard = { name: AREAS[def.biome].name, sub: def.name, t: 0 };
   else if (!opt.quiet) areaCard = null;
   updateCamera(0, true);
   hints(id);

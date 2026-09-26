@@ -1,0 +1,21 @@
+// UI overhaul check (agent U): SHOT_HTML=web/dist/u.html node tools/shots/ui_test.js tools/shots/out_ui && python3 tools/shots/sheet.py 'tools/shots/out_ui/*.png' ui_montage.png 3
+await boot();
+const T = (a, n = 1) => { for (let i = 0; i < n; i++) G.step(1, [], [a]); };
+const out = {};
+G.step(80); await snap('01_region_title');
+G.giveArmory(); G.step(300);
+T('pause'); G.step(2); await snap('02_equipment');
+T('confirm'); T('right', 3); T('down'); G.step(2); await snap('03_picker_weapons');
+const w0 = G.SAVE.weapon; T('confirm'); out.weapon = [w0, G.SAVE.weapon];
+T('down', 2); T('confirm'); T('right'); T('confirm'); out.spells = G.SAVE.spellsEq.slice();
+T('map'); G.step(2); await snap('04_inventory');
+T('up'); T('right', 4); T('down'); G.step(2); await snap('05_inventory_keyitems');
+T('map', 2); T('confirm'); G.step(2); await snap('06_guide');
+T('right', 3); G.step(2); await snap('07_guide_traversal');
+T('pause'); T('pause');
+for (const r of ['C1', 'C2', 'K1', 'M3', 'A2', 'A5', 'HF1', 'SP3', 'D3']) G.SAVE.visited[r] = 1;
+for (const r of ['C2', 'K1', 'M3', 'A2', 'A5', 'HF1', 'SP3', 'D3']) if (!G.SAVE.shrines.includes(r)) G.SAVE.shrines.push(r);
+G.tp('R1', 8, 10); G.step(200); G.step(2, [], ['interact']); await new Promise(r => setTimeout(r, 800)); G.step(2);
+T('down', 3); T('confirm'); G.step(40); await snap('08_travel');
+T('right', 2); G.step(40); await snap('09_travel_region');
+return out;

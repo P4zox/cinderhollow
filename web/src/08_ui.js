@@ -40,7 +40,7 @@ function bar(x, y, w, h, frac, ghost, color, back = '#120c10') {
   vctx.fillStyle = color; vctx.fillRect(X, Y, Wd * clamp(frac, 0, 1), Hd);
   vctx.fillStyle = 'rgba(255,255,255,0.14)'; vctx.fillRect(X, Y, Wd * clamp(frac, 0, 1), Math.max(1, Hd * 0.3));
 }
-const ICON_SHEETS = ['ui_icons', 'ui_icons2', 'ui_icons3'];   // later sheets may be pushed by region files
+const ICON_SHEETS = ['ui_icons', 'ui_icons2', 'ui_icons3', 'ui_icons4'];   // later sheets may be pushed by region files
 function icon(name, x, y, size = 16, alpha = 1) {
   let sh = null;
   for (const n of ICON_SHEETS) { const s2 = sheet(n); if (s2.ok && s2.has(name)) { sh = s2; break; } }
@@ -51,7 +51,11 @@ function icon(name, x, y, size = 16, alpha = 1) {
     vctx.drawImage(sh.img, f.x, f.y, f.w, f.h, ox + x * scale, oy + y * scale, size * scale, size * scale);
     vctx.globalAlpha = 1; return;
   }
-  vctx.globalAlpha = alpha; vctx.fillStyle = '#b08a3a'; vctx.fillRect(ox + (x + 3) * scale, oy + (y + 3) * scale, (size - 6) * scale, (size - 6) * scale); vctx.globalAlpha = 1;
+  // missing icon: a small gold rune (diamond with a spark) instead of a flat square
+  const cx = ox + (x + size / 2) * scale, cy = oy + (y + size / 2) * scale, r = size * 0.36 * scale;
+  vctx.globalAlpha = alpha; vctx.strokeStyle = '#b08a3a'; vctx.lineWidth = Math.max(1, size * 0.08 * scale);
+  vctx.beginPath(); vctx.moveTo(cx, cy - r); vctx.lineTo(cx + r, cy); vctx.lineTo(cx, cy + r); vctx.lineTo(cx - r, cy); vctx.closePath(); vctx.stroke();
+  vctx.fillStyle = '#e6c77a'; vctx.fillRect(cx - r * 0.25, cy - r * 0.25, r * 0.5, r * 0.5); vctx.globalAlpha = 1;
 }
 function nodeFrame(x, y, alpha = 1) {
   const sh = sheet('ui_frame');
@@ -117,13 +121,15 @@ function renderHUD() {
     const w = textW(t.msg, 6.5, 500) + 16; box(W / 2 - w / 2, y - 8, w, 11, 0.65 * a, `rgba(109,90,58,${a})`);
     text(t.msg, W / 2, y, 6.5, '#e8dcc0', 'center', { alpha: a, weight: 500 });
   });
-  // area title card
-  if (areaCard) {
-    const t = areaCard.t, a = clamp(Math.min(t, 3.6 - t) * 1.4, 0, 1);
-    text(areaCard.name.toUpperCase(), W / 2, 60, 13, '#e6c77a', 'center', { alpha: a, spacing: 2.5, weight: 500 });
-    const lw = textW(areaCard.name.toUpperCase(), 13) * 0.6;
-    vctx.globalAlpha = a * 0.7; vctx.fillStyle = '#b08a3a'; vctx.fillRect(ox + (W / 2 - lw / 2) * scale, oy + 64 * scale, lw * scale, Math.max(1, scale * 0.4)); vctx.globalAlpha = 1;
-    if (areaCard.sub) text(areaCard.sub, W / 2, 74, 6.5, '#c9bda2', 'center', { alpha: a, weight: 400 });
+  // area title card: the big cinematic one on a region's first visit (29_ui2.js), the small one on later entries
+  renderRegionCard();
+  if (areaCard && !bossBanner && !(regionCard && regionCard.t > 0)) {
+    const t = areaCard.t, a = clamp(Math.min(t, 3.6 - t) * 1.4, 0, 1), nm = areaCard.name.toUpperCase();
+    const size = uiFit(nm, 330, 13, 8, 500);
+    text(nm, W / 2, 60, size, '#e6c77a', 'center', { alpha: a, spacing: 2.5, weight: 500 });
+    const lw = (textW(nm, size, 500) + nm.length * 2.5) * 0.3 * clamp(t * 1.5, 0, 1);
+    uiDiamond(W / 2, 64.5, 1.3, '#e6c77a', a); uiFade(W / 2 + 4, W / 2 + 4 + lw, 64.3, UI_RGB.gold, 0.7 * a); uiFade(W / 2 - 4, W / 2 - 4 - lw, 64.3, UI_RGB.gold, 0.7 * a);
+    if (areaCard.sub) text(areaCard.sub, W / 2, 75, 6.5, '#c9bda2', 'center', { alpha: a, weight: 400 });
   }
   if (bossBanner) {
     const t = bossBanner.t, a = clamp(Math.min(t, 3 - t) * 1.6, 0, 1);
@@ -170,7 +176,7 @@ function menuInput(a) {
       if (o === 'Level Up') menu = { screen: 'level', sel: 0, alloc: { ...SAVE.stats }, prev: M };
       else if (o === 'Skill Tree') menu = { screen: 'tree', br: 0, t: 0, prev: M };
       else if (o === 'Flasks') menu = { screen: 'flasks', prev: M };
-      else if (o === 'Travel') menu = { screen: 'travel', sel: Math.max(0, SAVE.shrines.indexOf(room.id)), prev: M };
+      else if (o === 'Travel') menu = travelOpen(M);
       else if (o === 'Rebirth') {
         if (!SAVE.skills.length) { toast('You have learned nothing to unlearn'); sfx.deny(); }
         else if (!(SAVE.inv.tear > 0)) { toast('Rebirth needs a Pale Tear'); sfx.deny(); }
@@ -214,17 +220,7 @@ function menuInput(a) {
     if (a === 'left' && SAVE.flaskBlue < n) { SAVE.flaskBlue++; sfx.menu(); }
     else if (a === 'right' && SAVE.flaskBlue > 0) { SAVE.flaskBlue--; sfx.menu(); }
     else if (back || conf) { refillFlasks(); saveGame(); menu = M.prev; }
-  } else if (M.screen === 'travel') {
-    M.n = SAVE.shrines.length;
-    if (['up', 'down', 'left', 'right'].includes(a)) travelMove(M, a);
-    else if (back) menu = M.prev;
-    else if (conf) {
-      const id = SAVE.shrines[M.sel];
-      if (id === room.id) { sfx.deny(); return; }
-      sfx.kindle(); menu = null; state = 'play';
-      fadeTo(() => { respawnAtShrine(id); setP('rise', pHas('rise') ? 'rise' : 'idle', false); });
-    }
-  }
+  } else if (M.screen === 'travel') travelInput(M, a);
 }
 function levelsCost(from, to) { let s = 0; for (let L = from; L < to; L++) s += levelCost(L); return s; }
 
@@ -430,53 +426,18 @@ function renderMap() {
   text(`${room.def.name}  ·  ${AREAS[room.def.biome].name}`, W / 2, 204, 6.5, '#c9bda2', 'center', { weight: 400 });
 }
 
-// ---- travel: pick a kindled shrine on the world map
-function travelMove(M, dir) {
-  const list = SAVE.shrines, cur = shrinePos(list[M.sel]);
-  const [ux, uy] = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] }[dir];
-  let best = -1, bestScore = 1e9;
-  list.forEach((id, i) => {
-    if (i === M.sel) return;
-    const p = shrinePos(id), dx = p.x - cur.x, dy = p.y - cur.y, along = dx * ux + dy * uy, across = Math.abs(dx * uy - dy * ux);
-    if (along <= 0.5) return;
-    const sc = along + across * 2.2; if (sc < bestScore) { bestScore = sc; best = i; }
-  });
-  if (best < 0) { sfx.deny(); return; }
-  M.sel = best; sfx.menu();
-}
-function renderTravel(M) {
-  vctx.fillStyle = 'rgba(6,5,9,0.93)'; vctx.fillRect(ox, oy, W * scale, H * scale);
-  text('TRAVEL', W / 2, 17, 9, '#e6c77a', 'center', { spacing: 3 });
-  vctx.fillStyle = '#6d5a3a'; vctx.fillRect(ox + (W / 2 - 60) * scale, oy + 21 * scale, 120 * scale, Math.max(1, scale * 0.5));
-  const vis = mapVisible(), F = mapFrame(vis, 16, 28, 352, 134);
-  drawMapRooms(vis, F, { here: room.id, alpha: 0.35, lineAlpha: 0.55 });
-  const selId = SAVE.shrines[M.sel];
-  SAVE.shrines.forEach((id, i) => {
-    const p = shrinePos(id), x = F.X(p.x), y = F.Y(p.y), sel = i === M.sel, b = shrineBoss(id);
-    if (sel) {   // pulsing ember ring on the chosen shrine
-      const r = 7 + Math.sin(time * 6) * 1.2;
-      vctx.strokeStyle = '#ffd070'; vctx.lineWidth = Math.max(1, scale * 0.6); vctx.beginPath(); vctx.arc(ox + x * scale, oy + (y - 2) * scale, r * scale, 0, 6.3); vctx.stroke();
-      vctx.fillStyle = 'rgba(255,190,90,0.18)'; vctx.fill();
-    }
-    icon('shrine', x - 4, y - 6, 8, sel ? 1 : 0.8);
-    if (b) drawBossMark(x + 3, y - 12, b.done, 7);
-    if (id === room.id) text('you', x, y + 8, 4.5, '#ff9070', 'center', { weight: 500 });
-  });
-  // detail card
-  const R = ROOM_BY[selId], b = shrineBoss(selId);
-  box(16, 166, 352, 36, 0.9);
-  icon('shrine', 24, 172, 14);
-  text(R.shrine || R.name, 44, 180, 7.5, '#f5e3b0', 'left', { weight: 600 });
-  text(`${R.name}  ·  ${AREAS[R.biome] ? AREAS[R.biome].name : ''}${selId === room.id ? '  ·  you are here' : ''}`, 44, 191, 5.8, '#b8ab90', 'left', { weight: 400 });
-  if (b) { drawBossMark(248, 172, b.done, 12); text(b.done ? 'Vanquished' : 'A great foe lies ahead', 264, 180, 6, b.done ? '#8a8070' : '#e06050', 'left', { weight: 600 }); text(b.name, 264, 190, 5.4, b.done ? '#8a8070' : '#d8b0a0', 'left', { weight: 400 }); }
-  text('← ↑ ↓ → choose shrine   ·   E travel   ·   Esc back', W / 2, 210, 5.2, '#7f745f', 'center', { weight: 400 });
-}
+// ---- travel: see renderTravel / travelInput in 29_ui2.js (shrine list by region + zooming world map)
 
 // ---- title / pause / death / ending
-const CONTROLS = [['A D / ← →', 'Move · W / S aim up / down'], ['Space', 'Jump (hold higher) · ↓+Space drop'], ['J / click', 'Attack · combo · ↑ / ↓ in air'],
-  ['K / right-click', 'Heavy (hold to charge) · in air: plunge'], ['L / Shift', 'Roll (invulnerable) · air dash'], ['I', 'Parry → J riposte · shield: hold to block'],
-  ['U  /  Q', 'Cast spell  /  switch spell'], ['O', 'Weapon art (hold to charge)'], ['F  /  R', 'Crimson / azure flask'], ['E', 'Talk · interact · rest'],
-  ['H / C', 'Root Hook (near golden rings)'], ['S + K in air', 'Cinder Slam'], ['Esc', 'Menu: equipment, items, settings'], ['Tab / M', 'Map']];
+// keyboard quick reference (title screen + first page of Settings › Controls & techniques). Must match KEYMAP in 00_core.js.
+// format: [keys, 'Name · detail · detail']
+const CONTROLS = [['A D / ← →', 'Move · W / S aim up and down', 'Move · W / S aim'], ['Space', 'Jump · hold for height · ↓ + Space drops through thin floors', 'Jump · hold higher'],
+  ['J / click', 'Attack · combo · ↑ strikes up · ↓ in the air pogos', 'Attack · combo'], ['K / right-click', 'Heavy · hold to charge · in the air: plunge', 'Heavy · hold to charge'],
+  ['L / Shift', 'Roll · invulnerable · in the air: dash', 'Roll · invulnerable'], ['I', 'Parry · then J to riposte · shields: hold to block', 'Parry · then J riposte'],
+  ['U / Q', 'Spells · U casts · Q switches spell', 'Cast / switch spell'], ['O', 'Weapon art · hold to charge', 'Weapon art · hold to charge'],
+  ['F / R', 'Flasks · F crimson (HP) · R azure (FP)', 'Crimson / azure flask'], ['E', 'Interact · talk · pick up · rest at shrines', 'Interact · rest'],
+  ['H / C', 'Root Hook · grapple golden rings', 'Root Hook'], ['S + K', 'Cinder Slam · in the air', 'Cinder Slam (in the air)'],
+  ['Esc / P', 'Menu · equipment, items, status, settings', 'Menu · all controls in Settings'], ['Tab / M', 'Map', 'Map']];
 let titleSel = 0;
 function renderTitle() {
   vctx.fillStyle = 'rgba(6,4,10,0.55)'; vctx.fillRect(ox, oy, W * scale, H * scale);
@@ -490,7 +451,8 @@ function renderTitle() {
   });
   if (!matchMedia('(pointer: coarse)').matches) CONTROLS.forEach(([k, v], i) => {
     const col = i % 2, row = Math.floor(i / 2), x = 70 + col * 170, y = 134 + row * 10;
-    text(k, x, y, 5.5, '#e6c77a', 'right', { weight: 600 }); text(v, x + 6, y, 5.5, '#c9bda2', 'left', { weight: 400 });
+    const short = CONTROLS[i][2] || v.split(' · ')[0];
+    text(k, x, y, 5.5, '#e6c77a', 'right', { weight: 600 }); text(short, x + 6, y, uiFit(short, 150, 5.5, 4.5, 400), '#c9bda2', 'left', { weight: 400 });
   });
   if (!document.hasFocus() && !matchMedia('(pointer: coarse)').matches) text('Click the game to take control', W / 2, 210, 6, '#f1e6c8', 'center', { alpha: 0.6 + 0.4 * Math.sin(time * 3) });
 }
@@ -500,7 +462,7 @@ function titleOptions() { return hasSave() ? ['Continue', 'New Game'] : ['New Ga
 function renderPause() {
   vctx.fillStyle = 'rgba(5,4,8,0.7)'; vctx.fillRect(ox, oy, W * scale, H * scale);
   text('PAUSED', W / 2, 40, 14, '#e8dcc0', 'center', { spacing: 3 });
-  CONTROLS.forEach(([k, v], i) => { const y = 58 + i * 10; text(k, W / 2 - 10, y, 6.5, '#e6c77a', 'right'); text(v, W / 2, y, 6.5, '#c9bda2', 'left', { weight: 400 }); });
+  CONTROLS.forEach(([k, v], i) => { const y = 58 + i * 9; text(k, W / 2 - 10, y, 6, '#e6c77a', 'right'); text(v, W / 2, y, uiFit(v, 180, 6, 4.5, 400), '#c9bda2', 'left', { weight: 400 }); });
   text(`Level ${levelOf(SAVE.stats)} · Deaths ${SAVE.deaths} · ${fmtTime(SAVE.playTime)}`, W / 2, 184, 6.5, '#b8ab90', 'center', { weight: 400 });
   text('Esc resume · Backspace quit to title · N mute', W / 2, 198, 6, '#8a7f6a', 'center', { weight: 400 });
 }

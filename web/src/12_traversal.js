@@ -1,9 +1,9 @@
 // ------------------------------------------------------------------ traversal techniques: Root Hook, Ember Dash, Gale Cloak, Cinder Slam
 Object.assign(ITEMS, {
-  hook: { name: 'Root Hook', icon: 'i_hook', sheet: 'ui_icons2', desc: 'A living golden root that seeks anchors. Press H (or C) near a golden ring to grapple and swing; jump to let go.' },
-  emberdash: { name: 'Ember Dash', icon: 'i_emberdash', sheet: 'ui_icons2', desc: 'Your roll burns through ash. Roll into an ash veil to pass through it, untouchable.' },
-  gale: { name: 'Gale Cloak', icon: 'i_gale', sheet: 'ui_icons2', desc: 'Your cape catches the wind. Hold jump while falling to glide; ride updrafts upward.' },
-  slam: { name: 'Cinder Slam', icon: 'i_slam', sheet: 'ui_icons2', desc: 'In the air, hold S and press K to slam down. Shatters cracked floors and hurls foes aside.' },
+  hook: { name: 'Root Hook', icon: 'i_hook', sheet: 'ui_icons4', desc: 'A living golden root that seeks anchors. Press H (or C) near a golden ring to grapple and swing; jump to let go.' },
+  emberdash: { name: 'Ember Dash', icon: 'i_emberdash', sheet: 'ui_icons4', desc: 'Your roll burns through ash. Roll into an ash veil to pass through it, untouchable.' },
+  gale: { name: 'Gale Cloak', icon: 'i_gale', sheet: 'ui_icons4', desc: 'Your cape catches the wind. Hold jump while falling to glide; ride updrafts upward.' },
+  slam: { name: 'Cinder Slam', icon: 'i_slam', sheet: 'ui_icons4', desc: 'In the air, hold S and press K to slam down. Shatters cracked floors and hurls foes aside.' },
 });
 const TECHNIQUES = ['hook', 'emberdash', 'gale', 'slam'];
 const HOOK_RANGE = 130;
