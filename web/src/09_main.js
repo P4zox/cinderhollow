@@ -186,6 +186,7 @@ function startNGPlus() {
   for (const k of ['stats', 'skills', 'shards', 'weapon', 'weapons', 'arts', 'art', 'spellsOwned', 'spellSlots', 'spellsEq', 'spell', 'charms', 'charmSlots', 'charmsEq', 'inv', 'flaskPot', 'flaskBase', 'flaskBlue', 'cinders', 'deaths', 'playTime', 'endings', 'hints'])
     n[k] = keep[k];
   n.items = { talon: keep.items.talon, wings: keep.items.wings };
+  if (keep.x3) n.x3 = { lore: keep.x3.lore, trials: keep.x3.trials, vistas: keep.x3.vistas };   // the Chronicle, best times and found vistas outlive the journey
   n.ngp = (keep.ngp || 0) + 1; n.bought = {};
   SAVE = n; updNGP(); killed.clear();
   const def = ROOM_BY.R1; let sx = 72, sy = 176;
@@ -296,18 +297,23 @@ function update(rawDt) {
 
 // ---- render
 let frameLights = [];
+// Dynamic lighting (41_light.js): lit scene -> `low`, emitters -> `lowFx` (drawGlow), overlays -> `lowTop`, lit on the GPU.
+// Classic / shaders off: g stays on `low` the whole way and renderLighting() darkens it, exactly as before.
 function renderWorld() {
+  const dyn = lxBegin();
   g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1;
   g.clearRect(0, 0, W, H);
   if (!room) { g.fillStyle = '#0a0810'; g.fillRect(0, 0, W, H); return; }
   drawParallax();
   const sk = shake * SETTINGS.shake, sx = sk ? rand(-sk, sk) * 0.5 : 0, sy = sk ? rand(-sk, sk) * 0.5 : 0;
   const cx = Math.round(cam.x - sx), cy = Math.round(cam.y - sy);
+  LX.cx = cx; LX.cy = cy;
   g.setTransform(1, 0, 0, 1, -cx, -cy);
   g.drawImage(room.back, 0, 0);
-  if (boss && boss.phase === 2 && boss.alive) { g.fillStyle = `rgba(255,150,50,${0.05 + 0.03 * Math.sin(time * 3)})`; g.fillRect(cx, cy, W, H); }
+  const p2tint = boss && boss.phase === 2 && boss.alive;
+  if (p2tint && !dyn) { g.fillStyle = `rgba(255,150,50,${0.05 + 0.03 * Math.sin(time * 3)})`; g.fillRect(cx, cy, W, H); }
   g.drawImage(room.front, 0, 0);
-  for (const p of props) if (p.type !== 'fog' && p.type !== 'veil') drawProp(p);
+  for (const p of props) if (p.type !== 'fog' && p.type !== 'veil') lxDrawProp(p);
   for (const f of fx) if (f.name === 'ground_crack') drawFx(f);
   // shadows
   const shadow = (x, y, w, a) => { g.fillStyle = `rgba(6,4,10,${a})`; g.beginPath(); g.ellipse(Math.round(x), Math.round(y) + 1, Math.max(2, w), 2.5, 0, 0, 6.3); g.fill(); };
@@ -318,12 +324,14 @@ function renderWorld() {
   for (const e of enemies) e.draw();
   for (const h of hazards) if (h.pool) { g.fillStyle = `rgba(110,170,50,${0.45 * Math.min(1, h.life)})`; g.beginPath(); g.ellipse(Math.round(h.x), Math.round(h.y) - 1, h.w / 2, 3, 0, 0, 6.3); g.fill(); }
   const rw = fxSheet('rot_wave');
-  for (const h of hazards) if (h.wave && h.color === 'rot' && rw.ok) { const t = rw.tag('rot_wave'); drawSprite(rw, t.from + Math.floor(time * 12) % (t.to - t.from + 1), h.x, h.y, h.dir || 1, { bottom: true }); addLight(h.x, h.y - 8, 30, '150,210,90', 0.6); }
-  for (const h of hazards) if (h.wave && !(h.color === 'rot' && rw.ok)) {
-    const c = h.color === 'root' ? ['255,160,70', '255,220,160'] : h.color === 'rot' ? ['110,180,60', '190,230,120'] : ['255,200,90', '255,240,190'];
-    g.fillStyle = `rgba(${c[0]},0.85)`; g.fillRect(Math.round(h.x - 3), Math.round(h.y) - 10, 6, 10);
-    g.fillStyle = `rgba(${c[1]},0.9)`; g.fillRect(Math.round(h.x - 1), Math.round(h.y) - 14, 2, 14);
-  }
+  drawGlow(() => {
+    for (const h of hazards) if (h.wave && h.color === 'rot' && rw.ok) { const t = rw.tag('rot_wave'); drawSprite(rw, t.from + Math.floor(time * 12) % (t.to - t.from + 1), h.x, h.y, h.dir || 1, { bottom: true }); addLight(h.x, h.y - 8, 30, '150,210,90', 0.6); }
+    for (const h of hazards) if (h.wave && !(h.color === 'rot' && rw.ok)) {
+      const c = h.color === 'root' ? ['255,160,70', '255,220,160'] : h.color === 'rot' ? ['110,180,60', '190,230,120'] : ['255,200,90', '255,240,190'];
+      g.fillStyle = `rgba(${c[0]},0.85)`; g.fillRect(Math.round(h.x - 3), Math.round(h.y) - 10, 6, 10);
+      g.fillStyle = `rgba(${c[1]},0.9)`; g.fillRect(Math.round(h.x - 1), Math.round(h.y) - 14, 2, 14);
+    }
+  });
   for (const gh of ghosts) drawSprite(sheet('player'), gh.f, gh.x, gh.y, gh.face, { alpha: gh.life / 0.22 * 0.45, flash: 1, flashColor: gh.red ? '#c02030' : '#5a2a4a' });
   if (!(P.inv > 0 && P.state !== 'hurt' && P.state !== 'dead' && P.state !== 'rise' && Math.floor(time * 20) % 2)) {
     const op = P.flash > 0 ? { flash: P.flash * 0.55, flashColor: '#ff3030' } : P.empower > 0 ? { flash: 0.15 + 0.1 * Math.sin(time * 12), flashColor: '#ffd070' } : {};
@@ -336,23 +344,26 @@ function renderWorld() {
   }
   drawWater();
   drawHookLine();
-  for (const p of props) if (p.type === 'fog' || p.type === 'veil') drawProp(p);
-  drawProjectiles();
+  for (const p of props) if (p.type === 'fog' || p.type === 'veil') lxDrawProp(p);
+  lxDrawProjectiles();
   runHooks('render');
-  for (const f of fx) if (f.name !== 'ground_crack') drawFx(f);
+  for (const f of fx) if (f.name !== 'ground_crack') lxDrawFx(f);
   const saved = lights; lights = frameLights = [];
-  drawParticles();
+  lxDrawParticles();
   lights = saved.concat(frameLights);
-  addLight(P.x, P.y - 16, 100, '255,210,170', 0.9);
-  renderLighting();
+  addLight(P.x, P.y - 16, 100, '255,210,170', 0.9, LX_PLAYER);
+  if (dyn) lxCollect(lights); else renderLighting();
   lights = saved;
   g.setTransform(1, 0, 0, 1, 0, 0);
+  if (dyn) { g = gTop; if (p2tint) { g.fillStyle = `rgba(255,150,50,${0.04 + 0.02 * Math.sin(time * 3)})`; g.fillRect(0, 0, W, H); } }
   runHooks('renderTop');
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
   if (flashScreen > 0) { g.fillStyle = `rgba(255,236,190,${flashScreen * 0.35})`; g.fillRect(0, 0, W, H); }
   if (P.hp < D.maxHp * 0.25 && P.state !== 'dead') { g.fillStyle = `rgba(120,0,10,${0.12 + 0.06 * Math.sin(time * 5)})`; g.fillRect(0, 0, W, H); }
   const vg = g.createRadialGradient(W / 2, H / 2, 100, W / 2, H / 2, 250);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.6)');
   g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  g = gLow;
 }
 function render() {
   renderWorld();

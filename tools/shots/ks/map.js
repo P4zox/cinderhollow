@@ -1,0 +1,16 @@
+await boot(); G.SETTINGS.god = 1; const S = window.__sys, log = [];
+const all = ['R1','R2','R3','R4','C1','C2','C2s','C3','C4','C5','C6','K1','K2','K3','K3s','K4','M1','M2','M3','M4','M5','M6','A1','A2','A3','A4','A5','A6','SP1','SP2','SP3','SP4','SP5','HF1','HF2','HF3','HF4','X1','X2','X3','X4','X5','T2','T2b'];
+for (const r of all) G.SAVE.visited[r] = 1; G.SAVE.shrines.push('R1','C2','K1','A2');
+G.SAVE.seenAreas = { ramparts:1, catacombs:1, cathedral:1, mire:1, archives:1, spire:1, hoarfrost:1, crown:1 };
+S.x3().trials['T2:tr1'] = { best: 9.4, clears: 2, gold: true, got: true }; S.x3().vistas['x3:T2:bench'] = 5;
+G.tp('K3', 12, 24); G.step(20);
+G.step(1, [], ['map']); G.step(3); log.push('map state ' + G.state + ' z ' + S.mapv.z);
+await snap('m01_map_z1');
+G.step(1, [], ['confirm']); for(let k=0;k<30;k++) G.step(1); await snap('m02_map_z2');
+G.step(1, [], ['confirm']); for(let k=0;k<30;k++) G.step(1); await snap('m03_map_z0');
+G.step(1, [], ['confirm']); G.step(2); for (let i = 0; i < 40; i++) G.step(1, ['left']); for(let k=0;k<30;k++) G.step(1); await snap('m04_map_pan');
+G.step(1, [], ['spell']); for(let k=0;k<30;k++) G.step(1); await snap('m05_filter');
+G.step(1, [], ['map']); G.step(2); log.push('closed: ' + G.state);
+G.tp('T2', 30, 26); G.step(10); G.step(1, [], ['map']); G.step(1, [], ['confirm']); for(let k=0;k<40;k++) G.step(1); await snap('m06_map_t2_icons');
+G.step(1, [], ['map']);
+return log;

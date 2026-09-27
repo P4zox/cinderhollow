@@ -184,7 +184,7 @@ SPAWNS.cm_prop = (s, c) => {
   const p = cmProp(s.kind, c.cx, c.fy, d[0], s.sub || d[1]);
   p.anim.t = rand(0, 400);
   const glow = { candelabra: [0, -34, 60, 0.9], sconce: [0, -16, 44, 0.8], fountain: [0, -22, 40, 0.35], table: [0, -26, 40, 0.6] }[s.kind];
-  if (glow) p.update = () => addLight(p.x + glow[0], p.y + glow[1], glow[2] + Math.sin(time * 9 + p.x) * 2, s.kind === 'fountain' ? '200,40,50' : '255,170,100', glow[3]);
+  if (glow) p.update = () => addLight(p.x + glow[0], p.y + glow[1], glow[2] + Math.sin(time * 9 + p.x) * 2, s.kind === 'fountain' ? '200,40,50' : '255,170,100', glow[3], s.kind === 'fountain' ? undefined : LX_FLICKER);
   if (!p.sh.ok) p.draw = () => {};
   props.push(p);
 };
@@ -206,7 +206,7 @@ function cmLore(key) { startDialogue((CM_LORE[key] || ['…']).map(t => ({ t, lo
 SPAWNS.cm_diary = (s, c) => {
   cmEnsure();
   const p = cmProp('diary', c.cx, c.fy, 'cm_lectern', 'loop');
-  p.update = () => addLight(p.x + 4, p.y - 22, 38 + Math.sin(time * 10) * 2, '255,180,110', 0.75);
+  p.update = () => addLight(p.x + 4, p.y - 22, 38 + Math.sin(time * 10) * 2, '255,180,110', 0.75, LX_FLICKER);
   p.prompt = () => 'Read'; p.interact = () => cmLore(s.lore);
   props.push(p);
 };

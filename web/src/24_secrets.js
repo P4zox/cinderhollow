@@ -95,7 +95,7 @@ function scBreakSeal(p) {
 SPAWNS.sc_fire = (s, c) => {
   const p = scSimpleProp('sc_fire', 'sc_campfire', c.cx, c.fy, 'loop');
   p.update = () => {
-    addLight(p.x, p.y - 12, 120 + Math.sin(time * 9) * 5 + Math.sin(time * 23) * 3, '255,160,80', 1);
+    addLight(p.x, p.y - 12, 120 + Math.sin(time * 9) * 5 + Math.sin(time * 23) * 3, '255,160,80', 1, LX_FLICKER);
     if (Math.random() < 0.35) particles.push({ x: p.x + rand(-5, 5), y: p.y - rand(8, 16), vx: rand(-6, 6), vy: -rand(20, 50), life: rand(0.4, 1.0), kind: 'fire' });
     if (Math.random() < 0.08) particles.push({ x: p.x + rand(-3, 3), y: p.y - 20, vx: rand(-4, 4), vy: -rand(10, 20), life: 2, kind: 'ash' });
   };

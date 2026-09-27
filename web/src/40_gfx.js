@@ -98,20 +98,26 @@ function gfxRender(w, h) {
   const { gl, cv, u } = GFX;
   const k = Math.min(1, 2560 / w), ow = Math.max(W, Math.round(w * k)), oh = Math.max(H, Math.round(h * k));
   if (cv.width !== ow || cv.height !== oh) { cv.width = ow; cv.height = oh; }
-  gl.viewport(0, 0, ow, oh);
-  gl.bindTexture(gl.TEXTURE_2D, GFX.tex);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, low);
+  const lit = LX.on ? lxPass(gl) : null;   // Dynamic lighting (41_light.js): the lit composite at 384x216, else the raw canvas
+  gl.useProgram(GFX.prog); gl.viewport(0, 0, ow, oh); gl.activeTexture(gl.TEXTURE0);
+  if (lit) gl.bindTexture(gl.TEXTURE_2D, lit);
+  else { gl.bindTexture(gl.TEXTURE_2D, GFX.tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, low); }
   gl.uniform1i(u.T, 0); gl.uniform2f(u.S, W, H); gl.uniform2f(u.O, ow, oh); gl.uniform1f(u.tm, time % 1000);
   gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
   gl.uniform1f(u.ca, SETTINGS.ca); gl.uniform1f(u.filt, SETTINGS.tex); gl.uniform1f(u.grade, SETTINGS.grade);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 function presentWorld() {
+  const t0 = performance.now(); presentBody(); const dt = performance.now() - t0;
+  GFX.pt = (GFX.pt || 0) + dt; GFX.pn = (GFX.pn || 0) + 1;   // frame-time probe for tools/shots/lx (reset both to measure)
+}
+function presentBody() {
   const w = W * scale, h = H * scale;
   if (SETTINGS.shaders && gfxReady()) {
-    try { gfxRender(w, h); vctx.imageSmoothingEnabled = true; vctx.drawImage(GFX.cv, ox, oy, w, h); return; }
+    try { gfxRender(w, h); vctx.imageSmoothingEnabled = true; vctx.drawImage(GFX.cv, ox, oy, w, h); if (GFX.sync) GFX.gl.finish(); return; }
     catch (e) { console.warn('shader pass failed, falling back:', e && e.message); GFX.ok = false; }
   }
+  lxFlatten();
   vctx.imageSmoothingEnabled = SETTINGS.tex === 2; if (vctx.imageSmoothingEnabled) vctx.imageSmoothingQuality = 'high';
   vctx.drawImage(low, ox, oy, w, h);
   vctx.imageSmoothingEnabled = false;
@@ -120,6 +126,8 @@ function presentWorld() {
 // ---- Settings › Graphics & shaders
 const GFX_ROWS = [
   { k: 'shaders', label: 'Shaders', opts: ['Off', 'On'], desc: 'Post-processing on the game world (the HUD stays sharp). Turn off on slow devices.' },
+  { k: 'light', label: 'Lighting', opts: ['Classic', 'Dynamic', 'Dynamic + shadows'], shader: true, desc: 'Dynamic: lanterns, fire and spells light the stone in pixel-art bands. Shadows: walls block the light.' },
+  { k: 'lband', label: 'Light bands', opts: ['Pixel', 'Smooth'], shader: true, desc: 'Pixel: light falls off in hand-drawn steps with a dithered edge. Smooth: a soft gradient.' },
   { k: 'preset', label: 'Look', desc: 'A ready-made mix of the options below. Change any of them to make your own.' },
   { k: 'tex', label: 'Texture filter', opts: ['Crisp pixels', 'Smooth pixels', 'Soft'], desc: 'Crisp: hard pixel edges. Smooth pixels: clean anti-aliased pixel art (needs shaders). Soft: blurred.' },
   { k: 'bloom', label: 'Bloom', opts: ['Off', 'Low', 'High'], shader: true, desc: 'Embers, fire, spells and light sources glow and bleed into the dark.' },
@@ -152,11 +160,11 @@ function renderGfxSub(M) {
   uiBackdrop(0.12);
   vctx.fillStyle = 'rgba(6,4,10,0.86)'; vctx.fillRect(ox, oy, 214 * scale, H * scale);   // the right side stays clear: a live preview
   uiTitle('GRAPHICS', 17, 9);
-  const px = 12, pw = 196, top = 32, rh = 15, on = !!SETTINGS.shaders, bad = GFX.ok === false;
+  const px = 12, pw = 196, top = 26, rh = 13, on = !!SETTINGS.shaders, bad = GFX.ok === false;
   panel(px, top, pw, 10 + GFX_ROWS.length * rh);
   GFX_ROWS.forEach((R, i) => {
-    const y = top + 17 + i * rh, sel = i === S.sel, dim = (R.shader && !on);
-    if (sel) uiSel(px + 4, y - 10, pw - 8, rh - 1);
+    const y = top + 15 + i * rh, sel = i === S.sel, dim = (R.shader && !on);
+    if (sel) uiSel(px + 4, y - 9, pw - 8, rh - 1);
     text(R.label, px + 12, y, 6.2, sel ? '#f5e3b0' : dim ? '#7f745f' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     let val;
     if (R.k === 'preset') { const pi = gfxPresetIdx(); val = pi < 0 ? 'Custom' : GFX_PRESETS[pi][0]; }
@@ -166,7 +174,7 @@ function renderGfxSub(M) {
     text((sel ? '◂ ' : '') + val + (sel ? ' ▸' : ''), px + pw - 10, y, 6.2, dim ? '#6f6656' : (R.k === 'shaders' ? (on ? '#ffd070' : '#8a7f6a') : '#f1e6c8'), 'right', { weight: 600 });
   });
   const R = GFX_ROWS[S.sel];
-  wrap(R.desc, pw - 16, 5.4).forEach((ln, i) => text(ln, px + 8, top + 24 + GFX_ROWS.length * rh + i * 8, 5.4, '#b8ab90', 'left', { weight: 400 }));
+  wrap(R.desc, pw - 16, 5.4).forEach((ln, i) => text(ln, px + 8, top + 21 + GFX_ROWS.length * rh + i * 7.5, 5.4, '#b8ab90', 'left', { weight: 400 }));
   text('Preview →', 300, 30, 5.6, '#b8ab90', 'center', { weight: 400, alpha: 0.8 });
   uiFooter([['↑↓', 'select'], ['←→', 'change'], ['Esc', 'back']]);
 }

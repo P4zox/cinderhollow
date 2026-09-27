@@ -244,7 +244,7 @@ function drawHfWater() {
 HOOKS.render.push(() => {
   if (!hfIn()) return;
   drawHfWater();
-  drawHfShots();
+  drawGlow(drawHfShots);
   if (boss && boss.drawOver) boss.drawOver();
 });
 HOOKS.renderTop.push(() => {

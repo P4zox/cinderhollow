@@ -387,7 +387,7 @@ SPAWNS.db_prop = (s, c) => {
   const sh = sheet(d[0]);
   const p = { type: 'db_' + s.kind, x: c.cx, y: c.fy, face: 1, sh, anim: new Anim(sh, sh.has(d[1]) ? d[1] : Object.keys(sh.tags)[0] || d[1], true) };
   p.anim.t = rand(0, 400);
-  if (s.kind === 'lamp') p.update = () => addLight(p.x, p.y - 32, 56 + Math.sin(time * 7 + p.x) * 3, '110,230,210', 0.85);
+  if (s.kind === 'lamp') p.update = () => addLight(p.x, p.y - 32, 56 + Math.sin(time * 7 + p.x) * 3, '110,230,210', 0.85, LX_FLICKER);
   if (s.kind === 'bones') p.update = () => addLight(p.x, p.y - 8, 30, '110,230,210', 0.45);
   if (s.kind === 'window') p.update = () => addLight(p.x, p.y - 36, 40, '120,200,210', 0.3);
   if (s.kind === 'bell') dbMakeBell(p, c);

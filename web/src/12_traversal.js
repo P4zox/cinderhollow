@@ -91,7 +91,7 @@ function releaseHook(boost) {
   setP('air', 'jump_up', false); sfx.jump();
 }
 function drawHookLine() {
-  if (!P || P.state !== 'hook' || !P.hook) return;
+  if (!P || P.state !== 'hook' || !P.hook || P.hook.rope) return;   // kit ropes (42_kit.js) draw themselves
   const h = P.hook.h, x0 = P.x + P.face * 4, y0 = P.y - 33;
   const n = Math.ceil(Math.hypot(h.x - x0, h.y - y0) / 3);
   for (let i = 0; i <= n; i++) {

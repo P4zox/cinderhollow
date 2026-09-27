@@ -79,7 +79,7 @@ SPAWNS.sp_prop = (s, c) => {
   spEnsure();
   const d = SP_DECO[s.kind]; if (!d) return;
   const p = spDeco(s.kind, c.cx, c.fy, d[0], d[1]);
-  if (s.kind === 'lamp') p.update = () => addLight(p.x + 3, p.y - 32, 64 + Math.sin(time * 9 + p.x) * 3, '255,180,100', 0.9);
+  if (s.kind === 'lamp') p.update = () => addLight(p.x + 3, p.y - 32, 64 + Math.sin(time * 9 + p.x) * 3, '255,180,100', 0.9, LX_FLICKER);
   if (s.kind === 'windmill') p.update = () => addLight(p.x - 4, p.y - 64, 26, '255,180,100', 0.5);
   if (s.kind === 'cottage') p.update = () => addLight(p.x + 8, p.y - 24, 34, '255,170,90', 0.55);
   if (s.kind === 'wheat') p.anim.t = rand(0, 600);
@@ -362,7 +362,7 @@ HOOKS.update.push(dt => {
 HOOKS.render.push(() => {
   if (!spIn()) return;
   spDrawSea(); spDrawPuddles(); spDrawCrumbles(); spDrawStrikeWarn(); spDrawFlames(); spDrawWaves(); spDrawDebris();
-  spDrawBolts(); spDrawRings(); spDrawBeam(); spDrawStreaks();
+  drawGlow(() => { spDrawBolts(); spDrawRings(); spDrawBeam(); spDrawStreaks(); });
 });
 
 // ================================================================== Lightning acolyte bolts (chain through puddles)

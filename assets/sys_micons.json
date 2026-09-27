@@ -1,0 +1,133 @@
+{ "frames": [
+   {
+    "filename": "sys_micons 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 1.aseprite",
+    "frame": { "x": 9, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 2.aseprite",
+    "frame": { "x": 18, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 3.aseprite",
+    "frame": { "x": 27, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 4.aseprite",
+    "frame": { "x": 36, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 5.aseprite",
+    "frame": { "x": 45, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 6.aseprite",
+    "frame": { "x": 54, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 7.aseprite",
+    "frame": { "x": 63, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 8.aseprite",
+    "frame": { "x": 72, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 9.aseprite",
+    "frame": { "x": 81, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 10.aseprite",
+    "frame": { "x": 90, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_micons 11.aseprite",
+    "frame": { "x": 99, "y": 0, "w": 9, "h": 9 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "sys_micons.png",
+  "format": "RGBA8888",
+  "size": { "w": 108, "h": 9 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "mx_trial", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_trial_gold", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_gaunt", "from": 2, "to": 2, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_gaunt_done", "from": 3, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_puzzle", "from": 4, "to": 4, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_vista", "from": 5, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_secret", "from": 6, "to": 6, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_door", "from": 7, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_lock", "from": 8, "to": 8, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_passage", "from": 9, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_rooms", "from": 10, "to": 10, "direction": "forward", "color": "#000000ff" },
+   { "name": "mx_lore", "from": 11, "to": 11, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

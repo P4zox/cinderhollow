@@ -87,7 +87,8 @@ function moveBody(b, dt, opt = {}) {
       for (const xx of [b.x - b.w / 2 + 1, b.x, b.x + b.w / 2 - 1]) {
         const tx = Math.floor(xx / TILE), ty = Math.floor(ny / TILE), t = tileAt(tx, ty);
         const top = ty * TILE;
-        if (isSolidT(t) || solidDynAt(xx, ny)) land = land === null ? top : Math.min(land, top);
+        const lt = isSolidT(t) ? top : dynTopAt(xx, ny, prevY);   // dyn solids land on their own top (kit movers sit between tile rows)
+        if (lt !== null) land = land === null ? lt : Math.min(land, lt);
         else if (t === T_PLAT && !(b.drop > 0) && prevY <= top + 0.5) land = land === null ? top : Math.min(land, top);
       }
       if (land !== null) { b.y = land; b.vy = 0; b.ground = true; break; }
@@ -102,7 +103,7 @@ function moveBody(b, dt, opt = {}) {
           if (clear) { b.x += nudge; bonk = false; break; }
         }
       }
-      if (bonk) { b.y = (Math.floor((ny - b.h) / TILE) + 1) * TILE + b.h; b.vy = 0; b.hitCeil = true; break; }
+      if (bonk) { b.y = ceilAt(b, ny - b.h, prevY - b.h) + b.h; b.vy = 0; b.hitCeil = true; break; }
       b.y = ny;
     }
   }
@@ -111,6 +112,16 @@ function moveBody(b, dt, opt = {}) {
   b.landed = !wasGround && b.ground;
 }
 function solidDynAt(x, y) { for (const d of room.dyn) if (d.on() && x >= d.x0 && x < d.x1 && y >= d.y0 && y < d.y1) return true; return false; }
+// landing height on a dyn solid at (x, y): its own top when the body came from above, else the old tile-row snap
+function dynTopAt(x, y, prevY) { let r = null; for (const d of room.dyn) if (d.on() && x >= d.x0 && x < d.x1 && y >= d.y0 && y < d.y1) { const t = d.y0 >= prevY - 1 ? d.y0 : Math.floor(y / TILE) * TILE; r = r === null ? t : Math.min(r, t); } return r; }
+// head bump: below the tile row, or flush under a dyn solid's underside when the head came from below it
+function ceilAt(b, hy, prevHy) {
+  let r = (Math.floor(hy / TILE) + 1) * TILE, dynOnly = true;
+  for (const xx of [b.x - b.w / 2 + 1, b.x, b.x + b.w / 2 - 1]) { if (isSolidT(tileAt(Math.floor(xx / TILE), Math.floor(hy / TILE)))) dynOnly = false; }
+  if (!dynOnly) return r;
+  let d1 = null; for (const d of room.dyn) if (d.on() && hy >= d.y0 && hy < d.y1 && d.y1 <= prevHy + 1 && [b.x - b.w / 2 + 1, b.x, b.x + b.w / 2 - 1].some(xx => xx >= d.x0 && xx < d.x1)) d1 = Math.max(d1 ?? -1e9, d.y1);
+  return d1 ?? r;
+}
 function groundBelow(b, off = 1) {
   for (const xx of [b.x - b.w / 2 + 1, b.x + b.w / 2 - 1]) {
     const t = tileAt(Math.floor(xx / TILE), Math.floor((b.y + off) / TILE));
@@ -210,7 +221,9 @@ function drawParallax() {
   layer(far, 0.08, 0.02);
   layer(mid, 0.3, 0.08);
 }
-function addLight(x, y, r, color = '255,190,110', k = 1) { lights.push({ x, y, r, color, k }); }
+// o (optional): { flicker: true (lanterns, torches…), shadow: false (skip the tile-shadow test), height: px in front of the wall }
+function addLight(x, y, r, color = '255,190,110', k = 1, o) { lights.push({ x, y, r, color, k, o }); }
+// Classic lighting (shaders off, or Lighting = Classic): a darkness layer with soft holes. Dynamic lighting: 41_light.js
 function renderLighting() {
   const A = AREAS[room.def.biome];
   let amb = typeof darkT !== 'undefined' && darkT > 0 ? Math.min(0.97, A.ambient + 0.4 * Math.min(1, darkT)) : A.ambient;

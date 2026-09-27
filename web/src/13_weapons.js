@@ -49,7 +49,7 @@ HOOKS.update.push(dt => {
   for (const e of WFX) { e.t += dt; if ((e.update && e.update(dt) === false) || (e.life !== undefined && e.t >= e.life)) e.dead = true; }
   WFX = WFX.filter(e => !e.dead);
 });
-HOOKS.render.push(() => { for (const e of WFX) if (e.draw) e.draw(); });
+HOOKS.render.push(() => drawGlow(() => { for (const e of WFX) if (e.draw) e.draw(); }));   // weapon fx emit light (41_light.js)
 // play a wpn_fx_* strip at (x, y) (bottom-anchored unless center), frame chosen by time t
 function wfxSheet(name) { return sheet('wpn_fx_' + name); }
 function wfxDraw(name, t, x, y, face = 1, opt = {}) {

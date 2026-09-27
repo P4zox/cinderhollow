@@ -20,3 +20,4 @@ art/previews/
 
 # user-supplied reference art (not ours to redistribute)
 art/concepts/ref_*
+tools/.reach_cache.json

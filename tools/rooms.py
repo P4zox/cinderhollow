@@ -341,6 +341,12 @@ for x, y, ch in [(3, 16, 's'), (26, 16, 's')]:
 # Each module runs in this namespace: use Room(...), SOLID, GROUNDED, FLYING and patch existing rooms via ROOM('R4').
 def ROOM(id):
     return next(R for R in ROOMS if R.id == id)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import reach as _reach   # tools/reach.py (KS): placement helper + reachability
+def free_spot(near_gx, near_gy, w, h, zone, margin=0):
+    """nearest free w x h spot (top-left gx, gy) inside zone ('Spire' or (x0, x1, y0, y1)) that overlaps no room built so far"""
+    return _reach.free_spot(ROOMS, near_gx, near_gy, w, h, zone, margin)
+HAZARD = set('^v*(')    # touch = hurt (reachability treats these as deadly); regions may add chars
 GROUNDED = set('PSswcaeKuCiLHMFNAOTgVQZhmnodjJWEI')
 FLYING = set()          # enemy types in spawns= that don't need ground under them
 _rdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'regions')
@@ -397,12 +403,77 @@ def validate():
             if R.g[y][x] in SOLID: errs.append(f'{R.id}: spawn {s} inside solid')
             if s.get('ground', s.get('t') in ('enemy', 'boss', 'prop')) and s.get('type') not in FLYING and not s.get('air') and (y + 1 >= R.h or R.g[y + 1][x] not in SOLID | {'='}):
                 errs.append(f'{R.id}: spawn {s.get("type") or s.get("kind")} at ({x},{y}) not standing on ground')
+    errs += validate_sys()
     return errs
 
 
+# ---- Expansion 3 systems (KS): door pairs, sys spawns, reachability (tools/reach.py)
+SYS_KINDS = {'door', 'passage', 'trial', 'trial_goal', 'gauntlet', 'bench', 'lore'}
+SYS_GROUNDED = {'door', 'trial', 'trial_goal', 'bench', 'lore', 'gauntlet'}
+def validate_sys():
+    errs = []
+    by = {R.id: R for R in ROOMS}
+    def door_of(R, id):
+        return next((s for s in R.kw.get('spawns', []) if s.get('t') == 'sys' and s.get('kind') == 'door' and s.get('id') == id), None)
+    for R in ROOMS:
+        sp = [s for s in R.kw.get('spawns', []) if s.get('t') == 'sys']
+        ids = {}
+        for s in sp:
+            k, x, y = s.get('kind'), s.get('x'), s.get('y')
+            tag = f"sys {k} {s.get('id') or s.get('page') or s.get('trial') or ''}".rstrip()
+            if k not in SYS_KINDS: errs.append(f'{R.id}: {tag}: unknown sys kind'); continue
+            if k in ('door', 'trial', 'gauntlet') and not s.get('id'): errs.append(f'{R.id}: {tag}: needs an id'); continue
+            if s.get('id'):
+                key = (k if k != 'trial_goal' else 'goal', s['id'])
+                if key in ids: errs.append(f'{R.id}: {tag}: duplicate id')
+                ids[key] = s
+            if k in SYS_GROUNDED and 0 <= x < R.w and 0 <= y < R.h:
+                if R.g[y][x] in SOLID or (y > 0 and R.g[y - 1][x] in SOLID): errs.append(f'{R.id}: {tag} at ({x},{y}): its cell or the one above is solid')
+                elif y + 1 >= R.h or R.g[y + 1][x] not in SOLID | {'='}: errs.append(f'{R.id}: {tag} at ({x},{y}) not standing on ground')
+            if k == 'door':
+                to, toId = s.get('to'), s.get('toId', s.get('id'))
+                if to not in by: errs.append(f"{R.id}: door {s['id']} -> {to}:{toId}: no such room"); continue
+                t = door_of(by[to], toId)
+                if not t: errs.append(f"{R.id}: door {s['id']} -> {to}:{toId}: the partner door doesn't exist")
+                elif t.get('to') != R.id or t.get('toId', t.get('id')) != s['id']: errs.append(f"{R.id}: door {s['id']} -> {to}:{toId}: the partner points to {t.get('to')}:{t.get('toId', t.get('id'))}, not back here")
+            elif k == 'trial_goal':
+                if not any(q.get('kind') == 'trial' and q.get('id') == s.get('trial') for q in sp): errs.append(f"{R.id}: {tag}: no trial sigil with id {s.get('trial')!r} in this room")
+            elif k == 'trial':
+                if not any(q.get('kind') == 'trial_goal' and q.get('trial') == s.get('id') for q in sp): errs.append(f'{R.id}: {tag}: no trial_goal for it')
+            elif k == 'gauntlet':
+                if not s.get('waves'): errs.append(f'{R.id}: {tag}: no waves')
+                kit_ids = {q.get('id') for q in R.kw.get('spawns', []) if q.get('t') == 'kit' and q.get('kind') == 'gate'}
+                for g in s.get('gates', []):
+                    if g not in kit_ids: errs.append(f'{R.id}: {tag}: gate {g!r} is not a kit gate in this room')
+                for wi, w in enumerate(s.get('waves', [])):
+                    for e in w:
+                        if not (0 <= e.get('x', -1) < R.w and 0 <= e.get('y', -1) < R.h) or R.g[e['y']][e['x']] in SOLID: errs.append(f'{R.id}: {tag}: wave {wi + 1} spawn {e} is outside the room or in rock')
+            elif k == 'lore':
+                if not isinstance(s.get('page'), str) or not s.get('page'): errs.append(f'{R.id}: {tag}: needs page=<LORE_PAGES id>')
+            elif k == 'passage':
+                w, h = s.get('w', 1), s.get('h', 3)
+                cells = [(xx, yy) for yy in range(y - h + 1, y + 1) for xx in range(x, x + w)]
+                bad = next((c for c in cells if not (0 <= c[0] < R.w and 0 <= c[1] < R.h)), None)
+                if bad: errs.append(f'{R.id}: {tag}: cell {bad} outside the room')
+                elif any(R.g[yy][xx] in SOLID for xx, yy in cells): errs.append(f'{R.id}: {tag}: its cells must be open in the map (the engine walls them up while closed)')
+    return errs
+
+
+def validate_reach():
+    """(errors, warnings) from tools/reach.py: ERR for rooms with needs/x3, WARN for old rooms"""
+    if os.environ.get('NOREACH'): return [], []
+    msgs = _reach.check_all(ROOMS, cell, SOLID, ''.join(sorted(HAZARD)))
+    return [m for l, m in msgs if l == 'ERR'], [m for l, m in msgs if l != 'ERR']
+
+
 if __name__ == '__main__':
+    if '--zones' in sys.argv:
+        print(_reach.zones_report(ROOMS, _reach.ZONES)); sys.exit(0)
     errs = validate()
+    rerrs, rwarns = validate_reach()
+    errs += rerrs
     for e in errs: print('ERR', e)
+    for w in rwarns: print('WARN', w)
     out = ['// generated by tools/rooms.py — edit there, not here', 'const ROOMS = [']
     for R in ROOMS:
         meta = dict(id=R.id, name=R.name, biome=R.biome, gx=R.gx, gy=R.gy, w=R.w, h=R.h, **R.kw)

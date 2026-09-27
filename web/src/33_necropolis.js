@@ -153,8 +153,8 @@ SPAWNS.nv_prop = (s, c) => {
   const sh = sheet('nv_props'), hang = s.kind === 'banner';
   const p = { type: 'nv_' + s.kind, x: c.cx, y: hang ? s.y * TILE : c.fy, face: s.face || 1, sh, anim: new Anim(sh, sh.has(tag) ? tag : 'candles', true), hang };
   p.anim.t = rand(0, 500);
-  if (s.kind === 'candles') p.update = () => !NVR.void && addLight(p.x, p.y - 8, 34 + Math.sin(time * 9 + p.x) * 2, '140,190,255', 0.7);
-  if (s.kind === 'brazier') p.update = () => { if (NVR.void) return; addLight(p.x, p.y - 26, 64 + Math.sin(time * 7 + p.x) * 3, '130,185,255', 0.9); if (Math.random() < 0.25) particles.push({ x: p.x + rand(-4, 4), y: p.y - 24, vx: rand(-4, 4), vy: -rand(14, 30), life: rand(0.5, 1), kind: 'nvghost' }); };
+  if (s.kind === 'candles') p.update = () => !NVR.void && addLight(p.x, p.y - 8, 34 + Math.sin(time * 9 + p.x) * 2, '140,190,255', 0.7, LX_FLICKER);
+  if (s.kind === 'brazier') p.update = () => { if (NVR.void) return; addLight(p.x, p.y - 26, 64 + Math.sin(time * 7 + p.x) * 3, '130,185,255', 0.9, LX_FLICKER); if (Math.random() < 0.25) particles.push({ x: p.x + rand(-4, 4), y: p.y - 24, vx: rand(-4, 4), vy: -rand(14, 30), life: rand(0.5, 1), kind: 'nvghost' }); };
   if (s.kind === 'throne') p.update = () => !NVR.void && addLight(p.x, p.y - 50, 60, '130,185,255', 0.5);
   if (s.kind === 'statue') p.update = () => !NVR.void && addLight(p.x, p.y - 38, 22, '130,185,255', 0.35);
   p.draw = () => { if (NVR.void) return; if (sh.ok) drawSprite(sh, p.anim.frame, p.x, p.y, p.face, hang ? { pivot: [Math.floor(sh.fw / 2), 0] } : { bottom: true }); };

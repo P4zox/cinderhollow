@@ -899,7 +899,7 @@ HOOKS.update.push(dt => {
   }
   if (w) addLight(w.x, w.y, 90, '255,210,140', 0.8);
 });
-HOOKS.render.push(() => {
+HOOKS.render.push(() => drawGlow(() => {   // all of this is light: marks, waves, meteors, rings, rays (41_light.js)
   const B = sovBoss(); if (!B) return;
   const mk = fxSheet('sov_mark');
   for (const m of SOV.marks) {
@@ -927,7 +927,7 @@ HOOKS.render.push(() => {
   }
   const rays = B.phase === 3 ? B.rays : (B.state === 'attack' && B.mv && B.mv.rays);
   if (rays) for (const r of rays) sovDrawRay(r, 1, B.phase === 3 ? B.raysThin : B.mv.thin);
-});
+}));
 
 // ---- intro cutscene (same beats as before; sheet-aware so the nova pose still plays)
 BOSS_CUTS.sovereign = b => [

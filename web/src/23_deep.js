@@ -322,7 +322,7 @@ function drawDpShots() {
   for (const h of DP.haz) if (!(h.delay > 0) && h.draw) h.draw(h);
 }
 HOOKS.update.push(dt => updateDpShots(dt));
-HOOKS.render.push(() => drawDpShots());
+HOOKS.render.push(() => drawGlow(drawDpShots));   // glowing shots stay bright under dynamic lighting
 
 // ================================================================== enemies
 Object.assign(ENEMY, {

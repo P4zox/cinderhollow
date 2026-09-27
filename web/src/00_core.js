@@ -4,7 +4,7 @@ const W = 384, H = 216, TILE = 16;
 const view = document.getElementById('game');
 const vctx = view.getContext('2d');
 const low = document.createElement('canvas'); low.width = W; low.height = H;
-const g = low.getContext('2d'); g.imageSmoothingEnabled = false;
+let g = low.getContext('2d'); g.imageSmoothingEnabled = false;   // let: drawGlow() (41_light.js) points it at the glow layer while emitters draw
 const lightC = document.createElement('canvas'); lightC.width = W; lightC.height = H;
 const lg = lightC.getContext('2d');
 const tint = document.createElement('canvas'); tint.width = 256; tint.height = 160;

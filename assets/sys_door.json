@@ -1,0 +1,488 @@
+{ "frames": [
+   {
+    "filename": "sys_door 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 3.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 4.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 5.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 6.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 7.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 8.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 9.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 10.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 11.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 12.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 13.aseprite",
+    "frame": { "x": 624, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 14.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 15.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 16.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 17.aseprite",
+    "frame": { "x": 816, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 18.aseprite",
+    "frame": { "x": 864, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 19.aseprite",
+    "frame": { "x": 912, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "sys_door 20.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 21.aseprite",
+    "frame": { "x": 1008, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 22.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 23.aseprite",
+    "frame": { "x": 1104, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 24.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 25.aseprite",
+    "frame": { "x": 1200, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 26.aseprite",
+    "frame": { "x": 1248, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 27.aseprite",
+    "frame": { "x": 1296, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 28.aseprite",
+    "frame": { "x": 1344, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 29.aseprite",
+    "frame": { "x": 1392, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 30.aseprite",
+    "frame": { "x": 1440, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 31.aseprite",
+    "frame": { "x": 1488, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 32.aseprite",
+    "frame": { "x": 1536, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 33.aseprite",
+    "frame": { "x": 1584, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 34.aseprite",
+    "frame": { "x": 1632, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 35.aseprite",
+    "frame": { "x": 1680, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 36.aseprite",
+    "frame": { "x": 1728, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 37.aseprite",
+    "frame": { "x": 1776, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 38.aseprite",
+    "frame": { "x": 1824, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 39.aseprite",
+    "frame": { "x": 1872, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 40.aseprite",
+    "frame": { "x": 1920, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 41.aseprite",
+    "frame": { "x": 1968, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 42.aseprite",
+    "frame": { "x": 2016, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 43.aseprite",
+    "frame": { "x": 2064, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 44.aseprite",
+    "frame": { "x": 2112, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 45.aseprite",
+    "frame": { "x": 2160, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 46.aseprite",
+    "frame": { "x": 2208, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 47.aseprite",
+    "frame": { "x": 2256, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 48.aseprite",
+    "frame": { "x": 2304, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   },
+   {
+    "filename": "sys_door 49.aseprite",
+    "frame": { "x": 2352, "y": 0, "w": 48, "h": 64 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 64 },
+    "sourceSize": { "w": 48, "h": 64 },
+    "duration": 90
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "sys_door.png",
+  "format": "RGBA8888",
+  "size": { "w": 2400, "h": 64 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "arch_stone", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "arch_wood", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "arch_metal", "from": 2, "to": 2, "direction": "forward", "color": "#000000ff" },
+   { "name": "arch_crystal", "from": 3, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "arch_neon", "from": 4, "to": 4, "direction": "forward", "color": "#000000ff" },
+   { "name": "crack_stone", "from": 5, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "crack_wood", "from": 6, "to": 6, "direction": "forward", "color": "#000000ff" },
+   { "name": "crack_metal", "from": 7, "to": 7, "direction": "forward", "color": "#000000ff" },
+   { "name": "crack_crystal", "from": 8, "to": 8, "direction": "forward", "color": "#000000ff" },
+   { "name": "crack_neon", "from": 9, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "hatch_stone", "from": 10, "to": 10, "direction": "forward", "color": "#000000ff" },
+   { "name": "hatch_wood", "from": 11, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "hatch_metal", "from": 12, "to": 12, "direction": "forward", "color": "#000000ff" },
+   { "name": "hatch_crystal", "from": 13, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "hatch_neon", "from": 14, "to": 14, "direction": "forward", "color": "#000000ff" },
+   { "name": "ladder_stone", "from": 15, "to": 15, "direction": "forward", "color": "#000000ff" },
+   { "name": "ladder_wood", "from": 16, "to": 16, "direction": "forward", "color": "#000000ff" },
+   { "name": "ladder_metal", "from": 17, "to": 17, "direction": "forward", "color": "#000000ff" },
+   { "name": "ladder_crystal", "from": 18, "to": 18, "direction": "forward", "color": "#000000ff" },
+   { "name": "ladder_neon", "from": 19, "to": 19, "direction": "forward", "color": "#000000ff" },
+   { "name": "portal_stone", "from": 20, "to": 25, "direction": "forward", "color": "#000000ff" },
+   { "name": "portal_wood", "from": 26, "to": 31, "direction": "forward", "color": "#000000ff" },
+   { "name": "portal_metal", "from": 32, "to": 37, "direction": "forward", "color": "#000000ff" },
+   { "name": "portal_crystal", "from": 38, "to": 43, "direction": "forward", "color": "#000000ff" },
+   { "name": "portal_neon", "from": 44, "to": 49, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

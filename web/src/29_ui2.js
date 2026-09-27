@@ -386,7 +386,7 @@ function renderInvTab(M) {
   const C = INV_CATS[M.cat], L = catEntries(C); if (!L.length) M.bar = true; M.isel = Math.min(M.isel, Math.max(0, L.length - 1));
   panel(12, 30, 152, 172);
   INV_CATS.forEach((c, i) => {
-    const x = 18 + i * 23.4, y = 35, sel = i === M.cat;
+    const x = 18 + i * (140.4 / INV_CATS.length), y = 35, sel = i === M.cat;
     uiCell(x, y, 19, { sel: sel && M.bar });
     icon(c.icon, x + 2.5, y + 2.5, 14, sel ? 1 : 0.42);
     if (sel && !M.bar) { uiHair(x + 1, y + 21, 17, UIC.gold); }

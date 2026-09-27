@@ -417,23 +417,170 @@ function drawBossMark(x, y, done, size = 8) {
   icon('skull', x, y, size, a);
 }
 
-function renderMap() {
-  vctx.fillStyle = 'rgba(6,5,9,0.9)'; vctx.fillRect(ox, oy, W * scale, H * scale);
-  text('THE SUNKEN HALLOW', W / 2, 20, 9, '#e6c77a', 'center', { spacing: 2 });
-  const vis = mapVisible(), F = mapFrame(vis, 22, 30, 340, 158);
-  drawMapRooms(vis, F, { here: room.id });
-  for (const r of vis) {
-    const cx = F.X(r.gx + r.w / 2), cy = F.Y(r.gy + r.h / 2);
-    if (r.shrine && SAVE.shrines.includes(r.id)) { const p = shrinePos(r.id); icon('shrine', F.X(p.x) - 4, F.Y(p.y) - 6, 8); }
-    if (r.boss && !SAVE.flags['boss:' + r.boss]) icon('skull', cx - 4, cy - 4, 8);
+// ---- world map (Expansion 3, agent KS): 3 zoom levels, pan (keys / stick / drag / wheel), room silhouettes, icons for
+// shrines, trials, gauntlets, puzzles, vistas, secrets, doors and locked rooms, dotted door links, legend, region filter.
+const MAPV = { z: 1, s: 1.1, cx: 0, cy: 0, tx: 0, ty: 0, filter: null, lastT: -1, drag: null };
+const MAP_BOX = { x: 8, y: 25, w: 368, h: 161 };
+const MAP_ICON = { shrine: 'shrine', trial: 'mx_trial', trialGold: 'mx_trial_gold', gaunt: 'mx_gaunt', gauntDone: 'mx_gaunt_done', puzzle: 'mx_puzzle',
+                   vista: 'mx_vista', secret: 'mx_secret', door: 'mx_door', lock: 'mx_lock', passage: 'mx_passage' };
+let _mapInfo = null, _mapDoors = null, _mapBounds = null;
+function mapInfo() {   // static per-room map data from the room list (sys spawns), built once
+  if (_mapInfo) return _mapInfo;
+  _mapInfo = {}; _mapDoors = [];
+  const doorOf = (d, id) => (d.spawns || []).find(q => q.t === 'sys' && q.kind === 'door' && q.id === id);
+  for (const r of ROOMS) {
+    const I = { trials: [], gaunts: [], benches: [], doors: [], passages: [] };
+    for (const s of r.spawns || []) {
+      if (s.t !== 'sys') continue;
+      const at = { x: r.gx + s.x + 0.5, y: r.gy + s.y + 0.5, s };
+      if (s.kind === 'trial') I.trials.push({ ...at, key: `${r.id}:${s.id}` });
+      else if (s.kind === 'gauntlet') I.gaunts.push({ ...at, key: `x3:${r.id}:${s.id}` });
+      else if (s.kind === 'bench') I.benches.push({ ...at, key: `x3:${r.id}:${s.id || 'bench'}` });
+      else if (s.kind === 'passage') I.passages.push({ ...at, key: `x3:${r.id}:${s.id || `p${s.x}_${s.y}`}:thru` });
+      else if (s.kind === 'door') {
+        I.doors.push(at);
+        const d2 = ROOM_BY[s.to], t = d2 && doorOf(d2, s.toId || s.id);
+        if (t && (r.id < s.to || (r.id === s.to && s.id < (s.toId || s.id)))) _mapDoors.push({ a: r.id, b: s.to, x0: at.x, y0: at.y, x1: d2.gx + t.x + 0.5, y1: d2.gy + t.y + 0.5 });
+      }
+    }
+    _mapInfo[r.id] = I;
   }
-  const px = F.X(room.def.gx + P.x / TILE), py = F.Y(room.def.gy + P.y / TILE);
-  vctx.fillStyle = Math.sin(time * 8) > 0 ? '#ff5050' : '#ffd0a0'; vctx.fillRect(ox + (px - 1.5) * scale, oy + (py - 3) * scale, 3 * scale, 3 * scale);
-  if (SAVE.remnant) {
-    const R = ROOM_BY[SAVE.remnant.room], rx = F.X(R.gx + SAVE.remnant.x / TILE), ry = F.Y(R.gy + SAVE.remnant.y / TILE);
+  return _mapInfo;
+}
+const _mapImg = {};
+function mapRoomImg(r) {   // 1 px per tile silhouette of the room's open space (built once per room)
+  if (_mapImg[r.id]) return _mapImg[r.id];
+  const c = document.createElement('canvas'); c.width = r.w; c.height = r.h; const x = c.getContext('2d'), im = x.createImageData(r.w, r.h);
+  const hex = mapColor(r), R = parseInt(hex.slice(1, 3), 16), G2 = parseInt(hex.slice(3, 5), 16), B = parseInt(hex.slice(5, 7), 16);
+  for (let yy = 0; yy < r.h; yy++) for (let xx = 0; xx < r.w; xx++) {
+    const t = cellType(r.map[yy][xx]), i = (yy * r.w + xx) * 4;
+    if (isSolidT(t)) continue;
+    const plat = t === T_PLAT, haz = t === T_SPIKE || t === T_SPIKE_D;
+    im.data[i] = haz ? 170 : Math.min(255, R + (plat ? 70 : 34)); im.data[i + 1] = haz ? 70 : Math.min(255, G2 + (plat ? 60 : 30)); im.data[i + 2] = haz ? 60 : Math.min(255, B + (plat ? 40 : 26)); im.data[i + 3] = plat ? 255 : 215;
+  }
+  x.putImageData(im, 0, 0);
+  return (_mapImg[r.id] = c);
+}
+function mapBounds(vis) {
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for (const r of vis.length ? vis : [room.def]) { x0 = Math.min(x0, r.gx); y0 = Math.min(y0, r.gy); x1 = Math.max(x1, r.gx + r.w); y1 = Math.max(y1, r.gy + r.h); }
+  return { x0, y0, x1, y1 };
+}
+function mapScales(B) { const fit = Math.min(MAP_BOX.w / (B.x1 - B.x0 + 10), MAP_BOX.h / (B.y1 - B.y0 + 10)); return [Math.min(fit, 0.55), 1.1, 2.6]; }
+function mapPlayerAt() { return { x: room.def.gx + P.x / TILE, y: room.def.gy + (P.y - 12) / TILE }; }
+function mapOpen() {
+  const p = mapPlayerAt(), B = mapBounds(mapVisible());
+  MAPV.z = 1; MAPV.s = mapScales(B)[1]; MAPV.filter = null; MAPV.tx = MAPV.cx = p.x; MAPV.ty = MAPV.cy = p.y; MAPV.lastT = -1; MAPV.drag = null;
+}
+function mapRegions() { const L = []; for (const r of mapVisible()) if (!r.test && !L.includes(r.biome)) L.push(r.biome); return L; }
+function mapInput(a) {   // routed from the onPressHook wrapper (43_systems.js); true = consumed
+  if (a === 'confirm' || a === 'jump') { MAPV.z = MAPV.z >= 2 ? 0 : MAPV.z + 1; sfx.menu(); return true; }
+  if (a === 'heavy' || a === 'roll') { if (MAPV.z > 0) { MAPV.z--; sfx.menu(); } else sfx.deny(); return true; }
+  if (a === 'spell' || a === 'interact') {
+    const L = [null, ...mapRegions()], i = L.indexOf(MAPV.filter); MAPV.filter = L[(i + 1) % L.length]; sfx.menu();
+    const rs = mapVisible().filter(r => r.biome === MAPV.filter), c = rs.length ? mapBounds(rs) : null;
+    const p = c ? { x: (c.x0 + c.x1) / 2, y: (c.y0 + c.y1) / 2 } : mapPlayerAt(); MAPV.tx = p.x; MAPV.ty = p.y;
+    return true;
+  }
+  return ['left', 'right', 'up', 'down', 'attack'].includes(a);
+}
+view.addEventListener('pointerdown', e => { if (state === 'map') MAPV.drag = { x: e.clientX, y: e.clientY, tx: MAPV.tx, ty: MAPV.ty }; });
+addEventListener('pointermove', e => {
+  const Dg = MAPV.drag; if (!Dg || state !== 'map') return;
+  const k = (window.devicePixelRatio || 1) / (scale * MAPV.s);
+  MAPV.tx = MAPV.cx = Dg.tx - (e.clientX - Dg.x) * k; MAPV.ty = MAPV.cy = Dg.ty - (e.clientY - Dg.y) * k;
+});
+addEventListener('pointerup', () => { MAPV.drag = null; });
+view.addEventListener('wheel', e => { if (state !== 'map') return; e.preventDefault(); const z = clamp(MAPV.z + (e.deltaY < 0 ? 1 : -1), 0, 2); if (z !== MAPV.z) { MAPV.z = z; sfx.menu(); } }, { passive: false });
+function mapIcon(name, x, y, size, a = 1) { icon(name, x - size / 2, y - size / 2, size, a); }
+function renderMap() {
+  const dt = MAPV.lastT < 0 ? 0 : clamp(time - MAPV.lastT, 0, 0.1); MAPV.lastT = time;
+  const vis = mapVisible(), B = mapBounds(vis), S = mapScales(B), I = mapInfo(), X3 = SAVE.x3 || {}, TR = X3.trials || {}, VS = X3.vistas || {}, SEEN = X3.seen || {};
+  // ---- pan: held directions or the analog stick, eased; zoom eases toward its level
+  let ax = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0), ay = (held.has('down') ? 1 : 0) - (held.has('up') ? 1 : 0);
+  const gp = PAD.active && typeof padFind === 'function' ? padFind() : null;
+  if (gp) { const sx = gp.axes[0] || 0, sy = gp.axes[1] || 0; if (Math.hypot(sx, sy) > 0.2) { ax = sx; ay = sy; } }
+  const sp = 170 / MAPV.s;   // screen px per second, whatever the zoom
+  MAPV.tx = clamp(MAPV.tx + ax * sp * dt, B.x0, B.x1); MAPV.ty = clamp(MAPV.ty + ay * sp * dt, B.y0, B.y1);
+  const kk = 1 - Math.exp(-dt * 10);
+  MAPV.s += (S[MAPV.z] - MAPV.s) * (1 - Math.exp(-dt * 9)); if (!dt) MAPV.s = S[MAPV.z];
+  MAPV.cx += (MAPV.tx - MAPV.cx) * (dt ? kk : 1); MAPV.cy += (MAPV.ty - MAPV.cy) * (dt ? kk : 1);
+  const s = MAPV.s, bx = MAP_BOX.x, by = MAP_BOX.y, bw = MAP_BOX.w, bh = MAP_BOX.h;
+  const X = gx => bx + bw / 2 + (gx - MAPV.cx) * s, Y = gy => by + bh / 2 + (gy - MAPV.cy) * s;
+  const vx0 = MAPV.cx - bw / 2 / s, vx1 = MAPV.cx + bw / 2 / s, vy0 = MAPV.cy - bh / 2 / s, vy1 = MAPV.cy + bh / 2 / s;
+  uiBackdrop(0.97); uiStrips();
+  uiTitle('THE SUNKEN HALLOW', 15, 8);
+  panel(bx, by, bw, bh, 0.6);
+  vctx.save(); vctx.beginPath(); vctx.rect(ox + (bx + 2) * scale, oy + (by + 2) * scale, (bw - 4) * scale, (bh - 4) * scale); vctx.clip();
+  // ---- rooms: dark block + silhouette of the open space; filtered-out regions sink back
+  const shown = vis.filter(r => r.gx < vx1 && r.gx + r.w > vx0 && r.gy < vy1 && r.gy + r.h > vy0);
+  const dim = r => MAPV.filter && r.biome !== MAPV.filter;
+  vctx.imageSmoothingEnabled = false;
+  const labels = {};
+  for (const r of shown) {
+    const x = X(r.gx), y = Y(r.gy), w = r.w * s, h = r.h * s, a = dim(r) ? 0.18 : 1;
+    vctx.globalAlpha = 0.5 * a; vctx.fillStyle = '#17121c'; vctx.fillRect(ox + x * scale, oy + y * scale, w * scale, h * scale);
+    vctx.globalAlpha = (s < 0.7 ? 0.8 : 0.92) * a; vctx.drawImage(mapRoomImg(r), ox + x * scale, oy + y * scale, w * scale, h * scale);
+    vctx.globalAlpha = (r.id === room.id ? 1 : 0.55) * a; vctx.strokeStyle = r.id === room.id ? '#ffd070' : '#c9bda2'; vctx.lineWidth = Math.max(1, scale * (r.id === room.id ? 0.6 : 0.35));
+    vctx.strokeRect(ox + x * scale + 0.5, oy + y * scale + 0.5, w * scale - 1, h * scale - 1); vctx.globalAlpha = 1;
+    if (!dim(r) && !r.test) { const L = labels[r.biome] || (labels[r.biome] = { x: 0, y: 0, n: 0 }); L.x += r.gx + r.w / 2; L.y += r.gy + r.h / 2; L.n++; }
+  }
+  // ---- door links: a dotted thread between the two doors (both rooms explored)
+  const vset = new Set(vis.map(r => r.id));
+  vctx.save(); vctx.setLineDash([1.5 * scale, 2 * scale]); vctx.lineWidth = Math.max(1, scale * 0.5);
+  for (const d of _mapDoors) {
+    if (!vset.has(d.a) || !vset.has(d.b)) continue;
+    vctx.strokeStyle = `rgba(230,199,122,${MAPV.filter && ROOM_BY[d.a].biome !== MAPV.filter && ROOM_BY[d.b].biome !== MAPV.filter ? 0.15 : 0.7})`;
+    vctx.beginPath(); vctx.moveTo(ox + X(d.x0) * scale, oy + Y(d.y0) * scale); vctx.lineTo(ox + X(d.x1) * scale, oy + Y(d.y1) * scale); vctx.stroke();
+  }
+  vctx.restore();
+  // ---- icons: only the essentials at the widest zoom
+  const isz = MAPV.z === 0 ? 7 : MAPV.z === 1 ? 7 : 9, detail = MAPV.z > 0;
+  for (const r of shown) {
+    const a = dim(r) ? 0.25 : 1, info = I[r.id];
+    if (detail) {
+      for (const d of info.doors) mapIcon(MAP_ICON.door, X(d.x), Y(d.y) - 1, isz - 1, 0.85 * a);
+      for (const q of info.passages) if (SEEN[q.key]) mapIcon(MAP_ICON.passage, X(q.x), Y(q.y) - 1, isz - 1, a);
+      for (const t of info.trials) { const rec = TR[t.key]; mapIcon(rec && rec.gold ? MAP_ICON.trialGold : MAP_ICON.trial, X(t.x), Y(t.y) - 1, isz, rec && rec.clears ? a : 0.8 * a); }
+      for (const q of info.gaunts) mapIcon(SAVE.flags[q.key] ? MAP_ICON.gauntDone : MAP_ICON.gaunt, X(q.x), Y(q.y) - 1, isz, a);
+      for (const b of info.benches) if (VS[b.key] !== undefined) mapIcon(MAP_ICON.vista, X(b.x), Y(b.y) - 1, isz, a);
+      const cx = X(r.gx + r.w / 2), cy = Y(r.gy + r.h / 2);
+      if (r.puzzle) mapIcon(MAP_ICON.puzzle, cx, cy, isz, a);
+      if (r.secret) mapIcon(MAP_ICON.secret, r.puzzle ? cx + isz : cx, cy, isz, a);
+    }
+    if (r.needs && !r.needs.every(n => n === 'start' || SAVE.items[n])) mapIcon(MAP_ICON.lock, X(r.gx + r.w) - isz / 2 - 1, Y(r.gy) + isz / 2 + 1, isz, a);
+    if (r.shrine && SAVE.shrines.includes(r.id)) { const p = shrinePos(r.id); icon('shrine', X(p.x) - 4, Y(p.y) - 6, 8, a); }
+    if (r.boss && MAIN_BOSSES.has(r.boss)) drawBossMark(X(r.gx + r.w / 2) - 4, Y(r.gy + r.h / 2) - 4, !!SAVE.flags['boss:' + r.boss], 8);
+    else if (r.boss && !SAVE.flags['boss:' + r.boss]) icon('skull', X(r.gx + r.w / 2) - 4, Y(r.gy + r.h / 2) - 4, 8, a);
+  }
+  if (MAPV.z < 2) for (const [bio, L] of Object.entries(labels)) if (AREAS[bio]) text(AREAS[bio].name.replace(/^The /, ''), X(L.x / L.n), Y(L.y / L.n) + 2, MAPV.z ? 5 : 4.6, '#e8dcc0', 'center', { alpha: 0.72, weight: 500 });
+  if (SAVE.remnant && ROOM_BY[SAVE.remnant.room] && vset.has(SAVE.remnant.room)) {
+    const R = ROOM_BY[SAVE.remnant.room], rx = X(R.gx + SAVE.remnant.x / TILE), ry = Y(R.gy + SAVE.remnant.y / TILE);
     vctx.fillStyle = '#ff8050'; vctx.fillRect(ox + (rx - 1) * scale, oy + (ry - 2) * scale, 2 * scale, 2 * scale);
   }
-  text(`${room.def.name}  ·  ${AREAS[room.def.biome].name}`, W / 2, 204, 6.5, '#c9bda2', 'center', { weight: 400 });
+  const pp = mapPlayerAt(), px = X(pp.x), py = Y(pp.y);
+  vctx.beginPath(); vctx.arc(ox + px * scale, oy + py * scale, (3 + Math.sin(time * 6)) * scale, 0, 6.3); vctx.fillStyle = 'rgba(255,90,70,0.22)'; vctx.fill();
+  vctx.fillStyle = Math.sin(time * 8) > 0 ? '#ff5050' : '#ffd0a0'; vctx.fillRect(ox + (px - 1.5) * scale, oy + (py - 1.5) * scale, 3 * scale, 3 * scale);
+  // crosshair + what lies under it, once you've panned away from yourself
+  const off = Math.hypot(MAPV.cx - pp.x, MAPV.cy - pp.y) * s > 6, under = vis.find(r => MAPV.cx >= r.gx && MAPV.cx < r.gx + r.w && MAPV.cy >= r.gy && MAPV.cy < r.gy + r.h);
+  if (off) { const cx = bx + bw / 2, cy = by + bh / 2; vctx.fillStyle = 'rgba(245,227,176,0.8)'; for (const [dx, dy, w, h] of [[-5, -0.25, 3, 0.5], [2, -0.25, 3, 0.5], [-0.25, -5, 0.5, 3], [-0.25, 2, 0.5, 3]]) vctx.fillRect(ox + (cx + dx) * scale, oy + (cy + dy) * scale, w * scale, h * scale); }
+  vctx.restore();
+  // ---- header: zoom pips (left), region filter (right); info line; legend; footer
+  text('ZOOM', 14, 19, 4.4, UIC.faint, 'left', { spacing: 1, weight: 600 });
+  for (let i = 0; i < 3; i++) uiDiamond(38 + i * 6, 17.6, i === MAPV.z ? 1.7 : 1.1, i <= MAPV.z ? UIC.gold : '#4a3e2c');
+  const fl = MAPV.filter ? sysRegionName(MAPV.filter).replace(/^The /, '') : 'All regions';
+  text(`◂ ${fl} ▸`, 370, 19, 5, MAPV.filter ? UIC.gold : UIC.muted, 'right', { weight: 600 });
+  const R = off ? under : room.def;
+  if (R) {
+    const tr = (I[R.id] || { trials: [] }).trials.map(t => TR[t.key]).find(Boolean);
+    const extra = tr && tr.best ? `   ·   trial best ${sysFmt(tr.best)}${tr.gold ? ' ✦' : ''}` : '';
+    text(`${R.name}  ·  ${sysRegionName(R.biome)}${extra}`, W / 2, by + bh - 5, 5.4, off ? UIC.hi : '#c9bda2', 'center', { weight: 400 });
+  }
+  let lx = 14; const ly = 196;
+  const leg = (ic, label, sz = 7) => { mapIcon(ic, lx + 3.5, ly - 2, sz); text(label, lx + 9, ly, 4.6, UIC.dim, 'left', { weight: 500 }); lx += 16 + textW(label, 4.6, 500); };
+  leg('shrine', 'Shrine', 8); leg(MAP_ICON.trial, 'Trial'); leg(MAP_ICON.trialGold, 'Under par'); leg(MAP_ICON.gaunt, 'Gauntlet'); leg(MAP_ICON.puzzle, 'Puzzle');
+  leg(MAP_ICON.vista, 'Vista'); leg(MAP_ICON.secret, 'Secret'); leg(MAP_ICON.door, 'Door'); leg(MAP_ICON.lock, 'Locked');
+  uiFooter([['←↑↓→', 'pan'], ['Enter', 'zoom'], ['Q', 'region'], ['Tab', 'close']]);
 }
 
 // ---- travel: see renderTravel / travelInput in 29_ui2.js (shrine list by region + zooming world map)

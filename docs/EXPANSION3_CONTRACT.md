@@ -201,6 +201,113 @@ the icons.
 Report as plain text: what you built, where, the API summary (KM/KS also in KIT_API.md), `SHARED EDITS:`, `NEEDS:`,
 test results with screenshot paths, known issues, and frame-time numbers (LX).
 
-## 7. Phase 1/2: region agents
-Added by the lead after Phase 0 lands: zones, room id ranges, anchors, rewards registry (13 trial charms, lore pages)
-and per-region room assignments from `docs/expansion3_rooms.json`.
+## 7. Phase 1/2 — region agents (everyone reads this whole file, then `docs/KIT_API.md`)
+Build the rooms listed for your regions in `docs/expansion3_rooms.json` (the plan page `docs/expansion3_plan.html`
+shows the same list, with the reasoning per region). Names, types, sizes and ideas are the brief. You may adjust a size
+by ±25% or reword a name if the room plays better, but keep the type and the spirit. Build **every** room on your
+list. Build with the kit (`docs/KIT_API.md`) and each region's own tiles, enemies, hazards and parallax.
+
+### 7.1 Agents, regions, files
+| Agent | Regions (build order) | Room files (new) | Engine file (new) | Art (new) / asset prefix |
+|---|---|---|---|---|
+| **RA** | Ashen Ramparts, Rootbound Catacombs, Sunken Cathedral | `tools/regions/80_ra.py` | `web/src/50_ra.js` | `art/gen_xra*.py` / `xra_` |
+| **RB** | Weeping Mire, Ashen Archives, Hoarfrost Aqueduct | `tools/regions/81_rb.py` | `web/src/51_rb.js` | `art/gen_xrb*.py` / `xrb_` |
+| **RC** | Stormward Spire (+ **The Last Field** and the **Ember Hatchling** spell), The Deep, The Crown | `tools/regions/82_rc.py` | `web/src/52_rc.js` | `art/gen_xrc*.py` / `xrc_` |
+| **SA** | Thornveil Wood, Drowned Barrows, Crimson Manor | `tools/regions/83_sa.py` | `web/src/53_sa.js` | `art/gen_xsa*.py` / `xsa_` |
+| **SB** | Necropolis of Vael, Sunscorched Dunes | `tools/regions/84_sb.py` | `web/src/54_sb.js` | `art/gen_xsb*.py` / `xsb_` |
+| **SC** | Starfall Crater, NEO-HALLOW, The Ember, The Hermit's Hollow | `tools/regions/85_sc.py` | `web/src/55_sc.js` | `art/gen_xsc*.py` / `xsc_` |
+
+Build: `BUILD_OUT=web/dist/<agent>.html python3 web/build_web.py`. Tests go in `tools/shots/<agent>/`. Everything else is
+read-only (use `NEEDS:`). **Old rooms of your own regions** may be patched **only from your own room file** with
+`ROOM('K3')` (it runs after the old modules): add `door`/`passage` spawns, open a wall where your zone touches it, add
+a lore stone. Never move, resize or re-lay an old room, and never break its existing routes, items or boss arena. Old
+rooms of other agents' regions are off limits.
+
+### 7.2 Zones (global tile coords; every new room lies fully inside its region's zone)
+| Region | Zone x | Zone y | Notes |
+|---|---|---|---|
+| Ramparts | −112…15 | −90…−1 | directly above `R1` (outdoor, open sky); a room here can join R1's open top edge |
+| Rootbound Catacombs | −330…−113 | 43…112 | door-linked pocket |
+| Sunken Cathedral | 372…491 | −160…−15 | above `K3s`/`K4` (K3s top edge at y 0) |
+| Weeping Mire | 150…227 | 99…180 | below `M6`/`M2` |
+| Ashen Archives | 250…371 | −160…−61 | above the Archives (A7 top at y −60) |
+| Hoarfrost Aqueduct | 150…249 | −160…−39 | above `HF6`/`HF7` |
+| Stormward Spire (+ Last Field) | −112…149 | −220…−91 | above the Stormspire (SP7 top at y −90) |
+| The Deep | 228…399 | 135…260 | below `D5` |
+| The Crown | 565…760 | −13…39 | east of `X5` (X5's east edge is x 564) |
+| Thornveil Wood | −330…−141 | −120…42 | west; **avoid the test rooms T0 (−200,0), T1 (−400,0), T2 (−300,0)** |
+| Drowned Barrows | 585…760 | 84…220 | door-linked pocket |
+| Crimson Manor | 453…564 | 41…83 | touches `CM7`/`CM4`'s east edge (x 452) |
+| Necropolis of Vael | −112…149 | 113…260 | below the Necropolis (bottom y 112) |
+| Sunscorched Dunes | 400…584 | 147…260 | below `DU8` (bottom y 146) |
+| Starfall Crater | 492…760 | −220…−93 | above the crater (tops at y −92) |
+| NEO-HALLOW | 1000…1400 | −150…150 | its own district |
+| The Ember | 565…760 | 40…83 | door-linked from the Ember rooms |
+| The Hermit's Hollow | −140…−41 | 0…14 | west of `H1`; the vista becomes 32×14 so it fits |
+
+Use `free_spot(...)` from KS to place rooms inside your zone. `python3 tools/rooms.py` must report **0 errors**
+(overlap, leaks, doors, reachability) with `STRICT=1`.
+
+### 7.3 Room ids, kwargs and structure
+- **Ids** continue each region's prefix after its highest existing number: Ramparts `R5…`, Catacombs `C7…`, Cathedral `K5…`,
+  Mire `M7…`, Archives `A8…`, Hoarfrost `HF8…`, Spire `SP8…`, The Last Field `LF1`, Deep `D9…`, Crown `X6…`, Thornveil
+  `TV9…`, Barrows `DB10…`, Crimson `CM9…`, Necropolis `NV8…`, Dunes `DU9…`, Starfall `SF10…`, NEO-HALLOW `NH8…`, Ember
+  `E4…`, Hermit `H2…`. The build's duplicate-id check catches collisions.
+- New rooms use their region's **biome** (music, ambient, enemy scaling, region card). The Last Field gets its own biome
+  `lastfield`, registered by RC.
+- Kwargs on every new room: `needs=[...]` (abilities the room requires, for reachability and the map lock icon),
+  `x3=True`, and one of `puzzle=True` / `secret=True` / `vista=True` / `trial=True` / `gauntlet=True` / `grand=True` /
+  `parkour=True` (path rooms have none). KS's map and completion code reads these.
+- **Structure: wings, not dead ends.** Each region's new rooms form one or two **wings**. A wing branches off an old room
+  of the region (a clear, signposted archway, crack or door), runs through its path rooms as a spine, and **loops back**
+  into a *different* old room of the region, opening a shortcut the first time you come out. Vistas, trials, puzzles,
+  secrets and gauntlets hang off the spine. At least one wing per region should start next to the main route, so
+  players find it without a guide. Never change the story's critical path.
+- **Gating:** main-path/spine rooms need at most what the plan's `needs` says (`start` means none; `wall jump` =
+  `talon`). The double jump (`wings`) is in an optional secret room, so never require it outside trials and secrets.
+  Rooms that need later abilities show a visible, tantalising reason to come back (a hook point just out of reach, a
+  cracked floor).
+- **Trials:** story-region trials are "one step below Hollow Knight's White Palace". Side-region trials (and the Ember's
+  final trial) are full White Palace difficulty. Every trial must be cleared once by a scripted headless run, or by
+  proof via `tools/reach.py` plus a recorded manual route, before you report it done. Set `par` about 25% above your
+  own clear time.
+- **Puzzles:** the clue is always in the game (a mural, a book, a hymn sheet, glowing veins) and readable without outside
+  knowledge. After 3 wrong attempts, show a gentle hint toast. A solved puzzle stays solved.
+- **Vistas:** a bench (KS `bench`), a composed view (parallax or a big painted backdrop, with a `view` focus point),
+  ambient-only music, a lore page, and **no enemies**. They should be the prettiest rooms in each region.
+- **Grand rooms:** 2–3 distinct routes (high, low, secret) and at least one landmark you can see from far away. Check
+  that 60 fps holds with lighting on.
+- **Gauntlets:** opt-in (KS `gauntlet`), never on the only route, 3 waves plus an elite, using the region's existing
+  enemies.
+
+### 7.4 Rewards registry
+- **Trial charms** (define with `registerGear` in your engine file, draw the icon in your art, and implement the effect
+  with `charmOn` hooks; keep effects fair, since they stack with everything):
+  Cathedral `c_x3_chime` *Chime of Ascent* (double jump 15% higher) · Archives `c_x3_ink` *Inkbound Grapple* (Root
+  Hook 30% longer reach, faster pull) · Hoarfrost `c_x3_rime` *Rime Heart* (Ember Dash chills foes it passes through) ·
+  Spire `c_x3_storm` *Stormglass Feather* (glide 25% faster, stronger updrafts) · Deep `c_x3_slag` *Slagwalker's
+  Sole* (the first lava touch in 10 s bounces you out unharmed) · Crown `c_x3_crown` *Sovereign's Sigil* (techniques
+  cost no stamina, +8% damage) · Thornveil `c_x3_thorn` *Thornstep Ring* (air-attack limit 3 instead of 2) · Barrows
+  `c_x3_lung` *Drowned Lung* (double breath, swim 25% faster) · Necropolis `c_x3_hood` *Headsman's Hood* (a roll
+  through an attack at the last moment slows time for 1 s) · Dunes `c_x3_scarab` *Scarab Wing* (no landing lag from
+  any height) · Starfall `c_x3_moon` *Moonlit Stride* (floatier jump apex, +8% run speed) · NEO-HALLOW `c_x3_glitch`
+  *Glitch Driver* (air dash 35% longer with damaging afterimages) · Ember `c_x3_flame` *Heart of the First Flame*
+  (all spell and art cooldowns 30% shorter).
+- **Other rewards:** gauntlets, puzzles and secrets pay in `emberstone` (weapon upgrades), `shard` (+1 skill point),
+  `seed` (+1 flask), `gold` (cinders) and lore pages. Budget per region: 2 emberstones, 1 shard and at most 1 seed,
+  spread across its side rooms.
+- **Lore:** each region writes 3–6 `LORE_PAGES` (vistas, secrets, lore stones) in the game's voice. It's grave, sparse
+  and specific, never modern or jokey (NEO-HALLOW's Dev Room is the one exception). Page ids are `<agent>_<n>`.
+- **RC only:** the Ember Hatchling spell (`sp:ember_hatchling`, FP 30, `cd: 25`, a summoned drake cub for 10 s: spits
+  fireballs at the nearest enemy, dives to bite and burn, damage scales like other spells, one cub at a time, can't be
+  hit). It comes with its cub sprite (appear/fly/spit/dive/vanish), icon, pickup, lore and The Last Field room exactly
+  as specified on the plan page.
+
+### 7.5 Quality bar and done
+- Every new room is enterable and exitable both ways, passes STRICT validation and reachability, and is covered by the
+  stress sweep (add your rooms to `tools/shots/spots.json` via a copy in your test folder, or pass them into your own
+  sweep script).
+- Look at a screenshot of **every** new room (Read the PNGs). Fix empty-looking rooms, misaligned tiles, floating props,
+  unreadable darkness and overlapping decor. Rooms should look hand-built and rich, not generated.
+- Final report: the room list with ids, zones used, anchors patched (`SHARED EDITS:`), `NEEDS:`, test results and a
+  contact-sheet path, known issues.

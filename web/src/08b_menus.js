@@ -60,6 +60,7 @@ function pauseInput(a) {
   else if (M.tab === 1) invInput(M, a);
   else if (M.tab === 2) {
     if (a === 'left' || a === 'right') { M.tab = (M.tab + (a === 'left' ? 3 : 1)) % 4; M.sel = 0; }
+    else if (a === 'up' || a === 'down') { const n = M.cRows || 0, vis = STATUS_ROWS_VIS; M.cOff = clamp((M.cOff || 0) + (a === 'up' ? -1 : 1), 0, Math.max(0, n - vis)); sfx.menu(); }
   } else {
     M.n = SETTING_ROWS.length;
     if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
@@ -93,16 +94,8 @@ function renderPauseMenu() {
   uiBackdrop(0.84); uiStrips(); uiTabs(M.tab);
   if (M.tab === 0) renderEquipTab(M);
   else if (M.tab === 1) renderInvTab(M);
-  else if (M.tab === 2) {
-    panel(14, 30, 356, 172);
-    const L = statsLines();
-    L.forEach(([k, v], i) => {
-      const col = Math.floor(i / 9), row = i % 9, x = 26 + col * 118, y = 48 + row * 15;
-      text(k, x, y, 6.2, '#9a8f78', 'left', { weight: 500 }); text(String(v), x + 100, y, 6.8, '#e8dcc0', 'right');
-    });
-    text(`Skills ${SAVE.skills.length}/${SKILLS.length}  ·  Weapons ${Object.keys(SAVE.weapons).length}/${Object.keys(WEAPONS).length}  ·  Charms ${SAVE.charms.length}/${Object.keys(CHARMS).length}`, W / 2, 190, 6, '#b8ab90', 'center', { weight: 400 });
-    uiFooter([['←→', 'tabs'], ...tabHint(), ['Esc', 'close']]);
-  } else {
+  else if (M.tab === 2) renderStatusTab(M);
+  else {
     const rh = Math.min(17, 158 / SETTING_ROWS.length);
     panel(92, 30, 200, 16 + SETTING_ROWS.length * rh);
     SETTING_ROWS.forEach((R, i) => {
@@ -119,6 +112,54 @@ function renderPauseMenu() {
       : SETTING_ACTIONS.includes(R.k) ? [['↑↓', 'select'], ['Enter', 'confirm'], ...tabHint(), ['Esc', 'close']]
       : [['↑↓', 'select'], ['←→', 'change'], ...tabHint(), ['Esc', 'close']]);
   }
+}
+
+// ---- Status tab: character sheet (left) · completion by region (right, ↑↓ scrolls). Data: sysCompletion() in 43_systems.js
+const STATUS_ROWS_VIS = 11;
+const STATUS_COLS = [['rooms', 'mx_rooms', 'Rooms'], ['trials', 'mx_trial', 'Trials'], ['vistas', 'mx_vista', 'Vistas'], ['secrets', 'mx_secret', 'Secrets'], ['gaunts', 'mx_gaunt', 'Gauntlets'], ['lore', 'mx_lore', 'Lore']];
+function renderStatusTab(M) {
+  panel(12, 30, 140, 172);
+  uiHead('Character', 19, 40, 126, `Level ${levelOf(SAVE.stats)}`);
+  statsLines().slice(1).forEach(([k, v], i) => {
+    const y = 50 + i * 8.9;
+    if (i % 2 === 0) uiRect(15, y - 6.2, 134, 8.9, 'rgba(176,138,58,0.04)');
+    text(k, 20, y, 5.5, '#9a8f78', 'left', { weight: 500 }); text(String(v), 144, y, 5.9, '#e8dcc0', 'right');
+  });
+  text(`Skills ${SAVE.skills.length}/${SKILLS.length} · Weapons ${Object.keys(SAVE.weapons).length}/${Object.keys(WEAPONS).length} · Charms ${SAVE.charms.length}/${Object.keys(CHARMS).length}`, 82, 197, 4.4, '#8a7f6a', 'center', { weight: 400 });
+  // ---- completion
+  const C = sysCompletion(), px = 158, pw = 214;
+  panel(px, 30, pw, 172, 0.85);
+  uiHead('Completion', px + 7, 40, pw - 14);
+  text(`${C.pct.toFixed(1)}%`, px + pw - 8, 41, 7.4, UIC.gold, 'right', { weight: 600 });
+  // totals: one chip per category
+  STATUS_COLS.forEach(([k, ic, name], i) => {
+    const x = px + 8 + (i % 3) * 68, y = 47 + Math.floor(i / 3) * 15, v = C.tot[k];
+    icon(ic, x, y + 0.5, 8);
+    text(name.toUpperCase(), x + 11, y + 4.4, 3.9, UIC.faint, 'left', { spacing: 0.6, weight: 600 });
+    const full = v[1] > 0 && v[0] >= v[1];
+    text(`${v[0]} / ${v[1]}`, x + 11, y + 11.2, 5.6, full ? UIC.gold : UIC.text, 'left', { weight: 600 });
+    if (k === 'trials' && v[2]) text(`✦${v[2]}`, x + 13 + textW(`${v[0]} / ${v[1]}`, 5.6), y + 11.2, 5, '#ffd070', 'left', { weight: 600 });
+  });
+  uiHair(px + 7, 79, pw - 14, UIC.line, 0.8);
+  // per-region table (discovered regions only)
+  const cx0 = px + 84, pitch = 21.5, rows = C.rows.filter(r => r.seen), hidden = C.rows.length - rows.length;
+  STATUS_COLS.forEach(([k, ic], i) => icon(ic, cx0 + i * pitch - 3.5, 82, 7, 0.85));
+  M.cRows = rows.length; M.cOff = clamp(M.cOff || 0, 0, Math.max(0, rows.length - STATUS_ROWS_VIS));
+  rows.slice(M.cOff, M.cOff + STATUS_ROWS_VIS).forEach((r, j) => {
+    const y = 97 + j * 8.8, done = STATUS_COLS.every(([k]) => r[k][0] >= r[k][1]);
+    if (j % 2 === 0) uiRect(px + 3, y - 6.3, pw - 6, 8.8, 'rgba(176,138,58,0.045)');
+    const nm = r.name.replace(/^The /, '');
+    text(nm, px + 8, y, uiFit(nm, 66, 5.2, 3.8, 500), done ? UIC.gold : UIC.body, 'left', { weight: 500 });
+    STATUS_COLS.forEach(([k], i) => {
+      const v = r[k], x = cx0 + i * pitch;
+      if (!v[1]) { text('·', x, y, 5, '#4a3e2c', 'center'); return; }
+      const full = v[0] >= v[1], gold = k === 'trials' && v[2] >= v[1];
+      text(`${v[0]}/${v[1]}`, x, y, 4.7, gold ? '#ffd070' : full ? UIC.gold : v[0] ? UIC.text : UIC.faint, 'center', { weight: full ? 600 : 500 });
+    });
+  });
+  uiScroll(px + pw - 4, 91, STATUS_ROWS_VIS * 8.8, M.cOff, STATUS_ROWS_VIS, rows.length);
+  if (hidden > 0) text(`${hidden} region${hidden === 1 ? '' : 's'} not yet found`, px + pw / 2, 197, 4.6, UIC.faint, 'center', { weight: 400 });
+  uiFooter([['←→', 'tabs'], ...(rows.length > STATUS_ROWS_VIS ? [['↑↓', 'scroll']] : []), ...tabHint(), ['Esc', 'close']]);
 }
 
 // ---- shops & forge
