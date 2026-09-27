@@ -1,0 +1,1203 @@
+[
+ {
+  "region": "Ashen Ramparts",
+  "current": 4,
+  "tag": "Story · outdoor walls above the sea",
+  "note": "The tutorial region. It teaches instead of testing: fights, one gentle parkour room, a first lever puzzle. No trial; a hard trial before you have any abilities would just be a wall.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Long Wall",
+    "size": "128×22",
+    "idea": "A sweeping rampart walk with collapsed sections and archers on the towers. High route along the battlements, low route through the stables.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "The Stable Yard",
+    "size": "48×14",
+    "idea": "Collapsed stables with archers in the hayloft and loose horses’ bones underfoot.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "Signal Tower Stair",
+    "size": "24×28",
+    "idea": "A vertical climb up a signal tower, soldiers on each landing.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "The Barracks",
+    "size": "48×14",
+    "idea": "Bunks, weapon racks and the first shield wardens. Teaches blocking and parrying on the way.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "Siege Undercroft",
+    "size": "48×14",
+    "idea": "Dark tunnels under the wall down toward the Catacombs, with a lift that opens a shortcut back to the first shrine.",
+    "needs": "start"
+   },
+   {
+    "type": "parkour",
+    "name": "Crenel Run",
+    "size": "64×16",
+    "idea": "Hop broken battlements over a sheer drop. Wide gaps and slow crumbling: a gentle first taste.",
+    "needs": "start"
+   },
+   {
+    "type": "puzzle",
+    "name": "Winch House",
+    "size": "32×20",
+    "idea": "Two winches each hold the portcullis for a few seconds. Hit one, sprint, hit the other.",
+    "needs": "start"
+   },
+   {
+    "type": "gauntlet",
+    "name": "Muster Yard",
+    "size": "40×14",
+    "idea": "Strike the war banner and the gates slam shut: three waves of soldiers, then a shield warden.",
+    "needs": "start"
+   },
+   {
+    "type": "vista",
+    "name": "Watcher’s Perch",
+    "size": "40×24",
+    "idea": "A bench on the highest tower. The camera pulls back over the Hallow with the Pale Root on the horizon. Lore: the night the ash fell.",
+    "needs": "start"
+   },
+   {
+    "type": "secret",
+    "name": "Sentry’s Cache",
+    "size": "16×14",
+    "idea": "Behind a cracked wall in the Long Wall: your first breakable wall.",
+    "needs": "start"
+   }
+  ]
+ },
+ {
+  "region": "Rootbound Catacombs",
+  "current": 7,
+  "tag": "Story · bone halls and roots",
+  "note": "Tight, dark and full of hiding places, so it leans on secrets and close fights. There is no view underground, so no vista; the only big room is a natural cavern.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Great Ossuary",
+    "size": "96×32",
+    "idea": "A cavern of bone shelves on three levels, with root-crawler nests and a hidden upper gallery.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "Rootbound Passage",
+    "size": "48×14",
+    "idea": "Roots have split the walls; crawlers drop from the ceiling.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "The Drop Shaft",
+    "size": "24×40",
+    "idea": "A descent down ledges and old coffin shelves.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "Burial Tunnels",
+    "size": "48×14",
+    "idea": "Low tunnels lined with niches; things crawl out of them.",
+    "needs": "start"
+   },
+   {
+    "type": "parkour",
+    "name": "Bone Lift Shaft",
+    "size": "24×48",
+    "idea": "Ride rising and falling bone lifts between spike walls.",
+    "needs": "start"
+   },
+   {
+    "type": "puzzle",
+    "name": "Crypt of Lanterns",
+    "size": "40×16",
+    "idea": "Light the lanterns in the order carved on the tombs to open the vault.",
+    "needs": "start"
+   },
+   {
+    "type": "gauntlet",
+    "name": "Charnel Pit",
+    "size": "36×14",
+    "idea": "Ring the bone bell at the pit’s edge to call up waves of rot crawlers, then a grave knight.",
+    "needs": "start"
+   },
+   {
+    "type": "secret",
+    "name": "Gravedigger’s Stash",
+    "size": "16×14",
+    "idea": "A false tomb in the Burial Tunnels.",
+    "needs": "start"
+   },
+   {
+    "type": "secret",
+    "name": "The Sealed Niche",
+    "size": "16×14",
+    "idea": "Under a slam-cracked floor in the Ossuary.",
+    "needs": "later: Cinder Slam"
+   }
+  ]
+ },
+ {
+  "region": "Sunken Cathedral",
+  "current": 5,
+  "tag": "Story · flooded nave, bells",
+  "note": "Tall and sacred: climbing, a hymn puzzle and the game’s first real view. The double jump is found here, so its trial tests the double jump right away.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Clerestory",
+    "size": "112×36",
+    "idea": "The cathedral’s upper storey: rafters, stained-glass walls, three routes between the nave and the bell tower.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Pilgrims’ Aisle",
+    "size": "48×14",
+    "idea": "Rows of kneeling statues. A few of them are not statues.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Flooded Crypt Stair",
+    "size": "24×28",
+    "idea": "A stair down into knee-deep black water under the nave.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Confessional Row",
+    "size": "48×14",
+    "idea": "Enemies wait inside the booths and ambush you as you pass.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Chandelier Crossing",
+    "size": "56×20",
+    "idea": "Chandeliers sway when you land and drop if you stay too long.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "Organ Loft",
+    "size": "32×18",
+    "idea": "Pull the organ stops in the order of the hymn written in the choir book.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "The Rose Window",
+    "size": "40×20",
+    "idea": "Sit beneath the great window: light shafts, the choir humming, the story of the Pale Root church.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Bellrope Trial",
+    "size": "24×56",
+    "idea": "Climb swinging bell ropes to the top before the bell tolls three times.",
+    "needs": "double jump (found here)"
+   },
+   {
+    "type": "secret",
+    "name": "The Walled Sacristy",
+    "size": "16×14",
+    "idea": "Behind the altar, through a breakable wall.",
+    "needs": "wall jump"
+   }
+  ]
+ },
+ {
+  "region": "Weeping Mire",
+  "current": 6,
+  "tag": "Story · poison marsh",
+  "note": "Hostile ground and nothing worth hiding. Hazard parkour and a fight, with one lonely rest stop. No trial and no secret: the swamp itself is the challenge.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Drowned Grove",
+    "size": "120×24",
+    "idea": "A poison marsh of islands, rotted trees and sinking lily pads. Bog spitters guard the dry ground.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Boardwalk of Stilts",
+    "size": "56×14",
+    "idea": "Rickety boardwalks above the poison, with gaps and ambushes from the water.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Reed Maze",
+    "size": "48×18",
+    "idea": "Tall reeds hide enemies until they’re close.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Sinking Stones",
+    "size": "64×16",
+    "idea": "Stepping stones sink after half a second. Keep moving.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Rotwood Bridges",
+    "size": "56×18",
+    "idea": "Rope bridges that snap behind you as you cross.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Valve House",
+    "size": "40×24",
+    "idea": "Two valves raise and lower the poison water to open the high exit or the low one.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "Leech Pits",
+    "size": "40×14",
+    "idea": "Kick the rotten stake and the pit wakes: bog spitters from above, a mire witch across the water.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "Fisherman’s Rest",
+    "size": "36×16",
+    "idea": "A dry hut on stilts, a lantern and fog over the marsh. Kalden’s old letter is on the table.",
+    "needs": "wall jump"
+   }
+  ]
+ },
+ {
+  "region": "Ashen Archives",
+  "current": 7,
+  "tag": "Story · shelves and ink",
+  "note": "A library, so it’s the puzzle region. The Root Hook is found here, so its trial is a hook trial. No gauntlet: it’s a quiet place.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Grand Stacks",
+    "size": "64×48",
+    "idea": "Towering shelves, rolling ladders that slide along rails, and hook points high up.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Copy Room",
+    "size": "48×14",
+    "idea": "Desks of scribes still copying pages, turned hollow at their work.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Ladder Well",
+    "size": "24×36",
+    "idea": "A shaft of ladders and shelves between floors of the library.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Page Storm",
+    "size": "56×18",
+    "idea": "Gusts lift loose pages into platforms for a moment.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Index Room",
+    "size": "32×20",
+    "idea": "Pull the books whose numbers match the index card to open a hidden shelf.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Cipher Wall",
+    "size": "40×18",
+    "idea": "Decode the scribe’s cipher from notes scattered across the Archives, then strike the matching glyphs.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "Reading Nook",
+    "size": "24×14",
+    "idea": "A window seat with candles and rain on the glass. The scribe’s notes on the Unwritten.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Hookline Trial",
+    "size": "48×32",
+    "idea": "Swing hook to hook over an ink abyss without landing.",
+    "needs": "Root Hook (found here)"
+   },
+   {
+    "type": "secret",
+    "name": "Forbidden Annex",
+    "size": "16×14",
+    "idea": "Behind a false bookcase.",
+    "needs": "Root Hook"
+   }
+  ]
+ },
+ {
+  "region": "Hoarfrost Aqueduct",
+  "current": 7,
+  "tag": "Story · ice and frozen water",
+  "note": "Momentum and slipping: ice is the parkour tool. The Ember Dash is found here, so its trial is built for the dash. The cold leaves little to fight.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Frozen Falls",
+    "size": "48×56",
+    "idea": "Climb a frozen waterfall while icicles fall. Ice ledges slide under you.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Pump Station",
+    "size": "48×16",
+    "idea": "Frozen pumps and pipes, with slick floors and frost soldiers.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Frozen Conduit",
+    "size": "56×14",
+    "idea": "A cramped run through the inside of an iced-over pipe.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "The Long Slide",
+    "size": "80×16",
+    "idea": "A long slippery ice run with gaps. Build speed and time the jumps.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Icicle Gallery",
+    "size": "48×18",
+    "idea": "Icicles drop as you pass under them; some make new footholds when they land.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "Brazier Locks",
+    "size": "40×20",
+    "idea": "Light and douse braziers to melt or freeze the water into platforms.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "Frostbitten Overlook",
+    "size": "36×18",
+    "idea": "A bench above the still reservoir under an aurora.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Rimebreaker Trial",
+    "size": "56×24",
+    "idea": "Ember-dash through ash veils in mid-air while timing the icicles.",
+    "needs": "Ember Dash (found here)"
+   }
+  ]
+ },
+ {
+  "region": "Stormward Spire",
+  "current": 7,
+  "tag": "Story · sea wall, wind and lightning",
+  "note": "The traversal region: the most parkour in the story, wind everywhere and a view of the sea. No puzzles and no gauntlet: the storm is the enemy.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Storm Causeway",
+    "size": "128×28",
+    "idea": "A long broken causeway with lightning that marks where it will strike, and wind that pushes you.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Fishers’ Row",
+    "size": "48×14",
+    "idea": "Huts along the sea wall, wind rattling the shutters.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Sea-Wall Tunnels",
+    "size": "48×14",
+    "idea": "Storm drains inside the wall, with waves crashing through the grates.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Lower Harbor",
+    "size": "48×14",
+    "idea": "Docks and hanging nets, with a shortcut back up the sea wall.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Updraft Chimney",
+    "size": "24×60",
+    "idea": "Ride the updrafts up a chimney between crumbling blocks.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "The Crumbling Stair",
+    "size": "32×48",
+    "idea": "A spiral stair falling apart around you as you climb.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Kite Lines",
+    "size": "64×20",
+    "idea": "Cross a gorge on the lines of storm kites; the wind swings them.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "Lighthouse Balcony",
+    "size": "32×20",
+    "idea": "The storm over the open sea, seen from the top of the sea wall.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "The Last Field ✦",
+    "size": "112×22",
+    "idea": "Hidden. After Cindervane falls, a passage opens in the Stormspire onto a golden wheat field at sunset: her nest, her story and the Ember Hatchling spell. Details below.",
+    "needs": "Cindervane defeated"
+   },
+   {
+    "type": "trial",
+    "name": "Gale Trial",
+    "size": "48×40",
+    "idea": "Glide through gaps between the lightning strikes.",
+    "needs": "Gale Cloak (found here)"
+   },
+   {
+    "type": "secret",
+    "name": "The Crow’s Nest",
+    "size": "16×14",
+    "idea": "Far above the Stormspire, reached only by gliding.",
+    "needs": "Gale Cloak"
+   }
+  ]
+ },
+ {
+  "region": "The Deep",
+  "current": 8,
+  "tag": "Story · forge, slag and lava",
+  "note": "An industrial hell: machines, heat and workers who fight back. Two gauntlets and a lava chase, and no vista: nothing down here is peaceful.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Great Forge",
+    "size": "112×40",
+    "idea": "Conveyor belts, lava geysers and moving crane hooks across a huge foundry floor.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Ore Rail Tunnels",
+    "size": "64×14",
+    "idea": "Mine tunnels where runaway ore carts come through.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Workers’ Lift",
+    "size": "24×40",
+    "idea": "A freight lift shaft with platforms on chains.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Belt Runner",
+    "size": "64×16",
+    "idea": "Belts over the lava reverse direction on a timer.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "Slag Sluices",
+    "size": "40×24",
+    "idea": "Open channels to route molten slag. It cools into the platforms you need.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "The Slag Pits",
+    "size": "40×14",
+    "idea": "Pull the shift whistle: forge workers and acolytes pour in on the shifting belts.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "The Overseer’s Floor",
+    "size": "48×16",
+    "idea": "Sound the foundry horn to bring out the guards and a slag golem, with the belts running.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Crucible Trial",
+    "size": "24×64",
+    "idea": "Climb while the lava rises behind you.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "secret",
+    "name": "The Slam-cracked Vault",
+    "size": "16×14",
+    "idea": "Under a cracked floor in the Great Forge.",
+    "needs": "Cinder Slam (found here)"
+   }
+  ]
+ },
+ {
+  "region": "The Crown",
+  "current": 5,
+  "tag": "Story · the Pale Root’s crown",
+  "note": "The finale. Short and focused: one great climb, one last view and the story’s hardest trial. No puzzles to slow the ending down.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Great Boughs",
+    "size": "96×48",
+    "idea": "Climb the Pale Root’s branches: falling petals and a view of everything below.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Root Passage",
+    "size": "48×14",
+    "idea": "A tunnel through the living wood of the Pale Root.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Petal Stair",
+    "size": "24×32",
+    "idea": "A climb up bark ledges under falling petals.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Petal Drift",
+    "size": "56×20",
+    "idea": "Giant petals drift on the wind as moving platforms.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "Thorned Gallery",
+    "size": "40×14",
+    "idea": "Touch the thorned idol to call the sentinels’ echoes, one after another.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "The Crown Overlook",
+    "size": "40×24",
+    "idea": "The whole Hallow below you. The last lore before the Sovereign.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Sovereign’s Trial",
+    "size": "64×40",
+    "idea": "One run that needs every technique: hook, dash, glide and slam. The best charm in the story regions.",
+    "needs": "all four techniques"
+   }
+  ]
+ },
+ {
+  "region": "Thornveil Wood",
+  "current": 8,
+  "tag": "Side · brambles and the coven",
+  "note": "A living forest: vines to swing on, witches in the trees, a glade to rest in. Paths through the forest instead of puzzles.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Elder Canopy",
+    "size": "112×32",
+    "idea": "Treetop walkways, bramble walls and hanging vines between huge trunks.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Hunter’s Trail",
+    "size": "56×14",
+    "idea": "An old hunting trail with rusted snares and deer skulls.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Under the Roots",
+    "size": "48×14",
+    "idea": "A path beneath the great trees, lit by glowing fungus.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Vine Swing",
+    "size": "64×20",
+    "idea": "Swing from vine to vine over a thorn floor.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "The Coven Circle",
+    "size": "40×16",
+    "idea": "Step into the ring of standing stones to start the witches’ rite; thorns rise from the ground.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "Mossbed Glade",
+    "size": "36×18",
+    "idea": "Fireflies, soft moss and a bench under an ancient tree.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Bramble Sprint",
+    "size": "56×20",
+    "idea": "A pogo run across the brambles, against the clock.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "secret",
+    "name": "Witch’s Larder",
+    "size": "16×14",
+    "idea": "Behind a thorn wall the Ember Dash burns through.",
+    "needs": "Ember Dash"
+   }
+  ]
+ },
+ {
+  "region": "Drowned Barrows",
+  "current": 9,
+  "tag": "Side · flooded tombs",
+  "note": "Swimming is the parkour here. Water-level puzzles and a light-filled lagoon; no gauntlet, because fights underwater get old fast.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Sunken Nave",
+    "size": "96×40",
+    "idea": "A flooded church with air pockets; swim routes and dry routes cross.",
+    "needs": "Swimming (found here)"
+   },
+   {
+    "type": "path",
+    "name": "Grave Causeway",
+    "size": "48×14",
+    "idea": "A half-flooded causeway between burial mounds.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Tomb Galleries",
+    "size": "48×16",
+    "idea": "Rows of sealed tombs, some of them leaking.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Tide Steps",
+    "size": "48×24",
+    "idea": "The water rises and falls on a cycle, opening and closing the routes.",
+    "needs": "Swimming"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Floodgates",
+    "size": "40×24",
+    "idea": "Three gates set the water level across three chambers.",
+    "needs": "Swimming"
+   },
+   {
+    "type": "vista",
+    "name": "Pearl Lagoon",
+    "size": "40×20",
+    "idea": "Light through the water, drifting pearls and a sunken bench.",
+    "needs": "Swimming"
+   },
+   {
+    "type": "trial",
+    "name": "Breathless Dive",
+    "size": "64×24",
+    "idea": "A swim course that has to be done on one breath.",
+    "needs": "Swimming"
+   },
+   {
+    "type": "secret",
+    "name": "The Drowned Bell",
+    "size": "16×14",
+    "idea": "Down a well no one has opened.",
+    "needs": "Swimming"
+   }
+  ]
+ },
+ {
+  "region": "Crimson Manor",
+  "current": 8,
+  "tag": "Side · vampire manor",
+  "note": "A mystery house: riddles, locked rooms and secret passages, plus the staff who serve the Countess. No trial: this manor is about exploring, not platforming.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The East Wing",
+    "size": "112×30",
+    "idea": "Three floors of manor: galleries, servants’ stairs and a collapsed library.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Grand Staircase",
+    "size": "32×32",
+    "idea": "The manor’s central stair, portraits watching every landing.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Servants’ Corridor",
+    "size": "48×14",
+    "idea": "Narrow hidden halls behind the manor’s walls.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Blood-Rain Rooftops",
+    "size": "64×20",
+    "idea": "Slick rooftops and chimneys in the red rain.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Portrait Riddle",
+    "size": "40×18",
+    "idea": "The painted eyes follow a sequence. Pull the matching frames.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Locked Study",
+    "size": "32×18",
+    "idea": "Find three keys hidden around the manor to open the Count’s study.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "Servants’ Quarters",
+    "size": "40×14",
+    "idea": "Ring the service bell and the household staff answer, all turned.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "Moonlit Conservatory",
+    "size": "36×20",
+    "idea": "Glass roof, dead roses and a piano that plays itself.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "secret",
+    "name": "Behind the Bookcase",
+    "size": "16×14",
+    "idea": "A secret passage from the library into the walls.",
+    "needs": "wall jump"
+   }
+  ]
+ },
+ {
+  "region": "Necropolis of Vael",
+  "current": 8,
+  "tag": "Side · city of the dead, bells",
+  "note": "Grim and martial: the dead army fights, the bells rule the ground, the headsman’s axes swing. No vista: there is nothing restful here.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Catafalque Stair",
+    "size": "48×60",
+    "idea": "A giant stair of tombs climbing to the Hollow Throne.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Street of Lanterns",
+    "size": "64×16",
+    "idea": "A street of tombs lit by ghost lanterns.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Cemetery Gate",
+    "size": "48×14",
+    "idea": "The walled approach to the city, guarded by the dead.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "The Bellwalk",
+    "size": "64×18",
+    "idea": "Each toll of the bell swaps which stones are solid.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Dirge",
+    "size": "32×20",
+    "idea": "Ring the bells in the order of the funeral dirge on the wall.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "The Legion Yard",
+    "size": "48×16",
+    "idea": "Beat the war drum to call rank after rank of the dead king’s soldiers.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "Charnel Barracks",
+    "size": "40×14",
+    "idea": "Take the headsman’s axe from its rack and the barracks wake: headsmen and chain-wielders.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Headsman’s Run",
+    "size": "56×20",
+    "idea": "A corridor of swinging executioner’s axes.",
+    "needs": "Ember Dash"
+   },
+   {
+    "type": "secret",
+    "name": "Ossuary of Kings",
+    "size": "16×14",
+    "idea": "Beneath the throne room.",
+    "needs": "Cinder Slam"
+   }
+  ]
+ },
+ {
+  "region": "Sunscorched Dunes",
+  "current": 8,
+  "tag": "Side · desert, slopes and quicksand",
+  "note": "Treasure-hunting country: buried tombs, hieroglyph puzzles and two secrets under the sand. An oasis to rest at; no gauntlet in the open desert.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Sea of Dunes",
+    "size": "128×28",
+    "idea": "Slopes, quicksand and a sandstorm that hides the path.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Caravan Road",
+    "size": "64×16",
+    "idea": "Wrecked caravans half buried in the sand, with scarabs nesting in them.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Tomb Entry Hall",
+    "size": "48×16",
+    "idea": "The painted hall leading down into the tombs.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Sinking Sands",
+    "size": "56×18",
+    "idea": "Quicksand swallows what you stand on. Keep jumping.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Sun Dial",
+    "size": "40×24",
+    "idea": "Turn mirrors to carry sunlight to the hieroglyph door.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Hieroglyph Seal",
+    "size": "32×20",
+    "idea": "Match the pharaoh’s titles carved in the halls to open the seal.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "The Last Oasis",
+    "size": "36×18",
+    "idea": "Palms, still water and the sunset.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Sandfall Descent",
+    "size": "24×64",
+    "idea": "Fall down a shaft of sandfalls without touching the walls.",
+    "needs": "Gale Cloak"
+   },
+   {
+    "type": "secret",
+    "name": "The Nameless Tomb",
+    "size": "16×14",
+    "idea": "Buried under a dune; slam through.",
+    "needs": "Cinder Slam"
+   },
+   {
+    "type": "secret",
+    "name": "Scarab Cache",
+    "size": "16×14",
+    "idea": "Follow the golden scarab into a crack in the sandstone.",
+    "needs": "wall jump"
+   }
+  ]
+ },
+ {
+  "region": "Starfall Crater",
+  "current": 9,
+  "tag": "Side · black glass and fallen stars",
+  "note": "The contemplative region: floaty parkour, starlight puzzles and two views of the sky. Nothing here to fight in waves.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Glass Expanse",
+    "size": "120×32",
+    "idea": "A black-glass plain with star tiles and craters to cross.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Observatory Road",
+    "size": "56×14",
+    "idea": "The old pilgrims’ road up to the observatory.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Glass Canyon",
+    "size": "48×20",
+    "idea": "A canyon of black glass that reflects the stars.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Meteor Steps",
+    "size": "56×24",
+    "idea": "Stepping stones made of falling meteors.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Gravity Wells",
+    "size": "48×32",
+    "idea": "Star shards pull you toward them as you jump past.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "The Lens Array",
+    "size": "40×24",
+    "idea": "Turn lenses to bend starlight onto three sockets.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "The Stargazer’s Seat",
+    "size": "36×20",
+    "idea": "A meteor shower behind the old observatory.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "The Crater Edge",
+    "size": "40×18",
+    "idea": "The whole crater and the fallen star’s glow below.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Moonstep Trial",
+    "size": "48×48",
+    "idea": "A tower that needs the triple jump.",
+    "needs": "Triple jump (found here)"
+   },
+   {
+    "type": "secret",
+    "name": "The Comet’s Heart",
+    "size": "16×14",
+    "idea": "Inside the crater’s core.",
+    "needs": "Triple jump"
+   }
+  ]
+ },
+ {
+  "region": "NEO-HALLOW",
+  "current": 7,
+  "tag": "Secret · cyberpunk city",
+  "note": "A city built for movement: the most parkour of any side region, a security lockdown and a rooftop view.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Megablock",
+    "size": "48×64",
+    "idea": "A vertical city block with elevators, billboards and data abysses.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Back Alleys",
+    "size": "48×16",
+    "idea": "Rain, vending machines and gangs of glitched hollows.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "Service Tunnels",
+    "size": "48×14",
+    "idea": "Maintenance tunnels with steam vents and cable trays.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Data Highway",
+    "size": "96×18",
+    "idea": "Jump between moving maglev cars.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "parkour",
+    "name": "Billboard Climb",
+    "size": "32×48",
+    "idea": "Climb flickering billboards; the dark ones aren’t solid.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "puzzle",
+    "name": "Firewall",
+    "size": "40×20",
+    "idea": "Terminals toggle laser gates. Find the route that stays open.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "gauntlet",
+    "name": "Security Lockdown",
+    "size": "40×16",
+    "idea": "Trip the alarm terminal: shutters seal and waves of drones pour in.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "Neon Skyline",
+    "size": "40×20",
+    "idea": "A rooftop in the rain with billboards and flying traffic.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Glitch Run",
+    "size": "64×24",
+    "idea": "Platforms de-render on the beat of the music.",
+    "needs": "Ember Dash"
+   },
+   {
+    "type": "secret",
+    "name": "The Dev Room",
+    "size": "16×14",
+    "idea": "A glitched room with a joke or two and a real reward.",
+    "needs": "wall jump"
+   }
+  ]
+ },
+ {
+  "region": "The Ember",
+  "current": 3,
+  "tag": "Secret · the Cinder Well",
+  "note": "The hidden end of the world: a lonely approach, a last warm place and the game’s hardest trial.",
+  "rooms": [
+   {
+    "type": "grand",
+    "name": "The Ashen Expanse",
+    "size": "112×30",
+    "idea": "An endless field of ash and old embers on the way to the Hollow.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "path",
+    "name": "The Cinder Road",
+    "size": "56×14",
+    "idea": "The last road, lined with burnt-out shrines.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "vista",
+    "name": "The Last Hearth",
+    "size": "32×18",
+    "idea": "The only warm place left in the Hallow.",
+    "needs": "wall jump"
+   },
+   {
+    "type": "trial",
+    "name": "Trial of the First Flame",
+    "size": "64×48",
+    "idea": "The hardest trial in the game. Every technique, no mistakes.",
+    "needs": "everything"
+   }
+  ]
+ },
+ {
+  "region": "The Hermit's Hollow",
+  "current": 1,
+  "tag": "Secret · Oswin’s home",
+  "note": "A small reward for finding Oswin: somewhere to sit, and his stash.",
+  "rooms": [
+   {
+    "type": "vista",
+    "name": "The Hermit’s Garden",
+    "size": "32×16",
+    "idea": "Oswin’s wind chimes and herb garden.",
+    "needs": "start"
+   },
+   {
+    "type": "path",
+    "name": "The Hidden Path",
+    "size": "48×14",
+    "idea": "The approach to Oswin’s hut through the fog.",
+    "needs": "start"
+   },
+   {
+    "type": "secret",
+    "name": "Oswin’s Stash",
+    "size": "16×14",
+    "idea": "Under the floorboards of his hut.",
+    "needs": "start"
+   }
+  ]
+ }
+]

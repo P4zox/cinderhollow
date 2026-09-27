@@ -1,0 +1,455 @@
+<title>Cinderhollow Room Expansion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --ground: #0c0a10; --panel: #15111a; --panel2: #1c1622; --line: #3a2f24; --line2: #6d5a3a;
+  --text: #e8dcc0; --body: #d2c7ae; --muted: #a79a80; --faint: #7f745f;
+  --gold: #e6c77a; --accent: #b08a3a; --ember: #e0804a;
+  --t-path: #9aa3b0; --t-grand: #e6c77a; --t-parkour: #6fc7d9; --t-trial: #e07a62; --t-gauntlet: #c0506a;
+  --t-puzzle: #a58fe0; --t-vista: #8fd89a; --t-secret: #d9a560;
+  --display: 'Cinzel', Georgia, serif; --sans: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--body); font: 16px/1.55 var(--sans); margin: 0; padding-inline: 16px; }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 40px 80px; }
+h1, h2, h3 { font-family: var(--display); color: var(--text); text-wrap: balance; letter-spacing: 0.04em; margin: 0; }
+h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 700; }
+h2 { font-size: 22px; font-weight: 600; margin-top: 56px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 17px; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 600 12px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 18px; color: var(--body); margin-top: 14px; }
+.stack { display: grid; gap: 14px; }
+.muted { color: var(--muted); }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+strong { color: var(--text); }
+
+/* headline numbers */
+.nums { display: flex; flex-wrap: wrap; gap: 28px 44px; margin-top: 28px; align-items: baseline; }
+.num b { display: block; font: 700 38px var(--display); color: var(--gold); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.num span { font-size: 14px; color: var(--muted); }
+
+/* region bars */
+.bars { display: grid; gap: 7px; margin-top: 18px; }
+.bar { display: grid; grid-template-columns: 150px 1fr 70px; gap: 12px; align-items: center; font-size: 14px; }
+.bar .nm { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .track { position: relative; height: 12px; background: var(--panel2); border-radius: 2px; }
+.bar .cur, .bar .add { position: absolute; top: 0; bottom: 0; }
+.bar .cur { left: 0; background: var(--line2); }
+.bar .add { background: repeating-linear-gradient(135deg, var(--accent) 0 3px, #8a6d36 3px 6px); }
+.bar .ct { font-family: var(--mono); font-size: 12.5px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.bar .ct em { font-style: normal; color: var(--gold); }
+.legend { display: flex; gap: 18px; font-size: 13px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
+.legend i { display: inline-block; width: 14px; height: 10px; margin-right: 6px; vertical-align: -1px; }
+
+/* room types */
+.types { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; margin-top: 20px; }
+.type { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--c); padding: 16px 18px; display: grid; gap: 6px; align-content: start; }
+.type h3 { color: var(--c); font-size: 15px; }
+.type p { font-size: 15px; }
+.type .ex { font-size: 13.5px; color: var(--muted); }
+.chip { display: inline-block; font: 600 11px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--c); border: 1px solid var(--c); padding: 1px 6px; border-radius: 2px; white-space: nowrap; }
+
+/* ability timeline */
+.abil { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 16px; }
+.ab { border-left: 2px solid var(--accent); padding: 4px 0 4px 12px; font-size: 14px; }
+.ab b { display: block; color: var(--text); font-weight: 700; }
+.ab span { color: var(--muted); }
+
+/* filter */
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 4px; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--ground); padding-block: 10px; z-index: 2; border-bottom: 1px solid var(--line); }
+.filter button { font: 600 12px var(--mono); letter-spacing: 0.05em; text-transform: uppercase; background: transparent; color: var(--c, var(--text)); border: 1px solid var(--c, var(--line2)); padding: 5px 10px; border-radius: 2px; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--c, var(--accent)); color: var(--ground); }
+.filter button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* regions */
+.region { margin-top: 30px; }
+.rhead { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; }
+.rhead .ct { font: 600 13px var(--mono); color: var(--gold); }
+.rhead .tag { font-size: 13px; color: var(--muted); }
+.rnote { font-size: 15px; color: var(--muted); margin-top: 6px; }
+.tbl { overflow-x: auto; margin-top: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14.5px; }
+th { text-align: left; font: 600 11px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); padding: 6px 10px; border-bottom: 1px solid var(--line); }
+td { padding: 9px 10px; border-bottom: 1px solid #221b28; vertical-align: top; }
+td.nm { color: var(--text); font-weight: 700; white-space: nowrap; }
+td.sz { font-family: var(--mono); font-size: 12.5px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+td.nd { font-size: 13px; color: var(--muted); white-space: nowrap; }
+tr[hidden] { display: none; }
+table.mx { min-width: 700px; }
+table.mx th, table.mx td { text-align: center; padding: 7px 6px; }
+table.mx th:first-child, table.mx td:first-child { text-align: left; }
+table.mx td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
+table.mx td.v { font: 600 13px var(--mono); font-variant-numeric: tabular-nums; }
+table.mx td.v span { display: inline-grid; place-items: center; min-width: 24px; height: 22px; border: 1px solid var(--c); color: var(--c); border-radius: 2px; }
+table.mx td.v span.two { background: var(--c); color: var(--ground); }
+table.mx td.tot { font: 600 13px var(--mono); color: var(--gold); }
+table.mx tr.sep td { border-top: 1px solid var(--line2); }
+
+/* systems + phases */
+.sys { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px 28px; margin-top: 18px; }
+.sys div { display: grid; gap: 4px; }
+.sys b { color: var(--text); }
+.sys p { font-size: 15px; }
+.phases { display: grid; gap: 0; margin-top: 18px; }
+.ph { display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.ph .k { font: 700 14px var(--display); color: var(--gold); }
+.ph .k span { display: block; font: 400 12px var(--mono); color: var(--muted); margin-top: 4px; letter-spacing: 0; }
+.ph ul, .qs ul { margin: 6px 0 0; padding-left: 18px; }
+.ph li, .qs li { margin: 3px 0; }
+.lf { margin-top: 20px; display: grid; gap: 22px; }
+.lf-sky { position: relative; height: 150px; overflow: hidden; border: 1px solid var(--line);
+  background: linear-gradient(180deg, #2a1c3a 0%, #7a3a4a 38%, #e0804a 66%, #f3c26a 82%, #f7dc8e 100%); }
+.lf-sun { position: absolute; left: 62%; top: 58%; width: 64px; height: 64px; margin: -32px; border-radius: 50%;
+  background: radial-gradient(circle, #fff6d0 0 34%, rgba(255,214,120,0.7) 46%, rgba(255,180,90,0) 70%); }
+.lf-wheat { position: absolute; left: 0; right: 0; bottom: 0; height: 52px;
+  background: repeating-linear-gradient(100deg, #c98a2a 0 2px, #e6b24a 2px 4px, #a86a1e 4px 5px, #d9a13c 5px 7px);
+  -webkit-mask: linear-gradient(180deg, transparent 0, #000 22px); mask: linear-gradient(180deg, transparent 0, #000 22px); }
+.lf-wheat::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 26px;
+  background: radial-gradient(3px 7px at 6px 14px, #f2c860 60%, transparent 62%) 0 0 / 11px 26px repeat-x; }
+.qs { display: grid; gap: 16px; margin-top: 18px; }
+.q { background: var(--panel); border: 1px solid var(--line); padding: 14px 18px; }
+.q b { color: var(--text); }
+.q .rec { color: var(--gold); font-size: 14.5px; margin-top: 6px; }
+@media (max-width: 560px) {
+  .bar { grid-template-columns: 96px 1fr 60px; font-size: 13px; }
+  .ph { grid-template-columns: 1fr; gap: 6px; }
+}
+@media (prefers-reduced-motion: no-preference) { .filter button { transition: background .15s, color .15s; } }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Cinderhollow · Expansion 3 plan · for review</div>
+  <h1>Cinderhollow Room Expansion</h1>
+  <p class="lede">Every region grows from a handful of rooms into a place worth exploring, with the kinds of room that suit it. The library gets puzzles, the storm-swept spire gets parkour, the foundry gets fights, the observatory gets views of the sky. No existing room is removed and saves keep working.</p>
+
+  <div class="nums">
+    <div class="num"><b>118</b><span>rooms today</span></div>
+    <div class="num"><b>+151</b><span>new rooms</span></div>
+    <div class="num"><b>269</b><span>rooms after</span></div>
+    <div class="num"><b>18</b><span>regions, most at 14–19 rooms<br>(secret areas fewer)</span></div>
+  </div>
+
+  <h2>Rooms per region</h2>
+  <div class="bars" id="bars"></div>
+  <div class="legend"><span><i style="background:var(--line2)"></i>today</span><span><i style="background:repeating-linear-gradient(135deg,var(--accent) 0 3px,#8a6d36 3px 6px)"></i>new</span></div>
+
+  <h2>Mix by region</h2>
+  <p class="muted" style="margin-top:12px">New rooms by type. Blank means the region doesn't get that kind of room.</p>
+  <div class="tbl"><table class="mx" id="mx"></table></div>
+
+  <h2>The room kit</h2>
+  <p class="muted" style="margin-top:12px">Eight kinds of room, each dressed in its region's own tiles, enemies and hazards. A region only gets the kinds that make sense for it; the grid below shows the mix. One screen is about 24×14 tiles. Most rooms today are 48×14, two screens wide.</p>
+  <div class="types" id="types"></div>
+
+  <h2>Parkour follows your abilities</h2>
+  <p class="muted" style="margin-top:12px">Parkour on the main path only needs what you're guaranteed to have when you arrive. Trials and secrets can need later abilities, so they become reasons to come back. The map marks them with a lock until you have what they need.</p>
+  <div class="abil" id="abil"></div>
+
+  <h2>Region by region</h2>
+  <p class="muted" style="margin-top:12px">Listed in story order, then the optional regions. Names and ideas are first drafts; sizes are in tiles (width × height).</p>
+  <div class="filter" id="filter" role="toolbar" aria-label="Filter rooms by type"></div>
+  <div id="regions"></div>
+
+  <h2 id="last-field">The Last Field</h2>
+  <div class="lf">
+    <div class="lf-sky" aria-hidden="true"><div class="lf-sun"></div><div class="lf-wheat"></div></div>
+    <div class="stack">
+      <p class="lede" style="margin-top:0">A secret vista in the Stormward Spire, found only after Cindervane is dead and the storm has had time to clear.</p>
+      <div class="sys" style="margin-top:4px">
+        <div><b>How it appears</b><p>Kill Cindervane, then leave the Stormspire. The next time you come back, after resting at any shrine or at least five minutes after the fight, the wall where she fell has split open. Warm wind and wheat seeds blow through the crack, and a soft chime plays when you enter the room. Nothing on the map shows it until you walk in.</p></div>
+        <div><b>The field</b><p>A wide sunset scene: a low sun, long clouds, far hills in several parallax layers and a golden wheat field that sways and parts around you as you walk. Embers and seeds drift in the light. There are no enemies. The music is a slow, warm variation of the Spire theme. At the far end is her nest: a hollow in the wheat ringed with shed scales.</p></div>
+        <div><b>Her story</b><p>A lore stone and the nest tell it. The Hallow was once fields like this, and the drakes kept the sky over them. When the Pale Root rose, the sky went grey and the drakes died out one by one. Cindervane was the last, and she guarded the one warm place left. The boss’s own line, “The sky was ours before the Root. It will be ours after,” turns out to be about what she left in the nest.</p></div>
+        <div><b>The reward: Ember Hatchling</b><p>The nest holds her last egg, still warm. Taking it teaches a new spell. <strong>Ember Hatchling</strong> summons a tiny drake cub that fights at your side for 10 seconds, then scatters into embers.<br>• It flies beside you and spits small fireballs at the nearest enemy.<br>• Now and then it dives in for a biting attack that sets the target on fire.<br>• Damage scales with Faith. Only one cub at a time.<br>• It can’t be hit, and it never makes a fight impossible to lose.</p></div>
+        <div><b>What gets made</b><p>• The cub sprite: appear, fly, spit, dive and vanish.<br>• The spell icon.<br>• Five parallax layers for the field, plus animated wheat.<br>• The nest and egg props, and the lore stone.<br>• The music variation.<br>• The new-spell toast and a Chronicle page.</p></div>
+        <div><b>Built when</b><p>Phase 1, with the Spire. It uses the vista bench and hidden-passage pieces from Phase 0, so it arrives with everything else in that region.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>What gets built first</h2>
+  <p class="muted" style="margin-top:12px">These engine pieces are shared by every region, so they come before any rooms.</p>
+  <div class="sys">
+    <div><b>Doors and passages</b><p>Rooms today only connect when they touch edge to edge on one world grid, and the middle of the map is full. The NEO-HALLOW portal becomes a general door: step through a doorway, a crack or a hatch, and you arrive at its partner. New rooms can then sit in open map space and still show up next to their region on the map.</p></div>
+    <div><b>Trial framework</b><p>A sigil at the start of the trial. Touching a hazard puts you back at the start instantly, with no HP lost and no walk back. A timer runs, with a par time for a bonus. The first clear opens the reward chest. Best times are saved and shown on the map.</p></div>
+    <div><b>Moving parts</b><p>New reusable pieces, re-skinned per region:<br>• Moving platforms on a set path.<br>• Crumbling ledges.<br>• Timed phase platforms that blink on a beat.<br>• Sinking stones.<br>• Swinging blades.<br>• Rising hazard floors for chase rooms.</p></div>
+    <div><b>Puzzle parts</b><p>Levers and switches wired to several gates. Timed gates. Pressure plates. Ordered sequences (bells, lanterns, stops) with clues written into the room. Beams you can redirect (Starfall lenses, Dunes mirrors). Water or slag levels that raise and lower.</p></div>
+    <div><b>Optional gauntlets</b><p>Each gauntlet has a challenge marker themed on its region. The room stays open until you use the marker. Then the gates lock, a wave counter appears and the fight begins. Once cleared, the marker stays lit, the gates stay open and the fight can be replayed. A gauntlet never blocks the main path.</p></div>
+    <div><b>Vista benches</b><p>Sit on a bench and the camera pulls back to show the whole scene. The music drops to the region's ambient layer, and a lore stone or ghost can speak. There are no enemies, and resting there is safe. Every bench found is logged in a Vistas list.</p></div>
+    <div><b>Bigger rooms</b><p>Grand rooms of 100–130 tiles wide or 40–60 tall, with two or three routes through them. The camera, room cache and memory budget get checked at that size, and the room layer is drawn in chunks if needed.</p></div>
+    <div><b>Map upgrade</b><p>With twice as many rooms, the map gets zoom and pan, region filters, and icons for trials, puzzles, vistas, secrets and locked rooms. Cleared trials get a gold mark.</p></div>
+    <div><b>Reachability check</b><p>A build-time tool that uses the real jump height, dash and wall-jump distances to check that every exit and reward can be reached with the abilities a room claims to need. Impossible parkour fails the build. Headless test runs then do the rest.</p></div>
+  </div>
+
+  <h2>Rewards worth the detour</h2>
+  <div class="sys">
+    <div><b>Trial charms</b><p>Each of the 13 trials guards a new charm themed on its region. Many change how you move or fight: a longer air dash, a wall-cling that lasts longer, a third pogo off spikes, a faster glide.</p></div>
+    <div><b>Upgrade materials</b><p>Gauntlets and puzzles pay out shards, seeds and flask upgrades, so side content makes you stronger without being required.</p></div>
+    <div><b>Lore pages</b><p>Vistas and secrets hold pages of the Hallow Chronicle, a new Lore tab in the inventory. A complete set unlocks a final vista with an extra story scene.</p></div>
+    <div><b>Completion</b><p>The Status tab tracks rooms, trials, vistas and secrets, per region and overall.</p></div>
+  </div>
+
+  <h2>Delivery</h2>
+  <p class="muted" style="margin-top:12px">Each phase is published when it's done, so your friends play the new rooms early instead of waiting for all 151.</p>
+  <div class="phases">
+    <div class="ph"><div class="k">Phase 0<span>engine kit</span></div><div>Doors, the trial framework, moving and puzzle parts, vista benches, the map upgrade and the reachability check. Includes small new art: bench, trial sigil, levers, platform and blade sprites per region. Verified in one proving room before any region work starts.</div></div>
+    <div class="ph"><div class="k">Phase 1<span>story regions · +80</span></div><div>Ramparts, Catacombs, Cathedral, Mire, Archives, Hoarfrost, Spire, the Deep and the Crown, built by three agents with three regions each. These are the thinnest regions and the ones played most.</div></div>
+    <div class="ph"><div class="k">Phase 2<span>side regions · +64</span></div><div>Thornveil, Barrows, Crimson Manor, Necropolis, Dunes, Starfall and NEO-HALLOW, built by three agents.</div></div>
+    <div class="ph"><div class="k">Phase 3<span>finale · +7</span></div><div>The Ember and the Hermit, the all-abilities final trial, the full lore set, then a balance pass on par times, rewards and difficulty.</div></div>
+  </div>
+  <p class="muted" style="margin-top:14px">Every phase ends the same way: rooms validate with zero errors, the reachability check passes, the all-rooms stress sweep is clean, the phone build boots, and a playthrough of each new trial is recorded before publishing.</p>
+
+  <h2>Decisions for you</h2>
+  <div class="qs">
+    <div class="q"><b>Trial failure.</b> Touching a hazard in a trial either resets you to the start instantly with no damage, or hurts you like normal play.<div class="rec">Recommended: instant reset, no damage. Retrying is quick, and a trial can be hard without being tedious.</div></div>
+    <div class="q"><b>How hard trials get.</b> Hollow Knight's White Palace level, or a step below it.<div class="rec">Recommended: story-region trials a step below; the side-region trials and the Ember's final trial at full White Palace difficulty.</div></div>
+    <div class="q"><b>The mix.</b> Some regions now have no trial (Ramparts, Catacombs, Mire, Crimson Manor), no vista (Catacombs, the Deep, Necropolis) or no puzzle (Spire, Crown, Thornveil).<div class="rec">Recommended: keep these gaps. Regions feel different when they aren't all built from the same checklist.</div></div>
+    <div class="q"><b>Where new rooms connect.</b> Doors let rooms sit anywhere, but walking straight through an edge feels more seamless.<div class="rec">Recommended: edge connections wherever the map has space (most region borders do), and doors only for optional rooms in packed areas.</div></div>
+    <div class="q"><b>Order.</b> Story regions first, or the side regions your friends are exploring now.<div class="rec">Recommended: story regions first, as planned above.</div></div>
+  </div>
+</div>
+
+<script>
+const TYPES = {
+  path:     { n: 'Path',     c: '--t-path',     d: 'The connective tissue of a region: corridors, stairs, shafts and streets with regular enemies and a bit of traversal. Two or more per region, so the trip to the boss is a journey.', ex: 'Siege Undercroft, Confessional Row' },
+  grand:    { n: 'Grand',    c: '--t-grand',    d: 'A big multi-screen room (roughly 100×30 up to 130×60) with two or three routes, landmarks and hidden corners. At most one per region.', ex: 'The Long Wall, The Great Forge' },
+  parkour:  { n: 'Parkour',  c: '--t-parkour',  d: 'Traversal is the challenge: moving, crumbling or sinking platforms, wind, belts, lifts. On the main path, so only fair-to-medium hard.', ex: 'Crenel Run, Kite Lines' },
+  trial:    { n: 'Trial',    c: '--t-trial',    d: 'Optional challenge parkour behind a sigil. Instant reset on a mistake, a timer and a par time. The first clear opens a chest with a secret item. Where a region hands you an ability, its trial is built around that ability.', ex: 'Hookline Trial, Breathless Dive' },
+  gauntlet: { n: 'Gauntlet', c: '--t-gauntlet', d: 'Optional. Walk through the room freely, or start the fight at the region’s challenge marker (a war banner, a bone bell, a war drum): the gates lock and waves come, with an elite at the end. Pays out upgrade materials; replayable for cinders.', ex: 'Muster Yard, Leech Pits' },
+  puzzle:   { n: 'Puzzle',   c: '--t-puzzle',   d: 'Levers, orders, beams or water levels, with the clue written into the room itself (a hymn book, portraits, veins in the root).', ex: 'Organ Loft, Portrait Riddle' },
+  vista:    { n: 'Vista',    c: '--t-vista',    d: 'A quiet room to rest in. No enemies, a bench, the camera pulled back over the view, ambient music and a piece of lore.', ex: 'Watcher’s Perch, Neon Skyline' },
+  secret:   { n: 'Secret',   c: '--t-secret',   d: 'Hidden behind a breakable wall, a slam-cracked floor or a hard jump. Holds loot, a lore page or a shortcut.', ex: 'Sentry’s Cache, Dev Room' },
+};
+const ABIL = [
+  ['Start', 'Jump, roll, air dash'], ['Wall jump', 'Hound, end of Catacombs'], ['Double jump', 'Cathedral secret'], ['Root Hook', 'wall jump'],
+  ['Ember Dash', 'Twins, Hoarfrost'], ['Gale Cloak', 'Cindervane, Spire'], ['Cinder Slam', 'Colossus, the Deep'], ['Swimming', 'Barrows reliquary'], ['Triple jump', 'wall jump'],
+];
+// [type, name, size, idea, needs]   needs: what the room requires; "later" abilities make it a return trip
+const REGIONS = [
+  ['Ashen Ramparts', 4, 'Story · outdoor walls above the sea', 'The tutorial region. It teaches instead of testing: fights, one gentle parkour room, a first lever puzzle. No trial; a hard trial before you have any abilities would just be a wall.', [
+    ['grand', 'The Long Wall', '128×22', 'A sweeping rampart walk with collapsed sections and archers on the towers. High route along the battlements, low route through the stables.', 'start'],
+    ['path', 'The Stable Yard', '48×14', 'Collapsed stables with archers in the hayloft and loose horses’ bones underfoot.', 'start'],
+    ['path', 'Signal Tower Stair', '24×28', 'A vertical climb up a signal tower, soldiers on each landing.', 'start'],
+    ['path', 'The Barracks', '48×14', 'Bunks, weapon racks and the first shield wardens. Teaches blocking and parrying on the way.', 'start'],
+    ['path', 'Siege Undercroft', '48×14', 'Dark tunnels under the wall down toward the Catacombs, with a lift that opens a shortcut back to the first shrine.', 'start'],
+    ['parkour', 'Crenel Run', '64×16', 'Hop broken battlements over a sheer drop. Wide gaps and slow crumbling: a gentle first taste.', 'start'],
+    ['puzzle', 'Winch House', '32×20', 'Two winches each hold the portcullis for a few seconds. Hit one, sprint, hit the other.', 'start'],
+    ['gauntlet', 'Muster Yard', '40×14', 'Strike the war banner and the gates slam shut: three waves of soldiers, then a shield warden.', 'start'],
+    ['vista', 'Watcher’s Perch', '40×24', 'A bench on the highest tower. The camera pulls back over the Hallow with the Pale Root on the horizon. Lore: the night the ash fell.', 'start'],
+    ['secret', 'Sentry’s Cache', '16×14', 'Behind a cracked wall in the Long Wall: your first breakable wall.', 'start'],
+  ]],
+  ['Rootbound Catacombs', 7, 'Story · bone halls and roots', 'Tight, dark and full of hiding places, so it leans on secrets and close fights. There is no view underground, so no vista; the only big room is a natural cavern.', [
+    ['grand', 'The Great Ossuary', '96×32', 'A cavern of bone shelves on three levels, with root-crawler nests and a hidden upper gallery.', 'start'],
+    ['path', 'Rootbound Passage', '48×14', 'Roots have split the walls; crawlers drop from the ceiling.', 'start'],
+    ['path', 'The Drop Shaft', '24×40', 'A descent down ledges and old coffin shelves.', 'start'],
+    ['path', 'Burial Tunnels', '48×14', 'Low tunnels lined with niches; things crawl out of them.', 'start'],
+    ['parkour', 'Bone Lift Shaft', '24×48', 'Ride rising and falling bone lifts between spike walls.', 'start'],
+    ['puzzle', 'Crypt of Lanterns', '40×16', 'Light the lanterns in the order carved on the tombs to open the vault.', 'start'],
+    ['gauntlet', 'Charnel Pit', '36×14', 'Ring the bone bell at the pit’s edge to call up waves of rot crawlers, then a grave knight.', 'start'],
+    ['secret', 'Gravedigger’s Stash', '16×14', 'A false tomb in the Burial Tunnels.', 'start'],
+    ['secret', 'The Sealed Niche', '16×14', 'Under a slam-cracked floor in the Ossuary.', 'later: Cinder Slam'],
+  ]],
+  ['Sunken Cathedral', 5, 'Story · flooded nave, bells', 'Tall and sacred: climbing, a hymn puzzle and the game’s first real view. The double jump is found here, so its trial tests the double jump right away.', [
+    ['grand', 'The Clerestory', '112×36', 'The cathedral’s upper storey: rafters, stained-glass walls, three routes between the nave and the bell tower.', 'wall jump'],
+    ['path', 'Pilgrims’ Aisle', '48×14', 'Rows of kneeling statues. A few of them are not statues.', 'wall jump'],
+    ['path', 'Flooded Crypt Stair', '24×28', 'A stair down into knee-deep black water under the nave.', 'wall jump'],
+    ['path', 'Confessional Row', '48×14', 'Enemies wait inside the booths and ambush you as you pass.', 'wall jump'],
+    ['parkour', 'Chandelier Crossing', '56×20', 'Chandeliers sway when you land and drop if you stay too long.', 'wall jump'],
+    ['puzzle', 'Organ Loft', '32×18', 'Pull the organ stops in the order of the hymn written in the choir book.', 'wall jump'],
+    ['vista', 'The Rose Window', '40×20', 'Sit beneath the great window: light shafts, the choir humming, the story of the Pale Root church.', 'wall jump'],
+    ['trial', 'Bellrope Trial', '24×56', 'Climb swinging bell ropes to the top before the bell tolls three times.', 'double jump (found here)'],
+    ['secret', 'The Walled Sacristy', '16×14', 'Behind the altar, through a breakable wall.', 'wall jump'],
+  ]],
+  ['Weeping Mire', 6, 'Story · poison marsh', 'Hostile ground and nothing worth hiding. Hazard parkour and a fight, with one lonely rest stop. No trial and no secret: the swamp itself is the challenge.', [
+    ['grand', 'The Drowned Grove', '120×24', 'A poison marsh of islands, rotted trees and sinking lily pads. Bog spitters guard the dry ground.', 'wall jump'],
+    ['path', 'Boardwalk of Stilts', '56×14', 'Rickety boardwalks above the poison, with gaps and ambushes from the water.', 'wall jump'],
+    ['path', 'The Reed Maze', '48×18', 'Tall reeds hide enemies until they’re close.', 'wall jump'],
+    ['parkour', 'Sinking Stones', '64×16', 'Stepping stones sink after half a second. Keep moving.', 'wall jump'],
+    ['parkour', 'Rotwood Bridges', '56×18', 'Rope bridges that snap behind you as you cross.', 'wall jump'],
+    ['puzzle', 'The Valve House', '40×24', 'Two valves raise and lower the poison water to open the high exit or the low one.', 'wall jump'],
+    ['gauntlet', 'Leech Pits', '40×14', 'Kick the rotten stake and the pit wakes: bog spitters from above, a mire witch across the water.', 'wall jump'],
+    ['vista', 'Fisherman’s Rest', '36×16', 'A dry hut on stilts, a lantern and fog over the marsh. Kalden’s old letter is on the table.', 'wall jump'],
+  ]],
+  ['Ashen Archives', 7, 'Story · shelves and ink', 'A library, so it’s the puzzle region. The Root Hook is found here, so its trial is a hook trial. No gauntlet: it’s a quiet place.', [
+    ['grand', 'The Grand Stacks', '64×48', 'Towering shelves, rolling ladders that slide along rails, and hook points high up.', 'wall jump'],
+    ['path', 'The Copy Room', '48×14', 'Desks of scribes still copying pages, turned hollow at their work.', 'wall jump'],
+    ['path', 'Ladder Well', '24×36', 'A shaft of ladders and shelves between floors of the library.', 'wall jump'],
+    ['parkour', 'Page Storm', '56×18', 'Gusts lift loose pages into platforms for a moment.', 'wall jump'],
+    ['puzzle', 'The Index Room', '32×20', 'Pull the books whose numbers match the index card to open a hidden shelf.', 'wall jump'],
+    ['puzzle', 'The Cipher Wall', '40×18', 'Decode the scribe’s cipher from notes scattered across the Archives, then strike the matching glyphs.', 'wall jump'],
+    ['vista', 'Reading Nook', '24×14', 'A window seat with candles and rain on the glass. The scribe’s notes on the Unwritten.', 'wall jump'],
+    ['trial', 'Hookline Trial', '48×32', 'Swing hook to hook over an ink abyss without landing.', 'Root Hook (found here)'],
+    ['secret', 'Forbidden Annex', '16×14', 'Behind a false bookcase.', 'Root Hook'],
+  ]],
+  ['Hoarfrost Aqueduct', 7, 'Story · ice and frozen water', 'Momentum and slipping: ice is the parkour tool. The Ember Dash is found here, so its trial is built for the dash. The cold leaves little to fight.', [
+    ['grand', 'The Frozen Falls', '48×56', 'Climb a frozen waterfall while icicles fall. Ice ledges slide under you.', 'wall jump'],
+    ['path', 'Pump Station', '48×16', 'Frozen pumps and pipes, with slick floors and frost soldiers.', 'wall jump'],
+    ['path', 'Frozen Conduit', '56×14', 'A cramped run through the inside of an iced-over pipe.', 'wall jump'],
+    ['parkour', 'The Long Slide', '80×16', 'A long slippery ice run with gaps. Build speed and time the jumps.', 'wall jump'],
+    ['parkour', 'Icicle Gallery', '48×18', 'Icicles drop as you pass under them; some make new footholds when they land.', 'wall jump'],
+    ['puzzle', 'Brazier Locks', '40×20', 'Light and douse braziers to melt or freeze the water into platforms.', 'wall jump'],
+    ['vista', 'Frostbitten Overlook', '36×18', 'A bench above the still reservoir under an aurora.', 'wall jump'],
+    ['trial', 'Rimebreaker Trial', '56×24', 'Ember-dash through ash veils in mid-air while timing the icicles.', 'Ember Dash (found here)'],
+  ]],
+  ['Stormward Spire', 7, 'Story · sea wall, wind and lightning', 'The traversal region: the most parkour in the story, wind everywhere and a view of the sea. No puzzles and no gauntlet: the storm is the enemy.', [
+    ['grand', 'The Storm Causeway', '128×28', 'A long broken causeway with lightning that marks where it will strike, and wind that pushes you.', 'wall jump'],
+    ['path', 'Fishers’ Row', '48×14', 'Huts along the sea wall, wind rattling the shutters.', 'wall jump'],
+    ['path', 'Sea-Wall Tunnels', '48×14', 'Storm drains inside the wall, with waves crashing through the grates.', 'wall jump'],
+    ['path', 'The Lower Harbor', '48×14', 'Docks and hanging nets, with a shortcut back up the sea wall.', 'wall jump'],
+    ['parkour', 'Updraft Chimney', '24×60', 'Ride the updrafts up a chimney between crumbling blocks.', 'wall jump'],
+    ['parkour', 'The Crumbling Stair', '32×48', 'A spiral stair falling apart around you as you climb.', 'wall jump'],
+    ['parkour', 'Kite Lines', '64×20', 'Cross a gorge on the lines of storm kites; the wind swings them.', 'wall jump'],
+    ['vista', 'Lighthouse Balcony', '32×20', 'The storm over the open sea, seen from the top of the sea wall.', 'wall jump'],
+    ['vista', 'The Last Field ✦', '112×22', 'Hidden. After Cindervane falls, a passage opens in the Stormspire onto a golden wheat field at sunset: her nest, her story and the Ember Hatchling spell. Details below.', 'Cindervane defeated'],
+    ['trial', 'Gale Trial', '48×40', 'Glide through gaps between the lightning strikes.', 'Gale Cloak (found here)'],
+    ['secret', 'The Crow’s Nest', '16×14', 'Far above the Stormspire, reached only by gliding.', 'Gale Cloak'],
+  ]],
+  ['The Deep', 8, 'Story · forge, slag and lava', 'An industrial hell: machines, heat and workers who fight back. Two gauntlets and a lava chase, and no vista: nothing down here is peaceful.', [
+    ['grand', 'The Great Forge', '112×40', 'Conveyor belts, lava geysers and moving crane hooks across a huge foundry floor.', 'wall jump'],
+    ['path', 'Ore Rail Tunnels', '64×14', 'Mine tunnels where runaway ore carts come through.', 'wall jump'],
+    ['path', 'Workers’ Lift', '24×40', 'A freight lift shaft with platforms on chains.', 'wall jump'],
+    ['parkour', 'Belt Runner', '64×16', 'Belts over the lava reverse direction on a timer.', 'wall jump'],
+    ['puzzle', 'Slag Sluices', '40×24', 'Open channels to route molten slag. It cools into the platforms you need.', 'wall jump'],
+    ['gauntlet', 'The Slag Pits', '40×14', 'Pull the shift whistle: forge workers and acolytes pour in on the shifting belts.', 'wall jump'],
+    ['gauntlet', 'The Overseer’s Floor', '48×16', 'Sound the foundry horn to bring out the guards and a slag golem, with the belts running.', 'wall jump'],
+    ['trial', 'Crucible Trial', '24×64', 'Climb while the lava rises behind you.', 'wall jump'],
+    ['secret', 'The Slam-cracked Vault', '16×14', 'Under a cracked floor in the Great Forge.', 'Cinder Slam (found here)'],
+  ]],
+  ['The Crown', 5, 'Story · the Pale Root’s crown', 'The finale. Short and focused: one great climb, one last view and the story’s hardest trial. No puzzles to slow the ending down.', [
+    ['grand', 'The Great Boughs', '96×48', 'Climb the Pale Root’s branches: falling petals and a view of everything below.', 'wall jump'],
+    ['path', 'The Root Passage', '48×14', 'A tunnel through the living wood of the Pale Root.', 'wall jump'],
+    ['path', 'Petal Stair', '24×32', 'A climb up bark ledges under falling petals.', 'wall jump'],
+    ['parkour', 'Petal Drift', '56×20', 'Giant petals drift on the wind as moving platforms.', 'wall jump'],
+    ['gauntlet', 'Thorned Gallery', '40×14', 'Touch the thorned idol to call the sentinels’ echoes, one after another.', 'wall jump'],
+    ['vista', 'The Crown Overlook', '40×24', 'The whole Hallow below you. The last lore before the Sovereign.', 'wall jump'],
+    ['trial', 'Sovereign’s Trial', '64×40', 'One run that needs every technique: hook, dash, glide and slam. The best charm in the story regions.', 'all four techniques'],
+  ]],
+  ['Thornveil Wood', 8, 'Side · brambles and the coven', 'A living forest: vines to swing on, witches in the trees, a glade to rest in. Paths through the forest instead of puzzles.', [
+    ['grand', 'The Elder Canopy', '112×32', 'Treetop walkways, bramble walls and hanging vines between huge trunks.', 'wall jump'],
+    ['path', 'The Hunter’s Trail', '56×14', 'An old hunting trail with rusted snares and deer skulls.', 'wall jump'],
+    ['path', 'Under the Roots', '48×14', 'A path beneath the great trees, lit by glowing fungus.', 'wall jump'],
+    ['parkour', 'Vine Swing', '64×20', 'Swing from vine to vine over a thorn floor.', 'wall jump'],
+    ['gauntlet', 'The Coven Circle', '40×16', 'Step into the ring of standing stones to start the witches’ rite; thorns rise from the ground.', 'wall jump'],
+    ['vista', 'Mossbed Glade', '36×18', 'Fireflies, soft moss and a bench under an ancient tree.', 'wall jump'],
+    ['trial', 'Bramble Sprint', '56×20', 'A pogo run across the brambles, against the clock.', 'wall jump'],
+    ['secret', 'Witch’s Larder', '16×14', 'Behind a thorn wall the Ember Dash burns through.', 'Ember Dash'],
+  ]],
+  ['Drowned Barrows', 9, 'Side · flooded tombs', 'Swimming is the parkour here. Water-level puzzles and a light-filled lagoon; no gauntlet, because fights underwater get old fast.', [
+    ['grand', 'The Sunken Nave', '96×40', 'A flooded church with air pockets; swim routes and dry routes cross.', 'Swimming (found here)'],
+    ['path', 'Grave Causeway', '48×14', 'A half-flooded causeway between burial mounds.', 'wall jump'],
+    ['path', 'Tomb Galleries', '48×16', 'Rows of sealed tombs, some of them leaking.', 'wall jump'],
+    ['parkour', 'Tide Steps', '48×24', 'The water rises and falls on a cycle, opening and closing the routes.', 'Swimming'],
+    ['puzzle', 'The Floodgates', '40×24', 'Three gates set the water level across three chambers.', 'Swimming'],
+    ['vista', 'Pearl Lagoon', '40×20', 'Light through the water, drifting pearls and a sunken bench.', 'Swimming'],
+    ['trial', 'Breathless Dive', '64×24', 'A swim course that has to be done on one breath.', 'Swimming'],
+    ['secret', 'The Drowned Bell', '16×14', 'Down a well no one has opened.', 'Swimming'],
+  ]],
+  ['Crimson Manor', 8, 'Side · vampire manor', 'A mystery house: riddles, locked rooms and secret passages, plus the staff who serve the Countess. No trial: this manor is about exploring, not platforming.', [
+    ['grand', 'The East Wing', '112×30', 'Three floors of manor: galleries, servants’ stairs and a collapsed library.', 'wall jump'],
+    ['path', 'The Grand Staircase', '32×32', 'The manor’s central stair, portraits watching every landing.', 'wall jump'],
+    ['path', 'Servants’ Corridor', '48×14', 'Narrow hidden halls behind the manor’s walls.', 'wall jump'],
+    ['parkour', 'Blood-Rain Rooftops', '64×20', 'Slick rooftops and chimneys in the red rain.', 'wall jump'],
+    ['puzzle', 'The Portrait Riddle', '40×18', 'The painted eyes follow a sequence. Pull the matching frames.', 'wall jump'],
+    ['puzzle', 'The Locked Study', '32×18', 'Find three keys hidden around the manor to open the Count’s study.', 'wall jump'],
+    ['gauntlet', 'Servants’ Quarters', '40×14', 'Ring the service bell and the household staff answer, all turned.', 'wall jump'],
+    ['vista', 'Moonlit Conservatory', '36×20', 'Glass roof, dead roses and a piano that plays itself.', 'wall jump'],
+    ['secret', 'Behind the Bookcase', '16×14', 'A secret passage from the library into the walls.', 'wall jump'],
+  ]],
+  ['Necropolis of Vael', 8, 'Side · city of the dead, bells', 'Grim and martial: the dead army fights, the bells rule the ground, the headsman’s axes swing. No vista: there is nothing restful here.', [
+    ['grand', 'The Catafalque Stair', '48×60', 'A giant stair of tombs climbing to the Hollow Throne.', 'wall jump'],
+    ['path', 'Street of Lanterns', '64×16', 'A street of tombs lit by ghost lanterns.', 'wall jump'],
+    ['path', 'The Cemetery Gate', '48×14', 'The walled approach to the city, guarded by the dead.', 'wall jump'],
+    ['parkour', 'The Bellwalk', '64×18', 'Each toll of the bell swaps which stones are solid.', 'wall jump'],
+    ['puzzle', 'The Dirge', '32×20', 'Ring the bells in the order of the funeral dirge on the wall.', 'wall jump'],
+    ['gauntlet', 'The Legion Yard', '48×16', 'Beat the war drum to call rank after rank of the dead king’s soldiers.', 'wall jump'],
+    ['gauntlet', 'Charnel Barracks', '40×14', 'Take the headsman’s axe from its rack and the barracks wake: headsmen and chain-wielders.', 'wall jump'],
+    ['trial', 'Headsman’s Run', '56×20', 'A corridor of swinging executioner’s axes.', 'Ember Dash'],
+    ['secret', 'Ossuary of Kings', '16×14', 'Beneath the throne room.', 'Cinder Slam'],
+  ]],
+  ['Sunscorched Dunes', 8, 'Side · desert, slopes and quicksand', 'Treasure-hunting country: buried tombs, hieroglyph puzzles and two secrets under the sand. An oasis to rest at; no gauntlet in the open desert.', [
+    ['grand', 'The Sea of Dunes', '128×28', 'Slopes, quicksand and a sandstorm that hides the path.', 'wall jump'],
+    ['path', 'Caravan Road', '64×16', 'Wrecked caravans half buried in the sand, with scarabs nesting in them.', 'wall jump'],
+    ['path', 'Tomb Entry Hall', '48×16', 'The painted hall leading down into the tombs.', 'wall jump'],
+    ['parkour', 'Sinking Sands', '56×18', 'Quicksand swallows what you stand on. Keep jumping.', 'wall jump'],
+    ['puzzle', 'The Sun Dial', '40×24', 'Turn mirrors to carry sunlight to the hieroglyph door.', 'wall jump'],
+    ['puzzle', 'The Hieroglyph Seal', '32×20', 'Match the pharaoh’s titles carved in the halls to open the seal.', 'wall jump'],
+    ['vista', 'The Last Oasis', '36×18', 'Palms, still water and the sunset.', 'wall jump'],
+    ['trial', 'Sandfall Descent', '24×64', 'Fall down a shaft of sandfalls without touching the walls.', 'Gale Cloak'],
+    ['secret', 'The Nameless Tomb', '16×14', 'Buried under a dune; slam through.', 'Cinder Slam'],
+    ['secret', 'Scarab Cache', '16×14', 'Follow the golden scarab into a crack in the sandstone.', 'wall jump'],
+  ]],
+  ['Starfall Crater', 9, 'Side · black glass and fallen stars', 'The contemplative region: floaty parkour, starlight puzzles and two views of the sky. Nothing here to fight in waves.', [
+    ['grand', 'The Glass Expanse', '120×32', 'A black-glass plain with star tiles and craters to cross.', 'wall jump'],
+    ['path', 'Observatory Road', '56×14', 'The old pilgrims’ road up to the observatory.', 'wall jump'],
+    ['path', 'Glass Canyon', '48×20', 'A canyon of black glass that reflects the stars.', 'wall jump'],
+    ['parkour', 'Meteor Steps', '56×24', 'Stepping stones made of falling meteors.', 'wall jump'],
+    ['parkour', 'Gravity Wells', '48×32', 'Star shards pull you toward them as you jump past.', 'wall jump'],
+    ['puzzle', 'The Lens Array', '40×24', 'Turn lenses to bend starlight onto three sockets.', 'wall jump'],
+    ['vista', 'The Stargazer’s Seat', '36×20', 'A meteor shower behind the old observatory.', 'wall jump'],
+    ['vista', 'The Crater Edge', '40×18', 'The whole crater and the fallen star’s glow below.', 'wall jump'],
+    ['trial', 'Moonstep Trial', '48×48', 'A tower that needs the triple jump.', 'Triple jump (found here)'],
+    ['secret', 'The Comet’s Heart', '16×14', 'Inside the crater’s core.', 'Triple jump'],
+  ]],
+  ['NEO-HALLOW', 7, 'Secret · cyberpunk city', 'A city built for movement: the most parkour of any side region, a security lockdown and a rooftop view.', [
+    ['grand', 'The Megablock', '48×64', 'A vertical city block with elevators, billboards and data abysses.', 'wall jump'],
+    ['path', 'Back Alleys', '48×16', 'Rain, vending machines and gangs of glitched hollows.', 'wall jump'],
+    ['path', 'Service Tunnels', '48×14', 'Maintenance tunnels with steam vents and cable trays.', 'wall jump'],
+    ['parkour', 'Data Highway', '96×18', 'Jump between moving maglev cars.', 'wall jump'],
+    ['parkour', 'Billboard Climb', '32×48', 'Climb flickering billboards; the dark ones aren’t solid.', 'wall jump'],
+    ['puzzle', 'Firewall', '40×20', 'Terminals toggle laser gates. Find the route that stays open.', 'wall jump'],
+    ['gauntlet', 'Security Lockdown', '40×16', 'Trip the alarm terminal: shutters seal and waves of drones pour in.', 'wall jump'],
+    ['vista', 'Neon Skyline', '40×20', 'A rooftop in the rain with billboards and flying traffic.', 'wall jump'],
+    ['trial', 'Glitch Run', '64×24', 'Platforms de-render on the beat of the music.', 'Ember Dash'],
+    ['secret', 'The Dev Room', '16×14', 'A glitched room with a joke or two and a real reward.', 'wall jump'],
+  ]],
+  ['The Ember', 3, 'Secret · the Cinder Well', 'The hidden end of the world: a lonely approach, a last warm place and the game’s hardest trial.', [
+    ['grand', 'The Ashen Expanse', '112×30', 'An endless field of ash and old embers on the way to the Hollow.', 'wall jump'],
+    ['path', 'The Cinder Road', '56×14', 'The last road, lined with burnt-out shrines.', 'wall jump'],
+    ['vista', 'The Last Hearth', '32×18', 'The only warm place left in the Hallow.', 'wall jump'],
+    ['trial', 'Trial of the First Flame', '64×48', 'The hardest trial in the game. Every technique, no mistakes.', 'everything'],
+  ]],
+  ["The Hermit's Hollow", 1, 'Secret · Oswin’s home', 'A small reward for finding Oswin: somewhere to sit, and his stash.', [
+    ['vista', 'The Hermit’s Garden', '32×16', 'Oswin’s wind chimes and herb garden.', 'start'],
+    ['path', 'The Hidden Path', '48×14', 'The approach to Oswin’s hut through the fog.', 'start'],
+    ['secret', 'Oswin’s Stash', '16×14', 'Under the floorboards of his hut.', 'start'],
+  ]],
+];
+
+const $ = s => document.querySelector(s);
+// bars
+const max = Math.max(...REGIONS.map(r => r[1] + r[4].length));
+$('#bars').innerHTML = REGIONS.map(([n, cur, , , rooms]) => {
+  const add = rooms.length, t = cur + add;
+  return `<div class="bar"><span class="nm" title="${n}">${n}</span><span class="track"><span class="cur" style="width:${cur / max * 100}%"></span><span class="add" style="left:${cur / max * 100}%;width:${add / max * 100}%"></span></span><span class="ct">${cur} → <em>${t}</em></span></div>`;
+}).join('');
+// types
+$('#types').innerHTML = Object.entries(TYPES).map(([k, t]) => {
+  const n = REGIONS.reduce((s, r) => s + r[4].filter(x => x[0] === k).length, 0);
+  return `<div class="type" style="--c:var(${t.c})"><h3>${t.n} <span class="muted mono" style="font-size:12px;font-weight:400">· ${n} new</span></h3><p>${t.d}</p><div class="ex">e.g. ${t.ex}</div></div>`;
+}).join('');
+const TK = Object.keys(TYPES);
+$('#mx').innerHTML = `<thead><tr><th>Region</th>${TK.map(k => `<th style="color:var(${TYPES[k].c})">${TYPES[k].n}</th>`).join('')}<th>New</th></tr></thead><tbody>` +
+  REGIONS.map(([n, , , , rooms], i) => `<tr${i === 9 || i === 16 ? ' class="sep"' : ''}><td>${n}</td>${TK.map(k => { const c = rooms.filter(r => r[0] === k).length; return `<td class="v" style="--c:var(${TYPES[k].c})">${c ? `<span class="${c > 1 ? 'two' : ''}">${c}</span>` : ''}</td>`; }).join('')}<td class="tot">+${rooms.length}</td></tr>`).join('') + '</tbody>';
+$('#abil').innerHTML = ABIL.map(([a, w]) => `<div class="ab"><b>${a}</b><span>${w}</span></div>`).join('');
+// regions
+$('#regions').innerHTML = REGIONS.map(([n, cur, tag, note, rooms]) => `
+  <section class="region">
+    <div class="rhead"><h3>${n}</h3><span class="ct">${cur} → ${cur + rooms.length} rooms</span><span class="tag">${tag}</span></div>
+    <p class="rnote">${note}</p>
+    <div class="tbl"><table><thead><tr><th>Type</th><th>Room</th><th>Size</th><th>Idea</th><th>Needs</th></tr></thead><tbody>
+    ${rooms.map(([k, nm, sz, idea, nd]) => `<tr data-t="${k}"><td><span class="chip" style="--c:var(${TYPES[k].c})">${TYPES[k].n}</span></td><td class="nm">${nm}</td><td class="sz">${sz}</td><td>${idea}</td><td class="nd">${nd}</td></tr>`).join('')}
+    </tbody></table></div>
+  </section>`).join('');
+// filter
+const f = $('#filter');
+f.innerHTML = `<button type="button" id="f-all" aria-pressed="true">All</button>` + Object.entries(TYPES).map(([k, t]) => `<button type="button" id="f-${k}" data-k="${k}" aria-pressed="false" style="--c:var(${t.c})">${t.n}</button>`).join('');
+f.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const k = b.dataset.k || null;
+  f.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  document.querySelectorAll('tr[data-t]').forEach(tr => { tr.hidden = !!k && tr.dataset.t !== k; });
+  document.querySelectorAll('.region').forEach(s => { s.hidden = !!k && !s.querySelector(`tr[data-t="${k}"]`); });
+});
+</script>

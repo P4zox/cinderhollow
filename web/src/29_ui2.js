@@ -226,6 +226,7 @@ function drawDetail(e, px, py, pw, ph, cmp) {
     text('FP COST', x, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 });
     text(String(e.fp), x, y + 15, 9.5, UIC.fp, 'left');
     if (cmp && cmp.kind === e.kind && cmp.id !== e.id) uiDelta(x + textW(String(e.fp), 9.5) + 3, y + 14.5, e.fp - cmp.fp, true);
+    { const cd = cdBase(e.kind, e.id); text('COOLDOWN', x + 36, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 }); text((cd % 1 ? cd.toFixed(1) : String(cd)) + 's', x + 36, y + 15, 9.5, UIC.muted, 'left'); }
     text('USE', x + 74, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 });
     let kx = x + 74; for (const [k, l] of e.kind === 'art' ? [['O', 'use'], ['hold O', 'charge']] : [['U', 'cast'], ['Q', 'switch']]) {
       kx += uiKey(k, kx, y + 14.5, { size: 5 }) + 2; text(l, kx, y + 14.5, 4.8, UIC.faint, 'left', { weight: 400 }); kx += textW(l, 4.8, 400) + 6;

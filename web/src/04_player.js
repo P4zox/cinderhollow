@@ -193,7 +193,9 @@ function startCast() {
   const id = SAVE.spell;
   if (!id || !spellKnown(id) || !SAVE.spellsEq.includes(id)) { toast(SAVE.spellsEq.length ? 'Press Q to pick a spell' : 'No spell equipped — open the menu (Esc) › Equipment'); return; }
   const cost = spellCost(id);
+  if (cdLeft('spell', id) > 0) { cdDeny('spell'); return; }
   if (P.fp < cost) { sfx.deny(); toast('Not enough FP'); return; }
+  cdStart('spell', id);
   P.fp -= cost; P.spellFired = false; P.castId = id;
   setP('cast', pHas('cast') ? 'cast' : 'heal', false, D.castSpeed * (id === 'emberburst' ? 0.9 : 1.1));
   sfx.charge();
@@ -824,14 +826,33 @@ function fireChargedArt(id) {
   } else fireProjectile(id);
 }
 
+// ---- cooldowns: every spell and weapon art has one, tracked per id (switching spells doesn't reset them).
+// Default from the FP cost; timed buffs/summons wait out their effect ("for 12 seconds" in the description) plus a gap.
+const CD_OVERRIDE = { spell: { warmth: 14 }, art: {} };
+function cdBase(kind, id) {
+  const T = kind === 'spell' ? SPELLS[id] : ARTS[id]; if (!T) return 0;
+  if (CD_OVERRIDE[kind][id] !== undefined) return CD_OVERRIDE[kind][id];
+  if (T.cd !== undefined) return T.cd;
+  let cd = kind === 'spell' ? clamp(1.2 + T.fp * 0.13, 2, 9) : clamp(1.5 + T.fp * 0.22, 3, 10);
+  const m = /(\d+(?:\.\d+)?) seconds/.exec(T.desc || ''); if (m) cd = Math.max(cd, +m[1] + 6);
+  if (/^Restore|heal/i.test(T.desc || '')) cd = Math.max(cd, 12);
+  return cd;
+}
+function cdLeft(kind, id) { return SETTINGS.nocd ? 0 : Math.max(0, ((P.cds || {})[kind + ':' + id] || 0) - time); }
+function cdStart(kind, id) { (P.cds = P.cds || {})[kind + ':' + id] = time + cdBase(kind, id) * (charmOn('c_scholar') && kind === 'spell' ? 0.9 : 1); }
+function cdDeny(kind) { if ((P.cdDenyT || 0) < time) { sfx.deny(); P.cdDenyT = time + 0.3; } P.cdFlash = { kind, t: time }; }
+function cdFrac(kind, id) { const L = cdLeft(kind, id), B = cdBase(kind, id); return B > 0 ? L / B : 0; }
+
 // ---- weapon arts (swappable; O key)
 function startArt() {
   const id = SAVE.art; if (!id || !ARTS[id]) { toast('No weapon art equipped'); return; }
   let cost = ARTS[id].fp;
   const echoFree = charmOn('c_echo') && (P.artCount + 1) % 3 === 0;   // Echo of the First Flame: every third art is free
   if (echoFree) cost = 0;
+  if (cdLeft('art', id) > 0) { cdDeny('art'); return; }
   if (P.fp < cost) { sfx.deny(); toast('Not enough FP'); return; }
   if (id === 'stormleap' && !P.ground) { sfx.deny(); return; }
+  cdStart('art', id);
   P.artCount++;
   if (echoFree) { spawnFx(fxOr('parry_flash', 'parry_spark'), P.x, P.y - 16, P.face, null, { alpha: 0.5 }); tone(660, 0.3, 0.05, 'sine', 1.5); }
   // hold O to charge (>= 0.6 s): the art is released charged; P.artCharged stays set while it plays

@@ -74,6 +74,14 @@ function band(alpha, y = 80, h = 64) {
 // ---- HUD
 let areaCard = null, bannerMsg = null;
 function banner(title, desc, ic) { bannerMsg = { title, desc, icon: ic, t: 0 }; }
+function cdOverlay(kind, id, x, y) {   // a dark sweep drains off the icon as the cooldown runs out; the seconds sit on top
+  const f = cdFrac(kind, id), fl = P.cdFlash && P.cdFlash.kind === kind ? Math.max(0, 1 - (time - P.cdFlash.t) * 3) : 0;
+  if (f <= 0) { if (P['cdWas' + kind]) { P['cdWas' + kind] = 0; P['cdPing' + kind] = time; } const k = Math.max(0, 1 - (time - (P['cdPing' + kind] || -9)) * 3); if (k > 0) { vctx.fillStyle = `rgba(255,230,160,${0.45 * k})`; vctx.fillRect(ox + x * scale, oy + y * scale, 16 * scale, 16 * scale); } return; }
+  P['cdWas' + kind] = 1;
+  const h = 16 * f;
+  vctx.fillStyle = `rgba(6,4,10,${0.72 + 0.2 * fl})`; vctx.fillRect(ox + x * scale, oy + (y + 16 - h) * scale, 16 * scale, h * scale);
+  const L = cdLeft(kind, id); text(L >= 1 ? String(Math.ceil(L)) : L.toFixed(1), x + 8, y + 11, 6.5, fl > 0 ? '#ff9a80' : '#f1e6c8', 'center', { weight: 700 });
+}
 function renderHUD() {
   const hpW = clamp(D.maxHp * 0.42, 60, 170), fpW = clamp(D.maxFp * 0.8, 40, 140), stW = clamp(D.maxSt * 0.9, 50, 150);
   bar(10, 9, hpW, 3.5, P.hp / D.maxHp, P.displayHp / D.maxHp, '#a3222a');
@@ -84,9 +92,10 @@ function renderHUD() {
   icon('flask_blue', 34, 192, 14, P.flasksB ? 1 : 0.35); text(String(P.flasksB), 49, 204, 7, '#e8dcc0');
   if (SAVE.spell && spellKnown(SAVE.spell)) {
     nodeFrame(58, 187, 1); icon(SPELLS[SAVE.spell].icon, 62, 191, 16);
-    text(`U · ${spellCost(SAVE.spell)}`, 84, 204, 5.5, '#8fb0e8', 'left', { weight: 500 });
+    text(`${keysOf('cast')[0] || 'U'} · ${spellCost(SAVE.spell)}`, 84, 204, 5.5, '#8fb0e8', 'left', { weight: 500 });
+    cdOverlay('spell', SAVE.spell, 62, 191);
   }
-  if (SAVE.art) { nodeFrame(104, 187, 1); icon('a_' + SAVE.art, 108, 191, 16); text(`O · ${ARTS[SAVE.art].fp}`, 130, 204, 5.5, '#e6c77a', 'left', { weight: 500 }); }
+  if (SAVE.art) { nodeFrame(104, 187, 1); icon('a_' + SAVE.art, 108, 191, 16); text(`${keysOf('art')[0] || 'O'} · ${ARTS[SAVE.art].fp}`, 130, 204, 5.5, '#e6c77a', 'left', { weight: 500 }); cdOverlay('art', SAVE.art, 108, 191); }
   // statuses
   let sy = 28;
   if (P.rot > 0 || P.rotT > 0) { bar(10, sy, 40, 2, P.rotT > 0 ? P.rotT / 9 : P.rot / 100, 0, P.rotT > 0 ? '#6a9a30' : '#4a6a28'); text(P.rotT > 0 ? 'ROT' : 'rot', 54, sy + 3, 5, '#9ac860', 'left'); sy += 6; }

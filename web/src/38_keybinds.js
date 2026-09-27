@@ -5,6 +5,7 @@ const CHEAT_ROWS = [
   { k: 'god', label: 'God mode', toggle: true, desc: 'You take no damage and cannot die.' },
   { k: 'infst', label: 'Infinite stamina', toggle: true, desc: 'Stamina never runs out.' },
   { k: 'inffp', label: 'Infinite FP', toggle: true, desc: 'FP never runs out: cast and use arts freely.' },
+  { k: 'nocd', label: 'No cooldowns', toggle: true, desc: 'Spells and weapon arts are ready again the moment they finish.' },
   { k: 'armory', label: 'Armory: unlock all gear', desc: 'Every weapon, art, spell and charm, plus wall-jump and double jump.' },
   { k: 'tech', label: 'Grant all techniques', desc: 'Root Hook, Ember Dash, Gale Cloak, Cinder Slam, swimming and the triple jump.' },
   { k: 'shrines', label: 'Kindle every shrine', desc: 'Light every shrine so you can travel anywhere.' },
