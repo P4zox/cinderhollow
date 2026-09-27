@@ -13,8 +13,18 @@ ENEMY = {'s': 'hollow_soldier', 'w': 'shield_warden', 'c': 'rot_crawler', 'f': '
          'a': 'hollow_archer', 'e': 'ember_acolyte', 'K': 'grave_knight'}
 
 
+# ---- Expansion 3 world layout: the top row of regions moves up and the bottom row moves down, opening two bands of
+# space through the middle of the world for the new wings. Old rooms keep writing their original coordinates and are
+# shifted here; new rooms (x3=True) are placed in final coordinates. The six links cut by the move become shafts (below).
+WORLD_UP = {'spire', 'archives', 'starfall'}
+WORLD_LO = {'necropolis', 'mire', 'deep', 'dunes', 'barrows', 'crimson'}
+WORLD_HU, WORLD_HB = 70, 90
+def world_shift(biome):
+    return -WORLD_HU if biome in WORLD_UP else WORLD_HB if biome in WORLD_LO else 0
+
 class Room:
     def __init__(self, id, name, biome, gx, gy, w, h, **kw):
+        if not kw.get('x3') and not kw.get('test'): gy += world_shift(biome)
         self.id, self.name, self.biome, self.gx, self.gy, self.w, self.h = id, name, biome, gx, gy, w, h
         self.g = [['.'] * w for _ in range(h)]
         self.kw = kw
@@ -357,6 +367,32 @@ if os.path.isdir(_rdir):
                 exec(compile(open(os.path.join(_rdir, _fn)).read(), _fn, 'exec'), globals())
             except Exception as _e:
                 print(f'REGION MODULE ERROR {_fn}: {_e!r}')
+
+# ---- the shafts that rejoin the regions the world layout pulled apart (upper room, lower room)
+WORLD_LINKS = [('R3', 'SP1', 'W1', 'The Sea-Wall Climb', 'spire'), ('C2', 'NV1', 'W2', 'The Ossuary Well', 'necropolis'),
+               ('C3', 'M1', 'W3', 'The Root Drop', 'mire'), ('K2', 'DB1', 'W4', 'The Drowned Shaft', 'barrows'),
+               ('K3', 'A1', 'W5', 'The Ink Stair', 'archives'), ('X4', 'SF1', 'W6', 'The Sky Stair', 'starfall')]
+def _world_shafts():
+    for a, b, wid, name, biome in WORLD_LINKS:
+        A, B = ROOM(a), ROOM(b)
+        up, lo = (A, B) if A.gy < B.gy else (B, A)
+        top, bot = up.gy + up.h, lo.gy
+        if bot <= top: continue
+        cols = [x for x in range(max(up.gx, lo.gx), min(up.gx + up.w, lo.gx + lo.w))
+                if up.g[up.h - 1][x - up.gx] not in SOLID and lo.g[0][x - lo.gx] not in SOLID]
+        if not cols: print(f'WORLD LINK {a}-{b}: no shared opening'); continue
+        x0, x1 = min(cols) - 1, max(cols) + 1
+        while x1 - x0 + 1 < 6: x1 += 1
+        w, h = x1 - x0 + 1, bot - top
+        r = Room(wid, name, biome, x0, top, w, h, indoor=True, x3=True, world_link=True, needs=[])
+        r.fill(0, 0, 0, h - 1).fill(w - 1, 0, w - 1, h - 1).fill(0, 0, w - 1, 0).fill(0, h - 1, w - 1, h - 1)
+        for x in cols: r.g[0][x - x0] = '.'; r.g[h - 1][x - x0] = '.'
+        # zigzag one-way ledges every 3 rows, so the climb back up needs nothing but a jump
+        inner = w - 2; lw = max(2, min(4, inner // 2 + 1))
+        for i, y in enumerate(range(h - 4, 2, -3)):
+            xa = 1 if i % 2 == 0 else w - 1 - lw
+            r.fill(xa, y, xa + lw - 1, y, '=')
+_world_shafts()
 
 # ============================================================ validation
 def cell(gx, gy):

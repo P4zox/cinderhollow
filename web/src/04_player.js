@@ -396,7 +396,7 @@ function updatePlayer(dt) {
   if (spikeHit(P)) spikeHurt();
   // remember safe ground for spike respawns
   P.safeT -= dt;
-  if (P.ground && P.safeT <= 0 && !nearSpikes()) { P.safe = { x: P.x, y: P.y }; P.safeT = 0.25; }
+  if (P.ground && P.safeT <= 0 && !nearSpikes()) { P.safe = { x: P.x, y: P.y }; P.safeT = 0.25; if (P.entryRoom !== room) { P.entryRoom = room; P.entry = { x: P.x, y: P.y }; } }
 
   P.stDelay -= dt;
   if (P.stDelay <= 0 && P.state !== 'roll' && !ATK[P.state])
@@ -427,7 +427,11 @@ function onPlatform() {   // one-way tiles, plus one-way dynamic platforms (e.g.
   return tileAt(Math.floor(P.x / TILE), Math.floor((P.y + 1) / TILE)) === T_PLAT ||
     room.dyn.some(d => d.oneway && d.on() && P.x >= d.x0 && P.x < d.x1 && Math.abs(P.y - d.y0) < 1.5);
 }
+// hazards that aren't spike tiles (region voids, ink pools, mist drops) register a test here, so no respawn spot lands inside one
+const SAFE_CHECKS = [];
+function unsafeAt(x, y) { for (const f of SAFE_CHECKS) if (f(x, y)) return true; return false; }
 function nearSpikes() {
+  if (unsafeAt(P.x, P.y)) return true;
   const tx = Math.floor(P.x / TILE), ty = Math.floor((P.y + 1) / TILE);
   for (let dx = -2; dx <= 2; dx++) { const t = tileAt(tx + dx, ty); if (t === T_SPIKE || t === T_PLAT) return true; if (tileAt(tx + dx, ty - 1) === T_SPIKE) return true; }
   return false;
@@ -594,7 +598,9 @@ function spikeHurt() {
   spawnFx('blood', P.x, P.y - 10, 1);
   if (P.hp <= 0) return killPlayer(0);
   P.inv = 0.9; P.vx = 0; P.vy = 0;
-  fadeTo(() => { P.x = P.safe.x; P.y = P.safe.y; setP('idle', 'idle', true); updateCamera(0, true); });
+  // never put you back somewhere that hurts again: fall back to where you first stood in this room
+  const s = unsafeAt(P.safe.x, P.safe.y) && P.entry && P.entryRoom === room ? P.entry : P.safe;
+  fadeTo(() => { P.x = s.x; P.y = s.y; P.safe = { ...s }; setP('idle', 'idle', true); updateCamera(0, true); });
 }
 
 function hurtPlayer(dmg, dir, id, opt = {}) {

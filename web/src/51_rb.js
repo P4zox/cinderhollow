@@ -444,6 +444,7 @@ function xrbInkAt(b) {   // feet sunk into an ink cell (a little below its surfa
   }
   return false;
 }
+SAFE_CHECKS.push((x, y) => room && room.def.map.some(r => r.includes('9')) && (xrbInkAt({ x, y }) || xrbInkAt({ x, y: y + 8 })));   // never respawn at the ink's edge
 function xrbUpdateInk() {
   if (!room.def.map.some(r => r.includes('9'))) return;
   if (P.state === 'dead' || fadePhase === 1) return;

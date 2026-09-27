@@ -8,7 +8,7 @@
 // Every top-level name is prefixed ra/RA (all region files share one scope).
 const RA = { roomObj: null };
 function raReset() {
-  Object.assign(RA, { roomObj: room, back: [], walls: [], lights: [], amb: [], chands: [], waters: [], locks: [], hints: [], painted: null, toll: 0, tollT: 0, lockT: 0 });
+  Object.assign(RA, { roomObj: room, voids: [], back: [], walls: [], lights: [], amb: [], chands: [], waters: [], locks: [], hints: [], painted: null, toll: 0, tollT: 0, lockT: 0 });
 }
 function raEnsure() { if (RA.roomObj !== room) raReset(); }
 Object.assign(PCOL, { ra_bone: '200,188,160', ra_ink: '20,22,34', ra_drop: '120,130,160', ra_wax: '255,214,150', ra_root: '120,88,56' });
@@ -231,6 +231,7 @@ SPAWNS.ra_mist = (s, c) => {
     for (let i = 0; i < 9; i++) { const x = ((time * (6 + i) + i * 131) % (w + 160)) - 80 + x0, y = y0 + 8 + (i * 23) % (h - 12); g.fillRect(Math.round(x), Math.round(y), 70 + (i * 17) % 60, 2); }
   } });
 };
+SAFE_CHECKS.push((x, y) => !!RA.voids && RA.voids.some(v => x >= v.x0 - 8 && x <= v.x1 + 8 && y - 6 >= v.y0 && y - 6 <= v.y1));
 function raTickVoid() {
   if (!RA.voids || P.state === 'dead') return;
   const hb = playerHurtbox();

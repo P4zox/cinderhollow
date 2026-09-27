@@ -6,7 +6,7 @@
 # keeps the fight above the HUD. Its west door and floor stay where they
 # were (global rows -35..-32 / -31), the room just grows upward into the Archives zone (gy -46).
 r = ROOM('A6')
-r.gy, r.h = -46, 18
+r.gy, r.h = -46 + world_shift('archives'), 18   # (the Expansion 3 world layout moves the Archives up)
 r.g = [['.'] * r.w for _ in range(r.h)]
 r.walls().open('W', 11, 14)
 r.fill(0, 0, 35, 3).fill(0, 15, 35, 17)

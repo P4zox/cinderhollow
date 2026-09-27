@@ -311,3 +311,93 @@ Use `free_spot(...)` from KS to place rooms inside your zone. `python3 tools/roo
   unreadable darkness and overlapping decor. Rooms should look hand-built and rich, not generated.
 - Final report: the room list with ids, zones used, anchors patched (`SHARED EDITS:`), `NEEDS:`, test results and a
   contact-sheet path, known issues.
+
+## 8. Integration pass: walkable wings, no doors (binding; supersedes §7.2 zones and the door-based wing links)
+The user wants every new room reachable **by walking**, like the original world. No doors, ladders, hatches or
+teleports between rooms. To make room, `tools/rooms.py` now moves whole regions (`world_shift`):
+- `spire`, `archives` and `starfall` old rooms move **up 70**.
+- `necropolis`, `mire`, `deep`, `dunes`, `barrows` and `crimson` old rooms move **down 90**.
+- Everything else stays.
+
+**Coordinates:**
+- Old rooms keep their original coordinates in their source files and are shifted when they're built.
+- New rooms (`x3=True`) are placed in **final world coordinates**.
+- `python3 tools/rooms.py --show` and `--zones` print the final layout.
+
+**Connector shafts.** The six old links the move cut are rejoined by generated shafts, W1–W6 (`WORLD_LINKS` in
+rooms.py): W1 R3–SP1, W2 C2–NV1, W3 C3–M1, W4 K2–DB1, W5 K3–A1, W6 X4–SF1. Each one is a plain zigzag of one-way
+ledges. The owning agent may redesign or dress it by patching `ROOM('Wn')` from their own room file. They can make it
+wider, add rooms beside it or run it through their wing, as long as both ends still meet the original openings and it
+stays climbable with the needs of the rooms it joins. Owners: W1 RC, W2 RA, W3 RB, W4 SA, W5 RB, W6 SC.
+
+### 8.1 New zones (final coordinates; every new room of yours fits inside, and nobody else's does)
+| Agent | Region | Zone |
+|---|---|---|
+| RA | Ramparts | x −112…99, y −69…−1 (above R1–R3; R4's top too if you reach it) |
+| RA | Catacombs | x 36…145, y 57…145 (below C1–C4; W2 runs through it at x≈83–88) |
+| RA | Cathedral | x 252…347, y −69…13 plus x 356…419, y −69…−15 (above K1, K2, K3s; W5 is at x≈349–355) |
+| RB | Mire | x 153…252, y 57…145 (above M1–M6, below C5/C6) |
+| RB | Archives | x 250…371, y −260…−131 (above the Archives) |
+| RB | Hoarfrost | x 150…249, y −200…−39 (above HF5–HF7) |
+| RC | Spire + The Last Field | x −112…149, y −260…−141, plus x −112…15, y −140…−70. **LF1 must sit directly against SP7's west wall**, opened by the hidden `passage` (see §8.2). |
+| RC | Deep | x 228…399, y 225…350 (below the Deep) |
+| RC | Crown | x 565…760, y −80…−1 (east of X5) |
+| SA | Thornveil | x −112…35, y 43…140 (below TV2–TV5) |
+| SA | Barrows | x 253…379, y 29…117 (above DB1–DB5, below K2/K4; W4 is at x≈335–340) |
+| SA | Crimson | x 380…600, y 61…111 (above the Crimson rooms) |
+| SB | Necropolis | x −112…149, y 203…330 (below) |
+| SB | Dunes | x 400…600, y 237…350 plus x 585…760, y 112…236 |
+| SC | Starfall | x 492…760, y −300…−163 plus x 749…900, y −170…−70 |
+| SC | NEO-HALLOW | x 1000…1400, y −150…150 (unchanged; its portal stays a portal) |
+| SC | Ember | x 525…760, y 0…60 plus x 452…524, y 41…60 |
+| SC | Hermit's Hollow | x −140…−41, y 0…14 |
+Test rooms T0–T2b are not in any zone.
+
+### 8.2 What to change
+1. **Re-place every new room** in your zone so each wing touches its region's (shifted) old rooms **edge to edge**:
+   - Open a wall segment in the old room (`ROOM('X').open(...)` or fill/put from your file) and a matching opening in
+     your room.
+   - The entry and the loop-back are real openings you walk, jump or drop through.
+   - Rooms inside a wing connect by edges too.
+2. **Remove every `door` spawn** that links rooms (anchors and internal ones). Allowed exceptions:
+   - the NEO-HALLOW entry portal (it was always a portal);
+   - one-way shortcut **gates** (KM `gate` + lever) at the loop-back;
+   - **hidden `passage`s** that open wall cells in place, such as The Last Field in SP7's west wall and the Hermit's wall.
+   
+   A key-locked study or a sealed crypt becomes a **gate** (or passage) in a wall you walk through once it's open.
+3. **Add shrines** throughout the new areas. Every wing gets at least one shrine; grand/large wings (and the Spire,
+   Deep, Starfall and Dunes wings) get two:
+   - Put one near the start of the wing and one near the far end or before a trial/gauntlet cluster.
+   - Use map char `'S'` with the room kwarg `shrine='<Name>'`, one shrine per room, on solid ground with 3 free cells above.
+   - The names must be new and in the region's voice.
+   - They appear on the travel map automatically, so check that one travel map screenshot shows them.
+4. **Vertical edges** follow the old rules. A climb up through a floor opening needs ledges or a wall-jump shaft that
+   the room's `needs` allow. A drop down needs a readable way back or a marker (EXPANSION2 §0).
+5. **Keep everything else as is:** the rooms' contents, puzzles, trials, rewards and lore. Change a room's size only
+   where the new placement needs it.
+
+### 8.3 Reachability
+KS is fixing the limits you reported in `tools/reach.py`:
+- swimming;
+- outdoor top edges;
+- bottom-entrance jumps;
+- seed-span starvation;
+- glide length and updraft drift;
+- pruned wall-jump shafts.
+
+Until that lands you may iterate with `NOREACH=1`, but your final state must pass full reachability under `STRICT=1`
+with zero ERR lines on your ids and on the old rooms you patched. Use `reach_ignore` only for a mechanic the checker
+truly can't model, and name it in your report.
+
+### 8.4 Done means
+- **Validation:** `STRICT=1 python3 tools/rooms.py` shows 0 ERR on your ids (including W shafts you own).
+- **Doors:** `grep "kind='door'\|kind: 'door'"` finds no door in your files except the allowed ones.
+- **Walk test:** a headless test walks each wing **without teleporting inside it**. It enters from the old room, goes
+  through the spine to the loop-back, then back again, and logs every room change. Every edge between two of your
+  rooms, and between your rooms and old rooms, is crossed at least once in each direction where that direction is
+  meant to be possible.
+- **Phantom damage:** stand still for 3 s on every floor spot you can reach in each new room, with enemies removed,
+  and confirm there is no damage except from visible hazards. This is how the lead found a leftover void bug in RA's
+  code: region state that wasn't reset per room.
+- **Regressions:** `tools/shots/stress.js` and `tools/shots/dormant_chk.js` are clean.
+- **Report:** a contact sheet of every room, plus the world map (zoomed out) showing your wings attached.
