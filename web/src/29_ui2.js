@@ -6,7 +6,7 @@ const UIC = { gold: '#e6c77a', hi: '#f5e3b0', text: '#e8dcc0', body: '#d8cdb4', 
 const UI_RGB = { gold: '230,199,122', accent: '176,138,58' };
 const TOUCH_UI = (() => { try { return matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } })();
 const KEY_LABEL = TOUCH_UI ? { Enter: 'OK', Esc: 'Menu', Tab: 'Map', Q: '' } : {};
-const kl = k => (k in KEY_LABEL ? KEY_LABEL[k] : k);
+const kl = k => (PAD.active && k in PAD_KL ? PAD_KL[k] : k in KEY_LABEL ? KEY_LABEL[k] : k);
 
 // ---- widgets
 function uiRect(x, y, w, h, color, a = 1) { vctx.globalAlpha = a; vctx.fillStyle = color; vctx.fillRect(ox + x * scale, oy + y * scale, w * scale, h * scale); vctx.globalAlpha = 1; }
@@ -443,7 +443,7 @@ const GUIDE_PAGES = [
   ] },
   { name: 'Traversal', rows: () => [
     [['↓', '+', 'J'], 'Pogo', 'In the air, strike downward to bounce off foes and hazards.'],
-    [['K', 'in air'], 'Plunge', 'Heavy in the air dives down and crashes into whatever is below.'],
+    [['K', 'in air'], 'Plunge', 'Heavy in the air dives down and crashes into whatever is below. Any 2 attacks in the air use up the jump: land for a moment before attacking in the air again.'],
     [['S', '+', 'K'], 'Cinder Slam', 'In the air: slam down, shattering cracked floors. Two in a row at most.', 'slam'],
     [['Space', 'in air'], 'Double jump', 'Jump again in midair.', 'wings'],
     [['Space'], 'Wall-jump', 'Slide down a wall, then jump to leap off it.', 'talon'],
@@ -518,7 +518,7 @@ function renderTouchGuide() {
   const notes = [
     ['Move & aim', 'Left pad. ▼ + Jump drops through thin floors; ▼ + Strike in the air pogos.'],
     ['Hold to charge', 'Hold Heavy or Art to charge; hold Jump while falling to glide; hold Parry to block.'],
-    ['In the air', 'Heavy plunges; ▼ + Heavy is the Cinder Slam; Roll is an air dash.'],
+    ['In the air', 'Heavy plunges; ▼ + Heavy is the Cinder Slam; Roll is an air dash. Two attacks per jump.'],
     ['Menus', 'Arrows move, OK confirms, Menu goes back or closes, Map switches menu tabs.'],
     ['Travel', 'At a shrine, Map toggles the shrine list and the map cursor.'],
   ];

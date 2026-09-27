@@ -48,9 +48,9 @@ const SIGS = {
       burst(p.x, p.y, heavy ? 16 : 8, 'gold', 'ember'); tone(heavy ? 392 : 523, 0.3, 0.05, 'triangle', 0.6);
     },
     finisher(A, r) {
-      const n = A.kind === 'heavy' ? 3 : 1;
+      const n = A.kind === 'heavy' ? 2 : 1;
       for (let k = 0; k < n; k++) projectiles.push({ owner: 'player', kind: 'sunspear', face: P.face, t: 0, hits: new Set(), x: P.x + P.face * 16, y: P.y - 20 + (k - (n - 1) / 2) * 7,
-        vx: P.face * (330 + k * 20), vy: (k - (n - 1) / 2) * 25, dmg: D.light * 0.9, life: 1.0, r: 6, pierce: true, sh: 'fx_light_spear' });
+        vx: P.face * (330 + k * 20), vy: (k - (n - 1) / 2) * 25, dmg: D.light * 0.65, life: 1.0, r: 6, pierce: true, sh: 'fx_light_spear' });
       sfx.spear(); flashScreen = Math.max(flashScreen, 0.08);
     } },
   rotmaw: { glow: '#9ae05a', light: '150,210,90', pk: 'spore', pk2: 'ember',
@@ -115,7 +115,7 @@ const SIGS = {
       wfx({ life: 0.36, update() {
         if (this.t < 0.3 || this.done) return; this.done = true;
         if (t.alive === false) return;
-        t.hit({ dmg: info.dmg * 0.45, poise: (info.poise || 0) * 0.35, dir: info.dir, kind: 'light', x: info.x, y: info.y, fire: true, melee: true });
+        t.hit({ dmg: info.dmg * 0.25, poise: (info.poise || 0) * 0.3, dir: info.dir, kind: 'light', x: info.x, y: info.y, fire: true, melee: true });
         spawnFx(fxOr('embers', 'hit'), info.x, info.y, info.dir); tone(740, 0.2, 0.04, 'triangle', 0.8);
         for (let i = 0; i < 8; i++) particles.push({ x: info.x, y: info.y, vx: rand(-60, 60), vy: -rand(20, 90), g: 100, life: rand(0.3, 0.6), kind: 'ember' });
       } });
@@ -123,7 +123,7 @@ const SIGS = {
   // ---- v9 (Expansion 2) boss weapons
   antler_scythe: { glow: '#9fe8a0', light: '140,230,150', pk: 'spore', pk2: 'root',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 14 : 7, 'spore', 'root'); },
-    finisher(A) { sig9Thorns(A.kind === 'heavy' ? 5 : 3, A.kind === 'heavy' ? 0.8 : 0.5); } },
+    finisher(A) { sig9Thorns(A.kind === 'heavy' ? 4 : 3, A.kind === 'heavy' ? 0.5 : 0.35); } },
   choir_harpoon: { glow: '#7ff0e0', light: '100,230,210', pk: 'teal', pk2: 'frost',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'teal', 'frost'); },
     finisher(A, r) { const p = sigPoint(r); if (A.kind === 'heavy') for (const vy of [-50, 0, 50]) sig9WaterLance(p, vy, 0.6); else sig9WaterLance(p, 0, 0.8); },
@@ -154,7 +154,7 @@ const SIGS = {
   last_kindling: { glow: '#fff4d0', light: '255,244,210', pk: 'mote', pk2: 'gold',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'mote', 'gold'); },
     hit(t, info) { sig9Pyre(t.x, t.y, t); },
-    finisher(A) { if (A.kind === 'heavy') for (let k = -2; k <= 2; k++) sig9Pyre(P.x + k * 18, P.y, null, true); } },
+    finisher(A) { if (A.kind === 'heavy') for (const k of [0, 1]) sig9Pyre(P.x + P.face * (8 + k * 26), P.y, null, true); } },
 };
 // ---- v9 signature helpers (entities live in 13_weapons.js's WFX list)
 const sig9Pyres = [];
@@ -185,8 +185,8 @@ function sig9WaterLance(p, vy, mult) {
     onHit(t) { if (!t.prop && !t.boss && !(t.cfg && t.cfg.elite) && t.vx !== undefined) { t.vx = -P.face * 120; weaponPull(t, { chain: false }); } } });   // the tide drags them in
 }
 function sig9BloodLance(p, vy) {
-  sig9Proj({ x: p.x, y: p.y, vx: P.face * 360, vy, dmg: D.light * 0.7, sheet: 'bloodlance', trail: 'blood', light: '240,60,80', col: '#e02040', poise: 10,
-    onHit(t) { if (t.hit && !t.prop) t.hit({ dmg: 0, poise: 0, dir: P.face, kind: 'spell', x: t.x, y: t.y - 14, bleed: 30, quiet: true }); } });
+  sig9Proj({ x: p.x, y: p.y, vx: P.face * 360, vy, dmg: D.light * 0.45, sheet: 'bloodlance', trail: 'blood', light: '240,60,80', col: '#e02040', poise: 10,
+    onHit(t) { if (t.hit && !t.prop) t.hit({ dmg: 0, poise: 0, dir: P.face, kind: 'spell', x: t.x, y: t.y - 14, bleed: 16, quiet: true }); } });
   tone(880, 0.15, 0.04, 'sawtooth', 0.5);
 }
 function sig9Chains() {   // spectral chains burst from the ground and bind the nearest foe ahead
@@ -218,14 +218,14 @@ function sig9SunDisc(p) {   // a disc of sunlight flung out that comes back to t
     update(dt) {
       if (!this.back) { this.vx -= Math.sign(this.vx) * 520 * dt; if (Math.abs(this.vx) < 20 || solidAtPx(this.x + Math.sign(this.vx) * 6, this.y)) { this.back = true; this.skip = new Set(); } this.x += this.vx * dt; }
       else { const dx = P.x - this.x, dy = P.y - 18 - this.y, d = Math.hypot(dx, dy) || 1; this.x += dx / d * 320 * dt; this.y += dy / d * 320 * dt; if (d < 10) return false; }
-      wStrike(rect(this.x - 7, this.y - 7, this.x + 7, this.y + 7), D.light * 0.6, { skip: this.skip, poise: 12, fire: true, kind: 'spell' });
+      wStrike(rect(this.x - 7, this.y - 7, this.x + 7, this.y + 7), D.light * 0.3, { skip: this.skip, poise: 12, fire: true, kind: 'spell' });
       if (Math.random() < 0.5) particles.push({ x: this.x, y: this.y, vx: rand(-20, 20), vy: rand(-20, 20), life: 0.3, kind: 'gold' });
     },
     draw() { if (!wfxDraw('sundisc', this.t, this.x, this.y, 1, { center: true, loop: true })) { g.fillStyle = '#ffd070'; g.fillRect(this.x - 4, this.y - 4, 8, 8); } addLight(this.x, this.y, 34, '255,210,120', 0.8); } });
 }
 function sig9Sand() {   // the heavy raises a burst of scouring sand around you
   sfx.crumble(); shake = Math.max(shake, 4);
-  wStrike(rect(P.x - 44, P.y - 30, P.x + 44, P.y + 2), D.heavy * 0.6, { poise: 30, kind: 'spell' });
+  wStrike(rect(P.x - 44, P.y - 30, P.x + 44, P.y + 2), D.heavy * 0.45, { poise: 30, kind: 'spell' });
   for (let i = 0; i < 40; i++) { const a = rand(0, Math.PI); particles.push({ x: P.x + Math.cos(a) * rand(4, 20), y: P.y - rand(0, 8), vx: Math.cos(a) * rand(60, 160) * (Math.random() < 0.5 ? 1 : -1), vy: -rand(20, 110), g: 260, life: rand(0.4, 0.9), kind: 'dust' }); }
   spawnFx('shockwave', P.x, P.y, 1);
 }
@@ -253,7 +253,7 @@ function sig9Laser(p, wide) {   // a neon laser line drawn through the world
   let x1 = p.x; const dir = P.face;
   for (let k = 0; k < 200; k += 4) { if (solidAtPx(p.x + dir * k, p.y)) break; x1 = p.x + dir * k; }
   const hw = wide ? 5 : 3;
-  wStrike(rect(Math.min(p.x, x1), p.y - hw - 2, Math.max(p.x, x1), p.y + hw + 2), D.light * (wide ? 1.3 : 0.95), { poise: 20, kind: 'spell', dir });
+  wStrike(rect(Math.min(p.x, x1), p.y - hw - 2, Math.max(p.x, x1), p.y + hw + 2), D.light * (wide ? 0.75 : 0.65), { poise: 20, kind: 'spell', dir });
   tone(2200, 0.15, 0.05, 'square', 0.4); tone(440, 0.25, 0.05, 'sawtooth', 2); flashScreen = Math.max(flashScreen, 0.06);
   wfx({ life: 0.3, x0: p.x, x1, y: p.y, hw, draw() {
     const a = 1 - this.t / this.life, jit = Math.floor(this.t * 60) % 3 - 1, lo = Math.min(this.x0, this.x1), w = Math.abs(this.x1 - this.x0);
@@ -277,12 +277,12 @@ function sig9Glitch(t, info) {   // the wound glitches: a corrupted copy of the 
 }
 function sig9Pyre(x, y, t, force) {   // a pyre of pale flame where the foe stood
   if (!force && t && (t._pyreT || 0) > time) return;
-  if (t) t._pyreT = time + 0.5;
+  if (t) t._pyreT = time + 1.0;
   const fy = wFloorBelow(x, y - 6); if (fy === null || solidAtPx(x, fy - 8)) return;
   while (sig9Pyres.length && (sig9Pyres[0].dead || sig9Pyres.length >= 5)) { const o = sig9Pyres.shift(); o.life = Math.min(o.life, o.t + 0.2); }
-  const e = wfx({ life: 2.2, x, fy, tick: 0.1,
+  const e = wfx({ life: 1.6, x, fy, tick: 0.1,
     update(dt) {
-      if ((this.tick -= dt) <= 0) { this.tick = 0.3; wStrike(rect(this.x - 9, this.fy - 30, this.x + 9, this.fy + 1), D.light * 0.2, { quiet: true, kind: 'spell', fire: true }); }
+      if ((this.tick -= dt) <= 0) { this.tick = 0.35; wStrike(rect(this.x - 9, this.fy - 30, this.x + 9, this.fy + 1), D.light * 0.12, { quiet: true, kind: 'spell', fire: true }); }
       if (Math.random() < 0.3) particles.push({ x: this.x + rand(-5, 5), y: this.fy - rand(4, 26), vx: 0, vy: -rand(20, 50), life: 0.4, kind: 'mote' });
     },
     draw() { const a = Math.min(1, this.t / 0.12, (this.life - this.t) / 0.3); if (!wfxDraw('pyre', this.t, this.x, this.fy + 1, 1, { loop: true, alpha: a })) { g.fillStyle = `rgba(255,244,210,${0.6 * a})`; g.fillRect(this.x - 4, this.fy - 22, 8, 22); } addLight(this.x, this.fy - 14, 36, '255,244,210', 0.7 * a); } });
@@ -292,14 +292,14 @@ function sig9Pyre(x, y, t, force) {   // a pyre of pale flame where the foe stoo
 // ---- v8 signature helpers
 function sigInkGlyph(t, info) {
   if (t.prop || (t._glyphT || 0) > time) return;
-  t._glyphT = time + 0.3;
+  t._glyphT = time + 0.6;
   const ox = info.x - t.x, oy = info.y - t.y;
   wfx({ life: 1.05, fired: false, x: info.x, y: info.y,
     update() {
       if (!this.fired) { this.x = t.x + ox; this.y = t.y + oy; }
       if (this.t >= 0.62 && !this.fired) {
         this.fired = true;
-        wStrike(rect(this.x - 14, this.y - 14, this.x + 14, this.y + 14), D.light * 0.55 * (1 + (D.spell - 1) * 0.6), { poise: 14, big: false });
+        wStrike(rect(this.x - 14, this.y - 14, this.x + 14, this.y + 14), D.light * 0.45 * (1 + (D.spell - 1) * 0.6), { poise: 14, big: false });
         sfx.bolt(); noise(0.2, 700, 1, 0.2, 'lowpass');
         for (let i = 0; i < 10; i++) particles.push({ x: this.x, y: this.y, vx: rand(-80, 80), vy: rand(-90, 30), g: 200, life: rand(0.3, 0.6), kind: 'ink' });
       }
@@ -310,14 +310,14 @@ function sigInkGlyph(t, info) {
     } });
 }
 function sigInkBlots() {
-  for (const d of [-1, 1]) for (let k = 0; k < 3; k++) {
+  for (const d of [-1, 1]) for (let k = 0; k < 2; k++) {
     const b = wfx({ life: 1.4, x: P.x + d * 10, y: P.y - 20, vx: d * rand(90, 210), vy: -rand(110, 220), skip: new Set(), splat: -1,
       update(dt) {
         if (this.splat >= 0) return this.t - this.splat < 0.4;
         this.vy += 520 * dt; this.x += this.vx * dt; this.y += this.vy * dt;
         if (Math.random() < 0.5) particles.push({ x: this.x, y: this.y, vx: 0, vy: 0, life: 0.25, kind: 'ink' });
-        const hit = wStrike(rect(this.x - 5, this.y - 5, this.x + 5, this.y + 5), D.light * 0.6, { skip: this.skip, poise: 10, dir: d });
-        if (hit.length || solidAtPx(this.x, this.y)) { this.splat = this.t; sfx.hit(); wStrike(rect(this.x - 12, this.y - 12, this.x + 12, this.y + 8), D.light * 0.3, { skip: this.skip, quiet: true }); }
+        const hit = wStrike(rect(this.x - 5, this.y - 5, this.x + 5, this.y + 5), D.light * 0.4, { skip: this.skip, poise: 10, dir: d });
+        if (hit.length || solidAtPx(this.x, this.y)) { this.splat = this.t; sfx.hit(); wStrike(rect(this.x - 12, this.y - 12, this.x + 12, this.y + 8), D.light * 0.15, { skip: this.skip, quiet: true }); }
       },
       draw() {
         if (this.splat >= 0) wfxDraw('inkburst', (this.t - this.splat) * 1.4, this.x, this.y, 1, { center: true, alpha: 0.85 });
@@ -400,7 +400,7 @@ function sigSkyBolt() {
       if (!this.struck && this.t >= 0.3) {
         this.struck = true; flashScreen = Math.max(flashScreen, 0.25); shake = Math.max(shake, 7);
         noise(0.7, 900, 0.7, 0.6, 'lowpass', 0.4); noise(0.25, 5000, 2, 0.3, 'highpass'); tone(60, 0.5, 0.3, 'sawtooth', 0.5);
-        const hit = wStrike(rect(this.x - 18, this.fy - 90, this.x + 18, this.fy + 2), D.heavy * 1.5, { poise: 60, big: true, kind: 'heavy' });
+        const hit = wStrike(rect(this.x - 18, this.fy - 90, this.x + 18, this.fy + 2), D.heavy * 0.9, { poise: 60, big: true, kind: 'heavy' });
         if (hit.length) sigChain({ x: this.x, y: this.fy - 20 });
         for (let i = 0; i < 16; i++) particles.push({ x: this.x + rand(-6, 6), y: this.fy - 2, vx: rand(-120, 120), vy: -rand(40, 160), g: 400, life: rand(0.3, 0.6), kind: 'spark' });
       }
@@ -433,7 +433,7 @@ function sigWhirlwind() {
   wfx({ life: 2.4, x: x0, fy, face: P.face, tick: 0,
     update(dt) {
       if (!solidAtPx(this.x + this.face * 12, this.fy - 8)) this.x += this.face * 70 * dt;
-      if ((this.tick -= dt) <= 0) { this.tick = 0.3; wStrike(rect(this.x - 14, this.fy - 44, this.x + 14, this.fy), D.light * 0.3, { poise: 8, dir: this.face, quiet: this.t > 0.05 }); }
+      if ((this.tick -= dt) <= 0) { this.tick = 0.4; wStrike(rect(this.x - 14, this.fy - 44, this.x + 14, this.fy), D.light * 0.2, { poise: 8, dir: this.face, quiet: this.t > 0.05 }); }
       for (const t of targets()) {   // small foes are caught and carried along
         if (!sigSmallFoe(t) || !t.hurtbox()) continue;
         if (Math.abs(t.x - this.x) < 24 && Math.abs(t.y - this.fy) < 34) { t.x += (this.x - t.x) * Math.min(1, dt * 6); if (t.vx !== undefined) t.vx = this.face * 70; }

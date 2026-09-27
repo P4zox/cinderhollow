@@ -102,9 +102,10 @@ function renderHUD() {
   const pr = nearbyPrompt();
   if (pr && state === 'play') {
     const sx = P.x - cam.x, sy = P.y - cam.y - 38;
-    const tw = textW('E  ' + pr, 6.5) + 10;
+    const ik = keysOf('interact')[0] || 'E', kw = textW(ik, 6.5) + 5;
+    const tw = kw + textW(pr, 6.5) + 13;
     box(sx - tw / 2, sy - 8, tw, 11, 0.7);
-    text('E', sx - tw / 2 + 5, sy, 6.5, '#e6c77a', 'left'); text(pr, sx - tw / 2 + 13, sy, 6.5, '#e8dcc0', 'left', { weight: 500 });
+    text(ik, sx - tw / 2 + 5, sy, 6.5, '#e6c77a', 'left'); text(pr, sx - tw / 2 + 8 + kw, sy, 6.5, '#e8dcc0', 'left', { weight: 500 });
   }
   // boss bar
   if (boss && boss.active && (boss.alive || boss.anim.i < boss.anim.n - 1)) {
@@ -118,8 +119,8 @@ function renderHUD() {
   // toasts
   toasts.forEach((t, i) => {
     const a = clamp(Math.min(t.t * 4, t.life * 2), 0, 1), y = (boss && boss.active && boss.alive ? 186 : 203) - (toasts.length - 1 - i) * 11;
-    const w = textW(t.msg, 6.5, 500) + 16; box(W / 2 - w / 2, y - 8, w, 11, 0.65 * a, `rgba(109,90,58,${a})`);
-    text(t.msg, W / 2, y, 6.5, '#e8dcc0', 'center', { alpha: a, weight: 500 });
+    const msg = padText(t.msg), w = textW(msg, 6.5, 500) + 16; box(W / 2 - w / 2, y - 8, w, 11, 0.65 * a, `rgba(109,90,58,${a})`);
+    text(msg, W / 2, y, 6.5, '#e8dcc0', 'center', { alpha: a, weight: 500 });
   });
   // area title card: the big cinematic one on a region's first visit (29_ui2.js), the small one on later entries
   renderRegionCard();

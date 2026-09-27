@@ -201,7 +201,7 @@ function startCast() {
 
 function updatePlayer(dt) {
   const ax = inputX();
-  smashTick(dt);
+  smashTick(dt); airTick(dt);
   P.inv = Math.max(0, P.inv - dt); P.flash = Math.max(0, P.flash - dt * 6); P.ctrlLock -= dt; P.drop -= dt; P.empower -= dt; P.parryWin -= dt;
   if (P.state === 'dead') {
     P.anim.update(dt); P.vx *= Math.pow(0.01, dt); P.vy = Math.min(P.vy + GRAV_DN * dt, FALL_MAX); moveBody(P, dt);
@@ -215,6 +215,8 @@ function updatePlayer(dt) {
 
   // ---- action starts (buffered inputs)
   const canStart = free() || (P.state === 'land' && P.anim.i >= 1);
+  // airborne attacks: two per jump, then land and wait AIR_CD (swimming is exempt — see airAtkGate)
+  const airIn = airAtkGate(canStart);
   if (canStart && traversalStart(ax)) { /* technique started */ }
   else if (canStart) {
     if (peek('roll') && P.st > 0 && (P.ground || P.coyote > 0 || P.airDash)) { take('roll'); doRoll(ax); }
@@ -243,6 +245,7 @@ function updatePlayer(dt) {
     else if (peek('heal') && P.ground) { take('heal'); if (P.flasksR > 0) { P.flasksR--; setP('heal', 'heal'); P.healPending = 1; } else { sfx.deny(); toast('Your crimson flasks are empty'); } }
     else if (peek('mana') && P.ground) { take('mana'); if (P.flasksB > 0) { P.flasksB--; setP('heal', 'heal'); P.healPending = 2; } else { sfx.deny(); toast('Your azure flasks are empty'); } }
   }
+  if (airIn && !free() && ((airIn.a && !peek('attack')) || (airIn.h && !peek('heavy')) || (airIn.o && !peek('art')))) airAtkStart();
 
   // apex hang: holding jump near the top of an arc softens gravity for a smoother, floatier peak
   const grav = () => { const apex = !P.ground && P.state === 'air' && Math.abs(P.vy) < 55 && held.has('jump'); P.vy = Math.min(P.vy + (P.vy > 0 ? GRAV_DN : GRAV_UP) * (apex ? 0.55 : 1) * dt, FALL_MAX); };
@@ -510,6 +513,23 @@ function smashTick(dt) {
     if (P.ground && !['plunge', 'slam'].includes(P.state)) { P.smashCd -= dt; if (P.smashCd <= 0) { P.smashLock = false; P.smashN = 0; P.smashDenied = false; } }
   } else if ((P.smashIdle = (P.smashIdle || 0) + dt) > 0.8 && P.ground) P.smashN = 0;   // a lone smash now and then doesn't count toward the chain
 }
+// ---- every airborne attack (strikes, pogo, plunge, slam, arts) shares a second limit: two per trip through
+// the air, then nothing until you've stood on the ground for AIR_CD. Pogoing off spikes/brambles refunds one.
+const AIR_CHAIN = 2, AIR_CD = 0.25;
+function airAtkGate(canStart) {
+  if (!canStart || P.ground || (typeof DBS !== 'undefined' && DBS.inWater)) return null;
+  const inp = { a: peek('attack'), h: peek('heavy'), o: peek('art') };
+  if (!(inp.a || inp.h || inp.o)) return null;
+  if (P.airLock) { take('attack'); take('heavy'); take('art'); if (!P.airDenied) { P.airDenied = true; sfx.deny(); } return null; }
+  return inp;
+}
+function airAtkStart() { P.airN = (P.airN || 0) + 1; if (P.airN >= AIR_CHAIN) { P.airLock = true; P.airCd = AIR_CD; P.airDenied = false; } }
+function airRefund() { if (P.airN > 0) P.airN--; if (P.airN < AIR_CHAIN) P.airLock = false; }
+function airTick(dt) {
+  if (!P.ground || ['plunge', 'slam'].includes(P.state)) return;
+  if (!P.airLock) { P.airN = 0; return; }
+  if ((P.airCd -= dt) <= 0) { P.airLock = false; P.airN = 0; P.airDenied = false; }
+}
 // the plunge lands (on the floor, or on a foe mid-fall): heavy AoE, bounce off whatever it struck
 function plungeImpact(midair) {
   smashLanded();
@@ -705,7 +725,7 @@ function playerStrike(A) {
   if (P.twinBuff && P.hitSet.size && [...P.hitSet].some(x => x !== 'brk')) P.twinBuff = false;
   // pogo off spikes + break walls/urns
   if (A.down && !P.pogoed) {
-    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE) { pogo(); break; } }
+    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE) { pogo(); airRefund(); break; } }
   }
   hitBreakables(r);
 }

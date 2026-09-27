@@ -34,7 +34,7 @@ registerGear({ weapons: {
     desc: 'A furnace door riveted to a gauntlet, and a falchion to drive the slaves. It turns aside blows that would break a lesser guard.' },
   twinfangs: { name: 'Twinfangs', base: 26, sc: { str: 'D', dex: 'A', fth: '-' }, speed: 1.3, reach: 0.9, stam: 0.8, poise: 0.7, bleed: 14, art: 'twin_tempest',
     desc: 'The Hollow Champion fought a hundred duels in the ramparts’ pit and never once used one blade where two would do.' },
-  first_ember: { name: 'The First Ember', base: 40, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.2, fire: 0.2, art: 'echo', boss: true,
+  first_ember: { name: 'The First Ember', base: 38, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.2, fire: 0.2, art: 'echo', boss: true,
     desc: 'Your own shadow carried this out of the dark. It takes the shape of whatever weapon you last trusted, and every blow it lands strikes twice: once now, and once as an echo.' },
 } });
 if (typeof SHOPS !== 'undefined' && SHOPS.ashwright && !SHOPS.ashwright.some(e => e.item === 'w:quarterstaff'))

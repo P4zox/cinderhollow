@@ -793,7 +793,7 @@ ENEMY_CLASSES.nh_turret = class extends Enemy {
 };
 
 // ================================================================== boss effect lists (missiles, waves, strikes, blades, walls, rain, rings)
-const nhBD = d => BOSS_DMG * d * NGP.dmg;
+const nhBD = d => BOSS_DMG * d * NGP.dmg * (boss && boss.kind === 'saint0' ? 1.2 : 1);
 function nhUpdateBossFx(dt) {
   const B = boss;
   // ---- missiles: rise, hang (the landing spot is marked), dive
@@ -1003,7 +1003,7 @@ PHASE2_LINES.enforcer = ['', 'The riot shield shears away. Its reactor vents run
 // (or parried) back into the eye — three reflections overload it (stagger + critical). RED orbs cannot be touched.
 // The diaphragm is armour: shut it takes 30% damage, wide open 150%; it opens after each pattern cycle (EXPOSED).
 // Phase 2 (66%) adds the purge, spirals, dives and floor deletion; phase 3 (33%) drags you into cyberspace.
-BOSS_INFO.saint0 = { name: 'SAINT-0, the Null Saint', hp: 4500, cinders: 22000, reward: ['w:saint_lance', 'sp:null_field', 'c_neon'],
+BOSS_INFO.saint0 = { name: 'SAINT-0, the Null Saint', hp: 5800, cinders: 22000, reward: ['w:saint_lance', 'sp:null_field', 'c_neon'],
   quote: '“BE NOT AFRAID. BE ARCHIVED.”' };
 const NH_S0 = { P2: 0.66, P3: 0.33, X0: 5 * TILE + 10, X1: 36 * TILE - 6, YTOP: 50, FLOOR_X0: 4, FLOOR_X1: 36, AX0: 3 * TILE, AX1: 39 * TILE, R: 22 };
 const NH_S0_RINGS = [
@@ -1011,15 +1011,15 @@ const NH_S0_RINGS = [
   { R: 53, n: 8, a: 1.25, b: 1.0, sa: -0.36, sb: 0.24, spin: -0.7 },
   { R: 63, n: 8, a: 0.95, b: 2.2, sa: 0.22, sb: -0.4, spin: 0.55 },
 ];
-const NH_S0_EXPOSE = [0, 3, 4, 4];   // moves between exposures, per phase
-const nhS0D = (d, b) => BOSS_DMG * d * NGP.dmg * (b && b.phase === 3 ? 1.12 : 1);
+const NH_S0_EXPOSE = [0, 4, 5, 6];   // moves between exposures, per phase
+const nhS0D = (d, b) => BOSS_DMG * d * NGP.dmg * 1.2 * (b && b.phase === 3 ? 1.12 : 1);
 class NhSaint extends BossBase {
   constructor(x, y) {
     super('saint0', x, y);
     this.hp = this.maxHp = this.displayHp = Math.round(BOSS_INFO.saint0.hp * NGP.hp);
     this.parts = null;   // (BossBase uses .parts for multi-part bosses: keep it unset)
     this.sh = sheet('saint0_lid'); this.anim = new Anim(this.sh, 'aperture', false); this.state = 'dormant';
-    Object.assign(this, { stanceMax: 380, critRange: 90, open: 0, openT: 0.35, ringK: 0, wing: 0, halo: 0, visible: false, alpha: 1,
+    Object.assign(this, { stanceMax: 460, critRange: 90, open: 0, openT: 0.35, ringK: 0, wing: 0, halo: 0, visible: false, alpha: 1,
       q: [], cool: 1.2, last: null, speed: 1, cds: {}, bob: 0, glitchT: 0, look: { x: 0, y: 0 }, since: 0, fx: nhS0NewFx(),
       tx: x, ty: y - 90, vx: 0, vy: 0, descend: 1, face: -1, floating: true });
     this.x = x; this.y = y - 90;
@@ -1044,14 +1044,14 @@ class NhSaint extends BossBase {
   hit(info) {
     if (!this.alive) return;
     if (!this.active) { if (!this.cutting) this.activate(); return; }
-    const k = info.crit ? 1 : 0.3 + this.open * 1.2;
-    if (this.open < 0.3 && !info.crit) { sfx.block(); tone(980, 0.12, 0.04, 'square', 0.7); spawnFx(fxOr('parry_spark', 'hit'), info.x, info.y, info.dir); }
+    const k = info.crit ? 1 : 0.15 + this.open * 1.0;
+    if (this.open < 0.45 && !info.crit) { sfx.block(); tone(980, 0.12, 0.04, 'square', 0.7); spawnFx(fxOr('parry_spark', 'hit'), info.x, info.y, info.dir); }
     super.hit({ ...info, dmg: info.dmg * k });
     if (this.alive) this.glitchT = Math.max(this.glitchT, 0.12);
   }
   deflectHit(x, y) {   // a reflected white orb strikes the eye
     if (!this.alive || !this.active) return;
-    const dmg = Math.round(95 * (1 + 0.5 * this.open) * (D ? Math.max(1, D.light / 60) : 1));
+    const dmg = Math.round(70 * (1 + 0.5 * this.open) * (D ? Math.max(1, D.light / 60) : 1));
     this.hp = Math.max(0, this.hp - dmg); this.flash = 1; this.glitchT = 0.3;
     this.dmgShown = this.dmgT > 0 ? this.dmgShown + dmg : dmg; this.dmgT = 2.2;
     hitstop = Math.max(hitstop, 0.08); shake = Math.max(shake, 6); sfx.bigHit(); nhSfx.glitch(0.9);
@@ -1059,7 +1059,7 @@ class NhSaint extends BossBase {
     for (let i = 0; i < 18; i++) particles.push({ x, y, vx: rand(-140, 140), vy: rand(-140, 80), g: 200, life: rand(0.3, 0.7), kind: i % 2 ? 'nh_white' : 'nh_mote' });
     if (this.hp <= 0) return this.die();
     if (this.stanceImmune > 0 || this.state === 'stagger') return;
-    this.stance += 135; this.overload = (this.overload || 0) + 1;
+    this.stance += 100; this.overload = (this.overload || 0) + 1;
     if (this.stance >= this.stanceMax && this.canStagger()) this.stagger();
   }
   stagger() {
@@ -1079,6 +1079,7 @@ class NhSaint extends BossBase {
     if (!this.active) { this.y = this.floor - 90 - this.descend * 160; if (!this.cutting && this.wakeCheck()) this.activate(); return; }
     if (this.alive) { for (const e of this.q) { e.t -= dt; if (e.t <= 0 && !e.done) { e.done = true; e.fn(); } } this.q = this.q.filter(e => !e.done); }
     for (const k in this.cds) this.cds[k] -= dt;
+    nhS0HugCheck(this, dt);
     switch (this.state) {
       case 'idle': {
         this.cool -= dt; this.openT = 0.35; this.facePlayer();
@@ -1091,7 +1092,8 @@ class NhSaint extends BossBase {
       case 'exposed':
         this.mt += dt; this.openT = 1; this.ty = this.floor - 46;
         if (Math.random() < 0.3) particles.push({ x: this.x + rand(-20, 20), y: this.y - rand(10, 30), vx: rand(-10, 10), vy: -rand(20, 50), life: 0.8, kind: 'dust' });
-        if (this.mt >= this.mv.dur) { this.state = 'idle'; this.cool = 0.5; this.openT = 0.35; }
+        if (this.mt >= this.mv.dur - 0.45 && !this.mv.warned) { this.mv.warned = 1; tone(1600, 0.4, 0.05, 'square', 0.4); this.glitchT = 0.45; }
+        if (this.mt >= this.mv.dur) { this.state = 'idle'; this.cool = 0.35; this.openT = 0.35; nhS0Nova(this, this.phase >= 2 ? 14 : 10, this.phase === 3 ? 2 : 1); }
         break;
       case 'stagger':
         this.t -= dt; this.ty = this.floor - 24; this.tx = this.x; this.openT = 1;
@@ -1120,9 +1122,9 @@ class NhSaint extends BossBase {
   choose() {
     const ph = this.phase;
     if (this.since >= NH_S0_EXPOSE[ph]) return this.startExposed();
-    let w = ph === 1 ? { orbs: 2.2, volley: 1.5, limbo: 1.3, grid: 1.2, gaze: 1.1 }
-      : ph === 2 ? { orbs: 1.5, volley: 1.1, limbo: 1.0, grid: 1.0, gaze: 1.0, burn: 1.4, spiral: 1.2, dive: 1.2, delete: 0.8 }
-      : { orbs: 1.1, volley: 1.0, limbo: 1.0, grid: 0.9, gaze: 1.0, burn: 1.1, spiral: 1.2, dive: 1.2, lighthouse: 1.5, rain: 1.0 };
+    let w = ph === 1 ? { orbs: 2.0, volley: 1.5, limbo: 1.3, grid: 1.2, gaze: 1.1, dive: 0.8, nova: 0.9 }
+      : ph === 2 ? { orbs: 1.5, volley: 1.1, limbo: 1.0, grid: 1.0, gaze: 1.0, burn: 1.4, spiral: 1.2, dive: 1.3, delete: 0.8, nova: 1.0 }
+      : { orbs: 1.1, volley: 1.0, limbo: 1.0, grid: 0.9, gaze: 1.0, burn: 1.1, spiral: 1.2, dive: 1.3, lighthouse: 1.5, rain: 1.0, nova: 1.1 };
     for (const k in w) if (this.cds[k] > 0) w[k] = 0;
     if (NHR.dels.some(d => d.st !== 'solid')) { w.burn = 0; w.delete = 0; }
     if (w[this.last]) w[this.last] *= 0.25;
@@ -1131,7 +1133,7 @@ class NhSaint extends BossBase {
     this.last = m; this.startMove(m);
   }
   startMove(m) {
-    const cd = { gaze: 9, burn: 11, delete: 9, lighthouse: 8, rain: 6, spiral: 5, dive: 4, limbo: 5, grid: 4 }[m]; if (cd) this.cds[m] = cd;
+    const cd = { gaze: 8, burn: 10, delete: 8, lighthouse: 7, rain: 5, spiral: 4, dive: 3, limbo: 4, grid: 3.5, nova: 4 }[m]; if (cd) this.cds[m] = cd;
     this.state = 'attack'; this.move = m; this.mt = 0; this.mv = {}; this.atkId = ++hazardId; this.facePlayer();
     const side = this.x < P.x ? -1 : 1, fb = this.fx;
     if (m === 'orbs' || m === 'volley' || m === 'spiral') { this.tx = clamp(P.x + side * 115, this.L, this.R); this.ty = m === 'spiral' ? 76 : 88; }
@@ -1143,19 +1145,21 @@ class NhSaint extends BossBase {
     if (m === 'dive') { this.tx = clamp(P.x + side * 60, this.L, this.R); this.ty = 58; }
     if (m === 'lighthouse') { this.tx = clamp(P.x + away * 90, this.L, this.R); this.ty = 72; }
     if (m === 'rain') { this.ty = 60; }
+    if (m === 'nova') { this.tx = clamp(P.x + side * 70, this.L, this.R); this.ty = 70; }
     if (m === 'delete') { this.ty = 70; }
     nhSfx.voice(3);
   }
   endMove() {
     this.state = 'idle'; this.since++; this.mv = {}; this.openT = 0.35;
-    this.cool = this.phase === 1 ? rand(0.8, 1.2) : this.phase === 2 ? rand(0.55, 0.9) : rand(0.35, 0.6);
+    this.cool = this.phase === 1 ? rand(0.5, 0.8) : this.phase === 2 ? rand(0.3, 0.55) : rand(0.18, 0.38);
+    if (this.phase >= 2 && Math.random() < (this.phase === 3 ? 0.45 : 0.3)) this.cool = 0.05;   // chains straight into the next move
   }
   cancelMove() {
     const f = this.fx; f.beams = []; f.grid = []; f.limbo = []; f.gaze = null; f.lighthouse = null; this.mv = {};
     for (const c of f.covers) c.gone = true; for (const pl of f.plats) pl.fade = true; f.burn = null; NHR.rains = [];
   }
   startExposed() {
-    this.since = 0; this.state = 'exposed'; this.mt = 0; this.mv = { dur: this.phase === 3 ? 2.1 : 2.6 }; this.openT = 1; this.tx = this.x;
+    this.since = 0; this.state = 'exposed'; this.mt = 0; this.mv = { dur: this.phase === 3 ? 1.5 : 1.9 }; this.openT = 1; this.tx = this.x;
     toast('The eye opens', 1.2); nhSfx.chime(); tone(140, 0.9, 0.08, 'sawtooth', 0.5);
   }
   // ---------------------------------------------------------------- the moves
@@ -1164,30 +1168,30 @@ class NhSaint extends BossBase {
     const done = () => this.endMove();
     if (m === 'orbs') {
       this.openT = t < 0.7 ? 0.65 : 0.4;
-      const plan = ph === 1 ? [[0.75, 3, [1]]] : ph === 2 ? [[0.75, 5, [1, 3]], [1.45, 3, [1]]] : [[0.7, 7, [2, 4]], [1.3, 5, [2]]];
+      const plan = ph === 1 ? [[0.7, 5, [2]], [1.3, 3, [1]]] : ph === 2 ? [[0.7, 7, [1, 5]], [1.25, 5, [2]], [1.8, 7, [3]]] : [[0.6, 9, [2, 6]], [1.1, 7, [3]], [1.6, 9, [4]]];
       plan.forEach(([at, n, whites], k) => { if (t >= at && !mv['v' + k]) { mv['v' + k] = 1; nhS0Fan(this, n, whites); } });
       if (t > plan[plan.length - 1][0] + 0.9) done();
     } else if (m === 'volley') {
-      const n = [0, 4, 6, 8][ph], gap = ph === 3 ? 0.24 : 0.3;
+      const n = [0, 5, 8, 10][ph], gap = ph === 3 ? 0.2 : 0.25;
       if (!mv.list) { mv.list = nhS0PickLenses(this, n); mv.i = 0; }
       while (mv.i < mv.list.length && t >= 0.35 + mv.i * gap) { f.beams.push({ kind: 'lens', lens: mv.list[mv.i], t: 0, warn: 0.6, on: 0.14, tx: P.x + P.vx * 0.1, ty: P.y - 13, id: ++hazardId, dmg: 24 }); mv.i++; tone(1400, 0.12, 0.03, 'square', 1.3); }
       this.openT = 0.5;
       if (t > 0.35 + n * gap + 0.9) done();
     } else if (m === 'limbo') {
-      const beats = [0, 3, 4, 5][ph], sp = [0, 1.35, 1.05, 0.85][ph], warn = ph === 3 ? 0.7 : 0.85;
+      const beats = [0, 4, 5, 6][ph], sp = [0, 1.15, 0.92, 0.76][ph], warn = ph === 3 ? 0.6 : 0.72;
       if (!mv.seq) { mv.seq = []; for (let i = 0; i < beats; i++) mv.seq.push(Math.random() < 0.5 ? 'low' : 'high'); if (!mv.seq.includes('low')) mv.seq[0] = 'low'; if (beats > 2 && !mv.seq.includes('high')) mv.seq[1] = 'high'; mv.i = 0; }
       while (mv.i < beats && t >= 0.6 + mv.i * sp) { const low = mv.seq[mv.i] === 'low'; f.limbo.push({ y: this.floor - (low ? 8 : 38), low, t: 0, warn, on: 0.32, id: ++hazardId, dmg: 32 }); mv.i++; tone(low ? 660 : 990, 0.2, 0.04, 'triangle', low ? 1.4 : 0.7); }
       this.openT = 0.55;
       if (t > 0.6 + beats * sp + 0.6) done();
     } else if (m === 'grid') {
-      const pats = ph === 1 ? [0, 1] : ph === 2 ? [0, 1, 0] : [0, 1, 0, 1], warn = [0, 0.85, 0.75, 0.65][ph], step = warn + 0.55;
+      const pats = ph === 1 ? [0, 1] : ph === 2 ? [0, 1, 0] : [0, 1, 0, 1], warn = [0, 0.75, 0.65, 0.55][ph], step = warn + 0.55;
       if (!mv.i) mv.i = 0;
       while (mv.i < pats.length && t >= 0.5 + mv.i * step) { nhS0Grid(this, pats[mv.i], warn); mv.i++; }
       if (ph >= 2 && t >= 0.9 && !mv.orb) { mv.orb = 1; nhS0Fan(this, 1, [0]); }
       this.openT = 0.45;
       if (t > 0.5 + pats.length * step + 0.5) done();
     } else if (m === 'gaze') {
-      const track = [0, 2.2, 1.9, 1.6][ph];
+      const track = [0, 1.9, 1.6, 1.35][ph];
       if (t >= 0.5 && !f.gaze) { f.gaze = { t: 0, track, lock: 0.35, fire: 0.55, x: P.x, y: P.y - 13, id: ++hazardId, dmg: 48 }; nhSfx.charge(); toast('LOCK-ON — hide behind the hard-light', 1.6); }
       this.openT = f.gaze ? 0.85 : 0.5;
       if (f.gaze && f.gaze.t > track + 0.35 + 0.55 + 0.5) { f.gaze = null; for (const c of f.covers) c.gone = true; done(); }
@@ -1207,14 +1211,25 @@ class NhSaint extends BossBase {
       else if (mv.st === 'hold') { if (t - mv.h > 0.28) { mv.st = 'dive'; mv.manual = true; mv.x0 = this.x; mv.y0 = this.y; mv.d = 0; nhSfx.missile(); } }
       else if (mv.st === 'dive') {
         const tx = clamp(mv.lx, this.L, this.R), ty = this.floor - 24, L = Math.hypot(tx - mv.x0, ty - mv.y0) || 1;
-        mv.d = Math.min(L, mv.d + 400 * dt); this.x = mv.x0 + (tx - mv.x0) * mv.d / L; this.y = mv.y0 + (ty - mv.y0) * mv.d / L;
+        mv.d = Math.min(L, mv.d + (ph === 3 ? 520 : 440) * dt); this.x = mv.x0 + (tx - mv.x0) * mv.d / L; this.y = mv.y0 + (ty - mv.y0) * mv.d / L;
         if (overlap(this.hurtbox() || rect(0, 0, 0, 0), playerHurtbox())) hurtPlayer(nhS0D(40, this), P.x < this.x ? -1 : 1, this.atkId, { src: this });
         if (mv.d >= L) { mv.st = 'stuck'; mv.s = t; shake = 10; nhSfx.thud(); spawnFx('shockwave', this.x, this.floor, 1); for (const d of [-1, 1]) f.limbo.push({ wave: true, x: this.x, vx: d * 170, y: this.floor, t: 0, id: ++hazardId, dmg: 26 }); }
-      } else if (mv.st === 'stuck') { this.openT = 0.95; this.tx = this.x; this.ty = this.floor - 24; mv.manual = false; if (t - mv.s > 1.25) done(); }
+      } else if (mv.st === 'stuck') {
+        this.openT = 0.95; this.tx = this.x; this.ty = this.floor - 24; mv.manual = false;
+        if (ph >= 2 && !mv.again && t - mv.s > 0.55) { mv.again = 1; mv.st = 'lock'; this.mt = 0; mv.lx = P.x; this.ty = 58; }   // rises and dives again
+        else if (t - mv.s > 0.95) done();
+      }
     } else if (m === 'lighthouse') {
       if (t >= 0.5 && !f.lighthouse) { const a0 = Math.atan2(P.y - 13 - this.y, P.x - this.x) + Math.PI / 2; f.lighthouse = { t: 0, warn: 0.85, dur: 3.2, a: a0, w: (Math.random() < 0.5 ? 1 : -1) * 1.25, L: 180, id: ++hazardId, dmg: 34 }; nhSfx.beam(); }
       this.openT = 0.75;
       if (f.lighthouse && f.lighthouse.t > f.lighthouse.warn + f.lighthouse.dur) { f.lighthouse = null; done(); }
+    } else if (m === 'nova') {   // the halo flares, then bursts into a ring of light (two rings from phase 2)
+      this.openT = t < 0.7 ? 0.3 : 0.7; if (t < 0.7 && Math.random() < 0.5) particles.push({ x: this.x + rand(-40, 40), y: this.y + rand(-40, 40), vx: 0, vy: 0, life: 0.3, kind: 'nh_white' });
+      if (t >= 0.2 && !mv.w) { mv.w = 1; tone(900, 0.5, 0.05, 'sine', 2); this.glitchT = 0.4; }
+      if (t >= 0.75 && !mv.a) { mv.a = 1; nhS0Nova(this, ph === 1 ? 12 : 14, 1); }
+      if (ph >= 2 && t >= 1.25 && !mv.b) { mv.b = 1; nhS0Nova(this, 14, 1, Math.PI / 14); }
+      if (ph === 3 && t >= 1.7 && !mv.c) { mv.c = 1; nhS0Fan(this, 5, [2]); }
+      if (t > 2.3) done();
     } else if (m === 'rain') {
       if (!mv.r) { mv.r = 1; nhRain(this); }
       this.openT = 0.6; if (t > 3.0) done();
@@ -1265,6 +1280,11 @@ class NhSaint extends BossBase {
     nhS0DrawEye(this, jx, a, cyb);
     nhS0DrawRings(this, true, a, cyb);
     nhS0DrawHalo(this, a, cyb);
+    if (this.pulse) {   // the anti-hug pulse: a tightening ring, then the flash
+      const k = this.pulse.t / 0.45, r = k < 1 ? 78 * (1.4 - 0.4 * k) : 78 * (1 + (this.pulse.t - 0.45) * 2);
+      g.save(); g.globalAlpha = k < 1 ? 0.35 + 0.5 * k : Math.max(0, 1 - (this.pulse.t - 0.45) / 0.25); g.strokeStyle = k < 1 ? '#ff46c8' : '#e8fbff'; g.lineWidth = k < 1 ? 1 : 3;
+      g.beginPath(); g.arc(Math.round(this.x), Math.round(this.y), r, 0, 6.283); g.stroke(); g.restore();
+    }
     if (this.alive && !cyb) { addLight(this.x, this.y + 30, 120, '150,225,255', 0.5); addLight(this.x + this.look.x, this.y + this.look.y, 40, '255,90,210', 0.6 + this.open * 0.4); }
     if (this.critable()) { g.fillStyle = '#ffd070'; const y = Math.round(this.y - 34 + Math.sin(time * 8) * 1.5); g.fillRect(Math.round(this.x) - 1, y, 3, 3); g.fillRect(Math.round(this.x), y - 1, 1, 5); g.fillRect(Math.round(this.x) - 2, y + 1, 5, 1); }
   }
@@ -1406,6 +1426,27 @@ function nhS0Fan(b, n, whites) {
   const aim = Math.atan2(P.y - 14 - b.y, P.x - b.x), spread = b.phase === 3 ? 0.2 : 0.24, sp = [0, 115, 130, 150][b.phase];
   for (let k = 0; k < n; k++) nhS0Orb(b, aim + (k - (n - 1) / 2) * spread, sp, whites.includes(k) ? 'white' : 'red');
   nhSfx.shot(); tone(520, 0.2, 0.05, 'triangle', 1.6);
+}
+function nhS0Nova(b, n, whites, off = 0) {   // a ring of orbs in every direction; `whites` of them can be struck back
+  const a0 = Math.atan2(P.y - 14 - b.y, P.x - b.x) + off, sp = [0, 105, 120, 135][b.phase] || 120;
+  const step = Math.max(1, Math.floor(n / Math.max(1, whites)));
+  for (let k = 0; k < n; k++) nhS0Orb(b, a0 + (k + 0.5) / n * 6.283, sp, whites && k % step === 0 && k / step < whites ? 'white' : 'red');
+  nhSfx.shot(); nhSfx.glitch(0.5); shake = Math.max(shake, 4); flashScreen = Math.max(flashScreen, 0.1);
+}
+// standing right under the eye between openings: it pulses the space around it clean
+function nhS0HugCheck(b, dt) {
+  if (!b.alive || !b.active || ['exposed', 'stagger', 'dead', 'cyberWait'].includes(b.state) || P.state === 'dead') { b.hugT = 0; return; }
+  const near = Math.abs(P.x - b.x) < 58 && Math.abs(P.y - 14 - b.y) < 70;
+  if (b.pulse) {
+    b.pulse.t += dt;
+    if (b.pulse.t >= 0.45 && !b.pulse.hit) { b.pulse.hit = 1; shake = Math.max(shake, 6); nhSfx.glitch(0.8); tone(160, 0.4, 0.1, 'sawtooth', 0.5);
+      spawnFx(fxOr('nh_blast', 'shockwave'), b.x, b.y, 1);
+      if (Math.hypot(P.x - b.x, P.y - 14 - b.y) < 78) hurtPlayer(nhS0D(30, b), P.x < b.x ? -1 : 1, 'nhpulse' + (b.pulseN = (b.pulseN || 0) + 1), { src: b }); }
+    if (b.pulse.t > 0.7) b.pulse = null;
+    return;
+  }
+  b.hugT = near ? (b.hugT || 0) + dt : Math.max(0, (b.hugT || 0) - dt * 2);
+  if (b.hugT > (b.phase === 1 ? 1.4 : 1.0)) { b.hugT = 0; b.pulse = { t: 0 }; tone(1300, 0.35, 0.05, 'square', 0.6); b.glitchT = 0.45; }
 }
 function nhS0Aimed(b, kind) { nhS0Orb(b, Math.atan2(P.y - 14 - b.y, P.x - b.x), 120, kind); nhSfx.shot(); }
 function nhS0DrawOrbs() {

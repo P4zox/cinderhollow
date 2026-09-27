@@ -20,7 +20,7 @@ const WEAPONS = {
     desc: 'Ser Kalden swore on this blade to guard the Ashen Bell. He kept that oath past death, and past himself.' },
   gravetusk: { name: 'Gravetusk', base: 48, sc: { str: 'A', dex: 'D', fth: '-' }, speed: 0.78, reach: 1.25, stam: 1.4, poise: 1.9, armor: true, art: 'stormleap', boss: true,
     desc: 'The Hound\u2019s own tusk, still bound in golden root. Its finishing blows call roots up from the earth.' },
-  omen: { name: 'Morvain\u2019s Eclipse', base: 36, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, art: 'crescent', boss: true,
+  omen: { name: 'Morvain\u2019s Eclipse', base: 34, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, art: 'crescent', boss: true,
     desc: 'The Omen\u2019s blade drinks the light it cuts through. Its swings leave golden arcs; heavy blows loose spears of light.' },
   rotmaw: { name: 'Rotmaw Cleaver', base: 50, sc: { str: 'S', dex: '-', fth: '-' }, speed: 0.74, reach: 1.05, stam: 1.5, poise: 2.0, armor: true, art: 'warcry', rot: true, boss: true,
     desc: 'Hacked from the Vessel\u2019s many bones. Every wound it opens festers, and heavy blows leave pools of rot.' },

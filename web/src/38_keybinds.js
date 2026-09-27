@@ -11,6 +11,8 @@ const CHEAT_ROWS = [
 ];
 
 function settingsSubInput(M, a) {
+  if (M.sub.kind === 'pad') return padSubInput(M, a);
+  if (M.sub.kind === 'gfx') return gfxSubInput(M, a);
   const S = M.sub, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
   if (S.capture) return;   // the next key press goes to KEY_CAPTURE instead of here
   if (['pause', 'back', 'heavy'].includes(a) || (a === 'left' && S.kind === 'cheats')) { M.sub = null; sfx.menu(); return; }
@@ -50,6 +52,8 @@ function settingsSubInput(M, a) {
 
 function renderSettingsSub(M) {
   const S = M.sub;
+  if (S.kind === 'pad') return renderPadSub(M);
+  if (S.kind === 'gfx') return renderGfxSub(M);
   uiBackdrop(0.9); uiStrips();
   if (S.kind === 'cheats') {
     uiTitle('CHEATS', 17, 9);

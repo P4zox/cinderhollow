@@ -486,7 +486,7 @@ const WEAPONS = {
     desc: 'Ser Kalden swore on this blade to guard the Ashen Bell. He kept that oath past death, and past himself.' },
   gravetusk: { name: 'Gravetusk', base: 48, sc: { str: 'A', dex: 'D', fth: '-' }, speed: 0.78, reach: 1.25, stam: 1.4, poise: 1.9, armor: true, art: 'stormleap', boss: true,
     desc: 'The Hound\u2019s own tusk, still bound in golden root. Its finishing blows call roots up from the earth.' },
-  omen: { name: 'Morvain\u2019s Eclipse', base: 36, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, art: 'crescent', boss: true,
+  omen: { name: 'Morvain\u2019s Eclipse', base: 34, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, art: 'crescent', boss: true,
     desc: 'The Omen\u2019s blade drinks the light it cuts through. Its swings leave golden arcs; heavy blows loose spears of light.' },
   rotmaw: { name: 'Rotmaw Cleaver', base: 50, sc: { str: 'S', dex: '-', fth: '-' }, speed: 0.74, reach: 1.05, stam: 1.5, poise: 2.0, armor: true, art: 'warcry', rot: true, boss: true,
     desc: 'Hacked from the Vessel\u2019s many bones. Every wound it opens festers, and heavy blows leave pools of rot.' },
@@ -3562,7 +3562,7 @@ function startCast() {
 
 function updatePlayer(dt) {
   const ax = inputX();
-  smashTick(dt);
+  smashTick(dt); airTick(dt);
   P.inv = Math.max(0, P.inv - dt); P.flash = Math.max(0, P.flash - dt * 6); P.ctrlLock -= dt; P.drop -= dt; P.empower -= dt; P.parryWin -= dt;
   if (P.state === 'dead') {
     P.anim.update(dt); P.vx *= Math.pow(0.01, dt); P.vy = Math.min(P.vy + GRAV_DN * dt, FALL_MAX); moveBody(P, dt);
@@ -3576,6 +3576,8 @@ function updatePlayer(dt) {
 
   // ---- action starts (buffered inputs)
   const canStart = free() || (P.state === 'land' && P.anim.i >= 1);
+  // airborne attacks: two per jump, then land and wait AIR_CD (swimming is exempt — see airAtkGate)
+  const airIn = airAtkGate(canStart);
   if (canStart && traversalStart(ax)) { /* technique started */ }
   else if (canStart) {
     if (peek('roll') && P.st > 0 && (P.ground || P.coyote > 0 || P.airDash)) { take('roll'); doRoll(ax); }
@@ -3604,6 +3606,7 @@ function updatePlayer(dt) {
     else if (peek('heal') && P.ground) { take('heal'); if (P.flasksR > 0) { P.flasksR--; setP('heal', 'heal'); P.healPending = 1; } else { sfx.deny(); toast('Your crimson flasks are empty'); } }
     else if (peek('mana') && P.ground) { take('mana'); if (P.flasksB > 0) { P.flasksB--; setP('heal', 'heal'); P.healPending = 2; } else { sfx.deny(); toast('Your azure flasks are empty'); } }
   }
+  if (airIn && !free() && ((airIn.a && !peek('attack')) || (airIn.h && !peek('heavy')) || (airIn.o && !peek('art')))) airAtkStart();
 
   // apex hang: holding jump near the top of an arc softens gravity for a smoother, floatier peak
   const grav = () => { const apex = !P.ground && P.state === 'air' && Math.abs(P.vy) < 55 && held.has('jump'); P.vy = Math.min(P.vy + (P.vy > 0 ? GRAV_DN : GRAV_UP) * (apex ? 0.55 : 1) * dt, FALL_MAX); };
@@ -3871,6 +3874,23 @@ function smashTick(dt) {
     if (P.ground && !['plunge', 'slam'].includes(P.state)) { P.smashCd -= dt; if (P.smashCd <= 0) { P.smashLock = false; P.smashN = 0; P.smashDenied = false; } }
   } else if ((P.smashIdle = (P.smashIdle || 0) + dt) > 0.8 && P.ground) P.smashN = 0;   // a lone smash now and then doesn't count toward the chain
 }
+// ---- every airborne attack (strikes, pogo, plunge, slam, arts) shares a second limit: two per trip through
+// the air, then nothing until you've stood on the ground for AIR_CD. Pogoing off spikes/brambles refunds one.
+const AIR_CHAIN = 2, AIR_CD = 0.25;
+function airAtkGate(canStart) {
+  if (!canStart || P.ground || (typeof DBS !== 'undefined' && DBS.inWater)) return null;
+  const inp = { a: peek('attack'), h: peek('heavy'), o: peek('art') };
+  if (!(inp.a || inp.h || inp.o)) return null;
+  if (P.airLock) { take('attack'); take('heavy'); take('art'); if (!P.airDenied) { P.airDenied = true; sfx.deny(); } return null; }
+  return inp;
+}
+function airAtkStart() { P.airN = (P.airN || 0) + 1; if (P.airN >= AIR_CHAIN) { P.airLock = true; P.airCd = AIR_CD; P.airDenied = false; } }
+function airRefund() { if (P.airN > 0) P.airN--; if (P.airN < AIR_CHAIN) P.airLock = false; }
+function airTick(dt) {
+  if (!P.ground || ['plunge', 'slam'].includes(P.state)) return;
+  if (!P.airLock) { P.airN = 0; return; }
+  if ((P.airCd -= dt) <= 0) { P.airLock = false; P.airN = 0; P.airDenied = false; }
+}
 // the plunge lands (on the floor, or on a foe mid-fall): heavy AoE, bounce off whatever it struck
 function plungeImpact(midair) {
   smashLanded();
@@ -4066,7 +4086,7 @@ function playerStrike(A) {
   if (P.twinBuff && P.hitSet.size && [...P.hitSet].some(x => x !== 'brk')) P.twinBuff = false;
   // pogo off spikes + break walls/urns
   if (A.down && !P.pogoed) {
-    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE) { pogo(); break; } }
+    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE) { pogo(); airRefund(); break; } }
   }
   hitBreakables(r);
 }
@@ -4395,9 +4415,9 @@ const SIGS = {
       burst(p.x, p.y, heavy ? 16 : 8, 'gold', 'ember'); tone(heavy ? 392 : 523, 0.3, 0.05, 'triangle', 0.6);
     },
     finisher(A, r) {
-      const n = A.kind === 'heavy' ? 3 : 1;
+      const n = A.kind === 'heavy' ? 2 : 1;
       for (let k = 0; k < n; k++) projectiles.push({ owner: 'player', kind: 'sunspear', face: P.face, t: 0, hits: new Set(), x: P.x + P.face * 16, y: P.y - 20 + (k - (n - 1) / 2) * 7,
-        vx: P.face * (330 + k * 20), vy: (k - (n - 1) / 2) * 25, dmg: D.light * 0.9, life: 1.0, r: 6, pierce: true, sh: 'fx_light_spear' });
+        vx: P.face * (330 + k * 20), vy: (k - (n - 1) / 2) * 25, dmg: D.light * 0.65, life: 1.0, r: 6, pierce: true, sh: 'fx_light_spear' });
       sfx.spear(); flashScreen = Math.max(flashScreen, 0.08);
     } },
   rotmaw: { glow: '#9ae05a', light: '150,210,90', pk: 'spore', pk2: 'ember',
@@ -4462,7 +4482,7 @@ const SIGS = {
       wfx({ life: 0.36, update() {
         if (this.t < 0.3 || this.done) return; this.done = true;
         if (t.alive === false) return;
-        t.hit({ dmg: info.dmg * 0.45, poise: (info.poise || 0) * 0.35, dir: info.dir, kind: 'light', x: info.x, y: info.y, fire: true, melee: true });
+        t.hit({ dmg: info.dmg * 0.25, poise: (info.poise || 0) * 0.3, dir: info.dir, kind: 'light', x: info.x, y: info.y, fire: true, melee: true });
         spawnFx(fxOr('embers', 'hit'), info.x, info.y, info.dir); tone(740, 0.2, 0.04, 'triangle', 0.8);
         for (let i = 0; i < 8; i++) particles.push({ x: info.x, y: info.y, vx: rand(-60, 60), vy: -rand(20, 90), g: 100, life: rand(0.3, 0.6), kind: 'ember' });
       } });
@@ -4470,7 +4490,7 @@ const SIGS = {
   // ---- v9 (Expansion 2) boss weapons
   antler_scythe: { glow: '#9fe8a0', light: '140,230,150', pk: 'spore', pk2: 'root',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 14 : 7, 'spore', 'root'); },
-    finisher(A) { sig9Thorns(A.kind === 'heavy' ? 5 : 3, A.kind === 'heavy' ? 0.8 : 0.5); } },
+    finisher(A) { sig9Thorns(A.kind === 'heavy' ? 4 : 3, A.kind === 'heavy' ? 0.5 : 0.35); } },
   choir_harpoon: { glow: '#7ff0e0', light: '100,230,210', pk: 'teal', pk2: 'frost',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'teal', 'frost'); },
     finisher(A, r) { const p = sigPoint(r); if (A.kind === 'heavy') for (const vy of [-50, 0, 50]) sig9WaterLance(p, vy, 0.6); else sig9WaterLance(p, 0, 0.8); },
@@ -4501,7 +4521,7 @@ const SIGS = {
   last_kindling: { glow: '#fff4d0', light: '255,244,210', pk: 'mote', pk2: 'gold',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'mote', 'gold'); },
     hit(t, info) { sig9Pyre(t.x, t.y, t); },
-    finisher(A) { if (A.kind === 'heavy') for (let k = -2; k <= 2; k++) sig9Pyre(P.x + k * 18, P.y, null, true); } },
+    finisher(A) { if (A.kind === 'heavy') for (const k of [0, 1]) sig9Pyre(P.x + P.face * (8 + k * 26), P.y, null, true); } },
 };
 // ---- v9 signature helpers (entities live in 13_weapons.js's WFX list)
 const sig9Pyres = [];
@@ -4532,8 +4552,8 @@ function sig9WaterLance(p, vy, mult) {
     onHit(t) { if (!t.prop && !t.boss && !(t.cfg && t.cfg.elite) && t.vx !== undefined) { t.vx = -P.face * 120; weaponPull(t, { chain: false }); } } });   // the tide drags them in
 }
 function sig9BloodLance(p, vy) {
-  sig9Proj({ x: p.x, y: p.y, vx: P.face * 360, vy, dmg: D.light * 0.7, sheet: 'bloodlance', trail: 'blood', light: '240,60,80', col: '#e02040', poise: 10,
-    onHit(t) { if (t.hit && !t.prop) t.hit({ dmg: 0, poise: 0, dir: P.face, kind: 'spell', x: t.x, y: t.y - 14, bleed: 30, quiet: true }); } });
+  sig9Proj({ x: p.x, y: p.y, vx: P.face * 360, vy, dmg: D.light * 0.45, sheet: 'bloodlance', trail: 'blood', light: '240,60,80', col: '#e02040', poise: 10,
+    onHit(t) { if (t.hit && !t.prop) t.hit({ dmg: 0, poise: 0, dir: P.face, kind: 'spell', x: t.x, y: t.y - 14, bleed: 16, quiet: true }); } });
   tone(880, 0.15, 0.04, 'sawtooth', 0.5);
 }
 function sig9Chains() {   // spectral chains burst from the ground and bind the nearest foe ahead
@@ -4565,14 +4585,14 @@ function sig9SunDisc(p) {   // a disc of sunlight flung out that comes back to t
     update(dt) {
       if (!this.back) { this.vx -= Math.sign(this.vx) * 520 * dt; if (Math.abs(this.vx) < 20 || solidAtPx(this.x + Math.sign(this.vx) * 6, this.y)) { this.back = true; this.skip = new Set(); } this.x += this.vx * dt; }
       else { const dx = P.x - this.x, dy = P.y - 18 - this.y, d = Math.hypot(dx, dy) || 1; this.x += dx / d * 320 * dt; this.y += dy / d * 320 * dt; if (d < 10) return false; }
-      wStrike(rect(this.x - 7, this.y - 7, this.x + 7, this.y + 7), D.light * 0.6, { skip: this.skip, poise: 12, fire: true, kind: 'spell' });
+      wStrike(rect(this.x - 7, this.y - 7, this.x + 7, this.y + 7), D.light * 0.3, { skip: this.skip, poise: 12, fire: true, kind: 'spell' });
       if (Math.random() < 0.5) particles.push({ x: this.x, y: this.y, vx: rand(-20, 20), vy: rand(-20, 20), life: 0.3, kind: 'gold' });
     },
     draw() { if (!wfxDraw('sundisc', this.t, this.x, this.y, 1, { center: true, loop: true })) { g.fillStyle = '#ffd070'; g.fillRect(this.x - 4, this.y - 4, 8, 8); } addLight(this.x, this.y, 34, '255,210,120', 0.8); } });
 }
 function sig9Sand() {   // the heavy raises a burst of scouring sand around you
   sfx.crumble(); shake = Math.max(shake, 4);
-  wStrike(rect(P.x - 44, P.y - 30, P.x + 44, P.y + 2), D.heavy * 0.6, { poise: 30, kind: 'spell' });
+  wStrike(rect(P.x - 44, P.y - 30, P.x + 44, P.y + 2), D.heavy * 0.45, { poise: 30, kind: 'spell' });
   for (let i = 0; i < 40; i++) { const a = rand(0, Math.PI); particles.push({ x: P.x + Math.cos(a) * rand(4, 20), y: P.y - rand(0, 8), vx: Math.cos(a) * rand(60, 160) * (Math.random() < 0.5 ? 1 : -1), vy: -rand(20, 110), g: 260, life: rand(0.4, 0.9), kind: 'dust' }); }
   spawnFx('shockwave', P.x, P.y, 1);
 }
@@ -4600,7 +4620,7 @@ function sig9Laser(p, wide) {   // a neon laser line drawn through the world
   let x1 = p.x; const dir = P.face;
   for (let k = 0; k < 200; k += 4) { if (solidAtPx(p.x + dir * k, p.y)) break; x1 = p.x + dir * k; }
   const hw = wide ? 5 : 3;
-  wStrike(rect(Math.min(p.x, x1), p.y - hw - 2, Math.max(p.x, x1), p.y + hw + 2), D.light * (wide ? 1.3 : 0.95), { poise: 20, kind: 'spell', dir });
+  wStrike(rect(Math.min(p.x, x1), p.y - hw - 2, Math.max(p.x, x1), p.y + hw + 2), D.light * (wide ? 0.75 : 0.65), { poise: 20, kind: 'spell', dir });
   tone(2200, 0.15, 0.05, 'square', 0.4); tone(440, 0.25, 0.05, 'sawtooth', 2); flashScreen = Math.max(flashScreen, 0.06);
   wfx({ life: 0.3, x0: p.x, x1, y: p.y, hw, draw() {
     const a = 1 - this.t / this.life, jit = Math.floor(this.t * 60) % 3 - 1, lo = Math.min(this.x0, this.x1), w = Math.abs(this.x1 - this.x0);
@@ -4624,12 +4644,12 @@ function sig9Glitch(t, info) {   // the wound glitches: a corrupted copy of the 
 }
 function sig9Pyre(x, y, t, force) {   // a pyre of pale flame where the foe stood
   if (!force && t && (t._pyreT || 0) > time) return;
-  if (t) t._pyreT = time + 0.5;
+  if (t) t._pyreT = time + 1.0;
   const fy = wFloorBelow(x, y - 6); if (fy === null || solidAtPx(x, fy - 8)) return;
   while (sig9Pyres.length && (sig9Pyres[0].dead || sig9Pyres.length >= 5)) { const o = sig9Pyres.shift(); o.life = Math.min(o.life, o.t + 0.2); }
-  const e = wfx({ life: 2.2, x, fy, tick: 0.1,
+  const e = wfx({ life: 1.6, x, fy, tick: 0.1,
     update(dt) {
-      if ((this.tick -= dt) <= 0) { this.tick = 0.3; wStrike(rect(this.x - 9, this.fy - 30, this.x + 9, this.fy + 1), D.light * 0.2, { quiet: true, kind: 'spell', fire: true }); }
+      if ((this.tick -= dt) <= 0) { this.tick = 0.35; wStrike(rect(this.x - 9, this.fy - 30, this.x + 9, this.fy + 1), D.light * 0.12, { quiet: true, kind: 'spell', fire: true }); }
       if (Math.random() < 0.3) particles.push({ x: this.x + rand(-5, 5), y: this.fy - rand(4, 26), vx: 0, vy: -rand(20, 50), life: 0.4, kind: 'mote' });
     },
     draw() { const a = Math.min(1, this.t / 0.12, (this.life - this.t) / 0.3); if (!wfxDraw('pyre', this.t, this.x, this.fy + 1, 1, { loop: true, alpha: a })) { g.fillStyle = `rgba(255,244,210,${0.6 * a})`; g.fillRect(this.x - 4, this.fy - 22, 8, 22); } addLight(this.x, this.fy - 14, 36, '255,244,210', 0.7 * a); } });
@@ -4639,14 +4659,14 @@ function sig9Pyre(x, y, t, force) {   // a pyre of pale flame where the foe stoo
 // ---- v8 signature helpers
 function sigInkGlyph(t, info) {
   if (t.prop || (t._glyphT || 0) > time) return;
-  t._glyphT = time + 0.3;
+  t._glyphT = time + 0.6;
   const ox = info.x - t.x, oy = info.y - t.y;
   wfx({ life: 1.05, fired: false, x: info.x, y: info.y,
     update() {
       if (!this.fired) { this.x = t.x + ox; this.y = t.y + oy; }
       if (this.t >= 0.62 && !this.fired) {
         this.fired = true;
-        wStrike(rect(this.x - 14, this.y - 14, this.x + 14, this.y + 14), D.light * 0.55 * (1 + (D.spell - 1) * 0.6), { poise: 14, big: false });
+        wStrike(rect(this.x - 14, this.y - 14, this.x + 14, this.y + 14), D.light * 0.45 * (1 + (D.spell - 1) * 0.6), { poise: 14, big: false });
         sfx.bolt(); noise(0.2, 700, 1, 0.2, 'lowpass');
         for (let i = 0; i < 10; i++) particles.push({ x: this.x, y: this.y, vx: rand(-80, 80), vy: rand(-90, 30), g: 200, life: rand(0.3, 0.6), kind: 'ink' });
       }
@@ -4657,14 +4677,14 @@ function sigInkGlyph(t, info) {
     } });
 }
 function sigInkBlots() {
-  for (const d of [-1, 1]) for (let k = 0; k < 3; k++) {
+  for (const d of [-1, 1]) for (let k = 0; k < 2; k++) {
     const b = wfx({ life: 1.4, x: P.x + d * 10, y: P.y - 20, vx: d * rand(90, 210), vy: -rand(110, 220), skip: new Set(), splat: -1,
       update(dt) {
         if (this.splat >= 0) return this.t - this.splat < 0.4;
         this.vy += 520 * dt; this.x += this.vx * dt; this.y += this.vy * dt;
         if (Math.random() < 0.5) particles.push({ x: this.x, y: this.y, vx: 0, vy: 0, life: 0.25, kind: 'ink' });
-        const hit = wStrike(rect(this.x - 5, this.y - 5, this.x + 5, this.y + 5), D.light * 0.6, { skip: this.skip, poise: 10, dir: d });
-        if (hit.length || solidAtPx(this.x, this.y)) { this.splat = this.t; sfx.hit(); wStrike(rect(this.x - 12, this.y - 12, this.x + 12, this.y + 8), D.light * 0.3, { skip: this.skip, quiet: true }); }
+        const hit = wStrike(rect(this.x - 5, this.y - 5, this.x + 5, this.y + 5), D.light * 0.4, { skip: this.skip, poise: 10, dir: d });
+        if (hit.length || solidAtPx(this.x, this.y)) { this.splat = this.t; sfx.hit(); wStrike(rect(this.x - 12, this.y - 12, this.x + 12, this.y + 8), D.light * 0.15, { skip: this.skip, quiet: true }); }
       },
       draw() {
         if (this.splat >= 0) wfxDraw('inkburst', (this.t - this.splat) * 1.4, this.x, this.y, 1, { center: true, alpha: 0.85 });
@@ -4747,7 +4767,7 @@ function sigSkyBolt() {
       if (!this.struck && this.t >= 0.3) {
         this.struck = true; flashScreen = Math.max(flashScreen, 0.25); shake = Math.max(shake, 7);
         noise(0.7, 900, 0.7, 0.6, 'lowpass', 0.4); noise(0.25, 5000, 2, 0.3, 'highpass'); tone(60, 0.5, 0.3, 'sawtooth', 0.5);
-        const hit = wStrike(rect(this.x - 18, this.fy - 90, this.x + 18, this.fy + 2), D.heavy * 1.5, { poise: 60, big: true, kind: 'heavy' });
+        const hit = wStrike(rect(this.x - 18, this.fy - 90, this.x + 18, this.fy + 2), D.heavy * 0.9, { poise: 60, big: true, kind: 'heavy' });
         if (hit.length) sigChain({ x: this.x, y: this.fy - 20 });
         for (let i = 0; i < 16; i++) particles.push({ x: this.x + rand(-6, 6), y: this.fy - 2, vx: rand(-120, 120), vy: -rand(40, 160), g: 400, life: rand(0.3, 0.6), kind: 'spark' });
       }
@@ -4780,7 +4800,7 @@ function sigWhirlwind() {
   wfx({ life: 2.4, x: x0, fy, face: P.face, tick: 0,
     update(dt) {
       if (!solidAtPx(this.x + this.face * 12, this.fy - 8)) this.x += this.face * 70 * dt;
-      if ((this.tick -= dt) <= 0) { this.tick = 0.3; wStrike(rect(this.x - 14, this.fy - 44, this.x + 14, this.fy), D.light * 0.3, { poise: 8, dir: this.face, quiet: this.t > 0.05 }); }
+      if ((this.tick -= dt) <= 0) { this.tick = 0.4; wStrike(rect(this.x - 14, this.fy - 44, this.x + 14, this.fy), D.light * 0.2, { poise: 8, dir: this.face, quiet: this.t > 0.05 }); }
       for (const t of targets()) {   // small foes are caught and carried along
         if (!sigSmallFoe(t) || !t.hurtbox()) continue;
         if (Math.abs(t.x - this.x) < 24 && Math.abs(t.y - this.fy) < 34) { t.x += (this.x - t.x) * Math.min(1, dt * 6); if (t.vx !== undefined) t.vx = this.face * 70; }
@@ -6839,9 +6859,10 @@ function renderHUD() {
   const pr = nearbyPrompt();
   if (pr && state === 'play') {
     const sx = P.x - cam.x, sy = P.y - cam.y - 38;
-    const tw = textW('E  ' + pr, 6.5) + 10;
+    const ik = keysOf('interact')[0] || 'E', kw = textW(ik, 6.5) + 5;
+    const tw = kw + textW(pr, 6.5) + 13;
     box(sx - tw / 2, sy - 8, tw, 11, 0.7);
-    text('E', sx - tw / 2 + 5, sy, 6.5, '#e6c77a', 'left'); text(pr, sx - tw / 2 + 13, sy, 6.5, '#e8dcc0', 'left', { weight: 500 });
+    text(ik, sx - tw / 2 + 5, sy, 6.5, '#e6c77a', 'left'); text(pr, sx - tw / 2 + 8 + kw, sy, 6.5, '#e8dcc0', 'left', { weight: 500 });
   }
   // boss bar
   if (boss && boss.active && (boss.alive || boss.anim.i < boss.anim.n - 1)) {
@@ -6855,8 +6876,8 @@ function renderHUD() {
   // toasts
   toasts.forEach((t, i) => {
     const a = clamp(Math.min(t.t * 4, t.life * 2), 0, 1), y = (boss && boss.active && boss.alive ? 186 : 203) - (toasts.length - 1 - i) * 11;
-    const w = textW(t.msg, 6.5, 500) + 16; box(W / 2 - w / 2, y - 8, w, 11, 0.65 * a, `rgba(109,90,58,${a})`);
-    text(t.msg, W / 2, y, 6.5, '#e8dcc0', 'center', { alpha: a, weight: 500 });
+    const msg = padText(t.msg), w = textW(msg, 6.5, 500) + 16; box(W / 2 - w / 2, y - 8, w, 11, 0.65 * a, `rgba(109,90,58,${a})`);
+    text(msg, W / 2, y, 6.5, '#e8dcc0', 'center', { alpha: a, weight: 500 });
   });
   // area title card: the big cinematic one on a region's first visit (29_ui2.js), the small one on later entries
   renderRegionCard();
@@ -7278,13 +7299,13 @@ function invList() {
   return out;
 }
 const SETTING_ROWS = [
-  { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' },
+  { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' }, { k: 'pad', label: 'Controller' }, { k: 'gfx', label: 'Graphics & shaders' },
   { k: 'music', label: 'Music volume', step: 0.1 }, { k: 'sfx', label: 'Effects volume', step: 0.1 },
   { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
   { k: 'cheats', label: 'Cheats (test)' }, { k: 'quit', label: 'Save & quit to title' },
 ];
 
-const SETTING_ACTIONS = ['guide', 'keys', 'cheats', 'quit'];
+const SETTING_ACTIONS = ['guide', 'keys', 'pad', 'gfx', 'cheats', 'quit'];
 function pauseInput(a) {
   const M = menu, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
   if (M.guide) return guideInput(M, a);
@@ -7304,6 +7325,7 @@ function pauseInput(a) {
     if (R.k === 'quit' && conf) { menu = null; saveGame(); state = 'title'; titleSel = 0; return; }
     if (R.k === 'keys') { if (conf || a === 'right') { M.sub = { kind: 'keys', sel: 0, col: 0, off: 0 }; sfx.menu(); } return; }
     if (R.k === 'cheats') { if (conf || a === 'right') { M.sub = { kind: 'cheats', sel: 0 }; sfx.menu(); } return; }
+    if (R.k === 'pad' || R.k === 'gfx') { if (conf || a === 'right') { M.sub = { kind: R.k, sel: 0, off: 0 }; sfx.menu(); } return; }
     if ((a === 'left' || a === 'right' || conf) && !SETTING_ACTIONS.includes(R.k)) {
       const d = a === 'left' ? -1 : 1;
       if (R.toggle) SETTINGS[R.k] = SETTINGS[R.k] ? 0 : 1;
@@ -7783,8 +7805,7 @@ function renderWorld() {
 function render() {
   renderWorld();
   vctx.fillStyle = '#050407'; vctx.fillRect(0, 0, view.width, view.height);
-  vctx.imageSmoothingEnabled = false;
-  vctx.drawImage(low, ox, oy, W * scale, H * scale);
+  presentWorld();   // 40_gfx.js: straight blit, or through the post-process shader
   if (state === 'title') renderTitle();
   else {
     if (P && D && state !== 'cut') { renderHUD(); runHooks('hud'); }
@@ -7803,7 +7824,7 @@ function render() {
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  try { update(dt); render(); updateMusic(); } catch (e) { console.error(e); }
+  try { padPoll(dt); update(dt); render(); updateMusic(); } catch (e) { console.error(e); }
   requestAnimationFrame(frame);
 }
 function titleBackdrop() {
@@ -7828,7 +7849,7 @@ Promise.all(preloadNames.map(n => { const s = sheet(n); return s.img.decode ? s.
 // ---- debug hooks (used by automated testing)
 window.__game = {
   get P() { return P; }, get boss() { return boss; }, get enemies() { return enemies; }, get room() { return room && room.id; }, get state() { return state; },
-  get SAVE() { return SAVE; }, get D() { return D; }, get props() { return props; }, get cut() { return cut; },
+  get SAVE() { return SAVE; }, get menu() { return menu; }, get SETTINGS() { return SETTINGS; }, get D() { return D; }, get props() { return props; }, get cut() { return cut; },
   newGame, continueGame, giveArmory, grantTechniques,
   tp(id, tx, ty) { if (state === 'menu') { menu = null; state = 'play'; } enterRoom(id, tx * TILE + 8, (ty + 1) * TILE, { card: true }); P.vx = P.vy = 0; setP('idle', 'idle', true); },
   give(o = {}) { Object.assign(SAVE, o); if (o.items) SAVE.items = { ...SAVE.items, ...o.items }; refreshDerived(); },
@@ -8565,7 +8586,7 @@ registerGear({ weapons: {
     desc: 'A furnace door riveted to a gauntlet, and a falchion to drive the slaves. It turns aside blows that would break a lesser guard.' },
   twinfangs: { name: 'Twinfangs', base: 26, sc: { str: 'D', dex: 'A', fth: '-' }, speed: 1.3, reach: 0.9, stam: 0.8, poise: 0.7, bleed: 14, art: 'twin_tempest',
     desc: 'The Hollow Champion fought a hundred duels in the ramparts’ pit and never once used one blade where two would do.' },
-  first_ember: { name: 'The First Ember', base: 40, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.2, fire: 0.2, art: 'echo', boss: true,
+  first_ember: { name: 'The First Ember', base: 38, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.2, fire: 0.2, art: 'echo', boss: true,
     desc: 'Your own shadow carried this out of the dark. It takes the shape of whatever weapon you last trusted, and every blow it lands strikes twice: once now, and once as an echo.' },
 } });
 if (typeof SHOPS !== 'undefined' && SHOPS.ashwright && !SHOPS.ashwright.some(e => e.item === 'w:quarterstaff'))
@@ -9636,7 +9657,7 @@ registerGear({ weapons: {
   barnacle_fang: { name: 'Barnacle Fang', base: 23, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.4, reach: 0.72, stam: 0.65, poise: 0.6, bleed: 24, art: 'bloodstep',
     desc: 'The Ferryman’s knife, a fang of shell. He took his fare in blood; so will you.' },
   // ---- The Crimson Manor
-  sanguine_rapier: { name: 'Sanguine Rapier', base: 36, sc: { str: 'E', dex: 'A', fth: 'D' }, speed: 1.15, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 22, art: 'blood_frenzy', boss: true,
+  sanguine_rapier: { name: 'Sanguine Rapier', base: 32, sc: { str: 'E', dex: 'A', fth: 'D' }, speed: 1.15, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 18, art: 'blood_frenzy', boss: true,
     desc: 'The Countess never drew it for anything but a duel. Finishing thrusts loose needles of blood, and every critical blow drinks deep.' },
   carving_knife: { name: 'Carving Knife', base: 24, sc: { str: 'D', dex: 'A', fth: '-' }, speed: 1.4, reach: 0.74, stam: 0.65, poise: 0.65, bleed: 20, crit: 1.2, art: 'bloodstep',
     desc: 'The Butler carved for the Countess’s table for two hundred years. Backstabs and ripostes cut 20% deeper.' },
@@ -9650,7 +9671,7 @@ registerGear({ weapons: {
   gravechain: { name: 'Gravechain', base: 30, sc: { str: 'D', dex: 'B', fth: '-' }, speed: 1.15, reach: 1.6, stam: 0.85, poise: 0.8, bleed: 10, art: 'lash',
     desc: 'Rusted links and a knot of old bone. It cracks hardest at its very tip, like a mourner’s last word.' },
   // ---- The Sunscorched Dunes
-  pharaoh_khopesh: { name: 'Khopesh of the Veiled Pharaoh', base: 40, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, fire: 0.15, art: 'solar_flare', boss: true,
+  pharaoh_khopesh: { name: 'Khopesh of the Veiled Pharaoh', base: 35, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, fire: 0.15, art: 'solar_flare', boss: true,
     desc: 'The sun-king’s sickle-sword. Its finishers hurl a spinning disc of sunlight that returns to the hand; its heavies raise the sand.' },
   sun_sceptre: { name: 'Sun Sceptre', base: 34, sc: { str: 'D', dex: 'D', fth: 'A' }, speed: 1.15, reach: 1.25, stam: 0.9, poise: 1.0, holy: 0.2, art: 'cinderblade',
     desc: 'Gold ringed in lapis, crowned with the sun. The priests who carried it are dust; the sun is not. Spells cast by its bearer burn 20% brighter.' },
@@ -9669,7 +9690,7 @@ registerGear({ weapons: {
   plasma_katana: { name: 'Plasma Katana', base: 40, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.2, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 10, art: 'overclock',
     desc: 'A blade of magenta light from NEO-HALLOW. It hums a song no one in Cinderhollow has heard.' },
   // ---- Sister Venn
-  last_kindling: { name: 'The Last Kindling', base: 46, sc: { str: 'C', dex: 'C', fth: 'B' }, speed: 1.0, reach: 1.35, stam: 1.2, poise: 1.35, fire: 0.2, holy: 0.1, art: 'pale_pyre', boss: true,
+  last_kindling: { name: 'The Last Kindling', base: 43, sc: { str: 'C', dex: 'C', fth: 'B' }, speed: 1.0, reach: 1.35, stam: 1.2, poise: 1.35, fire: 0.2, holy: 0.1, art: 'pale_pyre', boss: true,
     desc: 'Venn’s scythe of root and pale flame. She kept the last ember alive for you; now it is yours to tend. Its blows leave pyres of white fire where foes stood.' },
 } });
 
@@ -17459,7 +17480,7 @@ const UIC = { gold: '#e6c77a', hi: '#f5e3b0', text: '#e8dcc0', body: '#d8cdb4', 
 const UI_RGB = { gold: '230,199,122', accent: '176,138,58' };
 const TOUCH_UI = (() => { try { return matchMedia('(pointer: coarse)').matches; } catch (e) { return false; } })();
 const KEY_LABEL = TOUCH_UI ? { Enter: 'OK', Esc: 'Menu', Tab: 'Map', Q: '' } : {};
-const kl = k => (k in KEY_LABEL ? KEY_LABEL[k] : k);
+const kl = k => (PAD.active && k in PAD_KL ? PAD_KL[k] : k in KEY_LABEL ? KEY_LABEL[k] : k);
 
 // ---- widgets
 function uiRect(x, y, w, h, color, a = 1) { vctx.globalAlpha = a; vctx.fillStyle = color; vctx.fillRect(ox + x * scale, oy + y * scale, w * scale, h * scale); vctx.globalAlpha = 1; }
@@ -17896,7 +17917,7 @@ const GUIDE_PAGES = [
   ] },
   { name: 'Traversal', rows: () => [
     [['↓', '+', 'J'], 'Pogo', 'In the air, strike downward to bounce off foes and hazards.'],
-    [['K', 'in air'], 'Plunge', 'Heavy in the air dives down and crashes into whatever is below.'],
+    [['K', 'in air'], 'Plunge', 'Heavy in the air dives down and crashes into whatever is below. Any 2 attacks in the air use up the jump: land for a moment before attacking in the air again.'],
     [['S', '+', 'K'], 'Cinder Slam', 'In the air: slam down, shattering cracked floors. Two in a row at most.', 'slam'],
     [['Space', 'in air'], 'Double jump', 'Jump again in midair.', 'wings'],
     [['Space'], 'Wall-jump', 'Slide down a wall, then jump to leap off it.', 'talon'],
@@ -17971,7 +17992,7 @@ function renderTouchGuide() {
   const notes = [
     ['Move & aim', 'Left pad. ▼ + Jump drops through thin floors; ▼ + Strike in the air pogos.'],
     ['Hold to charge', 'Hold Heavy or Art to charge; hold Jump while falling to glide; hold Parry to block.'],
-    ['In the air', 'Heavy plunges; ▼ + Heavy is the Cinder Slam; Roll is an air dash.'],
+    ['In the air', 'Heavy plunges; ▼ + Heavy is the Cinder Slam; Roll is an air dash. Two attacks per jump.'],
     ['Menus', 'Arrows move, OK confirms, Menu goes back or closes, Map switches menu tabs.'],
     ['Travel', 'At a shrine, Map toggles the shrine list and the map cursor.'],
   ];
@@ -18426,7 +18447,7 @@ function tvUpdateBrambles(dt) {
   }
   // pogo off brambles with a downward strike (like spikes)
   if (P.state && P.anim.tag === 'attack_down' && !P.pogoed && P.anim.i >= 1 && P.anim.i <= 3) {
-    for (const dx of [-6, 0, 6]) { const t = tileAt(Math.floor((P.x + dx) / TILE), Math.floor((P.y + 10) / TILE)); if (t === TV_T_BRAMBLE) { pogo(); tvSfx.rustle(); break; } }
+    for (const dx of [-6, 0, 6]) { const t = tileAt(Math.floor((P.x + dx) / TILE), Math.floor((P.y + 10) / TILE)); if (t === TV_T_BRAMBLE) { pogo(); airRefund(); tvSfx.rustle(); break; } }
   }
   // foes that stumble into brambles get torn too (the hounds are made of them)
   TVR.brT -= dt;
@@ -26858,7 +26879,7 @@ ENEMY_CLASSES.nh_turret = class extends Enemy {
 };
 
 // ================================================================== boss effect lists (missiles, waves, strikes, blades, walls, rain, rings)
-const nhBD = d => BOSS_DMG * d * NGP.dmg;
+const nhBD = d => BOSS_DMG * d * NGP.dmg * (boss && boss.kind === 'saint0' ? 1.2 : 1);
 function nhUpdateBossFx(dt) {
   const B = boss;
   // ---- missiles: rise, hang (the landing spot is marked), dive
@@ -27068,7 +27089,7 @@ PHASE2_LINES.enforcer = ['', 'The riot shield shears away. Its reactor vents run
 // (or parried) back into the eye — three reflections overload it (stagger + critical). RED orbs cannot be touched.
 // The diaphragm is armour: shut it takes 30% damage, wide open 150%; it opens after each pattern cycle (EXPOSED).
 // Phase 2 (66%) adds the purge, spirals, dives and floor deletion; phase 3 (33%) drags you into cyberspace.
-BOSS_INFO.saint0 = { name: 'SAINT-0, the Null Saint', hp: 4500, cinders: 22000, reward: ['w:saint_lance', 'sp:null_field', 'c_neon'],
+BOSS_INFO.saint0 = { name: 'SAINT-0, the Null Saint', hp: 5800, cinders: 22000, reward: ['w:saint_lance', 'sp:null_field', 'c_neon'],
   quote: '“BE NOT AFRAID. BE ARCHIVED.”' };
 const NH_S0 = { P2: 0.66, P3: 0.33, X0: 5 * TILE + 10, X1: 36 * TILE - 6, YTOP: 50, FLOOR_X0: 4, FLOOR_X1: 36, AX0: 3 * TILE, AX1: 39 * TILE, R: 22 };
 const NH_S0_RINGS = [
@@ -27076,15 +27097,15 @@ const NH_S0_RINGS = [
   { R: 53, n: 8, a: 1.25, b: 1.0, sa: -0.36, sb: 0.24, spin: -0.7 },
   { R: 63, n: 8, a: 0.95, b: 2.2, sa: 0.22, sb: -0.4, spin: 0.55 },
 ];
-const NH_S0_EXPOSE = [0, 3, 4, 4];   // moves between exposures, per phase
-const nhS0D = (d, b) => BOSS_DMG * d * NGP.dmg * (b && b.phase === 3 ? 1.12 : 1);
+const NH_S0_EXPOSE = [0, 4, 5, 6];   // moves between exposures, per phase
+const nhS0D = (d, b) => BOSS_DMG * d * NGP.dmg * 1.2 * (b && b.phase === 3 ? 1.12 : 1);
 class NhSaint extends BossBase {
   constructor(x, y) {
     super('saint0', x, y);
     this.hp = this.maxHp = this.displayHp = Math.round(BOSS_INFO.saint0.hp * NGP.hp);
     this.parts = null;   // (BossBase uses .parts for multi-part bosses: keep it unset)
     this.sh = sheet('saint0_lid'); this.anim = new Anim(this.sh, 'aperture', false); this.state = 'dormant';
-    Object.assign(this, { stanceMax: 380, critRange: 90, open: 0, openT: 0.35, ringK: 0, wing: 0, halo: 0, visible: false, alpha: 1,
+    Object.assign(this, { stanceMax: 460, critRange: 90, open: 0, openT: 0.35, ringK: 0, wing: 0, halo: 0, visible: false, alpha: 1,
       q: [], cool: 1.2, last: null, speed: 1, cds: {}, bob: 0, glitchT: 0, look: { x: 0, y: 0 }, since: 0, fx: nhS0NewFx(),
       tx: x, ty: y - 90, vx: 0, vy: 0, descend: 1, face: -1, floating: true });
     this.x = x; this.y = y - 90;
@@ -27109,14 +27130,14 @@ class NhSaint extends BossBase {
   hit(info) {
     if (!this.alive) return;
     if (!this.active) { if (!this.cutting) this.activate(); return; }
-    const k = info.crit ? 1 : 0.3 + this.open * 1.2;
-    if (this.open < 0.3 && !info.crit) { sfx.block(); tone(980, 0.12, 0.04, 'square', 0.7); spawnFx(fxOr('parry_spark', 'hit'), info.x, info.y, info.dir); }
+    const k = info.crit ? 1 : 0.15 + this.open * 1.0;
+    if (this.open < 0.45 && !info.crit) { sfx.block(); tone(980, 0.12, 0.04, 'square', 0.7); spawnFx(fxOr('parry_spark', 'hit'), info.x, info.y, info.dir); }
     super.hit({ ...info, dmg: info.dmg * k });
     if (this.alive) this.glitchT = Math.max(this.glitchT, 0.12);
   }
   deflectHit(x, y) {   // a reflected white orb strikes the eye
     if (!this.alive || !this.active) return;
-    const dmg = Math.round(95 * (1 + 0.5 * this.open) * (D ? Math.max(1, D.light / 60) : 1));
+    const dmg = Math.round(70 * (1 + 0.5 * this.open) * (D ? Math.max(1, D.light / 60) : 1));
     this.hp = Math.max(0, this.hp - dmg); this.flash = 1; this.glitchT = 0.3;
     this.dmgShown = this.dmgT > 0 ? this.dmgShown + dmg : dmg; this.dmgT = 2.2;
     hitstop = Math.max(hitstop, 0.08); shake = Math.max(shake, 6); sfx.bigHit(); nhSfx.glitch(0.9);
@@ -27124,7 +27145,7 @@ class NhSaint extends BossBase {
     for (let i = 0; i < 18; i++) particles.push({ x, y, vx: rand(-140, 140), vy: rand(-140, 80), g: 200, life: rand(0.3, 0.7), kind: i % 2 ? 'nh_white' : 'nh_mote' });
     if (this.hp <= 0) return this.die();
     if (this.stanceImmune > 0 || this.state === 'stagger') return;
-    this.stance += 135; this.overload = (this.overload || 0) + 1;
+    this.stance += 100; this.overload = (this.overload || 0) + 1;
     if (this.stance >= this.stanceMax && this.canStagger()) this.stagger();
   }
   stagger() {
@@ -27144,6 +27165,7 @@ class NhSaint extends BossBase {
     if (!this.active) { this.y = this.floor - 90 - this.descend * 160; if (!this.cutting && this.wakeCheck()) this.activate(); return; }
     if (this.alive) { for (const e of this.q) { e.t -= dt; if (e.t <= 0 && !e.done) { e.done = true; e.fn(); } } this.q = this.q.filter(e => !e.done); }
     for (const k in this.cds) this.cds[k] -= dt;
+    nhS0HugCheck(this, dt);
     switch (this.state) {
       case 'idle': {
         this.cool -= dt; this.openT = 0.35; this.facePlayer();
@@ -27156,7 +27178,8 @@ class NhSaint extends BossBase {
       case 'exposed':
         this.mt += dt; this.openT = 1; this.ty = this.floor - 46;
         if (Math.random() < 0.3) particles.push({ x: this.x + rand(-20, 20), y: this.y - rand(10, 30), vx: rand(-10, 10), vy: -rand(20, 50), life: 0.8, kind: 'dust' });
-        if (this.mt >= this.mv.dur) { this.state = 'idle'; this.cool = 0.5; this.openT = 0.35; }
+        if (this.mt >= this.mv.dur - 0.45 && !this.mv.warned) { this.mv.warned = 1; tone(1600, 0.4, 0.05, 'square', 0.4); this.glitchT = 0.45; }
+        if (this.mt >= this.mv.dur) { this.state = 'idle'; this.cool = 0.35; this.openT = 0.35; nhS0Nova(this, this.phase >= 2 ? 14 : 10, this.phase === 3 ? 2 : 1); }
         break;
       case 'stagger':
         this.t -= dt; this.ty = this.floor - 24; this.tx = this.x; this.openT = 1;
@@ -27185,9 +27208,9 @@ class NhSaint extends BossBase {
   choose() {
     const ph = this.phase;
     if (this.since >= NH_S0_EXPOSE[ph]) return this.startExposed();
-    let w = ph === 1 ? { orbs: 2.2, volley: 1.5, limbo: 1.3, grid: 1.2, gaze: 1.1 }
-      : ph === 2 ? { orbs: 1.5, volley: 1.1, limbo: 1.0, grid: 1.0, gaze: 1.0, burn: 1.4, spiral: 1.2, dive: 1.2, delete: 0.8 }
-      : { orbs: 1.1, volley: 1.0, limbo: 1.0, grid: 0.9, gaze: 1.0, burn: 1.1, spiral: 1.2, dive: 1.2, lighthouse: 1.5, rain: 1.0 };
+    let w = ph === 1 ? { orbs: 2.0, volley: 1.5, limbo: 1.3, grid: 1.2, gaze: 1.1, dive: 0.8, nova: 0.9 }
+      : ph === 2 ? { orbs: 1.5, volley: 1.1, limbo: 1.0, grid: 1.0, gaze: 1.0, burn: 1.4, spiral: 1.2, dive: 1.3, delete: 0.8, nova: 1.0 }
+      : { orbs: 1.1, volley: 1.0, limbo: 1.0, grid: 0.9, gaze: 1.0, burn: 1.1, spiral: 1.2, dive: 1.3, lighthouse: 1.5, rain: 1.0, nova: 1.1 };
     for (const k in w) if (this.cds[k] > 0) w[k] = 0;
     if (NHR.dels.some(d => d.st !== 'solid')) { w.burn = 0; w.delete = 0; }
     if (w[this.last]) w[this.last] *= 0.25;
@@ -27196,7 +27219,7 @@ class NhSaint extends BossBase {
     this.last = m; this.startMove(m);
   }
   startMove(m) {
-    const cd = { gaze: 9, burn: 11, delete: 9, lighthouse: 8, rain: 6, spiral: 5, dive: 4, limbo: 5, grid: 4 }[m]; if (cd) this.cds[m] = cd;
+    const cd = { gaze: 8, burn: 10, delete: 8, lighthouse: 7, rain: 5, spiral: 4, dive: 3, limbo: 4, grid: 3.5, nova: 4 }[m]; if (cd) this.cds[m] = cd;
     this.state = 'attack'; this.move = m; this.mt = 0; this.mv = {}; this.atkId = ++hazardId; this.facePlayer();
     const side = this.x < P.x ? -1 : 1, fb = this.fx;
     if (m === 'orbs' || m === 'volley' || m === 'spiral') { this.tx = clamp(P.x + side * 115, this.L, this.R); this.ty = m === 'spiral' ? 76 : 88; }
@@ -27208,19 +27231,21 @@ class NhSaint extends BossBase {
     if (m === 'dive') { this.tx = clamp(P.x + side * 60, this.L, this.R); this.ty = 58; }
     if (m === 'lighthouse') { this.tx = clamp(P.x + away * 90, this.L, this.R); this.ty = 72; }
     if (m === 'rain') { this.ty = 60; }
+    if (m === 'nova') { this.tx = clamp(P.x + side * 70, this.L, this.R); this.ty = 70; }
     if (m === 'delete') { this.ty = 70; }
     nhSfx.voice(3);
   }
   endMove() {
     this.state = 'idle'; this.since++; this.mv = {}; this.openT = 0.35;
-    this.cool = this.phase === 1 ? rand(0.8, 1.2) : this.phase === 2 ? rand(0.55, 0.9) : rand(0.35, 0.6);
+    this.cool = this.phase === 1 ? rand(0.5, 0.8) : this.phase === 2 ? rand(0.3, 0.55) : rand(0.18, 0.38);
+    if (this.phase >= 2 && Math.random() < (this.phase === 3 ? 0.45 : 0.3)) this.cool = 0.05;   // chains straight into the next move
   }
   cancelMove() {
     const f = this.fx; f.beams = []; f.grid = []; f.limbo = []; f.gaze = null; f.lighthouse = null; this.mv = {};
     for (const c of f.covers) c.gone = true; for (const pl of f.plats) pl.fade = true; f.burn = null; NHR.rains = [];
   }
   startExposed() {
-    this.since = 0; this.state = 'exposed'; this.mt = 0; this.mv = { dur: this.phase === 3 ? 2.1 : 2.6 }; this.openT = 1; this.tx = this.x;
+    this.since = 0; this.state = 'exposed'; this.mt = 0; this.mv = { dur: this.phase === 3 ? 1.5 : 1.9 }; this.openT = 1; this.tx = this.x;
     toast('The eye opens', 1.2); nhSfx.chime(); tone(140, 0.9, 0.08, 'sawtooth', 0.5);
   }
   // ---------------------------------------------------------------- the moves
@@ -27229,30 +27254,30 @@ class NhSaint extends BossBase {
     const done = () => this.endMove();
     if (m === 'orbs') {
       this.openT = t < 0.7 ? 0.65 : 0.4;
-      const plan = ph === 1 ? [[0.75, 3, [1]]] : ph === 2 ? [[0.75, 5, [1, 3]], [1.45, 3, [1]]] : [[0.7, 7, [2, 4]], [1.3, 5, [2]]];
+      const plan = ph === 1 ? [[0.7, 5, [2]], [1.3, 3, [1]]] : ph === 2 ? [[0.7, 7, [1, 5]], [1.25, 5, [2]], [1.8, 7, [3]]] : [[0.6, 9, [2, 6]], [1.1, 7, [3]], [1.6, 9, [4]]];
       plan.forEach(([at, n, whites], k) => { if (t >= at && !mv['v' + k]) { mv['v' + k] = 1; nhS0Fan(this, n, whites); } });
       if (t > plan[plan.length - 1][0] + 0.9) done();
     } else if (m === 'volley') {
-      const n = [0, 4, 6, 8][ph], gap = ph === 3 ? 0.24 : 0.3;
+      const n = [0, 5, 8, 10][ph], gap = ph === 3 ? 0.2 : 0.25;
       if (!mv.list) { mv.list = nhS0PickLenses(this, n); mv.i = 0; }
       while (mv.i < mv.list.length && t >= 0.35 + mv.i * gap) { f.beams.push({ kind: 'lens', lens: mv.list[mv.i], t: 0, warn: 0.6, on: 0.14, tx: P.x + P.vx * 0.1, ty: P.y - 13, id: ++hazardId, dmg: 24 }); mv.i++; tone(1400, 0.12, 0.03, 'square', 1.3); }
       this.openT = 0.5;
       if (t > 0.35 + n * gap + 0.9) done();
     } else if (m === 'limbo') {
-      const beats = [0, 3, 4, 5][ph], sp = [0, 1.35, 1.05, 0.85][ph], warn = ph === 3 ? 0.7 : 0.85;
+      const beats = [0, 4, 5, 6][ph], sp = [0, 1.15, 0.92, 0.76][ph], warn = ph === 3 ? 0.6 : 0.72;
       if (!mv.seq) { mv.seq = []; for (let i = 0; i < beats; i++) mv.seq.push(Math.random() < 0.5 ? 'low' : 'high'); if (!mv.seq.includes('low')) mv.seq[0] = 'low'; if (beats > 2 && !mv.seq.includes('high')) mv.seq[1] = 'high'; mv.i = 0; }
       while (mv.i < beats && t >= 0.6 + mv.i * sp) { const low = mv.seq[mv.i] === 'low'; f.limbo.push({ y: this.floor - (low ? 8 : 38), low, t: 0, warn, on: 0.32, id: ++hazardId, dmg: 32 }); mv.i++; tone(low ? 660 : 990, 0.2, 0.04, 'triangle', low ? 1.4 : 0.7); }
       this.openT = 0.55;
       if (t > 0.6 + beats * sp + 0.6) done();
     } else if (m === 'grid') {
-      const pats = ph === 1 ? [0, 1] : ph === 2 ? [0, 1, 0] : [0, 1, 0, 1], warn = [0, 0.85, 0.75, 0.65][ph], step = warn + 0.55;
+      const pats = ph === 1 ? [0, 1] : ph === 2 ? [0, 1, 0] : [0, 1, 0, 1], warn = [0, 0.75, 0.65, 0.55][ph], step = warn + 0.55;
       if (!mv.i) mv.i = 0;
       while (mv.i < pats.length && t >= 0.5 + mv.i * step) { nhS0Grid(this, pats[mv.i], warn); mv.i++; }
       if (ph >= 2 && t >= 0.9 && !mv.orb) { mv.orb = 1; nhS0Fan(this, 1, [0]); }
       this.openT = 0.45;
       if (t > 0.5 + pats.length * step + 0.5) done();
     } else if (m === 'gaze') {
-      const track = [0, 2.2, 1.9, 1.6][ph];
+      const track = [0, 1.9, 1.6, 1.35][ph];
       if (t >= 0.5 && !f.gaze) { f.gaze = { t: 0, track, lock: 0.35, fire: 0.55, x: P.x, y: P.y - 13, id: ++hazardId, dmg: 48 }; nhSfx.charge(); toast('LOCK-ON — hide behind the hard-light', 1.6); }
       this.openT = f.gaze ? 0.85 : 0.5;
       if (f.gaze && f.gaze.t > track + 0.35 + 0.55 + 0.5) { f.gaze = null; for (const c of f.covers) c.gone = true; done(); }
@@ -27272,14 +27297,25 @@ class NhSaint extends BossBase {
       else if (mv.st === 'hold') { if (t - mv.h > 0.28) { mv.st = 'dive'; mv.manual = true; mv.x0 = this.x; mv.y0 = this.y; mv.d = 0; nhSfx.missile(); } }
       else if (mv.st === 'dive') {
         const tx = clamp(mv.lx, this.L, this.R), ty = this.floor - 24, L = Math.hypot(tx - mv.x0, ty - mv.y0) || 1;
-        mv.d = Math.min(L, mv.d + 400 * dt); this.x = mv.x0 + (tx - mv.x0) * mv.d / L; this.y = mv.y0 + (ty - mv.y0) * mv.d / L;
+        mv.d = Math.min(L, mv.d + (ph === 3 ? 520 : 440) * dt); this.x = mv.x0 + (tx - mv.x0) * mv.d / L; this.y = mv.y0 + (ty - mv.y0) * mv.d / L;
         if (overlap(this.hurtbox() || rect(0, 0, 0, 0), playerHurtbox())) hurtPlayer(nhS0D(40, this), P.x < this.x ? -1 : 1, this.atkId, { src: this });
         if (mv.d >= L) { mv.st = 'stuck'; mv.s = t; shake = 10; nhSfx.thud(); spawnFx('shockwave', this.x, this.floor, 1); for (const d of [-1, 1]) f.limbo.push({ wave: true, x: this.x, vx: d * 170, y: this.floor, t: 0, id: ++hazardId, dmg: 26 }); }
-      } else if (mv.st === 'stuck') { this.openT = 0.95; this.tx = this.x; this.ty = this.floor - 24; mv.manual = false; if (t - mv.s > 1.25) done(); }
+      } else if (mv.st === 'stuck') {
+        this.openT = 0.95; this.tx = this.x; this.ty = this.floor - 24; mv.manual = false;
+        if (ph >= 2 && !mv.again && t - mv.s > 0.55) { mv.again = 1; mv.st = 'lock'; this.mt = 0; mv.lx = P.x; this.ty = 58; }   // rises and dives again
+        else if (t - mv.s > 0.95) done();
+      }
     } else if (m === 'lighthouse') {
       if (t >= 0.5 && !f.lighthouse) { const a0 = Math.atan2(P.y - 13 - this.y, P.x - this.x) + Math.PI / 2; f.lighthouse = { t: 0, warn: 0.85, dur: 3.2, a: a0, w: (Math.random() < 0.5 ? 1 : -1) * 1.25, L: 180, id: ++hazardId, dmg: 34 }; nhSfx.beam(); }
       this.openT = 0.75;
       if (f.lighthouse && f.lighthouse.t > f.lighthouse.warn + f.lighthouse.dur) { f.lighthouse = null; done(); }
+    } else if (m === 'nova') {   // the halo flares, then bursts into a ring of light (two rings from phase 2)
+      this.openT = t < 0.7 ? 0.3 : 0.7; if (t < 0.7 && Math.random() < 0.5) particles.push({ x: this.x + rand(-40, 40), y: this.y + rand(-40, 40), vx: 0, vy: 0, life: 0.3, kind: 'nh_white' });
+      if (t >= 0.2 && !mv.w) { mv.w = 1; tone(900, 0.5, 0.05, 'sine', 2); this.glitchT = 0.4; }
+      if (t >= 0.75 && !mv.a) { mv.a = 1; nhS0Nova(this, ph === 1 ? 12 : 14, 1); }
+      if (ph >= 2 && t >= 1.25 && !mv.b) { mv.b = 1; nhS0Nova(this, 14, 1, Math.PI / 14); }
+      if (ph === 3 && t >= 1.7 && !mv.c) { mv.c = 1; nhS0Fan(this, 5, [2]); }
+      if (t > 2.3) done();
     } else if (m === 'rain') {
       if (!mv.r) { mv.r = 1; nhRain(this); }
       this.openT = 0.6; if (t > 3.0) done();
@@ -27330,6 +27366,11 @@ class NhSaint extends BossBase {
     nhS0DrawEye(this, jx, a, cyb);
     nhS0DrawRings(this, true, a, cyb);
     nhS0DrawHalo(this, a, cyb);
+    if (this.pulse) {   // the anti-hug pulse: a tightening ring, then the flash
+      const k = this.pulse.t / 0.45, r = k < 1 ? 78 * (1.4 - 0.4 * k) : 78 * (1 + (this.pulse.t - 0.45) * 2);
+      g.save(); g.globalAlpha = k < 1 ? 0.35 + 0.5 * k : Math.max(0, 1 - (this.pulse.t - 0.45) / 0.25); g.strokeStyle = k < 1 ? '#ff46c8' : '#e8fbff'; g.lineWidth = k < 1 ? 1 : 3;
+      g.beginPath(); g.arc(Math.round(this.x), Math.round(this.y), r, 0, 6.283); g.stroke(); g.restore();
+    }
     if (this.alive && !cyb) { addLight(this.x, this.y + 30, 120, '150,225,255', 0.5); addLight(this.x + this.look.x, this.y + this.look.y, 40, '255,90,210', 0.6 + this.open * 0.4); }
     if (this.critable()) { g.fillStyle = '#ffd070'; const y = Math.round(this.y - 34 + Math.sin(time * 8) * 1.5); g.fillRect(Math.round(this.x) - 1, y, 3, 3); g.fillRect(Math.round(this.x), y - 1, 1, 5); g.fillRect(Math.round(this.x) - 2, y + 1, 5, 1); }
   }
@@ -27471,6 +27512,27 @@ function nhS0Fan(b, n, whites) {
   const aim = Math.atan2(P.y - 14 - b.y, P.x - b.x), spread = b.phase === 3 ? 0.2 : 0.24, sp = [0, 115, 130, 150][b.phase];
   for (let k = 0; k < n; k++) nhS0Orb(b, aim + (k - (n - 1) / 2) * spread, sp, whites.includes(k) ? 'white' : 'red');
   nhSfx.shot(); tone(520, 0.2, 0.05, 'triangle', 1.6);
+}
+function nhS0Nova(b, n, whites, off = 0) {   // a ring of orbs in every direction; `whites` of them can be struck back
+  const a0 = Math.atan2(P.y - 14 - b.y, P.x - b.x) + off, sp = [0, 105, 120, 135][b.phase] || 120;
+  const step = Math.max(1, Math.floor(n / Math.max(1, whites)));
+  for (let k = 0; k < n; k++) nhS0Orb(b, a0 + (k + 0.5) / n * 6.283, sp, whites && k % step === 0 && k / step < whites ? 'white' : 'red');
+  nhSfx.shot(); nhSfx.glitch(0.5); shake = Math.max(shake, 4); flashScreen = Math.max(flashScreen, 0.1);
+}
+// standing right under the eye between openings: it pulses the space around it clean
+function nhS0HugCheck(b, dt) {
+  if (!b.alive || !b.active || ['exposed', 'stagger', 'dead', 'cyberWait'].includes(b.state) || P.state === 'dead') { b.hugT = 0; return; }
+  const near = Math.abs(P.x - b.x) < 58 && Math.abs(P.y - 14 - b.y) < 70;
+  if (b.pulse) {
+    b.pulse.t += dt;
+    if (b.pulse.t >= 0.45 && !b.pulse.hit) { b.pulse.hit = 1; shake = Math.max(shake, 6); nhSfx.glitch(0.8); tone(160, 0.4, 0.1, 'sawtooth', 0.5);
+      spawnFx(fxOr('nh_blast', 'shockwave'), b.x, b.y, 1);
+      if (Math.hypot(P.x - b.x, P.y - 14 - b.y) < 78) hurtPlayer(nhS0D(30, b), P.x < b.x ? -1 : 1, 'nhpulse' + (b.pulseN = (b.pulseN || 0) + 1), { src: b }); }
+    if (b.pulse.t > 0.7) b.pulse = null;
+    return;
+  }
+  b.hugT = near ? (b.hugT || 0) + dt : Math.max(0, (b.hugT || 0) - dt * 2);
+  if (b.hugT > (b.phase === 1 ? 1.4 : 1.0)) { b.hugT = 0; b.pulse = { t: 0 }; tone(1300, 0.35, 0.05, 'square', 0.6); b.glitchT = 0.45; }
 }
 function nhS0Aimed(b, kind) { nhS0Orb(b, Math.atan2(P.y - 14 - b.y, P.x - b.x), 120, kind); nhSfx.shot(); }
 function nhS0DrawOrbs() {
@@ -28689,6 +28751,8 @@ const CHEAT_ROWS = [
 ];
 
 function settingsSubInput(M, a) {
+  if (M.sub.kind === 'pad') return padSubInput(M, a);
+  if (M.sub.kind === 'gfx') return gfxSubInput(M, a);
   const S = M.sub, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
   if (S.capture) return;   // the next key press goes to KEY_CAPTURE instead of here
   if (['pause', 'back', 'heavy'].includes(a) || (a === 'left' && S.kind === 'cheats')) { M.sub = null; sfx.menu(); return; }
@@ -28728,6 +28792,8 @@ function settingsSubInput(M, a) {
 
 function renderSettingsSub(M) {
   const S = M.sub;
+  if (S.kind === 'pad') return renderPadSub(M);
+  if (S.kind === 'gfx') return renderGfxSub(M);
   uiBackdrop(0.9); uiStrips();
   if (S.kind === 'cheats') {
     uiTitle('CHEATS', 17, 9);
@@ -28796,6 +28862,343 @@ function renderSettingsSub(M) {
 
 // Infinite FP (Cheats); god mode and infinite stamina live in 09_main.js
 HOOKS.update.push(() => { if (P && D && SETTINGS.inffp) P.fp = D.maxFp; });
+
+// ------------------------------------------------------------------ Controller support (Gamepad API, "standard" layout)
+// Polled once per frame from frame() in 09_main.js. In play the buttons map through PAD.binds (Settings › Controller);
+// everywhere else (menus, title, dialog, cutscenes, map) a fixed layout drives the UI so a menu can never be locked out:
+// A confirm · B back · Start menu · View/RB map/next tab · LB previous tab · D-pad or left stick to move the cursor.
+// Buttons still held when the mode flips are latched until released, so the A that closed a menu doesn't also jump.
+const PAD_STORE = 'cinderhollow_pad';
+const PAD_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'View', 'Start', 'L3', 'R3', 'D-pad ↑', 'D-pad ↓', 'D-pad ←', 'D-pad →', 'Home'];
+const PAD_SHORT = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'View', 'Start', 'L3', 'R3', 'D↑', 'D↓', 'D←', 'D→', 'Home'];
+const PAD_DEFAULT = { jump: 0, roll: 1, attack: 2, interact: 3, parry: 4, art: 5, cast: 6, heavy: 7, map: 8, mana: 12, heal: 13, spell: 14, hook: 15 };
+const PAD_FIXED = 9;   // Start always opens the menu
+const PAD_BINDABLE = BINDABLE.filter(([a]) => a !== 'pause' && a !== 'mute');
+const PAD_UI = { 0: 'confirm', 1: 'back', 9: 'pause', 8: 'map', 5: 'map', 4: 'spell', 12: 'up', 13: 'down', 14: 'left', 15: 'right' };
+const PAD = { active: false, name: '', mode: 'play', prev: new Set(), raw: new Set(), latch: new Set(), rep: {}, binds: {}, capture: null, rumble: 1, seen: false };
+
+function padDefaults() { return { ...PAD_DEFAULT }; }
+function padLoad() {
+  PAD.binds = padDefaults();
+  try {
+    const s = JSON.parse(localStorage.getItem(PAD_STORE) || 'null');
+    if (s && s.binds) { PAD.binds = {}; for (const [a] of PAD_BINDABLE) if (Number.isInteger(s.binds[a]) && s.binds[a] !== PAD_FIXED) PAD.binds[a] = s.binds[a]; }
+    if (s && s.rumble !== undefined) PAD.rumble = s.rumble ? 1 : 0;
+  } catch (e) {}
+}
+function padSave() { try { localStorage.setItem(PAD_STORE, JSON.stringify({ binds: PAD.binds, rumble: PAD.rumble })); } catch (e) {} }
+function padBind(action, btn) {   // btn === null clears; a button moves away from any other action
+  for (const a of Object.keys(PAD.binds)) if (PAD.binds[a] === btn) delete PAD.binds[a];
+  if (btn === null) delete PAD.binds[action]; else PAD.binds[action] = btn;
+  padSave();
+}
+function padActionOf(i) { if (i === PAD_FIXED) return 'pause'; for (const a in PAD.binds) if (PAD.binds[a] === i) return a; return null; }
+padLoad();
+
+function padFind() {
+  let pads = []; try { pads = navigator.getGamepads ? navigator.getGamepads() : []; } catch (e) {}
+  for (const p of pads) if (p && p.connected && p.buttons && p.buttons.length >= 4) return p;
+  return null;
+}
+function padPoll(dt) {
+  const gp = padFind();
+  if (!gp) { if (PAD.prev.size) { for (const a of PAD.prev) release(a); PAD.prev = new Set(); } PAD.raw = new Set(); return; }
+  if (!PAD.seen) { PAD.seen = true; PAD.name = gp.id.replace(/\s*\(.*$/, '').slice(0, 34) || 'Controller'; toast(`Controller connected: ${PAD.name}`, 2.5); }
+  const down = new Set();
+  gp.buttons.forEach((b, i) => { if (i !== 16 && (b.pressed || b.value > 0.35)) down.add(i); });
+  const ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
+  if (ax < -0.4) down.add('s:left'); if (ax > 0.4) down.add('s:right');
+  if (ay < -0.55) down.add('s:up'); if (ay > 0.55) down.add('s:down');
+  const fresh = [...down].filter(k => !PAD.raw.has(k));
+  if (fresh.length) PAD.active = true;
+  // rebinding: the next fresh button goes to the capture callback (the stick doesn't count)
+  if (PAD.capture) {
+    const b = fresh.find(k => typeof k === 'number');
+    if (b !== undefined) { const f = PAD.capture; PAD.capture = null; for (const k of down) PAD.latch.add(k); f(b); }
+    PAD.raw = down; return;
+  }
+  const mode = state === 'play' ? 'play' : 'ui';
+  if (mode !== PAD.mode) { PAD.mode = mode; for (const k of down) PAD.latch.add(k); }
+  for (const k of [...PAD.latch]) if (!down.has(k)) PAD.latch.delete(k);
+  const want = new Set();
+  for (const k of down) {
+    if (PAD.latch.has(k)) continue;
+    const a = typeof k === 'string' ? k.slice(2) : mode === 'play' ? padActionOf(k) : PAD_UI[k];
+    if (a) want.add(a);
+  }
+  for (const a of want) if (!PAD.prev.has(a)) press(a);
+  for (const a of PAD.prev) if (!want.has(a)) release(a);
+  // held directions repeat in menus, like a held arrow key
+  for (const d of ['left', 'right', 'up', 'down']) {
+    if (mode !== 'ui' || !want.has(d)) { PAD.rep[d] = 0; continue; }
+    const t0 = PAD.rep[d] || 0, t1 = t0 + dt; PAD.rep[d] = t1;
+    if (t1 > 0.38 && Math.floor((t1 - 0.38) / 0.09) !== Math.floor(Math.max(0, t0 - 0.38) / 0.09)) onPressHook(d, true);
+  }
+  PAD.prev = want; PAD.raw = down;
+}
+// keyboard or mouse use hands the on-screen prompts back to the keyboard
+addEventListener('keydown', () => { PAD.active = false; }, true);
+addEventListener('mousedown', () => { PAD.active = false; }, true);
+addEventListener('gamepaddisconnected', () => { PAD.seen = false; PAD.active = false; toast('Controller disconnected', 2); });
+
+// ---- rumble
+function padRumble(strong, weak, ms) {
+  if (!PAD.rumble || !PAD.active) return;
+  const gp = padFind(); const va = gp && gp.vibrationActuator;
+  try { if (va && va.playEffect) va.playEffect('dual-rumble', { duration: ms, strongMagnitude: strong, weakMagnitude: weak }); } catch (e) {}
+}
+{ const _hurt = hurtPlayer; hurtPlayer = function (...args) { const hp0 = P ? P.hp : 0, r = _hurt.apply(this, args); if (r && P && P.hp < hp0) padRumble(P.hp <= 0 ? 1 : 0.55, 0.35, P.hp <= 0 ? 420 : 170); return r; }; }
+HOOKS.parry.push(() => padRumble(0.2, 0.6, 90));
+
+// ---- prompts follow the last device you touched
+const PAD_TEXT = [[/\bPress E\b/g, 'Press Y'], [/\bpress E\b/g, 'press Y'], [/\(Esc\)/g, '(Start)'], [/\bEsc\b/g, 'Start'], [/\bPress Enter\b/g, 'Press A'], [/\bPress Q\b/g, 'Press D-pad ←']];
+function padText(s) { if (!PAD.active || typeof s !== 'string') return s; for (const [re, r] of PAD_TEXT) s = s.replace(re, r); return s; }
+const PAD_KL = { Enter: 'A', Esc: 'B', Tab: 'View', Q: 'LB', Bksp: 'X', '↑↓': 'D-pad', '←→': 'D-pad', '↑↓←→': 'D-pad' };
+{
+  const _keysOf = keysOf;
+  keysOf = function (action) {
+    if (!PAD.active) return _keysOf(action);
+    if (['left', 'right', 'up', 'down'].includes(action)) { const b = PAD.binds[action]; return [...(b !== undefined ? [PAD_SHORT[b]] : []), 'L-stick']; }
+    if (action === 'pause') return ['Start'];
+    const b = PAD.binds[action]; return b !== undefined ? [PAD_SHORT[b]] : [];
+  };
+}
+
+// ---- Settings › Controller
+const PAD_ROWS = () => [...PAD_BINDABLE, ['__rumble', 'Vibration'], ['__reset', 'Reset to defaults']];
+function padSubInput(M, a) {
+  const S = M.sub, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a), rows = PAD_ROWS(), n = rows.length;
+  if (S.capture) return;
+  if (['pause', 'back', 'heavy'].includes(a)) { M.sub = null; sfx.menu(); return; }
+  if (a === 'up') { S.sel = (S.sel + n - 1) % n; sfx.menu(); return; }
+  if (a === 'down') { S.sel = (S.sel + 1) % n; sfx.menu(); return; }
+  const [act] = rows[S.sel];
+  if (act === '__rumble') { if (conf || a === 'left' || a === 'right') { PAD.rumble = PAD.rumble ? 0 : 1; padSave(); sfx.menu(); if (PAD.rumble) padRumble(0.4, 0.4, 150); } return; }
+  if (act === '__reset') { if (conf) { PAD.binds = padDefaults(); padSave(); sfx.kindle(); toast('Controller reset to defaults', 2.5); } return; }
+  if (!conf) return;
+  if (!padFind()) { sfx.deny(); toast('Connect a controller and press any button on it', 2.5); return; }
+  S.capture = true; sfx.glint();
+  const cancel = code => { if (!S.capture) return; S.capture = false; PAD.capture = null; clearBuffer(); if (code === 'Backspace') { padBind(act, null); sfx.menu(); } else sfx.menu(); };
+  KEY_CAPTURE = cancel;   // keyboard: Esc cancels, Backspace clears
+  PAD.capture = btn => {
+    S.capture = false; KEY_CAPTURE = null; clearBuffer();
+    if (btn === PAD_FIXED) { sfx.deny(); toast('Start is reserved for the menu', 2.5); return; }
+    const was = padActionOf(btn);
+    padBind(act, btn); sfx.kindle();
+    if (was && was !== act) toast(`${PAD_NAMES[btn]} moved from ${(BINDABLE.find(b => b[0] === was) || [0, was])[1]}`, 3);
+  };
+}
+function renderPadSub(M) {
+  const S = M.sub, rows = PAD_ROWS(), vis = 10, n = rows.length, gp = padFind();
+  uiBackdrop(0.9); uiStrips();
+  uiTitle('CONTROLLER', 17, 9);
+  text(gp ? `Connected: ${PAD.name || 'controller'}` : 'No controller found. Plug one in and press any button on it.', W / 2, 28, 5.4, gp ? '#8fd89a' : '#9a8f78', 'center', { weight: 400 });
+  S.off = clamp(S.off || 0, Math.max(0, S.sel - vis + 1), Math.min(S.sel, n - vis));
+  const px = 60, pw = 264, top = 34, rh = 14;
+  panel(px, top, pw, 12 + vis * rh);
+  text('ACTION', px + 12, top + 10, 5, '#8a7f6a', 'left', { spacing: 1 });
+  text('BUTTON', px + 214, top + 10, 5, '#8a7f6a', 'center', { spacing: 1 });
+  for (let r = 0; r < vis && S.off + r < n; r++) {
+    const i = S.off + r, [act, label] = rows[i], y = top + 24 + r * rh, sel = i === S.sel;
+    if (sel) uiSel(px + 4, y - 10, pw - 8, rh - 1);
+    if (act === '__reset') { text(label, px + pw / 2, y, 6.4, sel ? '#f5e3b0' : UIC.gold, 'center', { weight: 600 }); continue; }
+    text(label, px + 12, y, 6.2, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+    let lbl, lit;
+    if (act === '__rumble') { lbl = PAD.rumble ? 'On' : 'Off'; lit = !!PAD.rumble; }
+    else { const b = PAD.binds[act], cap = sel && S.capture; lbl = cap ? '…' : b !== undefined ? PAD_NAMES[b] : ['left', 'right', 'up', 'down'].includes(act) ? 'L-stick' : '—'; lit = cap || b !== undefined; }
+    const cx = px + 214, w = Math.max(30, textW(lbl, 6, 600) + 10);
+    vctx.fillStyle = sel ? 'rgba(176,138,58,0.35)' : 'rgba(255,255,255,0.05)';
+    vctx.fillRect(ox + (cx - w / 2) * scale, oy + (y - 8) * scale, w * scale, 11 * scale);
+    text(lbl, cx, y, 6, lit ? '#f1e6c8' : '#6f6656', 'center', { weight: 600 });
+  }
+  if (S.off > 0) text('▲', px + pw - 10, top + 16, 5, '#9a8f78', 'center');
+  if (S.off + vis < n) text('▼', px + pw - 10, top + 12 + vis * rh, 5, '#9a8f78', 'center');
+  text('Move with the left stick. Start always opens the menu. In menus: A confirm, B back, LB/RB switch tabs.', W / 2, top + 24 + vis * rh, 5, '#8a7f6a', 'center', { weight: 400 });
+  if (S.capture) {
+    const act = rows[S.sel];
+    vctx.fillStyle = 'rgba(0,0,0,0.55)'; vctx.fillRect(ox, oy, W * scale, H * scale);
+    vctx.fillStyle = 'rgb(12,9,16)'; vctx.fillRect(ox + 92 * scale, oy + 84 * scale, 200 * scale, 44 * scale);
+    vctx.strokeStyle = '#b08a3a'; vctx.strokeRect(ox + 92 * scale, oy + 84 * scale, 200 * scale, 44 * scale);
+    text(`Press a button for “${act[1]}”`, W / 2, 101, 7, '#f5e3b0', 'center', { weight: 600 });
+    text('Keyboard: Esc cancel  ·  Backspace clear', W / 2, 116, 5.6, '#b8ab90', 'center', { weight: 400 });
+  }
+  uiFooter([['↑↓', 'select'], ['Enter', rows[S.sel][0] === '__reset' ? 'reset' : rows[S.sel][0] === '__rumble' ? 'toggle' : 'rebind'], ['Esc', 'back']]);
+}
+
+// ------------------------------------------------------------------ Graphics: texture filter + post-process shaders
+// The world renders to the 384x216 `low` canvas. presentWorld() (called from render() in 09_main.js) either blits it
+// straight onto the view, or uploads it to a WebGL canvas and runs one fragment shader over it (texture filter, bloom,
+// colour grade, scanlines/CRT, chromatic aberration, vignette, grain) before the HUD and menus draw on top, crisp.
+// If WebGL is missing or the context is lost, the plain blit takes over and the shader rows say so.
+const GFX_DEFAULTS = { shaders: TOUCH_UI ? 0 : 1, tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 };
+for (const [k, v] of Object.entries(GFX_DEFAULTS)) if (SETTINGS[k] === undefined) SETTINGS[k] = v;
+const GFX_KEYS = ['tex', 'bloom', 'vig', 'scan', 'grain', 'ca', 'grade'];
+const GFX_PRESETS = [
+  ['Cinematic', { tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 }],
+  ['Ember glow', { tex: 1, bloom: 2, vig: 1, scan: 0, grain: 0, ca: 0, grade: 1 }],
+  ['Moonlit', { tex: 0, bloom: 1, vig: 1, scan: 0, grain: 1, ca: 0, grade: 2 }],
+  ['Noir', { tex: 0, bloom: 1, vig: 1, scan: 0, grain: 1, ca: 0, grade: 3 }],
+  ['Vivid', { tex: 0, bloom: 2, vig: 0, scan: 0, grain: 0, ca: 0, grade: 4 }],
+  ['Retro CRT', { tex: 0, bloom: 1, vig: 1, scan: 2, grain: 1, ca: 1, grade: 0 }],
+  ['Clean', { tex: 0, bloom: 0, vig: 0, scan: 0, grain: 0, ca: 0, grade: 0 }],
+];
+const GFX = { ok: null, cv: null, gl: null, prog: null, tex: null, u: {}, lost: false };
+
+const GFX_VS = `attribute vec2 a; varying vec2 v; void main() { v = a * 0.5 + 0.5; gl_Position = vec4(a, 0.0, 1.0); }`;
+const GFX_FS = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec2 v;
+uniform sampler2D T;
+uniform vec2 S, O;
+uniform float tm, bloom, vig, scan, grain, ca, filt, grade;
+float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+vec3 tap(vec2 uv) {
+  vec2 t = uv * S;
+  if (filt < 0.5) t = floor(t) + 0.5;                               // crisp: nearest texel
+  else if (filt < 1.5) {                                            // smooth pixels: sharp-bilinear (pixel art, soft seams)
+    float k = max(1.0, floor(O.x / S.x + 0.01)), r = 0.5 - 0.5 / k;
+    vec2 fl = floor(t), c = fract(t) - 0.5;
+    t = fl + (c - clamp(c, -r, r)) * k + 0.5;
+  }
+  return texture2D(T, t / S).rgb;
+}
+void main() {
+  vec2 uv = v;
+  if (scan > 1.5) {                                                 // CRT: barrel curve
+    vec2 c = uv * 2.0 - 1.0; c *= 1.0 + vec2(0.028, 0.045) * dot(c, c); uv = c * 0.5 + 0.5;
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) { gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); return; }
+  }
+  vec3 col;
+  if (ca > 0.5) { vec2 o = (uv - 0.5) * vec2(1.6, 1.2) / S; col = vec3(tap(uv + o).r, tap(uv).g, tap(uv - o).b); }
+  else col = tap(uv);
+  if (bloom > 0.5) {                                                // bright-pass ring taps around the texel
+    vec3 b = vec3(0.0);
+    for (float i = 0.0; i < 12.0; i += 1.0) {
+      float a = i * 0.5236 + 0.26, r = mod(i, 2.0) < 0.5 ? 1.7 : 3.8;
+      vec3 s = texture2D(T, uv + vec2(cos(a), sin(a)) * r / S).rgb;
+      b += max(s - 0.52, 0.0) * (r < 2.0 ? 1.0 : 0.6);
+    }
+    col += b * (bloom > 1.5 ? 0.34 : 0.19);
+  }
+  float l = dot(col, vec3(0.299, 0.587, 0.114));
+  if (grade > 0.5 && grade < 1.5) { col *= vec3(1.07, 0.98, 0.86); col += vec3(0.025, 0.012, 0.0) * (1.0 - l); }          // ember
+  else if (grade > 1.5 && grade < 2.5) { col = mix(vec3(l), col, 0.8) * vec3(0.88, 0.98, 1.12); col += vec3(0.0, 0.006, 0.02); }  // moonlit
+  else if (grade > 2.5 && grade < 3.5) { col = vec3(l) * vec3(1.03, 1.0, 0.94); col = (col - 0.5) * 1.22 + 0.5; }       // noir
+  else if (grade > 3.5) { col = mix(vec3(l), col, 1.32); col = (col - 0.5) * 1.07 + 0.5; }                                 // vivid
+  if (scan > 0.5) {                                                 // one scanline per game pixel row
+    float y = fract(uv.y * S.y), sl = 0.5 - 0.5 * cos(6.2832 * y);
+    col *= mix(1.0, 0.5 + 0.5 * sl, scan > 1.5 ? 0.55 : 0.32);
+    if (scan > 1.5) { float m = mod(gl_FragCoord.x, 3.0); col *= (m < 1.0 ? vec3(1.08, 0.9, 0.9) : m < 2.0 ? vec3(0.9, 1.08, 0.9) : vec3(0.9, 0.9, 1.08)) * 1.12; }
+  }
+  if (vig > 0.5) { vec2 c = (uv - 0.5) * vec2(1.0, 0.85); col *= 1.0 - 0.42 * smoothstep(0.28, 0.72, length(c)); }
+  if (grain > 0.5) col += (hash(gl_FragCoord.xy + fract(tm * 7.13) * 311.0) - 0.5) * 0.07;
+  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+}`;
+
+function gfxInit() {
+  GFX.ok = false;
+  try {
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const gl = cv.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
+    if (!gl) return false;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+    const prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, GFX_VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, GFX_FS)); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+    gl.useProgram(prog);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    for (const n of ['T', 'S', 'O', 'tm', 'bloom', 'vig', 'scan', 'grain', 'ca', 'filt', 'grade']) GFX.u[n] = gl.getUniformLocation(prog, n);
+    cv.addEventListener('webglcontextlost', e => { e.preventDefault(); GFX.ok = false; GFX.lost = true; });
+    Object.assign(GFX, { cv, gl, prog, tex, ok: true });
+  } catch (e) { console.warn('shaders unavailable:', e && e.message); GFX.ok = false; }
+  return GFX.ok;
+}
+function gfxReady() { return GFX.ok === null ? gfxInit() : GFX.ok; }
+function gfxRender(w, h) {
+  const { gl, cv, u } = GFX;
+  const k = Math.min(1, 2560 / w), ow = Math.max(W, Math.round(w * k)), oh = Math.max(H, Math.round(h * k));
+  if (cv.width !== ow || cv.height !== oh) { cv.width = ow; cv.height = oh; }
+  gl.viewport(0, 0, ow, oh);
+  gl.bindTexture(gl.TEXTURE_2D, GFX.tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, low);
+  gl.uniform1i(u.T, 0); gl.uniform2f(u.S, W, H); gl.uniform2f(u.O, ow, oh); gl.uniform1f(u.tm, time % 1000);
+  gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
+  gl.uniform1f(u.ca, SETTINGS.ca); gl.uniform1f(u.filt, SETTINGS.tex); gl.uniform1f(u.grade, SETTINGS.grade);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+function presentWorld() {
+  const w = W * scale, h = H * scale;
+  if (SETTINGS.shaders && gfxReady()) {
+    try { gfxRender(w, h); vctx.imageSmoothingEnabled = true; vctx.drawImage(GFX.cv, ox, oy, w, h); return; }
+    catch (e) { console.warn('shader pass failed, falling back:', e && e.message); GFX.ok = false; }
+  }
+  vctx.imageSmoothingEnabled = SETTINGS.tex === 2; if (vctx.imageSmoothingEnabled) vctx.imageSmoothingQuality = 'high';
+  vctx.drawImage(low, ox, oy, w, h);
+  vctx.imageSmoothingEnabled = false;
+}
+
+// ---- Settings › Graphics & shaders
+const GFX_ROWS = [
+  { k: 'shaders', label: 'Shaders', opts: ['Off', 'On'], desc: 'Post-processing on the game world (the HUD stays sharp). Turn off on slow devices.' },
+  { k: 'preset', label: 'Look', desc: 'A ready-made mix of the options below. Change any of them to make your own.' },
+  { k: 'tex', label: 'Texture filter', opts: ['Crisp pixels', 'Smooth pixels', 'Soft'], desc: 'Crisp: hard pixel edges. Smooth pixels: clean anti-aliased pixel art (needs shaders). Soft: blurred.' },
+  { k: 'bloom', label: 'Bloom', opts: ['Off', 'Low', 'High'], shader: true, desc: 'Embers, fire, spells and light sources glow and bleed into the dark.' },
+  { k: 'grade', label: 'Colour grade', opts: ['Natural', 'Ember', 'Moonlit', 'Noir', 'Vivid'], shader: true, desc: 'Tints the whole world: warm ember, cold moonlight, black-and-white noir, or richer colour.' },
+  { k: 'vig', label: 'Lens vignette', opts: ['Off', 'On'], shader: true, desc: 'Darkens the corners a little more, like an old lens.' },
+  { k: 'scan', label: 'Scanlines', opts: ['Off', 'Soft', 'CRT'], shader: true, desc: 'Soft: faint lines between pixel rows. CRT: a curved old monitor with a phosphor mask.' },
+  { k: 'grain', label: 'Film grain', opts: ['Off', 'On'], shader: true, desc: 'A fine moving grain over the picture.' },
+  { k: 'ca', label: 'Chromatic aberration', opts: ['Off', 'On'], shader: true, desc: 'Red and blue split slightly toward the edges of the screen.' },
+];
+function gfxPresetIdx() { return GFX_PRESETS.findIndex(([, v]) => GFX_KEYS.every(k => (SETTINGS[k] || 0) === v[k])); }
+function gfxSubInput(M, a) {
+  const S = M.sub, n = GFX_ROWS.length, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
+  if (['pause', 'back', 'heavy'].includes(a)) { M.sub = null; sfx.menu(); return; }
+  if (a === 'up') { S.sel = (S.sel + n - 1) % n; sfx.menu(); return; }
+  if (a === 'down') { S.sel = (S.sel + 1) % n; sfx.menu(); return; }
+  if (!(a === 'left' || a === 'right' || conf)) return;
+  const R = GFX_ROWS[S.sel], d = a === 'left' ? -1 : 1;
+  if (R.k === 'preset') {
+    const i = gfxPresetIdx(), ni = ((i < 0 ? (d > 0 ? -1 : 0) : i) + d + GFX_PRESETS.length) % GFX_PRESETS.length;
+    Object.assign(SETTINGS, GFX_PRESETS[ni][1]); if (!SETTINGS.shaders) SETTINGS.shaders = 1;
+  } else {
+    if (R.k === 'shaders' && !SETTINGS.shaders && !gfxReady()) { sfx.deny(); toast('This browser can’t run the shaders (no WebGL)', 2.5); return; }
+    SETTINGS[R.k] = ((SETTINGS[R.k] || 0) + d + R.opts.length) % R.opts.length;
+    if (R.shader && !SETTINGS.shaders) SETTINGS.shaders = 1;
+  }
+  saveSettings(); sfx.menu();
+}
+function renderGfxSub(M) {
+  const S = M.sub;
+  uiBackdrop(0.12);
+  vctx.fillStyle = 'rgba(6,4,10,0.86)'; vctx.fillRect(ox, oy, 214 * scale, H * scale);   // the right side stays clear: a live preview
+  uiTitle('GRAPHICS', 17, 9);
+  const px = 12, pw = 196, top = 32, rh = 15, on = !!SETTINGS.shaders, bad = GFX.ok === false;
+  panel(px, top, pw, 10 + GFX_ROWS.length * rh);
+  GFX_ROWS.forEach((R, i) => {
+    const y = top + 17 + i * rh, sel = i === S.sel, dim = (R.shader && !on);
+    if (sel) uiSel(px + 4, y - 10, pw - 8, rh - 1);
+    text(R.label, px + 12, y, 6.2, sel ? '#f5e3b0' : dim ? '#7f745f' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+    let val;
+    if (R.k === 'preset') { const pi = gfxPresetIdx(); val = pi < 0 ? 'Custom' : GFX_PRESETS[pi][0]; }
+    else if (R.k === 'shaders' && bad) val = 'Unavailable';
+    else val = R.opts[SETTINGS[R.k] || 0];
+    if (R.k === 'tex' && SETTINGS.tex === 1 && !on) val += ' (off)';
+    text((sel ? '◂ ' : '') + val + (sel ? ' ▸' : ''), px + pw - 10, y, 6.2, dim ? '#6f6656' : (R.k === 'shaders' ? (on ? '#ffd070' : '#8a7f6a') : '#f1e6c8'), 'right', { weight: 600 });
+  });
+  const R = GFX_ROWS[S.sel];
+  wrap(R.desc, pw - 16, 5.4).forEach((ln, i) => text(ln, px + 8, top + 24 + GFX_ROWS.length * rh + i * 8, 5.4, '#b8ab90', 'left', { weight: 400 }));
+  text('Preview →', 300, 30, 5.6, '#b8ab90', 'center', { weight: 400, alpha: 0.8 });
+  uiFooter([['↑↓', 'select'], ['←→', 'change'], ['Esc', 'back']]);
+}
+
+Object.assign(window.__game, { pad: padPoll, PAD, GFX, GFX_PRESETS });   // headless tests
 
 };</script>
 <script>(() => { const SZ = {"assets0.json": 8993238, "assets1.json": 8776659, "assets2.json": 7704702}, got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };

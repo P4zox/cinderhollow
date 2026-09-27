@@ -357,8 +357,7 @@ function renderWorld() {
 function render() {
   renderWorld();
   vctx.fillStyle = '#050407'; vctx.fillRect(0, 0, view.width, view.height);
-  vctx.imageSmoothingEnabled = false;
-  vctx.drawImage(low, ox, oy, W * scale, H * scale);
+  presentWorld();   // 40_gfx.js: straight blit, or through the post-process shader
   if (state === 'title') renderTitle();
   else {
     if (P && D && state !== 'cut') { renderHUD(); runHooks('hud'); }
@@ -377,7 +376,7 @@ function render() {
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  try { update(dt); render(); updateMusic(); } catch (e) { console.error(e); }
+  try { padPoll(dt); update(dt); render(); updateMusic(); } catch (e) { console.error(e); }
   requestAnimationFrame(frame);
 }
 function titleBackdrop() {
@@ -402,7 +401,7 @@ Promise.all(preloadNames.map(n => { const s = sheet(n); return s.img.decode ? s.
 // ---- debug hooks (used by automated testing)
 window.__game = {
   get P() { return P; }, get boss() { return boss; }, get enemies() { return enemies; }, get room() { return room && room.id; }, get state() { return state; },
-  get SAVE() { return SAVE; }, get D() { return D; }, get props() { return props; }, get cut() { return cut; },
+  get SAVE() { return SAVE; }, get menu() { return menu; }, get SETTINGS() { return SETTINGS; }, get D() { return D; }, get props() { return props; }, get cut() { return cut; },
   newGame, continueGame, giveArmory, grantTechniques,
   tp(id, tx, ty) { if (state === 'menu') { menu = null; state = 'play'; } enterRoom(id, tx * TILE + 8, (ty + 1) * TILE, { card: true }); P.vx = P.vy = 0; setP('idle', 'idle', true); },
   give(o = {}) { Object.assign(SAVE, o); if (o.items) SAVE.items = { ...SAVE.items, ...o.items }; refreshDerived(); },

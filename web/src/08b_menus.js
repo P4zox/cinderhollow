@@ -42,13 +42,13 @@ function invList() {
   return out;
 }
 const SETTING_ROWS = [
-  { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' },
+  { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' }, { k: 'pad', label: 'Controller' }, { k: 'gfx', label: 'Graphics & shaders' },
   { k: 'music', label: 'Music volume', step: 0.1 }, { k: 'sfx', label: 'Effects volume', step: 0.1 },
   { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
   { k: 'cheats', label: 'Cheats (test)' }, { k: 'quit', label: 'Save & quit to title' },
 ];
 
-const SETTING_ACTIONS = ['guide', 'keys', 'cheats', 'quit'];
+const SETTING_ACTIONS = ['guide', 'keys', 'pad', 'gfx', 'cheats', 'quit'];
 function pauseInput(a) {
   const M = menu, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
   if (M.guide) return guideInput(M, a);
@@ -68,6 +68,7 @@ function pauseInput(a) {
     if (R.k === 'quit' && conf) { menu = null; saveGame(); state = 'title'; titleSel = 0; return; }
     if (R.k === 'keys') { if (conf || a === 'right') { M.sub = { kind: 'keys', sel: 0, col: 0, off: 0 }; sfx.menu(); } return; }
     if (R.k === 'cheats') { if (conf || a === 'right') { M.sub = { kind: 'cheats', sel: 0 }; sfx.menu(); } return; }
+    if (R.k === 'pad' || R.k === 'gfx') { if (conf || a === 'right') { M.sub = { kind: R.k, sel: 0, off: 0 }; sfx.menu(); } return; }
     if ((a === 'left' || a === 'right' || conf) && !SETTING_ACTIONS.includes(R.k)) {
       const d = a === 'left' ? -1 : 1;
       if (R.toggle) SETTINGS[R.k] = SETTINGS[R.k] ? 0 : 1;
