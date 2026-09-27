@@ -227,6 +227,7 @@ function addLight(x, y, r, color = '255,190,110', k = 1, o) { lights.push({ x, y
 function renderLighting() {
   const A = AREAS[room.def.biome];
   let amb = typeof darkT !== 'undefined' && darkT > 0 ? Math.min(0.97, A.ambient + 0.4 * Math.min(1, darkT)) : A.ambient;
+  amb = Math.min(0.97, amb * [1.15, 1, 0.72][SETTINGS.bright ?? 1]);   // Settings › Graphics › Brightness
   lg.globalCompositeOperation = 'source-over';
   lg.clearRect(0, 0, W, H);
   lg.fillStyle = `rgba(4,3,8,${amb})`; lg.fillRect(0, 0, W, H);

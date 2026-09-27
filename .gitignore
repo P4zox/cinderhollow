@@ -21,3 +21,7 @@ art/previews/
 # user-supplied reference art (not ours to redistribute)
 art/concepts/ref_*
 tools/.reach_cache.json
+tools/shots/*/out/
+tools/shots/*/*/
+tools/shots/**/*.png
+tools/shots/**/*.log

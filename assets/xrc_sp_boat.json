@@ -1,0 +1,50 @@
+{ "frames": [
+   {
+    "filename": "xrc_sp_boat 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 20 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 20 },
+    "sourceSize": { "w": 48, "h": 20 },
+    "duration": 220
+   },
+   {
+    "filename": "xrc_sp_boat 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 20 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 20 },
+    "sourceSize": { "w": 48, "h": 20 },
+    "duration": 220
+   },
+   {
+    "filename": "xrc_sp_boat 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 20 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 20 },
+    "sourceSize": { "w": 48, "h": 20 },
+    "duration": 220
+   },
+   {
+    "filename": "xrc_sp_boat 3.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 20 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 20 },
+    "sourceSize": { "w": 48, "h": 20 },
+    "duration": 220
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xrc_sp_boat.png",
+  "format": "RGBA8888",
+  "size": { "w": 192, "h": 20 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "bob", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

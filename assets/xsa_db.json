@@ -1,0 +1,270 @@
+{ "frames": [
+   {
+    "filename": "xsa_db 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 3.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 220
+   },
+   {
+    "filename": "xsa_db 4.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 220
+   },
+   {
+    "filename": "xsa_db 5.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 220
+   },
+   {
+    "filename": "xsa_db 6.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 220
+   },
+   {
+    "filename": "xsa_db 7.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 220
+   },
+   {
+    "filename": "xsa_db 8.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 220
+   },
+   {
+    "filename": "xsa_db 9.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "xsa_db 10.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "xsa_db 11.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "xsa_db 12.aseprite",
+    "frame": { "x": 576, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 140
+   },
+   {
+    "filename": "xsa_db 13.aseprite",
+    "frame": { "x": 624, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 14.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 15.aseprite",
+    "frame": { "x": 720, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 16.aseprite",
+    "frame": { "x": 768, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 130
+   },
+   {
+    "filename": "xsa_db 17.aseprite",
+    "frame": { "x": 816, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 130
+   },
+   {
+    "filename": "xsa_db 18.aseprite",
+    "frame": { "x": 864, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 130
+   },
+   {
+    "filename": "xsa_db 19.aseprite",
+    "frame": { "x": 912, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 1400
+   },
+   {
+    "filename": "xsa_db 20.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 1400
+   },
+   {
+    "filename": "xsa_db 21.aseprite",
+    "frame": { "x": 1008, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 1400
+   },
+   {
+    "filename": "xsa_db 22.aseprite",
+    "frame": { "x": 1056, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 1400
+   },
+   {
+    "filename": "xsa_db 23.aseprite",
+    "frame": { "x": 1104, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 24.aseprite",
+    "frame": { "x": 1152, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 25.aseprite",
+    "frame": { "x": 1200, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   },
+   {
+    "filename": "xsa_db 26.aseprite",
+    "frame": { "x": 1248, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 120
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xsa_db.png",
+  "format": "RGBA8888",
+  "size": { "w": 1296, "h": 48 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "gravecross", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "gravestone", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "cairn", "from": 2, "to": 2, "direction": "forward", "color": "#000000ff" },
+   { "name": "weeds", "from": 3, "to": 8, "direction": "forward", "color": "#000000ff" },
+   { "name": "chainlamp", "from": 9, "to": 12, "direction": "forward", "color": "#000000ff" },
+   { "name": "tomb", "from": 13, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "tomb_leak", "from": 14, "to": 14, "direction": "forward", "color": "#000000ff" },
+   { "name": "pew", "from": 15, "to": 15, "direction": "forward", "color": "#000000ff" },
+   { "name": "candles_db", "from": 16, "to": 18, "direction": "forward", "color": "#000000ff" },
+   { "name": "pearlclam", "from": 19, "to": 22, "direction": "forward", "color": "#000000ff" },
+   { "name": "tidemark", "from": 23, "to": 23, "direction": "forward", "color": "#000000ff" },
+   { "name": "wellcover", "from": 24, "to": 24, "direction": "forward", "color": "#000000ff" },
+   { "name": "sluice", "from": 25, "to": 25, "direction": "forward", "color": "#000000ff" },
+   { "name": "coral", "from": 26, "to": 26, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

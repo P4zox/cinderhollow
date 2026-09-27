@@ -13,6 +13,9 @@ const LX = { on: false, bad: false, prog: null, u: {}, NL: 48, SS: 12, n: 0, LP:
 const LX_TUNE = { amb: 0.78, gain: 2.0, haze: 0.09, emi: 0.65, ao: 0.42, aoMax: 0.46, fall: 1.0, depth: 34, sat: 0.85, knee: 1.0, top: 1.9, player: 0.85 };
 // ambient light colour per biome. The level comes from AREAS[b].ambient (the old darkness) so darkT and boss rooms keep working.
 // A region can override with AREAS[b].lx = { amb: 'r,g,b', lvl: 0.9 } from its own file.
+// playtest pass: the darkest regions were hard to read under Dynamic lighting; lift their ambient a little
+const LX_BOOST = { crown: 0.88, necropolis: 1.4, nv_void: 1.25, thornveil: 1.35, barrows: 1.4, crimson: 1.3, catacombs: 1.25, hoarfrost: 1.25, ember: 1.3, cathedral: 1.1, spire: 1.1, starfall: 1.1 };
+const LX_BRIGHT = [0.8, 1, 1.3];   // Settings › Graphics › Brightness: Dark / Normal / Bright
 const LX_AMB = {
   ramparts: '175,150,205', catacombs: '125,150,195', cathedral: '165,150,200', mire: '130,180,130', crown: '235,238,248', archives: '185,165,140',
   deep: '220,130,95', spire: '140,160,210', hermit: '180,160,135', ember: '215,130,100', hoarfrost: '145,180,225', sov_void: '190,170,220',
@@ -70,7 +73,7 @@ function lxCol(s) {   // 'r,g,b' or '#rrggbb' -> colour normalised so its bright
 function lxCollect(ls) {
   const bio = room.def.biome, A = AREAS[bio] || {}, O = A.lx || {};
   const a0 = A.ambient ?? 0.5, amb = typeof darkT !== 'undefined' && darkT > 0 ? Math.min(0.97, a0 + 0.4 * Math.min(1, darkT)) : a0;
-  const c = lxCol(O.amb || LX_AMB[bio] || '150,155,180'), lum = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2], lvl = (1 - amb) * (O.lvl ?? LX_TUNE.amb) / lum;
+  const c = lxCol(O.amb || LX_AMB[bio] || '150,155,180'), lum = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2], lvl = (1 - amb) * (O.lvl ?? LX_TUNE.amb) * (LX_BOOST[bio] || 1) * LX_BRIGHT[SETTINGS.bright ?? 1] / lum;
   LX.amb = c.map(v => v * lvl);
   const cx = LX.cx, cy = LX.cy, cand = LX.cand; cand.length = 0;
   for (const L of ls) {

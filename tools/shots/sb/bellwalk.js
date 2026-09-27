@@ -1,0 +1,20 @@
+const out = []; G.SAVE.items.gale = 0; let F = 0;
+const R = () => window.__sys.roomObj, cell = (x, y) => R().grid[y * R().w + x];
+const Aon = () => cell(42, 14) !== 0;
+const st = (h = [], t = []) => { G.step(1, h, t); F++; G.P.hp = 9999; };
+const until = f => { let n = 0; while (F < f && n++ < 2000) st(); };
+const runTo = (x, dir) => { const d = dir < 0 ? 'left' : 'right'; for (let i = 0; i < 200 && (dir < 0 ? G.P.x > x : G.P.x < x); i++) st([d]); };
+const jump = (dir, hold = 28) => { const d = dir < 0 ? 'left' : 'right'; st([d, 'jump'], ['jump']); for (let i = 0; i < 90; i++) { st(i < hold ? [d, 'jump'] : [d]); if (G.P.ground && i > 3) break; } };
+const walkUp = (x, dir) => { const d = dir < 0 ? 'left' : 'right'; for (let i = 0; i < 200 && (dir < 0 ? G.P.x > x : G.P.x < x); i++) { if (i % 20 === 5) jump(dir, 6); else st([d]); } };
+const log = n => out.push(n + ' F' + F + ' at ' + (G.P.x / 16).toFixed(1) + ',' + (G.P.y / 16).toFixed(1) + ' g ' + G.P.ground);
+G.tp('NV11', 48, 13); for (let i = 0; i < 3; i++) { G.step(10); settle(); } G.enemies.length = 0;
+let was = Aon(), Ta = -1; for (let i = 0; i < 600 && Ta < 0; i++) { st(); const a = Aon(); if (a && !was) Ta = F; was = a; }
+const T = 192;
+runTo(43 * 16 + 8, -1); until(Ta + T - 15); jump(-1); log('S1 on B');
+walkUp(34 * 16 + 8, -1); log('P1');
+const Ta2 = Ta + 2 * T; until(Ta2); runTo(30 * 16 + 8, -1); until(Ta2 + T - 15); jump(-1, 8); log('S2 on B');
+walkUp(19 * 16 + 8, -1); log('P2');
+const Tb = Ta2 + 3 * T; until(Tb); jump(-1, 20); log('S3 on B'); runTo(14 * 16 + 8, -1); until(Tb + T - 15); jump(-1, 20); log('S3 landed');
+runTo(3 * 16, -1); log('west landing');
+for (let i = 0; i < 60 && G.room === 'NV11'; i++) st(['left']); out.push('-> ' + G.room);
+return out;

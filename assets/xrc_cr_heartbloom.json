@@ -1,0 +1,68 @@
+{ "frames": [
+   {
+    "filename": "xrc_cr_heartbloom 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 176, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 176 },
+    "sourceSize": { "w": 176, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "xrc_cr_heartbloom 1.aseprite",
+    "frame": { "x": 176, "y": 0, "w": 176, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 176 },
+    "sourceSize": { "w": 176, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "xrc_cr_heartbloom 2.aseprite",
+    "frame": { "x": 352, "y": 0, "w": 176, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 176 },
+    "sourceSize": { "w": 176, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "xrc_cr_heartbloom 3.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 176, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 176 },
+    "sourceSize": { "w": 176, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "xrc_cr_heartbloom 4.aseprite",
+    "frame": { "x": 704, "y": 0, "w": 176, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 176 },
+    "sourceSize": { "w": 176, "h": 176 },
+    "duration": 140
+   },
+   {
+    "filename": "xrc_cr_heartbloom 5.aseprite",
+    "frame": { "x": 880, "y": 0, "w": 176, "h": 176 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 176 },
+    "sourceSize": { "w": 176, "h": 176 },
+    "duration": 140
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xrc_cr_heartbloom.png",
+  "format": "RGBA8888",
+  "size": { "w": 1056, "h": 176 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "loop", "from": 0, "to": 5, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

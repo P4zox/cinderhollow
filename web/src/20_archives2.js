@@ -606,7 +606,7 @@ SPAWNS.ar2_lore = (s, c) => {
 };
 function ar2Readable() {
   if (!P || !P.ground) return null;
-  for (const p of props) if (p.lore && (!p.canRead || p.canRead()) && Math.abs(p.x - P.x) < 18 && Math.abs(p.y - P.y) < 24) return p;
+  for (const p of props) if (Array.isArray(p.lore) && (!p.canRead || p.canRead()) && Math.abs(p.x - P.x) < 18 && Math.abs(p.y - P.y) < 24) return p;
   return null;
 }
 

@@ -729,7 +729,7 @@ HOOKS.hud.push(() => {
   const V = SYS.vista;   // a bench's lore, set in the lower third while you sit
   if (V && V.lore && state === 'play') {
     const a = clamp((V.t - 1.8) * 1.2, 0, 1) * clamp(V.standing ? V.k * 2 - 1 : 1, 0, 1); if (a <= 0) return;
-    const pg = LORE_PAGES[V.lore], L = sysPageLines(pg, 300, 5.8).slice(0, 5), h = 22 + L.length * 7.6, y = 36;
+    const pg = LORE_PAGES[V.lore], L = sysPageLines(pg, 300, 5.8).slice(0, 5), h = 22 + L.length * 7.6, y = 180 - h;   // sits above the flask row, leaving the view clear
     sysHudPanel(W / 2 - 162, y, 324, h, a);
     text(pg.title || '', W / 2, y + 11, 7, UIC.gold, 'center', { alpha: a });
     L.forEach((l, i) => text(l, W / 2, y + 22 + i * 7.6, 5.8, UIC.body, 'center', { alpha: a, weight: 400 }));

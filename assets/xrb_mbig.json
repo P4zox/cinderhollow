@@ -1,0 +1,23 @@
+{ "frames": [
+   {
+    "filename": "xrb_mbig.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 240, "h": 272 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 240, "h": 272 },
+    "sourceSize": { "w": 240, "h": 272 },
+    "duration": 1000
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xrb_mbig.png",
+  "format": "RGBA8888",
+  "size": { "w": 240, "h": 272 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

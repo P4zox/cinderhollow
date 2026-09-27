@@ -334,3 +334,6 @@ and a free spot for a few common sizes.
 ### JS API (region code)
 `LORE_PAGES` (registry) · `sysCond(cond)` · `sysFlagTime(flag)` · `sysCompletion()` · `SYS.trial` (running trial or null:
 check it before spawning trouble) · `SYS.vista` (seated) · `sysGate(id, open)` · `sysLater(sec, fn)` (game-time delay).
+
+## Reserved tile chars (lead)
+- `'9'` (tile id 81): RB's ink abyss (Archives), a hazard for reachability. Don't reuse it.

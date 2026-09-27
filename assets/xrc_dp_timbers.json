@@ -1,0 +1,23 @@
+{ "frames": [
+   {
+    "filename": "xrc_dp_timbers.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 160 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 160 },
+    "sourceSize": { "w": 48, "h": 160 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xrc_dp_timbers.png",
+  "format": "RGBA8888",
+  "size": { "w": 48, "h": 160 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

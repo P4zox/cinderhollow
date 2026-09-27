@@ -1,0 +1,33 @@
+{ "frames": [
+   {
+    "filename": "xsb_sky 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "sourceSize": { "w": 512, "h": 216 },
+    "duration": 100
+   },
+   {
+    "filename": "xsb_sky 1.aseprite",
+    "frame": { "x": 512, "y": 0, "w": 512, "h": 216 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 512, "h": 216 },
+    "sourceSize": { "w": 512, "h": 216 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xsb_sky.png",
+  "format": "RGBA8888",
+  "size": { "w": 1024, "h": 216 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "far", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "mid", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

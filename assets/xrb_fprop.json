@@ -1,0 +1,102 @@
+{ "frames": [
+   {
+    "filename": "xrb_fprop 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 160
+   },
+   {
+    "filename": "xrb_fprop 1.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 160
+   },
+   {
+    "filename": "xrb_fprop 2.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 160
+   },
+   {
+    "filename": "xrb_fprop 3.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 160
+   },
+   {
+    "filename": "xrb_fprop 4.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 160
+   },
+   {
+    "filename": "xrb_fprop 5.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 160
+   },
+   {
+    "filename": "xrb_fprop 6.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 160
+   },
+   {
+    "filename": "xrb_fprop 7.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 500
+   },
+   {
+    "filename": "xrb_fprop 8.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 48, "h": 48 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 48, "h": 48 },
+    "sourceSize": { "w": 48, "h": 48 },
+    "duration": 500
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xrb_fprop.png",
+  "format": "RGBA8888",
+  "size": { "w": 432, "h": 48 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "valve", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
+   { "name": "crystal0", "from": 1, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "crystal1", "from": 2, "to": 2, "direction": "forward", "color": "#000000ff" },
+   { "name": "drift", "from": 3, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "gauge", "from": 4, "to": 4, "direction": "forward", "color": "#000000ff" },
+   { "name": "sign0", "from": 5, "to": 5, "direction": "forward", "color": "#000000ff" },
+   { "name": "sign1", "from": 6, "to": 6, "direction": "forward", "color": "#000000ff" },
+   { "name": "lamp", "from": 7, "to": 8, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

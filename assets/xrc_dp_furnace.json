@@ -1,0 +1,50 @@
+{ "frames": [
+   {
+    "filename": "xrc_dp_furnace 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 176, "h": 192 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 192 },
+    "sourceSize": { "w": 176, "h": 192 },
+    "duration": 130
+   },
+   {
+    "filename": "xrc_dp_furnace 1.aseprite",
+    "frame": { "x": 176, "y": 0, "w": 176, "h": 192 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 192 },
+    "sourceSize": { "w": 176, "h": 192 },
+    "duration": 130
+   },
+   {
+    "filename": "xrc_dp_furnace 2.aseprite",
+    "frame": { "x": 352, "y": 0, "w": 176, "h": 192 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 192 },
+    "sourceSize": { "w": 176, "h": 192 },
+    "duration": 130
+   },
+   {
+    "filename": "xrc_dp_furnace 3.aseprite",
+    "frame": { "x": 528, "y": 0, "w": 176, "h": 192 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 176, "h": 192 },
+    "sourceSize": { "w": 176, "h": 192 },
+    "duration": 130
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "xrc_dp_furnace.png",
+  "format": "RGBA8888",
+  "size": { "w": 704, "h": 192 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

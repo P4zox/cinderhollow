@@ -1,0 +1,34 @@
+// E7 Trial of the First Flame: a full scripted clear (every technique)
+await boot(); G.grantTechniques(); Object.assign(G.SAVE.items, { moonstep: 1, wings: 1, talon: 1 });
+G.tp('E7', 58, 37); G.step(30); G.step(1, [], ['interact']); G.step(5); log('sigil');
+walkTo(54.3); hopDashTo(-1, 50, 37, 3, { dashFrames: 6 });
+TRACE = null;
+hookSwing(-1, 44.5, { pre: 6 });
+for (let i = 0; i < 12; i++) G.step(1, ['left', 'jump']);
+hookSwing(-1, 37.5, { pre: 0 });
+airTo(32, 33, { jumps: 1 });
+G.step(1, ['left', 'jump'], ['jump']);
+for (let i = 0; i < 80; i++) { if (px() < 26.6 && !G.P.ground && G.P.vy > 0) { G.step(1, ['down'], ['heavy']); break; } G.step(1, [...(px() > 25.6 ? ['left'] : []), ...(G.P.vy < 0 ? ['jump'] : [])], (G.P.vy > 0 && G.P.airJumps > 0 && i > 10) ? ['jump'] : []); }
+log('slam ' + G.P.state);
+for (let i = 0; i < 60 && !G.P.ground; i++) G.step(1);
+log('after slam');
+walkTo(14.6);
+G.step(1, ['left', 'jump'], ['jump']);
+for (let i = 0; i < 300 && !(G.P.ground && py() < 14); i++) G.step(1, py() < 12.6 ? [px() > 2.2 ? 'left' : 'right'] : ['left', 'jump']);
+log('updraft ride');
+leap(10, 13, { jumps: 1 }); leap(17, 13, { jumps: 1 }); walkTo(17.5);
+chimney(16, 19, 4);
+leap(22, 3, { jumps: 1 }); for (let i = 0; i < 60 && G.P.ground; i++) G.step(1, ['right']);
+airTo(31, 10, { jumps: 1 });
+TRACE = { n: 0, out: [], every: 3 }; leap(38, 3, { jumps: 2, margin: 2 }); LOG.push(...TRACE.out); TRACE = null;
+hookSwing(1, 46.5, { pre: 4 });
+airTo(49, 7, { jumps: 1 });
+walkTo(50.3); G.step(1, ['right', 'jump'], ['jump']); for (let i = 0; i < 12; i++) G.step(1, ['right', 'jump']); G.step(1, ['right'], ['roll']); for (let i = 0; i < 8; i++) G.step(1, ['right']); airTo(58, 5, { jumps: 1 });
+walkTo(60.5);
+TRACE = null;
+TRACE = null;
+for (let i = 0; i < 30; i++) G.step(1);
+await snap('trial_e7');
+for (let i = 0; i < 260; i++) G.step(1);
+const rec = window.__sys.x3().trials['E7:flame'];
+return [...LOG, 'rec ' + JSON.stringify(rec), 'charm ' + G.SAVE.charms.includes('c_x3_flame')];

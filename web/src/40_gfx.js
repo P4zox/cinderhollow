@@ -3,7 +3,7 @@
 // straight onto the view, or uploads it to a WebGL canvas and runs one fragment shader over it (texture filter, bloom,
 // colour grade, scanlines/CRT, chromatic aberration, vignette, grain) before the HUD and menus draw on top, crisp.
 // If WebGL is missing or the context is lost, the plain blit takes over and the shader rows say so.
-const GFX_DEFAULTS = { shaders: TOUCH_UI ? 0 : 1, tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 };
+const GFX_DEFAULTS = { bright: 1, shaders: TOUCH_UI ? 0 : 1, tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 };
 for (const [k, v] of Object.entries(GFX_DEFAULTS)) if (SETTINGS[k] === undefined) SETTINGS[k] = v;
 const GFX_KEYS = ['tex', 'bloom', 'vig', 'scan', 'grain', 'ca', 'grade'];
 const GFX_PRESETS = [
@@ -126,6 +126,7 @@ function presentBody() {
 // ---- Settings › Graphics & shaders
 const GFX_ROWS = [
   { k: 'shaders', label: 'Shaders', opts: ['Off', 'On'], desc: 'Post-processing on the game world (the HUD stays sharp). Turn off on slow devices.' },
+  { k: 'bright', label: 'Brightness', opts: ['Dark', 'Normal', 'Bright'], desc: 'How much of the dark you can see into. Bright helps on dim screens and in daylight.' },
   { k: 'light', label: 'Lighting', opts: ['Classic', 'Dynamic', 'Dynamic + shadows'], shader: true, desc: 'Dynamic: lanterns, fire and spells light the stone in pixel-art bands. Shadows: walls block the light.' },
   { k: 'lband', label: 'Light bands', opts: ['Pixel', 'Smooth'], shader: true, desc: 'Pixel: light falls off in hand-drawn steps with a dithered edge. Smooth: a soft gradient.' },
   { k: 'preset', label: 'Look', desc: 'A ready-made mix of the options below. Change any of them to make your own.' },
