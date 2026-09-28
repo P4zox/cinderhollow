@@ -1224,9 +1224,7 @@ def build_portraits():
     portrait("portrait_player", ["K0", "C0", "C1", "C2", "C3"], (24, 22), draw_p_player,
              rims=[((70, 30), 44, (220, 70, 70), (60, 12, 20), ["Cape", "Body", "Head", "Face"], 0.45)],
              glow_r=30, glow_amt=0.45)
-    portrait("portrait_venn", ["N0", "U0", "U1", "N1", "L2", "G2"], (58, 56), draw_p_venn,
-             rims=[((60, 62), 44, (255, 200, 120), (70, 44, 26), ["Robe", "Neck", "Face", "Hood"], 0.5)],
-             glow_r=34, glow_amt=0.7)
+    # portrait_venn is drawn by art/gen_venn_portrait.py (redrawn from the user's reference)
     portrait("portrait_ashwright", ["J0", "J1", "R0", "R1", "O0", "O1"], (62, 50), draw_p_ash,
              rims=[((70, 44), 46, (255, 140, 60), (90, 30, 10), ["Body", "Gold", "Head", "Beard"], 0.55)],
              glow_r=40, glow_amt=0.8)
