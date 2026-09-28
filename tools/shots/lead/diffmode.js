@@ -8,7 +8,7 @@ const click = (x, y) => { ev('pointermove', x, y); G.step(1); ev('pointerdown', 
 // --- title: New Game opens the chooser; pick Hard with the mouse
 E("state = 'title'; titleSel = 0"); G.step(2);
 const opts = E('titleOptions()'); const ng = opts.indexOf('New Game');
-click(192, 96 + ng * 13 - 4); out.push('title click New Game -> chooser ' + E('TITLE_DIFF.open'));
+click(192, 92 + ng * 11.5 - 4); out.push('title click New Game -> chooser ' + E('TITLE_DIFF.open'));
 await snap('chooser');
 click(192, 104 + 2 * 14 - 4); out.push('click Hard -> state ' + G.state + ' diff ' + G.SAVE.diff);
 await boot(); G.step(10);

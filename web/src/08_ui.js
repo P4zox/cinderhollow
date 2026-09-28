@@ -573,10 +573,10 @@ function renderTitle() {
   text('Beneath the fallen Pale Root, the ash remembers.', W / 2, 68, 7, '#c9bda2', 'center', { weight: 400 });
   const sv = titleSave(), EN = (sv && sv.endings) || {}, nEnd = sv ? ['kindle', 'ash', 'true', 'venn'].filter(k => EN[k] || (k === 'true' && sv.flags && sv.flags.true_ending)).length : 0;
   if (sv && (sv.ngp || nEnd)) text(`Journey ${(sv.ngp || 0) + 1}  ·  Endings seen ${nEnd} / 4`, W / 2, 80, 5.8, '#9a8f78', 'center', { weight: 400 });
-  const opts = titleOptions();
+  const opts = titleOptions(); titleSel = Math.max(0, Math.min(titleSel, opts.length - 1));
   opts.forEach((o, i) => {
-    const y = 96 + i * 13, sel = i === titleSel;
-    if (!TITLE_DIFF.open) uiHit(W / 2 - 60, y - 9, 120, 12, () => { titleSel = i; });
+    const y = 92 + i * 11.5, sel = i === titleSel;
+    if (!TITLE_DIFF.open && !TITLE_SLOTS.screen) uiHit(W / 2 - 60, y - 9, 120, 12, () => { titleSel = i; });
     text((sel ? '— ' : '') + o + (sel ? ' —' : ''), W / 2, y, 8.5, sel ? '#f5e3b0' : '#9a8f78', 'center', { weight: sel ? 600 : 400 });
   });
   if (!matchMedia('(pointer: coarse)').matches) controlsList().forEach(([k, v], i, CONTROLS) => {
@@ -585,6 +585,7 @@ function renderTitle() {
     text(k, x, y, 5.5, '#e6c77a', 'right', { weight: 600 }); text(short, x + 6, y, uiFit(short, 150, 5.5, 4.5, 400), '#c9bda2', 'left', { weight: 400 });
   });
   if (!document.hasFocus() && !matchMedia('(pointer: coarse)').matches) text('Click the game to take control', W / 2, 210, 6, '#f1e6c8', 'center', { alpha: 0.6 + 0.4 * Math.sin(time * 3) });
+  if (TITLE_SLOTS.screen) renderTitleSlots();   // 66_slots.js
   if (TITLE_DIFF.open) renderTitleDiff();   // 64_diffmode.js
 }
 let _ts = null, _tsT = -9;

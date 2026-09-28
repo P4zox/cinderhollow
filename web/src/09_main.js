@@ -230,10 +230,11 @@ onPressHook = (a, repeat) => {
   audio();
   if (a === 'mute') { muted = !muted; toast(muted ? 'Sound off' : 'Sound on'); return; }
   if (state === 'title') {
+    if (TITLE_SLOTS.screen) { titleSlotsInput(a); buffered.delete(a); return; }   // 66_slots.js
     if (TITLE_DIFF.open) { titleDiffInput(a); buffered.delete(a); return; }   // 64_diffmode.js
     const n = titleOptions().length;
     if (a === 'up' || a === 'down') { titleSel = (titleSel + (a === 'up' ? -1 : 1) + n) % n; sfx.menu(); }
-    else if (['confirm', 'attack', 'jump', 'interact'].includes(a)) { const o = titleOptions()[titleSel]; sfx.kindle(); clearBuffer(); if (o === 'Continue') continueGame(); else { TITLE_DIFF.open = true; TITLE_DIFF.sel = 1; } }
+    else if (['confirm', 'attack', 'jump', 'interact'].includes(a)) { const o = titleOptions()[titleSel]; if (o) titleChoose(o); }   // 66_slots.js
     return;
   }
   if (state === 'menu') { menuInput(a); buffered.delete(a); return; }
