@@ -10,7 +10,7 @@ const lxCanvas = () => { const c = document.createElement('canvas'); c.width = W
 const [lowFx, gFx] = lxCanvas(), [lowTop, gTop] = lxCanvas(), gLow = g;
 const LX = { on: false, bad: false, prog: null, u: {}, NL: 48, SS: 12, n: 0, LP: null, LC: null, cx: 0, cy: 0, amb: [0.5, 0.5, 0.5], room: null, sum: -1, fr: 0, cand: [] };
 // look knobs (tests tweak these live): ambient gain, light gain, additive haze, emissive art, AO strength/cap, falloff power, wall depth
-const LX_TUNE = { amb: 0.78, gain: 2.0, haze: 0.09, emi: 0.65, ao: 0.42, aoMax: 0.46, fall: 1.0, depth: 34, sat: 0.85, knee: 1.0, top: 1.9, player: 0.85 };
+const LX_TUNE = { amb: 0.78, gain: 2.0, haze: 0.06, emi: 0.65, ao: 0.42, aoMax: 0.46, fall: 1.0, depth: 34, sat: 0.85, knee: 1.0, top: 1.9, player: 0.85 };
 // ambient light colour per biome. The level comes from AREAS[b].ambient (the old darkness) so darkT and boss rooms keep working.
 // A region can override with AREAS[b].lx = { amb: 'r,g,b', lvl: 0.9 } from its own file.
 // playtest pass: the darkest regions were hard to read under Dynamic lighting; lift their ambient a little

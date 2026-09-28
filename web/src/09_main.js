@@ -242,8 +242,8 @@ onPressHook = (a, repeat) => {
   if (state === 'map') { if (['map', 'pause', 'back'].includes(a)) { state = 'play'; clearBuffer(); } return; }
   if (state === 'ending') {
     if (stateT < 2.5) return;
-    if (['confirm', 'attack', 'interact'].includes(a)) startNGPlus();
-    else if (['pause', 'back'].includes(a)) { state = 'play'; clearBuffer(); }
+    // the story is over but the world isn't: a new journey starts only from the Pale Throne (56_throne.js)
+    if (['confirm', 'attack', 'interact', 'jump', 'pause', 'back'].includes(a)) { state = 'play'; clearBuffer(); toast('The Pale Throne waits in the Heart of the Root. Sit upon it to begin a new journey.', 5); }
     return;
   }
   if (state === 'play' && !repeat) {

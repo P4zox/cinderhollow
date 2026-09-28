@@ -27,7 +27,7 @@ precision mediump float;
 varying vec2 v;
 uniform sampler2D T;
 uniform vec2 S, O;
-uniform float tm, bloom, vig, scan, grain, ca, filt, grade;
+uniform float tm, bloom, vig, scan, grain, ca, filt, grade, expo;
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 vec3 tap(vec2 uv) {
   vec2 t = uv * S;
@@ -53,10 +53,13 @@ void main() {
     for (float i = 0.0; i < 12.0; i += 1.0) {
       float a = i * 0.5236 + 0.26, r = mod(i, 2.0) < 0.5 ? 1.7 : 3.8;
       vec3 s = texture2D(T, uv + vec2(cos(a), sin(a)) * r / S).rgb;
-      b += max(s - 0.52, 0.0) * (r < 2.0 ? 1.0 : 0.6);
+      b += max(s - 0.6, 0.0) * (r < 2.0 ? 1.0 : 0.6);
     }
-    col += b * (bloom > 1.5 ? 0.34 : 0.19);
+    float bl = dot(col, vec3(0.299, 0.587, 0.114));
+    col += b * (bloom > 1.5 ? 0.24 : 0.13) * (1.0 - 0.7 * bl);   // glow lifts the dark around a light, not what's already bright
   }
+  col *= expo;
+  vec3 hi = max(col - 0.72, 0.0); col = min(col, 0.72) + hi / (1.0 + hi * 3.6);   // highlight shoulder: bright skies roll off instead of clipping to white
   float l = dot(col, vec3(0.299, 0.587, 0.114));
   if (grade > 0.5 && grade < 1.5) { col *= vec3(1.07, 0.98, 0.86); col += vec3(0.025, 0.012, 0.0) * (1.0 - l); }          // ember
   else if (grade > 1.5 && grade < 2.5) { col = mix(vec3(l), col, 0.8) * vec3(0.88, 0.98, 1.12); col += vec3(0.0, 0.006, 0.02); }  // moonlit
@@ -87,7 +90,7 @@ function gfxInit() {
     const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
     for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    for (const n of ['T', 'S', 'O', 'tm', 'bloom', 'vig', 'scan', 'grain', 'ca', 'filt', 'grade']) GFX.u[n] = gl.getUniformLocation(prog, n);
+    for (const n of ['T', 'S', 'O', 'tm', 'bloom', 'vig', 'scan', 'grain', 'ca', 'filt', 'grade', 'expo']) GFX.u[n] = gl.getUniformLocation(prog, n);
     cv.addEventListener('webglcontextlost', e => { e.preventDefault(); GFX.ok = false; GFX.lost = true; });
     Object.assign(GFX, { cv, gl, prog, tex, ok: true });
   } catch (e) { console.warn('shaders unavailable:', e && e.message); GFX.ok = false; }
@@ -103,7 +106,7 @@ function gfxRender(w, h) {
   if (lit) gl.bindTexture(gl.TEXTURE_2D, lit);
   else { gl.bindTexture(gl.TEXTURE_2D, GFX.tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, low); }
   gl.uniform1i(u.T, 0); gl.uniform2f(u.S, W, H); gl.uniform2f(u.O, ow, oh); gl.uniform1f(u.tm, time % 1000);
-  gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
+  gl.uniform1f(u.expo, [0.86, 1, 1.08][SETTINGS.bright ?? 1]); gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
   gl.uniform1f(u.ca, SETTINGS.ca); gl.uniform1f(u.filt, SETTINGS.tex); gl.uniform1f(u.grade, SETTINGS.grade);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }

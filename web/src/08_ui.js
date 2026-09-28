@@ -649,7 +649,7 @@ function renderEnding() {
   text(T[0], W / 2, 60, 16, '#e6c77a', 'center', { alpha: a, spacing: 3 });
   const lines = [T[1], T[2], '',
     `Level ${levelOf(SAVE.stats)}   ·   Deaths ${SAVE.deaths}   ·   ${fmtTime(SAVE.playTime)}`, `Skills learned ${SAVE.skills.length} / ${SKILLS.length}   ·   Secrets ${['C2s', 'K3s', 'H1', 'E1', 'A7'].filter(r => SAVE.visited[r]).length} / 5`,
-    '', 'Thank you for playing Cinderhollow.'];
+    'To begin a new journey, sit upon the Pale Throne.', 'Thank you for playing Cinderhollow.'];
   lines.forEach((l, i) => text(l, W / 2, 86 + i * 12, 7, '#d8cdb4', 'center', { alpha: a, weight: 400 }));
   if (stateT > 2.5) text('Press Enter to keep exploring', W / 2, 190, 6.5, '#b8ab90', 'center', { alpha: clamp(stateT - 2.5, 0, 1) });
 }

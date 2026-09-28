@@ -11903,7 +11903,7 @@ function renderEnding() {
   text(T[0], W / 2, 60, 16, '#e6c77a', 'center', { alpha: a, spacing: 3 });
   const lines = [T[1], T[2], '',
     `Level ${levelOf(SAVE.stats)}   ·   Deaths ${SAVE.deaths}   ·   ${fmtTime(SAVE.playTime)}`, `Skills learned ${SAVE.skills.length} / ${SKILLS.length}   ·   Secrets ${['C2s', 'K3s', 'H1', 'E1', 'A7'].filter(r => SAVE.visited[r]).length} / 5`,
-    '', 'Thank you for playing Cinderhollow.'];
+    'To begin a new journey, sit upon the Pale Throne.', 'Thank you for playing Cinderhollow.'];
   lines.forEach((l, i) => text(l, W / 2, 86 + i * 12, 7, '#d8cdb4', 'center', { alpha: a, weight: 400 }));
   if (stateT > 2.5) text('Press Enter to keep exploring', W / 2, 190, 6.5, '#b8ab90', 'center', { alpha: clamp(stateT - 2.5, 0, 1) });
 }
@@ -12384,8 +12384,8 @@ onPressHook = (a, repeat) => {
   if (state === 'map') { if (['map', 'pause', 'back'].includes(a)) { state = 'play'; clearBuffer(); } return; }
   if (state === 'ending') {
     if (stateT < 2.5) return;
-    if (['confirm', 'attack', 'interact'].includes(a)) startNGPlus();
-    else if (['pause', 'back'].includes(a)) { state = 'play'; clearBuffer(); }
+    // the story is over but the world isn't: a new journey starts only from the Pale Throne (56_throne.js)
+    if (['confirm', 'attack', 'interact', 'jump', 'pause', 'back'].includes(a)) { state = 'play'; clearBuffer(); toast('The Pale Throne waits in the Heart of the Root. Sit upon it to begin a new journey.', 5); }
     return;
   }
   if (state === 'play' && !repeat) {
@@ -33776,7 +33776,7 @@ precision mediump float;
 varying vec2 v;
 uniform sampler2D T;
 uniform vec2 S, O;
-uniform float tm, bloom, vig, scan, grain, ca, filt, grade;
+uniform float tm, bloom, vig, scan, grain, ca, filt, grade, expo;
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 vec3 tap(vec2 uv) {
   vec2 t = uv * S;
@@ -33802,10 +33802,13 @@ void main() {
     for (float i = 0.0; i < 12.0; i += 1.0) {
       float a = i * 0.5236 + 0.26, r = mod(i, 2.0) < 0.5 ? 1.7 : 3.8;
       vec3 s = texture2D(T, uv + vec2(cos(a), sin(a)) * r / S).rgb;
-      b += max(s - 0.52, 0.0) * (r < 2.0 ? 1.0 : 0.6);
+      b += max(s - 0.6, 0.0) * (r < 2.0 ? 1.0 : 0.6);
     }
-    col += b * (bloom > 1.5 ? 0.34 : 0.19);
+    float bl = dot(col, vec3(0.299, 0.587, 0.114));
+    col += b * (bloom > 1.5 ? 0.24 : 0.13) * (1.0 - 0.7 * bl);   // glow lifts the dark around a light, not what's already bright
   }
+  col *= expo;
+  vec3 hi = max(col - 0.72, 0.0); col = min(col, 0.72) + hi / (1.0 + hi * 3.6);   // highlight shoulder: bright skies roll off instead of clipping to white
   float l = dot(col, vec3(0.299, 0.587, 0.114));
   if (grade > 0.5 && grade < 1.5) { col *= vec3(1.07, 0.98, 0.86); col += vec3(0.025, 0.012, 0.0) * (1.0 - l); }          // ember
   else if (grade > 1.5 && grade < 2.5) { col = mix(vec3(l), col, 0.8) * vec3(0.88, 0.98, 1.12); col += vec3(0.0, 0.006, 0.02); }  // moonlit
@@ -33836,7 +33839,7 @@ function gfxInit() {
     const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
     for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    for (const n of ['T', 'S', 'O', 'tm', 'bloom', 'vig', 'scan', 'grain', 'ca', 'filt', 'grade']) GFX.u[n] = gl.getUniformLocation(prog, n);
+    for (const n of ['T', 'S', 'O', 'tm', 'bloom', 'vig', 'scan', 'grain', 'ca', 'filt', 'grade', 'expo']) GFX.u[n] = gl.getUniformLocation(prog, n);
     cv.addEventListener('webglcontextlost', e => { e.preventDefault(); GFX.ok = false; GFX.lost = true; });
     Object.assign(GFX, { cv, gl, prog, tex, ok: true });
   } catch (e) { console.warn('shaders unavailable:', e && e.message); GFX.ok = false; }
@@ -33852,7 +33855,7 @@ function gfxRender(w, h) {
   if (lit) gl.bindTexture(gl.TEXTURE_2D, lit);
   else { gl.bindTexture(gl.TEXTURE_2D, GFX.tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, low); }
   gl.uniform1i(u.T, 0); gl.uniform2f(u.S, W, H); gl.uniform2f(u.O, ow, oh); gl.uniform1f(u.tm, time % 1000);
-  gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
+  gl.uniform1f(u.expo, [0.86, 1, 1.08][SETTINGS.bright ?? 1]); gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
   gl.uniform1f(u.ca, SETTINGS.ca); gl.uniform1f(u.filt, SETTINGS.tex); gl.uniform1f(u.grade, SETTINGS.grade);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
@@ -33943,7 +33946,7 @@ const lxCanvas = () => { const c = document.createElement('canvas'); c.width = W
 const [lowFx, gFx] = lxCanvas(), [lowTop, gTop] = lxCanvas(), gLow = g;
 const LX = { on: false, bad: false, prog: null, u: {}, NL: 48, SS: 12, n: 0, LP: null, LC: null, cx: 0, cy: 0, amb: [0.5, 0.5, 0.5], room: null, sum: -1, fr: 0, cand: [] };
 // look knobs (tests tweak these live): ambient gain, light gain, additive haze, emissive art, AO strength/cap, falloff power, wall depth
-const LX_TUNE = { amb: 0.78, gain: 2.0, haze: 0.09, emi: 0.65, ao: 0.42, aoMax: 0.46, fall: 1.0, depth: 34, sat: 0.85, knee: 1.0, top: 1.9, player: 0.85 };
+const LX_TUNE = { amb: 0.78, gain: 2.0, haze: 0.06, emi: 0.65, ao: 0.42, aoMax: 0.46, fall: 1.0, depth: 34, sat: 0.85, knee: 1.0, top: 1.9, player: 0.85 };
 // ambient light colour per biome. The level comes from AREAS[b].ambient (the old darkness) so darkT and boss rooms keep working.
 // A region can override with AREAS[b].lx = { amb: 'r,g,b', lvl: 0.9 } from its own file.
 // playtest pass: the darkest regions were hard to read under Dynamic lighting; lift their ambient a little
@@ -39869,6 +39872,36 @@ if (typeof window !== 'undefined' && window.__game) window.__game.xs = {
     d.getContext('2d').drawImage(c, 0, 0, d.width, d.height); return d.toDataURL('image/png');
   },
 };
+
+// ------------------------------------------------------------------ The Pale Throne: after the story, the only way to begin again
+// Finishing the game drops you back into the world (the ending screen no longer starts New Game+). The empty throne in the
+// Heart of the Root (X5) offers the next journey: sit, confirm, and the Hallow resets as Journey N+1 (startNGPlus).
+const throneReady = () => !!SAVE.ending && !(boss && boss.alive) && !props.some(p => p.vnEnd) && state === 'play';
+function throneOffer() {
+  const next = (SAVE.ngp || 0) + 2;
+  P.face = 1; setP('idle', 'idle', true);
+  startDialogue([
+    { t: 'The Pale Throne is cold, and the Root is quiet beneath it.', lore: true },
+    { t: 'If you sit, the Hallow begins again. The shrines go dark, the fallen rise, and every foe returns crueler. Your strength, your gear and your Chronicle remain.', lore: true },
+    { choice: [
+      [`Sit, and begin Journey ${next}`, [{ do() { dialog.after = throneSit; } }]],
+      ['Rise, and walk on', []],
+    ] },
+  ], null);
+}
+function throneSit() {
+  setP('rest', pHas('rest') ? 'rest' : 'heal', false); P.vx = 0;
+  sfx.kindle(); flashScreen = Math.max(flashScreen, 0.5); shake = Math.max(shake, 3);
+  throneT = 1.2;   // a breath on the throne before the world turns over (game time, so pausing waits too)
+}
+let throneT = 0;
+HOOKS.update.push(dt => { if (throneT > 0 && (throneT -= dt) <= 0) fadeTo(() => startNGPlus()); });
+HOOKS.enter.push(def => {
+  if (def.id !== 'X5') return;
+  const t = props.find(p => p.type === 'throne'); if (!t) return;
+  t.prompt = () => throneReady() ? 'Sit upon the throne' : null;
+  t.interact = () => { if (throneReady()) throneOffer(); };
+});
 
 };</script>
 <script>(() => { const SZ = {"assets0.json": 8993238, "assets1.json": 8923152, "assets2.json": 8256441}, got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };
