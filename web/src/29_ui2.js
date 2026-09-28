@@ -447,6 +447,7 @@ const GUIDE_PAGES = [
     [['K', 'hold'], 'Charged heavy', 'Hold K (or right-click) to charge a stance-breaking heavy; release to swing.'],
     [['O', 'hold'], 'Weapon art', 'Spend FP on your weapon art. Hold O to charge it for a stronger version.'],
     [['I', 'then', 'J'], 'Parry → riposte', 'Parry just as a blow lands, then strike for a critical riposte.'],
+    [['I', 'I'], 'Break their rhythm', 'Each parry shakes a great foe’s stance. Parry two blows in a row and its combo breaks: it reels, open to your counter.'],
     [['J'], 'Critical on stagger', 'Break a great foe’s stance with heavies and parries; when it staggers, strike for a critical.'],
     [['I', 'then', 'J'], 'Guard counter', 'Right after a parry or a shield block, attack for a heavy counter blow.'],
     [['I', 'hold'], 'Shield block', 'Shield weapons: hold I to raise the shield. A tap still parries.'],
