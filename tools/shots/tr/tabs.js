@@ -1,0 +1,16 @@
+await new Promise(r=>setTimeout(r,300));
+const T = G.trn, E = G.sk.ev, out = []; T.start(); G.step(30); await new Promise(r=>setTimeout(r,600)); G.step(2);
+await snap('room1'); T.goto('TR2'); G.step(10); await snap('room2'); T.goto('TR1'); G.step(5);
+const sel = (tab, pred) => { T.open(tab); G.step(1); const rows = T.rows(tab); const i = rows.findIndex(pred); if (i >= 0) E(`menu.sel = ${i}`); G.step(2); };
+sel(0, r => r.stat === 'str'); await snap('tab0_player');
+sel(1, r => r.wpn === 'crimson_scythe' && r.eq); await new Promise(r=>setTimeout(r,300)); G.step(1); await snap('tab1_weapon');
+sel(2, r => r.label === 'Spell 1'); await snap('tab2_magic');
+E('trnLearnAll()'); sel(3, r => r.label === 'Learn everything'); await snap('tab3_skills');
+sel(4, r => r.boss && r.boss.kind === 'sanguine'); await snap('tab4_spawn_boss');
+sel(4, r => r.enemy === 'sf_golem'); await new Promise(r=>setTimeout(r,300)); G.step(1); await snap('tab4_spawn_foe');
+sel(5, r => r.label === 'Time scale'); await snap('tab5_world');
+sel(3, r => r.label === 'Open the skill tree'); G.step(1, [], ['confirm']); G.step(3); out.push('tree: ' + E('menu.screen')); await new Promise(r=>setTimeout(r,300)); G.step(1); await snap('tree');
+G.step(1, [], ['pause']); G.step(2); out.push('after Esc in tree: ' + E('menu && menu.screen') + ' tab ' + E('menu && menu.tab'));
+sel(2, r => r.label === 'Open the equipment screen'); G.step(1, [], ['confirm']); G.step(3); out.push('equip: ' + E('menu.screen')); await snap('equip');
+G.step(1, [], ['pause']); G.step(2); out.push('after Esc in equipment: ' + E('menu && menu.screen') + ' tab ' + E('menu && menu.tab'));
+return out;
