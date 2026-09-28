@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer-core'); const fs = require('fs'); const pat
 (async () => {
   const [,, scriptFile, outDir = path.join(__dirname, 'out')] = process.argv;
   fs.mkdirSync(outDir, { recursive: true });
-  const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new', args: ['--autoplay-policy=no-user-gesture-required', '--mute-audio'] });
+  const browser = await puppeteer.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new', protocolTimeout: 1800000, args: ['--autoplay-policy=no-user-gesture-required', '--mute-audio'] });
   const page = await browser.newPage(); await page.setViewport({ width: 1152, height: 648 });
   const errors = []; page.on('pageerror', e => errors.push(String(e))); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.exposeFunction('__save', (name, url) => fs.writeFileSync(path.join(outDir, name + '.png'), Buffer.from(url.split(',')[1], 'base64')));

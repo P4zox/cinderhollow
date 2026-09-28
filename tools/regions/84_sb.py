@@ -145,7 +145,7 @@ r = Room('NV10', 'The Catafalque Stair', 'necropolis', -28, 201, 48, 60, indoor=
          xsb_paint=[['catafalque', 18, 7], ['tombwall', 6, 55], ['tombwall', 40, 19], ['tombwall', 24, 44]],
          reach_open=[(x, y) for x in (1, 2, 3) for y in (8, 9)],
          spawns=[
-                 dict(t='sys', kind='passage', x=38, y=7, w=2, h=3, id='throne', cond={'flag': 'boss:executioners'}, drift='nvghost',
+                 dict(t='sys', kind='passage', x=42, y=1, w=3, h=2, id='throne', cond={'flag': 'boss:executioners'}, drift='nvghost',   # seals the corridor up to the Hollow Court itself: the summit stays open, the Court and Vael's throne wait for the Executioners
                       light='150,200,255'),
                  dict(t='kit', kind='gate', x=40, y=28, id='bar', persist=True),
                  dict(t='kit', kind='lever', x=37, y=28, id='lbar', targets=['bar'], once=True, msg='The bar lifts. The undercroft climbs to the Tolling Streets.'),
@@ -401,8 +401,8 @@ r.put(96, 8, 'i')
 r.fill(2, 0, 4, 1, '.').fill(5, 0, 5, 8).fill(0, 13, 9, 13)
 _rungs(r, 2, 4, [1, 4, 7, 10])
 r.fill(9, 19, 11, 19, '=').fill(10, 16, 12, 16, '=')       # up from the flats to the chamber's ledge
-r.kw['spawns'] += [dict(t='kit', kind='gate', x=5, y=12, id='bar', persist=True),
-                   dict(t='kit', kind='lever', x=1, y=12, id='lbar', targets=['bar'], once=True, msg='The bar lifts. The Sea of Dunes lies below.')]
+# only one road leads to the Pharaoh: the chamber stays sealed from the Sea until the Veiled Pharaoh has fallen
+r.kw['spawns'] += [dict(t='sys', kind='passage', x=5, y=12, w=1, h=4, id='sanctum', cond={'flag': 'boss:pharaoh'}, drift='sand', light='255,210,140')]
 r.fill(30, 2, 33, 4).fill(60, 2, 70, 3).fill(104, 2, 110, 5)   # rock hanging from the cavern roof
 for _x, _y, _ch in [(16, 2, 'x'), (48, 2, 'x'), (86, 2, 'x'), (1, 21, 'b'), (62, 17, 'k'), (116, 23, 'k')]:
     r.put(_x, _y, _ch)
