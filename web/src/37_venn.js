@@ -486,7 +486,7 @@ class VennBoss extends BossBase {
     const k = this.phase === 3 ? 0.8 : 1;
     addLight(this.x - this.face * 3, this.y - 60, 46 * k, '255,240,210', 0.6);
     addLight(this.x, this.y - 30, 40, '235,228,220', 0.35);            // her pale robes catch her own light
-    if (this.phase >= 2 && Math.random() < 0.35) particles.push({ x: this.x - this.face * rand(10, 50), y: this.y - rand(40, 80), vx: rand(-10, 10), vy: -rand(10, 30), life: rand(0.5, 1), kind: 'ember' });
+    if (this.phase >= 2 && Math.random() < 0.35) particles.push({ x: this.x - this.face * rand(10, 50), y: this.y - rand(40, 80), vx: rand(-10, 10), vy: -rand(10, 30), life: rand(0.5, 1), kind: 'petal' });
     if (this.phase === 3 && Math.random() < 0.3) particles.push({ x: this.x + rand(-6, 6), y: this.y - rand(50, 64), vx: rand(-6, 6), vy: rand(10, 30), life: 0.8, kind: 'spark' });
     // phase 3 leaves afterimages when she moves fast
     if (this.phase === 3 && this.state === 'attack' && ['flurry', 'slam', 'cut3', 'string', 'spin', 'plunge', 'grab'].includes(this.atk) && (this.ghostT = (this.ghostT || 0) - dt) <= 0) {
@@ -494,9 +494,9 @@ class VennBoss extends BossBase {
     }
   }
   draw() {
-    for (const gh of VN.ghosts) drawSprite(gh.sh, gh.f, gh.x, gh.y, gh.face, { alpha: gh.life / 0.25 * 0.4, flash: 1, flashColor: '#fff4d8' });
+    for (const gh of VN.ghosts) drawSprite(gh.sh, gh.f, gh.x, gh.y, gh.face, { alpha: gh.life / 0.25 * 0.4, flash: 1, flashColor: '#f4f3f8' });
     if (this.hidden) return;
-    const opt = this.flash > 0 ? { flash: this.flash * 0.6 } : this.state === 'stagger' ? { flash: 0.15 + 0.1 * Math.sin(time * 20), flashColor: '#ffd070' } : {};
+    const opt = this.flash > 0 ? { flash: this.flash * 0.6 } : this.state === 'stagger' ? { flash: 0.15 + 0.1 * Math.sin(time * 20), flashColor: '#e6e4f0' } : {};
     if (this.state === 'dead' && this.gone) return;
     drawSprite(this.sh, this.anim.frame, this.x, this.y, this.face, opt);
     if (this.critable()) { g.fillStyle = '#ffd070'; const y = Math.round(this.y - 70 + Math.sin(time * 8) * 1.5); g.fillRect(Math.round(this.x) - 1, y, 3, 3); g.fillRect(Math.round(this.x), y - 1, 1, 5); g.fillRect(Math.round(this.x) - 2, y + 1, 5, 1); }
@@ -808,14 +808,14 @@ HOOKS.render.push(() => {
   // where she (or an afterimage) is about to appear
   for (const gl of VN.glints) { const a = 0.4 + 0.4 * Math.sin(time * 30); g.fillStyle = `rgba(255,245,220,${a})`; g.fillRect(Math.round(gl.x) - 1, Math.round(gl.y) - (gl.up ? 12 : 60), 2, gl.up ? 24 : 60); addLight(gl.x, gl.y - 30, 30, '255,245,220', 0.6); }
   // the afterimages
-  for (const e of VN.echoes) if (e.anim) drawSprite(e.sh, e.anim.frame, e.x, e.y, e.face, { alpha: 0.75, flash: 0.55, flashColor: '#fff4d8' });
+  for (const e of VN.echoes) if (e.anim) drawSprite(e.sh, e.anim.frame, e.x, e.y, e.face, { alpha: 0.75, flash: 0.55, flashColor: '#f4f3f8' });
   // the falling ash: floor marks, then the burning flakes
   for (const a of VN.ash) {
     if (!a.fall) { const k = 0.35 + 0.35 * Math.sin(time * 16); g.fillStyle = `rgba(255,200,120,${k})`; g.fillRect(Math.round(a.x) - 4, Math.round(a.fl) - 1, 8, 1); continue; }
-    g.fillStyle = '#ffc158'; g.fillRect(Math.round(a.x) - 2, Math.round(a.y) - 6, 4, 6);
+    g.fillStyle = '#d3cab2'; g.fillRect(Math.round(a.x) - 2, Math.round(a.y) - 6, 4, 6);
     g.fillStyle = '#fff5d8'; g.fillRect(Math.round(a.x) - 1, Math.round(a.y) - 4, 2, 3);
     g.fillStyle = 'rgba(160,150,150,0.6)'; g.fillRect(Math.round(a.x) - 1, Math.round(a.y) - 14, 2, 8);
-    addLight(a.x, a.y - 4, 18, '255,210,140', 0.6);
+    addLight(a.x, a.y - 4, 18, '232,228,236', 0.6);
   }
   // the last-flame beam: a thin aiming thread, then the line of white fire
   const B = boss && boss.kind === 'venn' && boss.state === 'attack' && boss.atk === 'beam' ? boss.bm : null;
@@ -827,7 +827,7 @@ HOOKS.render.push(() => {
     } else if (B.st === 'fire') {
       for (let d = 6; d < len; d += 2) {
         const x = Math.round(B.o.x + cs * d), y = Math.round(B.o.y + sn * d);
-        g.fillStyle = 'rgba(255,193,88,0.55)'; g.fillRect(x - 1, y - 4, 3, 9);
+        g.fillStyle = 'rgba(211,202,178,0.55)'; g.fillRect(x - 1, y - 4, 3, 9);
         g.fillStyle = '#fff5d8'; g.fillRect(x, y - 2, 2, 5);
         g.fillStyle = '#ffffff'; g.fillRect(x, y - 1, 2, 2);
       }
@@ -847,7 +847,7 @@ HOOKS.render.push(() => {
   if (boss && boss.kind === 'venn' && boss.state === 'dead' && boss.gone) {
     const x = Math.round(boss.x), y = Math.round(boss.floor);
     g.fillStyle = '#6e6a75'; g.fillRect(x - 9, y - 2, 18, 2); g.fillStyle = '#928d98'; g.fillRect(x - 6, y - 3, 12, 1); g.fillRect(x - 3, y - 4, 6, 1);
-    g.fillStyle = '#4f4b56'; g.fillRect(x + 10, y - 1, 26, 1); g.fillStyle = '#9c8a74'; g.fillRect(x + 12, y - 2, 20, 1);   // the fallen scythe
+    g.fillStyle = '#4f4b56'; g.fillRect(x + 10, y - 1, 26, 1); g.fillStyle = '#26232e'; g.fillRect(x + 12, y - 2, 20, 1);   // the fallen scythe
   }
   if (VN.flame) { addLight(VN.flame.x, VN.flame.y, 34, '255,245,220', 0.5); if (Math.random() < 0.6) particles.push({ x: VN.flame.x + rand(-2, 2), y: VN.flame.y - 3, vx: rand(-6, 6), vy: -rand(10, 30), life: 0.5, kind: 'mote' }); }
 });
@@ -858,7 +858,7 @@ HOOKS.renderTop.push(() => {
   const x = Math.round(f.x - cam.x), y = Math.round(f.y - cam.y), fl = Math.floor(time * 12) % 2;
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.fillStyle = '#1a1418'; g.fillRect(x - 3, y - 3, 7, 6); g.fillRect(x - 2, y - 6 - fl, 5, 4); g.fillRect(x - 1, y - 8 - fl, 3, 3);
-  g.fillStyle = '#ffc158'; g.fillRect(x - 2, y - 2, 5, 4);
+  g.fillStyle = '#d3cab2'; g.fillRect(x - 2, y - 2, 5, 4);
   g.fillStyle = '#fff5d8'; g.fillRect(x - 1, y - 4 - fl, 3, 6);
   g.fillStyle = '#ffffff'; g.fillRect(x, y - 6 - fl, 1, 6); g.fillRect(x - 1, y - 1, 3, 2);
 });

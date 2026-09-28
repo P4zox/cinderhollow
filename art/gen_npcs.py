@@ -6,7 +6,7 @@
     python3 art/gen_npcs.py --only venn,portraits [--preview]
 
 Sheets (face RIGHT, feet on the bottom row):
-    npc_venn       32x48  idle(6 loop) talk(4 loop)       Sister Venn, shrine keeper
+    npc_venn       32x48  idle(6 loop) talk(4 loop)       Sister Venn, shrine keeper (black habit, silver hair; see draw_venn)
     npc_ashwright  48x48  idle(8 loop, hammering) talk(4)  Old Ashwright, smith (with his work anvil)
     npc_scribe     32x56  idle(6 loop, book floats) talk(4) the Hollow Scribe
     npc_kalden     48x48  idle(4) talk(4) kneel(1)         Ser Kalden the Oathless
@@ -52,6 +52,12 @@ EXTRA = {
     "f0": "#3d2b31", "f1": "#6f5153", "f2": "#a17f77", "f3": "#ccac9c", "f4": "#ebd6c6",
     # grey beard / hair
     "H0": "#1f1c1c", "H1": "#3a3534", "H2": "#5c5553", "H3": "#837a74", "H4": "#aca197",
+    # Venn (agent VN, after the reference / portrait_venn): black habit, silver-white hair, silver thread, white light
+    "b0": "#070609", "b1": "#0f0d13", "b2": "#18151e", "b3": "#241f2c", "b4": "#352f40", "b5": "#4d4659",
+    "h0": "#4f4d5a", "h1": "#716f7d", "h2": "#9795a3", "h3": "#bcbac7", "h4": "#dddbe5", "h5": "#f4f3f8",
+    "g0": "#4a4755", "g1": "#7a7788", "g2": "#aeabbb", "g3": "#dcdae6", "g4": "#ffffff",
+    "w0": "#b9b6c8", "w1": "#dcdae6", "w2": "#f2f0f6", "w3": "#ffffff",
+    "k0": "#5d4b52", "k1": "#8c767d", "k2": "#b8a3a8", "k3": "#d9c8ca", "k4": "#eee3e2",
 }
 for k_, v_ in EXTRA.items():
     K.HEX[k_] = v_
@@ -183,42 +189,43 @@ V_NEU = dict(P=(14.0, 38.5), C=(14.6, 29.0), Hd=(15.6, 24.6), hup=(0.12, -1), hf
 VP = mk(V_NEU)
 
 
-def lantern(Ls, hand, ang, fi, fire, glow_col="Y1"):
-    """Small iron candle-lantern hanging from `hand` (ring), swinging by ang degrees."""
+def lantern(Ls, hand, ang, fi, fire, glow_col="w1"):
+    """Small iron candle-lantern hanging from `hand` (ring), swinging by ang degrees; a pale white flame."""
     La = Ls["Lantern"]
     FX = Ls["FX"]
     ca, sa = math.sin(math.radians(ang)), math.cos(math.radians(ang))
     top = (hand[0] + ca * 1.6, hand[1] + sa * 1.6)
-    La.fill(line(hand, top), "I3", noout=True)
+    La.fill(line(hand, top), "g1", noout=True)
     cx, cy = top[0] + ca * 3.0, top[1] + sa * 3.0
     c = ip((cx, cy))
     x, y = c
     pix = {}
-    # cap (peaked), cage, glass, base
-    pix[(x, y - 3)] = "I3"
+    # cap (peaked), cage, glass, base -- blackened iron with silver fittings
+    pix[(x, y - 3)] = "g2"
     for dx in (-1, 0, 1):
-        pix[(x + dx, y - 2)] = "I4" if dx < 1 else "I2"
+        pix[(x + dx, y - 2)] = "b4" if dx < 1 else "b3"
     for yy in (y - 1, y, y + 1):
-        pix[(x - 2, yy)] = "I3"
-        pix[(x + 2, yy)] = "I2"
+        pix[(x - 2, yy)] = "b4"
+        pix[(x + 2, yy)] = "b3"
         for dx in (-1, 0, 1):
-            pix[(x + dx, yy)] = "Y2" if fire > 0 else "I1"
+            pix[(x + dx, yy)] = "w1" if fire > 0 else "b2"
     if fire > 0:
-        pix[(x, y)] = "Y3"
-        pix[(x, y + 1)] = "B5"      # the candle stub
-        pix[(x - 1, y + 1)] = "Y1"
-        pix[(x + 1, y + 1)] = "Y1"
+        pix[(x, y)] = "w3"
+        pix[(x, y - 1)] = "w2"
+        pix[(x, y + 1)] = "h4"      # the candle stub
     for dx in (-2, -1, 0, 1, 2):
-        pix[(x + dx, y + 2)] = "G3" if dx < 1 else "G2"
+        pix[(x + dx, y + 2)] = "g2" if dx < 1 else "g1"
     La.fixed(pix)
     if fire > 0:
-        FX.halo((cx + .5, cy + .5), 4.2 + 0.4 * fire, 7.5 + 0.8 * fire, glow_col, (54, 24))
+        FX.halo((cx + .5, cy + .5), 4.2 + 0.4 * fire, 7.5 + 0.8 * fire, glow_col, (46, 20))
         if fi % 3 == 1:
-            FX.put([(x, y - 4)], "Y1", 150)
+            FX.put([(x, y - 4)], "w2", 150)
     return (cx, cy)
 
 
 def draw_venn(p, fi, sw):
+    """Sister Venn as in the reference / portrait_venn: a young nun in a black habit and layered mantle, black veil
+    with a silver-embroidered brow band over long silver-white hair, a silver chain and cross; a pale lantern."""
     Ls = {n: Layer(n) for n in VENN_L if n != "FX"}
     Ls["FX"] = Glow("FX")
     R = ID
@@ -230,10 +237,10 @@ def draw_venn(p, fi, sw):
     shF, shB = F(1.4, -ln + 1.6), F(-1.8, -ln + 1.8)
     # ---- back arm (only in talk: the free hand opens toward the listener)
     if p["hb"]:
-        arm(R, Ls["BackArm"], shB, p["hb"], 4.0, 4.2, 1.5, 1.6, "N", bias=0, fist="S", fist_r=0.9, pref=(0, 1))
+        arm(R, Ls["BackArm"], shB, p["hb"], 4.0, 4.2, 1.5, 1.6, "b", bias=0, fist="k", fist_r=0.9, pref=(0, 1))
         hq = ip(p["hb"])
-        Ls["BackArm"].fixed({hq: "S4", (hq[0] + 1, hq[1] - 1): "S3", (hq[0] + 1, hq[1]): "G4"})
-    # ---- robe: slender bell to the floor, soft vertical folds
+        Ls["BackArm"].fixed({hq: "k4", (hq[0] + 1, hq[1] - 1): "k3", (hq[0] - 1, hq[1]): "g2"})
+    # ---- habit: slender black bell to the floor, soft vertical folds, silver-embroidered hem
     Rb = Ls["Robe"]
     s = p["sway"]
     hem = floor + 0.4
@@ -248,54 +255,70 @@ def draw_venn(p, fi, sw):
     m = R.mask(pts)
     Rb.paint(n_plate(m, 2.0, (-0.1, 0.0), 1.0,
                      fold=lambda x, y: (0.55 * math.sin((x - P[0] - s * 0.3) * 1.25) * min(1.0, max(0.0, (y - P[1] + 6) / 9)), 0)),
-             "N", bias=0)
+             "b", bias=0)
     ybot = max(q[1] for q in m)
-    Rb.decal([q for q in m if q[1] >= ybot - 1], ("N", 1))            # ash-darkened hem
-    Rb.decal([q for q in m if q[1] == ybot - 2 and q[0] % 2 == 0], ("N", 2))
-    R.dline(Rb, F(-3.4, -3.4), F(3.2, -3.6), ("N", 1))                # cord belt
-    R.decal(Rb, [F(2.6, -3.0), F(2.6, -2.0), F(2.2, -1.0)], ("N", 4))  # hanging cord end
-    # ---- capelet over the shoulders
+    Rb.decal([q for q in m if q[1] >= ybot], ("b", 1))
+    Rb.decal([q for q in m if q[1] == ybot - 1], ("g", 1))              # silver hem band
+    R.dline(Rb, F(-3.4, -3.4), F(3.2, -3.6), ("b", 0))                 # cord belt
+    R.decal(Rb, [F(2.6, -3.0), F(2.6, -2.0)], ("g", 1))               # hanging chain end
+    # ---- layered mantle over the shoulders, silver trim
     Cl = Ls["Capelet"]
     cp = [F(-3.2, -ln - 0.4), F(2.8, -ln - 0.2), F(4.2, -ln + 4.4), F(2.6, -ln + 6.0), F(0.0, -ln + 5.4),
           F(-2.6, -ln + 6.6), F(-4.8, -ln + 5.0)]
     cm = R.mask(cp)
-    Cl.paint(n_plate(cm, 1.6, (-0.2, -0.1), 1.2), "N", bias=-1)
-    Cl.decal([q for q in cm if (q[0], q[1] + 1) not in cm], ("N", 3))   # pale lower trim
-    # a single gold vein at the throat (the seedling shows through)
-    # ---- head: soft hood, pale face lit warmly from the lantern below
+    Cl.paint(n_plate(cm, 1.6, (-0.2, -0.1), 1.2), "b", bias=1)
+    Cl.decal([q for q in cm if (q[0], q[1] + 1) not in cm], ("g", 1))
+    # ---- head: black veil, silver brow band, silver hair framing a pale face
     Hl = Ls["Head"]
     G = basis(Hd, p["hup"])
+    # hair behind the face (under the veil's edge) and spilling down the back of the neck
+    hair = [G(-0.6, -2.2), G(0.4, -1.6), G(-0.2, 1.8), G(0.2, 4.6), G(-1.6, 6.2), G(-2.4, 3.0), G(-2.2, -1.0)]
+    R.plate(Hl, hair, "h", bevel=1.0, tilt=(-0.1, -0.2), strength=0.8, bias=1)
     face = [G(0.2, -1.6), G(2.6, -1.4), G(3.4, 0.6), G(3.0, 2.6), G(1.2, 3.4), G(0.0, 1.6)]
-    fm = R.plate(Hl, face, "S", bevel=1.0, tilt=(0.3, 0.2), bias=1)
-    hood = [G(-3.8, 3.8), G(-4.2, -0.4), G(-3.0, -3.6), G(-0.6, -4.8), G(1.8, -4.4), G(3.6, -2.6), G(4.0, -0.8),
-            G(2.2, -1.8), G(0.6, -1.0), G(0.0, 1.4), G(0.4, 3.6), G(-0.4, 4.8)]
-    hm = R.plate(Hl, hood, "N", bevel=1.6, tilt=(-0.15, -0.25), strength=1.25)
-    # hood lip catches light
-    Hl.decal([q for q in hm if (q[0] + 1, q[1]) in fm or (q[0] + 1, q[1] + 1) in fm], ("N", 5))
-    # shadowed brow, closed calm eye, lit chin
-    fq = sorted(fm)
+    fm = R.plate(Hl, face, "k", bevel=1.0, tilt=(0.3, 0.2), bias=1)
+    hood = [G(-3.8, 3.8), G(-4.2, -0.4), G(-3.0, -3.6), G(-0.6, -4.8), G(1.8, -4.4), G(3.6, -2.6), G(4.0, -1.4),
+            G(2.2, -2.2), G(0.4, -1.8), G(-0.8, -1.0), G(-1.6, 1.4), G(-1.8, 3.6), G(-2.4, 4.8)]
+    hm = R.plate(Hl, hood, "b", bevel=1.6, tilt=(-0.15, -0.25), strength=1.25, bias=0)
+    # silver-embroidered band where the veil meets the brow
+    band = [q for q in hm if any((q[0] + a, q[1] + b) in fm for a, b in ((0, 1), (1, 1), (-1, 1)))]
+    Hl.decal(band, ("g", 3))
+    Hl.decal([q for q in band if q[0] % 2 == 0], ("g", 2))
+    # fringe over the brow; half-lidded grey eye; lit chin
     top = min(q[1] for q in fm)
-    Hl.decal([q for q in fm if q[1] == top], ("S", 1))
+    Hl.decal([q for q in fm if q[1] == top], ("h", 4))
     eye = ip(G(2.0, -0.2))
-    Hl.decal([eye], ("S", 0))
-    Hl.decal([(eye[0] + 1, eye[1])], ("S", 1))
-    Hl.decal([ip(G(3.2, 0.8))], ("S", 4))   # nose tip
-    Hl.decal([q for q in fm if q[1] >= max(r[1] for r in fm) - 0.5 and q[0] >= ip(G(1.0, 0))[0]], ("S", 4))  # lantern-lit chin
-    # gold veins creeping up the throat (the seedling shows through)
-    nk = [ip(G(1.2, 4.0)), ip(G(1.8, 4.6))]
-    Hl.fixed({q: "G4" for q in nk})
-    Hl.decal([ip(G(2.2, 2.0))], ("S", 1) if not p["talk"] else ("S", 0))  # mouth
+    Hl.decal([(eye[0], eye[1] - 1)], ("k", 0))
+    Hl.decal([eye], ("h", 1))
+    Hl.decal([(eye[0] + 1, eye[1])], ("k", 2))
+    Hl.decal([ip(G(3.2, 0.8))], ("k", 4))   # nose tip
+    Hl.decal([ip(G(2.2, 2.0))], ("k", 1) if not p["talk"] else ("k", 0))  # mouth
     if p["talk"] == 2:
-        Hl.decal([ip(G(2.2, 2.6))], ("S", 1))
-    # ---- front arm: sleeve to the lantern hand
+        Hl.decal([ip(G(2.2, 2.6))], ("k", 1))
+    # high black collar
+    col = [ip(G(0.6, 4.2)), ip(G(1.4, 4.2)), ip(G(0.4, 5.0)), ip(G(1.4, 5.0))]
+    Hl.fixed({q: "b2" for q in col})
+    # ---- chain and silver cross at the breast
+    Fx = Ls["FX"]
+    cx_ = ip(F(2.3, -ln + 3.6))
+    Cl.fixed({ip(F(1.2, -ln + 1.2)): "g1", ip(F(1.6, -ln + 2.2)): "g2"})
+    cross = {(cx_[0], cx_[1] - 1): "g3", cx_: "g4", (cx_[0] - 1, cx_[1]): "g2", (cx_[0] + 1, cx_[1]): "g2",
+             (cx_[0], cx_[1] + 1): "g2", (cx_[0], cx_[1] + 2): "g1"}
+    Fx.put([q for q in [(cx_[0] + a, cx_[1] + b) for a in (-2, -1, 0, 1, 2) for b in (-2, -1, 0, 1, 2, 3)]
+            if q not in cross and any((q[0] + a, q[1] + b) in cross for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))], "b0")
+    for q, c_ in cross.items():
+        Fx.put([q], c_)
+    # a long lock of silver hair over the shoulder, in front of the mantle
+    lock = [ip(G(0.0, 3.0)), ip(G(0.2, 4.0)), ip(F(0.8, -ln + 1.0)), ip(F(0.9, -ln + 2.2)), ip(F(0.6, -ln + 3.4))]
+    Cl.fixed({q: ("h4" if i < 2 else "h3" if i < 4 else "h2") for i, q in enumerate(lock)})
+    # ---- front arm: black sleeve to the lantern hand, a silver chain at the wrist
     Fa = Ls["FrontArm"]
-    el = arm(R, Fa, shF, p["hf"], 4.2, 4.2, 1.6, 1.8, "N", bias=0, fist="S", fist_r=0.9, pref=(-0.6, 1))
+    el = arm(R, Fa, shF, p["hf"], 4.2, 4.2, 1.6, 1.8, "b", bias=1, fist="k", fist_r=0.9, pref=(-0.6, 1))
     cuff = lerp(el, p["hf"], 0.72)
-    R.dome(Fa, cuff, 1.6, 1.6, "N", bias=1)
-    Fa.decal([ip(p["hf"])], "G3")     # gold vein across the knuckles
+    R.dome(Fa, cuff, 1.6, 1.6, "b", bias=1)
+    Fa.decal([ip(add(cuff, (0.8, 0.9)))], "g2")    # the wrist chain
     # ---- lantern
     lc = lantern(Ls, (p["hf"][0] + 0.6, p["hf"][1] + 0.6), p["csw"], fi, p["fire"])
-    rim = [(lc, 13, (255, 206, 120), (70, 48, 30), ["Robe", "Capelet", "FrontArm", "BackArm", "Head"], 0.5)]
+    rim = [(lc, 13, (214, 212, 232), (38, 36, 50), ["Robe", "Capelet", "FrontArm", "BackArm", "Head"], 0.45)]
     return Ls, {"rim": rim}
 
 

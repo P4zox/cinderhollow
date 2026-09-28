@@ -631,6 +631,9 @@ class Wpn:
     lash = None        # v9 whip class: the lash's control points (absolute), None = hanging at rest
     lash_prev = None   # v9: previous frame's lash (motion smear)
 
+    tag = None         # v11 (AA): the tag this frame belongs to (stamp_tag) ...
+    fi = -1            # ... and its index there: per-weapon art flourishes / tints key off (tag, kind, fi)
+
     def render(self, kind, dust=True, extras=True):
         if kind in WHIP_KINDS:
             return render_whip(self, kind, dust)
@@ -639,8 +642,10 @@ class Wpn:
         return self.render_core(kind, dust)
 
     def render_core(self, kind, dust=True):
+        flo, tint = aa_extras(self, kind)
+        ghosts = [f for f in self.fx if f[0] == "ghost"]
         if not (self.fx or self.clear or self.mirror or self.sheath or self.mask is not None or self.aura or self.heat
-                or self.clear_fx):
+                or self.clear_fx or flo or tint):
             return to_img(draw_weapon(kind, self.hand, self.ang, self.slen, self.planted, self.held, self.fitb))
         info = {}
         g = draw_weapon(kind, self.hand, self.ang, self.slen, self.planted, self.held, self.fitb, info=info)
@@ -667,15 +672,25 @@ class Wpn:
                             g[y][x] = (74, 48, 70) if lit else (38, 24, 40)
         if self.heat:
             heat_blade(g, info, self.heat)
-        fxg = move_fx(kind, info, self.fx, dust, self.fx_pal)
+        fxg = move_fx(kind, info, tuple(f for f in self.fx if f[0] != "ghost"), dust, self.fx_pal)
         if self.aura:
             halo(fxg, g, self.aura, self.aura_pal or SMEAR[kind], info)
+        if tint:
+            tint_grid(fxg, tint)
+        if flo:   # per-weapon flourish (boss power), drawn in the weapon's own FX layer, under the blade
+            fl = move_fx(kind, info, flo, dust, None)
+            for y in range(H):
+                for x in range(W):
+                    if fl[y][x] is not None and (fxg[y][x] is None or fl[y][x] not in DUST):
+                        fxg[y][x] = fl[y][x]
         if self.clear_fx:
             for x, y in self.clear:
                 if 0 <= x < W and 0 <= y < H:
                     fxg[y][x] = None
         img = to_img(fxg)
         img.alpha_composite(to_img(g))
+        if ghosts and self.cels:
+            draw_ghost(img, self.cels, ghosts)
         self.info = info
         if self.mirror:
             m = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -1445,6 +1460,8 @@ def art_fx(g, k, f, tones, tip, d):
                 if q > 0.6 and i % 2:
                     continue
                 put(g, xx, ys - i, pal[0] if q < 0.2 else (pal[1] if q < 0.55 else pal[2]))
+    elif k in AA_FX:        # v11 (AA): boss-power flourishes (wisps, roots, eclipse, spores, pool, pillar, chain, petals)
+        AA_FX[k](g, f, (c0, c1, c2), tip, d)
     elif k == "embers":     # ("embers", (x, y), spread, seed): scattered cinders
         cx, cy = f[1]
         sp, seed = f[2], f[3]
@@ -1519,7 +1536,7 @@ def mseq(frames, base=None, grip=None, art=False):
     fx=[...] (swing FX, coords in pose space: +dx/+dy), mirror=True (spin frame),
     behind=True (weapon hidden behind the body)."""
     base = base or {}
-    if _SETTLE and not art and len(frames) >= 3:
+    if _SETTLE and (not art or _SETTLE == "art") and len(frames) >= 3:
         frames = _settle_frames(frames, base)
     out = []
     prev, prevw = ((35, 27), -50), None
@@ -1553,7 +1570,7 @@ def mseq(frames, base=None, grip=None, art=False):
                     if "a0" not in opt:
                         a0 = _unwrap(a0, q["ang"])
                     fxl.append(("sweep", h0, a0, opt, prevw))
-                elif f[0] in ("flare", "rings", "speed", "wave", "embers", "ring", "vspeed"):
+                elif f[0] in ("flare", "rings", "speed", "wave", "embers", "ring", "vspeed") + AA_PT_FX:
                     pt = f[1] if f[1] == "tip" else (f[1][0] + bx, f[1][1] + by)
                     fxl.append((f[0], pt) + tuple(f[2:]))
                 elif f[0] == "flash":
@@ -1846,9 +1863,9 @@ def art_crescent():  # low wind-back, huge two-handed rising diagonal sweep that
                        fx=[sw(w=0.4)]), 50),
                  (dict(dx=2, dy=0, hand=(39, 23), ang=-32, footB=(OX + 8, 38), footF=(FF[0] + 3, 39), flow=1.3, flutter=3,
                        fx=[("arc", (30, 25), 172, -32, dict(sq=0.55, w=0.95))]), 55),
-                 (dict(dx=2, dy=-2, hand=(36, 13), ang=-88, footB=(OX + 9, 37), footF=(FF[0] + 3, 39), flow=1.4, flutter=4,
+                 (dict(dx=2, dy=-2, hand=(36, 16), ang=-86, slen=13, footB=(OX + 9, 37), footF=(FF[0] + 3, 39), flow=1.4, flutter=4,
                        fx=[sw(w=0.55)]), 60),
-                 (dict(dx=1, dy=-1, hand=(30, 12), ang=-128, footF=(FF[0] + 2, 39), flow=0.8, flutter=5), 170),
+                 (dict(dx=1, dy=-1, hand=(30, 14), ang=-128, slen=16, footF=(FF[0] + 2, 39), flow=0.8, flutter=5), 170),
                  (dict(dy=1, hand=(33, 24), ang=-65, flow=0.3, flutter=6), 180)], grip=GRIP_GREAT, art=True)
 
 def art_bloodstep():  # crouched sprint-dash, blade trailing low behind (engine moves the body on 2-4)
@@ -4815,13 +4832,535 @@ V10_AIR = {t for t, _ in V10_MOVES if t.endswith("_air")}
 HIT_X0.update({"kt_air": -2, "sh_air": -2, "tw_air": -2, "sp_air": -2, "dg_air": -2, "gs_air": -4})   # iaido flash / trailing smears
 
 
+# ================================================================ v11 (agent AA): weapon-art animations, class-true + per-weapon
+# Every weapon owns one art (WEAPONS[id].art). An art_<id> body was authored in one class's pose language; where another class
+# uses the art it now gets art_<id>__<cls> (cls = the moveset prefix: sw dg gs sp kt st sh tw sc wh) in its own language, same
+# frame structure / release frame / held frames as the original (so ART_IMPL / ART_SYNC keep working unchanged), picked by
+# startArt (04_player.js artTagFor). Boss weapons get their boss's power baked into their own overlay: FLOURISH[(tag, kind)]
+# {frame: [fx]} (absolute frame coords) and ART_TINT[(tag, kind)] (the art's FX recoloured along a 4-tone ramp).
+AA_PT_FX = ("wisps", "roots", "eclipse", "spores", "pool", "pillar", "chain", "petals")   # point-anchored: mseq offsets f[1]
+GHOSTFIRE = ((236, 244, 255), (160, 190, 255), (110, 100, 200))
+ROTPAL = ((214, 244, 150), (150, 200, 70), (80, 110, 40))
+ECLIPSE = ((255, 244, 196), (255, 200, 90), (190, 110, 40))
+KALDEN_T = ((206, 255, 244), (86, 206, 190), (38, 108, 110))
+
+
+def _hsh(*a):
+    h = 2166136261
+    for v in a:
+        h = ((h ^ (int(v) & 0xffffffff)) * 16777619) & 0xffffffff
+    return h
+
+
+def _fx_wisps(g, f, tones, tip, d):
+    """("wisps", (x0, y0), (x1, y1), n, seed[, pal]): n small tongues of ghost-fire standing on a line (teardrops, 3 px at the
+    base narrowing to a curled 1 px tip, hot core low)."""
+    (x0, y0), (x1, y1), n, seed = f[1], f[2], f[3], f[4]
+    pal = f[5] if len(f) > 5 else tones
+    for i in range(n):
+        t = (i + 0.5) / n
+        h = _hsh(seed, i, 3)
+        bx, by = int(round(x0 + (x1 - x0) * t)), int(round(y0 + (y1 - y0) * t))
+        ht = 4 + h % 3
+        lean = 1 if (h >> 4) % 2 else -1
+        for k in range(ht):
+            q = k / (ht - 1)
+            y = by - k
+            if q < 0.35:                       # base: 3 wide, hot core
+                put(g, bx - 1, y, pal[1]); put(g, bx, y, pal[0]); put(g, bx + 1, y, pal[1])
+            elif q < 0.7:                      # body: 2 wide, leaning
+                xo = bx + (lean if q > 0.5 else 0)
+                put(g, xo, y, pal[1] if q < 0.55 else pal[2]); put(g, xo - lean, y, pal[2])
+            else:                              # curled tip
+                put(g, bx + lean * (1 if q < 0.9 else 2), y, pal[2])
+
+
+def _fx_roots(g, f, tones, tip, d):
+    """("roots", (x, y), reach, n, seed[, pal]): Pale-Root tendrils splitting out of the ground both ways -- thin arcs that
+    rise and curl back down, a brighter core near the split, tips dissolving."""
+    (x, y), reach, n, seed = f[1], f[2], f[3], f[4]
+    pal = f[5] if len(f) > 5 else ROOTGOLD
+    for i in range(n):
+        h = _hsh(seed, i, 11)
+        side = 1 if i % 2 == 0 else -1
+        L = reach * (0.6 + 0.4 * ((h >> 6) % 100) / 100)
+        rise = 5 + h % 7
+        x0 = x + side * (3 + i // 2 * 2)
+        prev = None
+        steps = max(6, int(L * 1.6))
+        for s_ in range(steps + 1):
+            q = s_ / steps
+            px = x0 + side * q * L
+            py = y - rise * math.sin(math.pi * q ** 0.8) - (1.5 * q if i >= 2 else 0)
+            if q > 0.8 and s_ % 2:
+                continue
+            col = pal[0] if q < 0.18 else (pal[1] if q < 0.7 else pal[2])
+            if prev is not None:
+                for k in range(1, 3):   # fill steep gaps so the tendril stays one clean line
+                    put(g, prev[0] + (px - prev[0]) * k / 3, prev[1] + (py - prev[1]) * k / 3, col)
+            put(g, px, py, col)
+            prev = (px, py)
+        put(g, x0, y, pal[0]); put(g, x0 + side, y, pal[1])
+
+
+def _fx_eclipse(g, f, tones, tip, d):
+    """("eclipse", (x, y), r[, pal]): Morvain's eclipse: a black disc with a thin burning corona and short rays."""
+    (cx, cy), r = f[1], f[2]
+    pal = f[3] if len(f) > 3 else tones
+    for yy in range(int(cy - r - 5), int(cy + r + 6)):
+        for xx in range(int(cx - r - 5), int(cx + r + 6)):
+            dd = math.hypot(xx + 0.5 - cx, yy + 0.5 - cy)
+            if dd <= r - 0.4:
+                put(g, xx, yy, (20, 10, 14) if dd < r - 1.4 else (58, 24, 20))
+            elif dd <= r + 0.7:
+                put(g, xx, yy, pal[0])
+            elif dd <= r + 1.7:
+                put(g, xx, yy, pal[1])
+            elif dd <= r + 2.7 and (xx + yy) % 2 == 0:
+                put(g, xx, yy, pal[2])
+    for k in range(8):
+        a = math.radians(k * 45 + 22.5)
+        for i in range(int(r + 3), int(r + 3 + (3 if k % 2 else 5))):
+            put(g, cx - 0.5 + math.cos(a) * i, cy - 0.5 + math.sin(a) * i, pal[1] if i < r + 5 else pal[2])
+
+
+def _fx_spores(g, f, tones, tip, d):
+    """("spores", (x, y), spread, seed[, pal]): rot spores drifting up from a point."""
+    (cx, cy), sp, seed = f[1], f[2], f[3]
+    pal = f[4] if len(f) > 4 else tones
+    for i in range(11):
+        h = _hsh(seed, i, 5)
+        ax = ((h % 41) / 40.0 - 0.5) * 2 * sp
+        ay = -((h >> 6) % 100) / 100.0 * sp * 1.2
+        col = pal[i % 3]
+        put(g, cx + ax, cy + ay, col)
+        if i % 4 == 0:
+            put(g, cx + ax + 1, cy + ay, pal[1]); put(g, cx + ax, cy + ay + 1, pal[2])
+
+
+def _fx_pool(g, f, tones, tip, d):
+    """("pool", (x, y), half_width[, pal]): a flat pool of rot on the floor row y, with a bubble or two."""
+    (cx, cy), w = f[1], f[2]
+    pal = f[3] if len(f) > 3 else tones
+    for x in range(int(cx - w), int(cx + w) + 1):
+        q = abs(x - cx) / max(1, w)
+        put(g, x, cy, pal[1] if q < 0.6 else pal[2])
+        if q < 0.7:
+            put(g, x, cy - 1, pal[2] if (x % 2 or q > 0.45) else pal[1])
+    for k in (-w * 0.4, w * 0.3):
+        put(g, cx + k, cy - 2, pal[0]); put(g, cx + k, cy - 3, pal[1])
+
+
+def _fx_pillar(g, f, tones, tip, d):
+    """("pillar", (x, y), half_width[, pal]): a column of pale light falling from the sky onto (x, y)."""
+    (cx, cy), w = f[1], f[2]
+    pal = f[3] if len(f) > 3 else tones
+    for y in range(0, int(cy) + 1):
+        fade = y < 5
+        for x in range(int(cx - w - 1), int(cx + w + 2)):
+            dd = abs(x + 0.5 - cx)
+            if dd <= w * 0.3 and not (fade and (x + y) % 2):
+                put(g, x, y, pal[0])
+            elif dd <= w * 0.65 and not (fade and (x + y) % 2):
+                put(g, x, y, pal[1])
+            elif dd <= w and (x + y) % 2 == 0:
+                put(g, x, y, pal[2])
+    for i in range(-int(w * 2 + 3), int(w * 2 + 4)):            # the splash where it lands
+        if abs(i) > w * 0.6 and (i % 2 == 0 or abs(i) < w * 1.4):
+            put(g, cx + i, cy, pal[1] if abs(i) < w * 1.5 else pal[2])
+
+
+def _fx_chain(g, f, tones, tip, d):
+    """("chain", (x0, y0), (x1, y1)[, pal]): a spectral chain laid along a line (alternating flat and edge-on links)."""
+    (x0, y0), (x1, y1) = f[1], f[2]
+    pal = f[3] if len(f) > 3 else tones
+    L = math.hypot(x1 - x0, y1 - y0) or 1
+    ux, uy = (x1 - x0) / L, (y1 - y0) / L
+    n = int(L // 3)
+    for i in range(n):
+        cx, cy = x0 + ux * (i * 3 + 1.5), y0 + uy * (i * 3 + 1.5)
+        col = pal[0] if i % 3 == 0 else pal[1]
+        if i > n - 3:
+            col = pal[2]
+        if i % 2 == 0:   # flat link: a small ring
+            for a2, b2 in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                put(g, cx + a2 * 1.2, cy + b2, col)
+        else:            # edge-on link: a short bar
+            put(g, cx - 0.6, cy, col); put(g, cx + 0.6, cy, col)
+
+
+def _fx_petals(g, f, tones, tip, d):
+    """("petals", (x, y), spread, seed[, pal]): pale petals drifting (two-pixel diagonals)."""
+    (cx, cy), sp, seed = f[1], f[2], f[3]
+    pal = f[4] if len(f) > 4 else tones
+    for i in range(8):
+        h = _hsh(seed, i, 13)
+        ax = ((h % 37) / 36.0 - 0.5) * 2 * sp
+        ay = (((h >> 6) % 29) / 28.0 - 0.5) * 2 * sp
+        s = 1 if (h >> 12) % 2 else -1
+        put(g, cx + ax, cy + ay, pal[0]); put(g, cx + ax + s, cy + ay + 1, pal[1 + i % 2])
+
+
+AA_FX = {"wisps": _fx_wisps, "roots": _fx_roots, "eclipse": _fx_eclipse, "spores": _fx_spores, "pool": _fx_pool,
+         "pillar": _fx_pillar, "chain": _fx_chain, "petals": _fx_petals}
+
+
+def draw_ghost(img, cels, ghosts):
+    """("ghost", dx, level[, pal]): a golden afterimage of the knight's silhouette, dx px off, kept behind the body."""
+    body = compose(imgs({n: c for n, c in cels.items() if not isinstance(c, (Wpn, RotWpn))}, None))
+    bm = body.load()
+    px = img.load()
+    for f in ghosts:
+        dx, lvl = f[1], f[2]
+        pal = f[3] if len(f) > 3 else P_GOLD
+        inside = lambda x, y: 0 <= x - dx < W and 0 <= y < H and bm[x - dx, y][3] > 0
+        for y in range(H):
+            for x in range(W):
+                if not inside(x, y) or bm[x, y][3] or px[x, y][3]:
+                    continue
+                edge = not all(inside(x + a2, y + b2) for a2, b2 in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+                if edge:
+                    c = pal[0] if lvl >= 2 else pal[1]
+                    if lvl == 1 and (x + y) % 2:
+                        continue
+                elif lvl >= 3:
+                    c = pal[1] if (x + y) % 2 == 0 else pal[2]
+                elif lvl == 2 and (x + y) % 2 == 0 and y % 2 == 0:
+                    c = pal[2]
+                else:
+                    continue
+                px[x, y] = c + (255,)
+
+
+def tint_grid(g, ramp):
+    """Recolour an FX grid along a 4-tone ramp (bright -> deep) by luminance; floor dust keeps its own colour."""
+    for y in range(H):
+        for x in range(W):
+            c = g[y][x]
+            if c is None or c in DUST:
+                continue
+            rgb = PAL[c] if isinstance(c, str) else c
+            lum = 0.3 * rgb[0] + 0.55 * rgb[1] + 0.15 * rgb[2]
+            g[y][x] = ramp[0] if lum > 205 else (ramp[1] if lum > 140 else (ramp[2] if lum > 80 else ramp[3]))
+
+
+FLOURISH = {}   # (tag, kind) -> {frame index: [fx, ...]}  (absolute frame coords)
+ART_TINT = {}   # (tag, kind) -> 4-tone ramp
+
+
+def aa_extras(w, kind):
+    if w.tag is None:
+        return (), None
+    fl = FLOURISH.get((w.tag, kind))
+    return (tuple(fl.get(w.fi, ())) if fl else ()), ART_TINT.get((w.tag, kind))
+
+
+def stamp_tag(name, fn):
+    """Wrap an animation fn: every weapon cel it makes learns its (tag, frame index)."""
+    def run():
+        fr = list(fn())
+        for i, (cels, _) in enumerate(fr):
+            w = cels.get("Sword")
+            while isinstance(w, RotWpn):
+                w = w.inner
+            if isinstance(w, Wpn):
+                w.tag, w.fi = name, i
+        return fr
+    run.__name__ = getattr(fn, "__name__", name)
+    return run
+
+
+def settled_art(fn):
+    """settled() for weapon arts: the recovery eases back toward idle (a frame appended after every engine-read index)."""
+    def run():
+        global _SETTLE
+        _SETTLE = "art"
+        try:
+            return fn()
+        finally:
+            _SETTLE = False
+    run.__name__ = fn.__name__
+    return run
+
+
+# ---------------------------------------------------------------- moonwave: sword (Kalden, Frostbrand), spear (Scepter), great (Vael)
+def art_moonwave_sw():  # salute, then the blade swept up behind the head one-handed while the free hand sights the foe; one falling cut
+    hi = dict(dx=-1, dy=1, hand=(30, 12), ang=-158, off=(38, 20), footB=(OX + 6, 39), footF=(FF[0] + 1, 39), behind=True)
+    return mseq([(dict(dy=1, hand=(34, 23), ang=-92, off=(31, 24), flow=0.3), 100),
+                 (dict(dx=-1, hand=(31, 14), ang=-128, off=(35, 22), footB=(OX + 7, 39), flow=0.3, aura=1), 120),
+                 (dict(flow=0.4, flutter=1, aura=2, **hi), 140),
+                 (dict(flow=0.5, flutter=2, aura=3, fx=[("glint", "tip")], **hi), 140),
+                 (dict(flow=0.4, flutter=3, aura=2, fx=[("glint", (21, 5))], **{**hi, "hand": (29, 12), "ang": -164}), 120),
+                 (dict(dx=2, dy=3, hand=(40, 26), ang=55, off=(24, 25), footF=(FF[0] + 3, 39), flow=1.3, flutter=4, aura=1,
+                       fx=[sw(w=0.5, a0=-164), ("wave", (47, 21), 17, 9)]), 50),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(39, 30), ang=74, off=(23, 26), footB=(OX + 6, 39), footF=(FF[0] + 4, 39),
+                       flow=1.0, flutter=5, fx=[("dust", 47, 5)]), 90),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(39, 30), ang=76, off=(24, 27), footB=(OX + 6, 39), footF=(FF[0] + 4, 39),
+                       flow=0.6, flutter=6, fx=[("dust", 47, 3)]), 200),
+                 (dict(dx=2, dy=2, hand=(37, 27), ang=30, off=(28, 26), footF=(FF[0] + 2, 39), flow=0.4, flutter=7), 150),
+                 (dict(dy=1, hand=(35, 26), ang=-40, off=(31, 26), flow=0.3), 170)], art=True)
+
+
+def art_moonwave_sp():  # the spear raised straight at the sky in both hands, light gathering on the head, then one overhead wheel down
+    sky = dict(dy=-1, hand=(33, 18), ang=-90, footB=(OX + 7, 39))
+    return mseq([(dict(dy=1, hand=(33, 22), ang=-60, flow=0.3), 100),
+                 (dict(hand=(33, 19), ang=-82, flow=0.3), 120),
+                 (dict(flow=0.4, flutter=1, aura=1, **sky), 140),
+                 (dict(flow=0.5, flutter=2, aura=2, fx=[("glint", "tip")], **sky), 140),
+                 (dict(dx=-1, hand=(30, 15), ang=-148, footB=(OX + 6, 39), flow=0.4, flutter=3, aura=1), 120),
+                 (dict(dx=2, dy=2, hand=(39, 24), ang=16, footF=(FF[0] + 3, 39), flow=1.3, flutter=4, aura=1,
+                       fx=[sw(w=0.45), ("wave", (47, 21), 17, 9)]), 50),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(39, 28), ang=32, footB=(OX + 6, 39), footF=(FF[0] + 4, 39), flow=1.0, flutter=5,
+                       fx=[("dust", 50, 5)]), 90),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(39, 28), ang=33, footB=(OX + 6, 39), footF=(FF[0] + 4, 39), flow=0.6, flutter=6,
+                       fx=[("dust", 50, 3)]), 200),
+                 (dict(dx=2, dy=2, hand=(36, 27), ang=10, footF=(FF[0] + 2, 39), flow=0.4, flutter=7), 150),
+                 (dict(hand=(33, 27), ang=-8, flow=0.3), 170)], grip=GRIP_SPEAR, art=True)
+
+
+def art_moonwave_gs():  # a vigil: the blade point-down before you, both hands on the hilt; heave it over and cleave the wave loose
+    vig = dict(dy=2, hand=(35, 20), ang=90, slen=15, footB=(OX + 5, 39), footF=(FF[0] + 2, 39))
+    return mseq([(dict(dy=1, hand=(33, 24), ang=50, flow=0.3), 100),
+                 (dict(flow=0.2, **vig), 120),
+                 (dict(flow=0.2, flutter=1, head_dy=1, **vig), 140),
+                 (dict(flow=0.3, flutter=2, head_dy=1, fx=[("glint", (36, 21))], **vig), 140),
+                 (dict(dx=-2, dy=1, head_dx=-1, hand=(28, 13), ang=-166, footB=(OX + 5, 39), flow=0.3, flutter=3, aura=1, behind=True), 120),
+                 (dict(dx=2, dy=3, hand=(39, 25), ang=34, footF=(FF[0] + 3, 39), flow=1.3, flutter=4, aura=1,
+                       fx=[sw(w=0.55, a0=-166), ("wave", (47, 21), 17, 9)]), 50),
+                 (dict(dx=3, dy=5, head_dy=1, hand=(38, 30), ang=62, slen=16, footB=(OX + 6, 39), footF=(FF[0] + 4, 39), flow=1.0,
+                       flutter=5, fx=[("dust", 48, 6)]), 90),
+                 (dict(dx=3, dy=5, head_dy=1, hand=(38, 30), ang=63, slen=16, footB=(OX + 6, 39), footF=(FF[0] + 4, 39), flow=0.6,
+                       flutter=6, fx=[("dust", 48, 3)]), 200),
+                 (dict(dx=2, dy=3, hand=(36, 29), ang=46, footF=(FF[0] + 2, 39), flow=0.4, flutter=7), 150),
+                 (dict(dy=1, hand=(33, 25), ang=-70, flow=0.3), 170)], grip=GRIP_GREAT, art=True)
+
+
+# ---------------------------------------------------------------- bloodstep: katana (Stormvein) -- an iaido dash
+def art_bloodstep_kt():  # sheathed crouch, then the draw-cut flashes as you pass and the blade trails behind (engine dashes on 2-4)
+    st = dict(hand=(30, 29), ang=168, off=(32, 28), sheath=True)
+    dash = dict(dx=4, head_dx=2, flow=2.0, aura=1)
+    return mseq([(dict(dx=-1, dy=3, footB=(OX + 5, 39), flow=0.3, **st), 90),
+                 (dict(dx=-2, dy=5, head_dy=1, footB=(OX + 4, 39), footF=(OX + 20, 39), flow=0.2, flutter=1, fx=[("glint", (31, 27))],
+                       **st), 140),
+                 (dict(dy=5, head_dy=1, hand=(42, 27), ang=-4, off=(30, 28), footB=(OX + 3, 38), footF=(OX + 27, 39), flutter=2,
+                       fx=[("flash", 31, 6, 62), ("speed", (16, 17), 6, 20, BLOOD)], **dash), 50),
+                 (dict(dy=5, head_dy=1, hand=(41, 22), ang=-26, off=(31, 27), footB=(OX + 14, 36), footF=(OX + 22, 39), flutter=4,
+                       fx=[("speed", (15, 18), 6, 22, BLOOD)], **dash), 50),
+                 (dict(dy=5, head_dy=1, hand=(40, 24), ang=-14, off=(31, 27), footB=(OX + 4, 38), footF=(OX + 27, 39), flutter=6,
+                       fx=[("speed", (16, 17), 5, 14, BLOOD)], **dash), 60),
+                 (dict(dx=1, dy=2, hand=(37, 29), ang=34, off=(31, 27), footF=(OX + 21, 39), flow=0.5, flutter=7), 160)], art=True)
+
+
+# ---------------------------------------------------------------- war cry: spear (Spear, Scarab Spear) -- butt slammed down, spear upright
+def art_warcry_sp():
+    up = dict(hand=(38, 30), ang=-90)
+    roar = dict(dx=1, head_dx=-1, head_dy=-1, off=(14, 17), **up)
+    rings = lambda rr: ("rings", (32, 14), rr)
+    return mseq([(dict(dy=1, hand=(36, 24), ang=-76, off=(31, 25), flow=0.3), 100),
+                 (dict(dy=1, off=(33, 26), flow=0.3, flutter=1, fx=[("dust", 39, 3)], **up), 110),
+                 (dict(dx=-1, dy=3, head_dx=-1, head_dy=1, off=(29, 29), footB=(OX + 7, 39), flow=0.1, flutter=1, **up), 180),
+                 (dict(flow=1.3, flutter=2, fx=[rings((5, 9))], **roar), 110),
+                 (dict(flow=1.5, flutter=3, fx=[rings((9, 13))], **roar), 140),
+                 (dict(flow=1.4, flutter=4, fx=[rings((12, 17))], **roar), 150),
+                 (dict(flow=1.5, flutter=5, fx=[rings((6, 16))], **roar), 150),
+                 (dict(flow=1.2, flutter=6, fx=[rings((10, 20))], **roar), 120),
+                 (dict(dy=1, off=(26, 27), flow=0.5, flutter=7, **up), 150),
+                 (dict(hand=(35, 27), ang=-50, off=(30, 26), flow=0.3), 150)], art=True)
+
+
+# ---------------------------------------------------------------- cinderblade: great (Maul, Forge Cleaver), staff (Lantern Staff)
+def art_cinderblade_gs():  # braced low, the weapon angled up before you; the free hand drags fire up to the head, heave, one burning cleave
+    A0 = -66
+    brace = dict(dy=2, hand=(35, 30), ang=A0, two=True, footB=(OX + 5, 39), footF=(FF[0] + 2, 39))
+    ca, sa = math.cos(math.radians(A0)), math.sin(math.radians(A0))
+    def slide(gp, ms, **k):
+        px_, py_ = 35.5 + ca * gp, 30.5 + sa * gp
+        k["fx"] = [("flare", (px_, py_), 4, EMBER), ("embers", (px_ + 1, py_ - 2), 1 + gp // 5, gp)]
+        return (dict(grip=-gp, heat=(0, gp + 1), flow=0.2, **brace, **k), ms)
+    hot = dict(heat=(0, 40))
+    return mseq([(dict(dy=1, hand=(33, 29), ang=125, flow=0.3), 100),
+                 (dict(grip=-3, flow=0.2, **brace), 150),
+                 slide(5, 90, flutter=1),
+                 slide(8, 90, flutter=1),
+                 slide(11, 90, flutter=2),
+                 slide(13, 100, flutter=2),
+                 (dict(dx=-1, hand=(31, 18), ang=-138, slen=15, footB=(OX + 6, 39), flow=0.4, flutter=3, aura=1, aura_pal=EMBER[1:],
+                       fx=[("flare", "tip", 8, EMBER), ("embers", (22, 10), 5, 5)], **hot), 70),
+                 (dict(dx=2, dy=2, hand=(38, 21), ang=-12, footF=(FF[0] + 3, 39), flow=1.1, flutter=4, aura=1, aura_pal=EMBER[1:],
+                       fx=[sw(w=0.55), ("embers", (46, 16), 6, 6)], fx_pal=EMBER[:3], **hot), 50),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(37, 29), ang=46, slen=16, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.0,
+                       flutter=5, fx=[sw(w=0.45), ("dust", 50, 5), ("embers", (50, 30), 6, 7)], fx_pal=EMBER[:3], **hot), 70),
+                 (dict(dx=1, dy=2, hand=(35, 28), ang=32, footF=(FF[0] + 2, 39), flow=0.4, flutter=6, fx=[("embers", (50, 30), 4, 8)],
+                       **hot), 170)], grip=GRIP_GREAT, art=True)
+
+
+def art_cinderblade_st():  # the staff planted upright, the free hand runs fire up the haft to the head; flare, a burning wheel, a jab
+    up = dict(dx=1, dy=1, hand=(36, 30), ang=-90, two=True)
+    def slide(gp, ms, **k):
+        k["fx"] = [("flare", (36.5, 30.5 - gp), 4, EMBER)] + k.get("fx", [])
+        return (dict(grip=-gp, heat=(0, gp + 1), flow=0.2, **up, **k), ms)
+    hot = dict(heat=(0, 40))
+    wheel = lambda a0, a1: ("ring", (37, 24), 15.5, a0, a1, dict(sq=1.0, w=3.4, pal=EMBER[:3]))
+    return mseq([(dict(dy=1, hand=(34, 27), ang=-60, flow=0.3), 100),
+                 (dict(grip=-3, flow=0.2, **up), 150),
+                 slide(6, 90, flutter=1, fx=[("embers", (37, 22), 2, 1)]),
+                 slide(9, 90, flutter=1, fx=[("embers", (37, 19), 3, 2)]),
+                 slide(12, 90, flutter=2, fx=[("embers", (37, 16), 3, 3)]),
+                 slide(15, 100, flutter=2, fx=[("embers", (37, 13), 4, 4)]),
+                 (dict(off=(38, 12), flow=0.5, flutter=3, fx=[("flare", "tip", 9, EMBER), ("embers", (37, 10), 6, 5)],
+                       **{k: v for k, v in up.items() if k != "two"}, **hot), 70),
+                 (dict(dx=2, hand=(36, 24), ang=-10, footF=(FF[0] + 2, 39), flow=1.0, flutter=4, aura=1, aura_pal=EMBER[1:],
+                       fx=[wheel(-90, -10), ("embers", (48, 18), 6, 6)], **hot), 50),
+                 (dict(dx=3, dy=1, hand=(38, 25), ang=0, footB=(OX + 8, 39), footF=(OX + 24, 39), flow=1.1, flutter=5,
+                       fx=[("streak", 14), ("embers", (54, 24), 5, 7)], fx_pal=EMBER[:3], **hot), 70),
+                 (dict(dx=1, hand=(34, 27), ang=-12, flow=0.4, flutter=6, fx=[("embers", (50, 26), 4, 8)], **hot), 170)],
+                grip=GRIP_STAFF, art=True)
+
+
+# ---------------------------------------------------------------- backstep slash: dagger (Carving Knife) -- a reverse-grip back-flip
+def art_backstep_slash_dg():  # reverse grip: flip away (frames 1-2 while airborne), then a darting stab and a backhand cut
+    return mseq([(dict(dy=3, hand=(33, 26), ang=100, off=(31, 26), footB=(OX + 6, 39), flow=0.3, aura=1, fx=[("glint", "tip")]), 70),
+                 (dict(dx=-3, dy=-4, head_dx=-1, hand=(33, 22), ang=112, off=(28, 20), footB=(OX + 8, 34), footF=(OX + 17, 33), air=True,
+                       flow=0.1, flutter=1, fx=[("speed", (44, 24), 4, 10)]), 60),
+                 (dict(dx=-3, dy=-3, head_dx=-1, hand=(32, 23), ang=122, off=(27, 21), footB=(OX + 8, 35), footF=(OX + 17, 34), air=True,
+                       flow=0.0, flutter=2), 60),
+                 (dict(dx=2, dy=3, hand=(34, 28), ang=-8, off=(31, 26), footB=(OX + 5, 39), footF=(OX + 22, 39), flow=1.6, flutter=3,
+                       fx=[("speed", (20, 18), 5, 16)]), 40),
+                 (dict(dx=5, dy=2, hand=(43, 26), ang=-2, off=(24, 25), footB=(OX + 9, 39), footF=(OX + 28, 39), flow=1.8, flutter=4,
+                       fx=[("streak", 18)]), 50),
+                 (dict(dx=5, dy=2, hand=(41, 21), ang=-44, off=(25, 25), footB=(OX + 9, 39), footF=(OX + 28, 39), flow=1.4, flutter=5,
+                       fx=[sw(w=0.6)]), 60),
+                 (dict(dx=4, dy=2, hand=(39, 20), ang=-62, off=(26, 26), footB=(OX + 8, 39), footF=(OX + 26, 39), flow=0.8, flutter=6), 140),
+                 (dict(dx=1, dy=1, hand=(35, 26), ang=-38, off=(30, 26), flow=0.4), 100)], art=True)
+
+
+# ---------------------------------------------------------------- ink mark: dagger (Pagecutter) -- flick the glyph, stab it into the floor
+def art_ink_mark_dg():
+    def RI(a1, bx=0, by=0):   # the glyph hangs at the same spot of the frame whatever the body does
+        return ("ring", (51 - bx, 15 - by), 6.5, -90, a1, dict(sq=1.0, w=1.8, pal=P_INK))
+    kneel = dict(dx=2, dy=3, head_dy=1, hand=(40, 31), ang=90, off=(34, 28), footB=(OX + 4, 39), footF=(FF[0] + 3, 39))
+    return mseq([(dict(dy=1, hand=(33, 24), ang=-30, off=(31, 26), flow=0.3), 90),
+                 (dict(dx=1, hand=(39, 19), ang=-42, off=(29, 25), flow=0.4, flutter=1, fx=[RI(40, 1), ("flare", "tip", 3, P_INK)]), 110),
+                 (dict(dx=1, hand=(38, 22), ang=28, off=(29, 25), flow=0.4, flutter=2, fx=[RI(190, 1), ("flare", "tip", 3, P_INK)]), 110),
+                 (dict(dx=1, hand=(35, 14), ang=96, off=(33, 19), flow=0.3, flutter=3, aura=2, aura_pal=P_INK,
+                       fx=[RI(269, 1), ("flare", (50, 15), 4, P_INK), ("glint", "tip")]), 140),
+                 (dict(flow=1.2, flutter=4, fx=[("streak", 8), ("flare", (43, 36), 9, P_INK), ("dust", 43, 4)], fx_pal=P_INK, **kneel), 60),
+                 (dict(flow=0.7, flutter=5, fx=[("rings", (43, 35), (6, 10))], fx_pal=P_INK, **kneel), 160),
+                 (dict(dx=1, dy=1, hand=(35, 26), ang=-24, off=(31, 26), flow=0.3), 140)], art=True)
+
+
+# ---------------------------------------------------------------- tidal surge: great (Tidecleaver) -- the tide cleaved loose
+def art_tidal_surge_gs():
+    imp = dict(dx=3, dy=4, head_dy=1, hand=(38, 28), slen=16, footB=(OX + 7, 39), footF=(FF[0] + 4, 39))
+    return mseq([(dict(dy=1, hand=(33, 25), ang=-70, flow=0.3), 90),
+                 (dict(dx=-1, hand=(29, 15), ang=-140, footB=(OX + 6, 39), flow=0.3, flutter=1), 90),
+                 (dict(dx=-2, dy=1, head_dx=-1, hand=(27, 13), ang=-168, footB=(OX + 5, 39), flow=0.2, flutter=2, aura=1, aura_pal=P_TEAL,
+                       behind=True, fx=[("glint", "tip")]), 130),
+                 (dict(dy=-1, hand=(31, 12), ang=-100, flow=0.8, flutter=3, fx=[sw(w=0.4)], fx_pal=P_TEAL), 45),
+                 (dict(ang=42, flow=1.3, flutter=4, fx=[sw(w=0.5), ("flare", (50, 32), 8, P_TEAL), ("dust", 50, 6), ("wave", (47, 22), 11, 7)],
+                       fx_pal=P_TEAL, **imp), 50),
+                 (dict(ang=44, flow=0.9, flutter=5, fx=[("wave", (53, 20), 13, 8)], fx_pal=P_TEAL, **imp), 80),
+                 (dict(ang=45, flow=0.5, flutter=6, fx=[("dust", 50, 2)], **imp), 200),
+                 (dict(dx=1, dy=2, hand=(35, 28), ang=30, flow=0.3), 140)], grip=GRIP_GREAT, art=True)
+
+
+# ---------------------------------------------------------------- solar flare: staff (Sun Sceptre) -- raised to the sun, wheeled down
+def art_solar_flare_st():
+    sun = dict(dy=-1, hand=(33, 19), ang=-90, footB=(OX + 7, 39))
+    return mseq([(dict(hand=(33, 24), ang=-40, flow=0.3), 90),
+                 (dict(flow=0.2, flutter=1, aura=1, aura_pal=P_GOLD, fx=[("flare", "tip", 7, P_GOLD)], **sun), 140),
+                 (dict(flow=0.3, flutter=2, aura=2, aura_pal=P_GOLD, fx=[("flare", "tip", 10, P_GOLD), ("rings", (35, 4), (6, 10))],
+                       fx_pal=P_GOLD, **sun), 70),
+                 (dict(dx=3, dy=2, hand=(38, 22), ang=12, footF=(FF[0] + 3, 39), flow=1.3, flutter=3,
+                       fx=[("ring", (37, 22), 16, -90, 12, dict(sq=1.0, w=3.6, pal=P_GOLD)), ("flare", "tip", 6, P_GOLD)], fx_pal=P_GOLD), 50),
+                 (dict(dx=3, dy=3, hand=(38, 26), ang=40, footF=(FF[0] + 3, 39), flow=0.9, flutter=4,
+                       fx=[("embers", (50, 32), 5, 2), ("dust", 50, 3)]), 70),
+                 (dict(dx=3, dy=3, hand=(38, 26), ang=41, footF=(FF[0] + 3, 39), flow=0.5, flutter=5), 180),
+                 (dict(dx=1, hand=(33, 27), ang=-14, flow=0.3), 140)], grip=GRIP_STAFF, art=True)
+
+
+# ---------------------------------------------------------------- overclock: spear (SAINT Lance) -- a couched glitch-charge
+def art_overclock_sp():
+    dash = dict(dx=4, dy=3, head_dx=2, hand=(40, 27), ang=-2, footB=(OX + 2, 37), footF=(OX + 13, 36), air=True, flow=2.0,
+                aura=1, aura_pal=P_NEON)
+    return mseq([(dict(dx=-1, dy=2, hand=(30, 28), ang=-6, footB=(OX + 5, 39), flow=0.3), 70),
+                 (dict(dx=-2, dy=4, head_dy=1, hand=(28, 29), ang=-8, footB=(OX + 4, 39), footF=(OX + 18, 39), flow=0.2, flutter=1,
+                       aura=1, aura_pal=P_NEON, fx=[("flare", "tip", 5, P_NEON)]), 120),
+                 (dict(flutter=2, fx=[("streak", 18), ("speed", (18, 18), 6, 20, P_NEON)], fx_pal=P_NEON, **dash), 50),
+                 (dict(flutter=5, fx=[("streak", 14), ("speed", (16, 19), 6, 18, P_NEON)], fx_pal=P_NEON,
+                       **{**dash, "footB": (OX + 4, 36), "footF": (OX + 11, 37)}), 50),
+                 (dict(dx=2, hand=(37, 19), ang=-48, footF=(FF[0] + 2, 39), flow=1.0, flutter=6,
+                       fx=[sw(w=0.4), ("flare", "tip", 6, P_NEON)], fx_pal=P_NEON), 60),
+                 (dict(dx=1, hand=(35, 21), ang=-38, flow=0.7, flutter=7, fx=[sw(w=0.3)], fx_pal=P_NEON), 80),
+                 (dict(hand=(33, 27), ang=-8, flow=0.3), 120)], grip=GRIP_SPEAR, art=True)
+
+
+# ---------------------------------------------------------------- echo (First Ember): a golden afterimage peels off, then the mirrored art
+def art_echo():
+    st = dict(dx=-1, dy=1, hand=(33, 23), ang=-84, off=(34, 25), footB=(OX + 6, 39), footF=(FF[0] + 1, 39))
+    return mseq([(dict(flow=0.3, **st), 60),
+                 (dict(flow=0.4, flutter=1, aura=1, aura_pal=P_GOLD, fx=[("ghost", -4, 1), ("embers", (30, 18), 4, 1)], **st), 70),
+                 (dict(flow=0.5, flutter=2, aura=2, aura_pal=P_GOLD, fx=[("ghost", -8, 2), ("glint", "tip"), ("embers", (25, 16), 5, 2)],
+                       **st), 80),
+                 (dict(dx=1, dy=1, hand=(36, 24), ang=-60, off=(31, 25), flow=0.9, flutter=3, aura=1, aura_pal=P_GOLD,
+                       fx=[("ghost", 4, 3), ("flare", "tip", 6, P_GOLD)]), 60)], art=True)
+
+
+AA_ARTS = [("art_moonwave__sw", art_moonwave_sw), ("art_moonwave__sp", art_moonwave_sp), ("art_moonwave__gs", art_moonwave_gs),
+           ("art_bloodstep__kt", art_bloodstep_kt), ("art_warcry__sp", art_warcry_sp),
+           ("art_cinderblade__gs", art_cinderblade_gs), ("art_cinderblade__st", art_cinderblade_st),
+           ("art_backstep_slash__dg", art_backstep_slash_dg), ("art_ink_mark__dg", art_ink_mark_dg),
+           ("art_tidal_surge__gs", art_tidal_surge_gs), ("art_solar_flare__st", art_solar_flare_st),
+           ("art_overclock__sp", art_overclock_sp), ("art_echo", art_echo)]
+for _t, _ in AA_ARTS:   # a variant keeps its art's release / key frames
+    _b = _t.split("__")[0]
+    if _b in ACTIVE:
+        ACTIVE[_t] = ACTIVE[_b]
+    if _b in FXAT_OVERRIDE:
+        FXAT_OVERRIDE[_t] = FXAT_OVERRIDE[_b]
+ACTIVE["art_echo"] = (3, 3)
+BODY_HIT.add("art_bloodstep__kt")
+
+# ---- per-weapon identity: each boss weapon's art looks like its boss's power (drawn only in that weapon's overlay)
+FLOURISH.update({
+    # Ser Kalden: moonlit teal, a blow that rings like a struck bell
+    ("art_moonwave__sw", "kalden"): {2: [("glint", (21, 6))], 3: [("rings", (31, 9), (3, 6))],
+                                     5: [("rings", (52, 26), (4, 7))], 6: [("rings", (52, 27), (7, 12))], 7: [("rings", (52, 27), (12, 18))]},
+    # the Sovereign's Scepter: petals of pale light on the head, a pillar of light falls on the wave
+    ("art_moonwave__sp", "scepter"): {2: [("petals", (34, 5), 6, 1)], 3: [("petals", (34, 5), 7, 2), ("flare", (34, 2), 5)],
+                                      4: [("petals", (26, 8), 7, 3)], 5: [("pillar", (53, 39), 4)], 6: [("pillar", (53, 39), 3), ("petals", (53, 22), 7, 4)],
+                                      7: [("pillar", (53, 39), 1.5)]},
+    # Vael: ghost-fire licks up the vigil blade; spectral chains lie across the ground after the cleave
+    ("art_moonwave__gs", "vael_greatsword"): {1: [("wisps", (31, 39), (43, 39), 2, 1, GHOSTFIRE)],
+                                              2: [("wisps", (29, 39), (45, 39), 3, 2, GHOSTFIRE), ("wisps", (40, 30), (40, 30), 1, 5, GHOSTFIRE)],
+                                              3: [("wisps", (28, 39), (46, 39), 4, 3, GHOSTFIRE), ("wisps", (40, 28), (40, 28), 1, 6, GHOSTFIRE),
+                                                  ("wisps", (32, 33), (32, 33), 1, 7, GHOSTFIRE)],
+                                              6: [("chain", (43, 38), (63, 38), GHOSTFIRE), ("wisps", (47, 37), (61, 37), 3, 4, GHOSTFIRE)],
+                                              7: [("chain", (43, 38), (63, 38), GHOSTFIRE), ("wisps", (49, 37), (63, 37), 3, 5, GHOSTFIRE)],
+                                              8: [("chain", (47, 38), (60, 38), GHOSTFIRE)]},
+    # Rotmaw: a pool of rot where it is planted, spores drifting off the roar
+    ("art_warcry", "rotmaw"): {1: [("pool", (39, 39), 4, ROTPAL)], 2: [("pool", (39, 39), 6, ROTPAL)],
+                               **{i: [("pool", (39, 39), 7, ROTPAL), ("spores", (34, 18), 9 + i, i, ROTPAL)] for i in range(3, 8)},
+                               8: [("pool", (39, 39), 5, ROTPAL)]},
+    # Gravetusk: golden roots split the ground where it lands
+    ("art_stormleap", "gravetusk"): {9: [("roots", (40, 39), 14, 2, 2)], 10: [("roots", (40, 39), 20, 4, 2)],
+                                     11: [("roots", (40, 39), 22, 4, 2)]},
+    # Morvain's Eclipse: the cut opens a black sun
+    ("art_backstep_slash", "omen"): {4: [("eclipse", (55, 20), 3, ECLIPSE)], 5: [("eclipse", (56, 17), 4, ECLIPSE)],
+                                     6: [("eclipse", (56, 17), 2, ECLIPSE)]},
+})
+ART_TINT.update({
+    ("art_bloodstep__kt", "stormvein"): STORM,    # a storm-blade's dash crackles blue, not red
+})
+
+
 ANIMS = [("idle", idle), ("run", run), ("jump_up", jump_up), ("jump_fall", jump_fall), ("land", land),
          ("roll", roll), ("attack1", attack1), ("attack2", attack2), ("attack3", attack3), ("heavy", heavy),
          ("hurt", hurt), ("heal", heal), ("death", death),
          # v3 additions (appended; the frames above keep their indices)
          ("attack_up", attack_up), ("attack_down", attack_down), ("air_attack", air_attack), ("cast", cast),
          ("parry", parry), ("riposte", riposte), ("wall_slide", wall_slide), ("double_jump", double_jump),
-         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES   # v4 movesets after frame 124, v5 arts after 252,
+         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS   # v4 movesets after frame 124, v5 arts after 252,
                                                             # v7 traversal after 308, v8 classes/techniques after 329
 
 # v10 polish: these tags ease back toward the idle pose at the end (last frame split; active frames and total time unchanged)
@@ -4829,6 +5368,10 @@ SETTLE_TAGS = ({"attack1", "attack2", "attack3", "heavy", "attack_up", "riposte"
                | {n for n, _ in MOVES + V9_MOVES} | {n for n, _ in V8_MOVES if n.split("_")[0] in ("st", "tw")}
                | {"sh_1", "sh_2", "sh_3", "sh_heavy"} | {n for n, _ in V10_MOVES if n.endswith("_up")})
 ANIMS = [(n, settled(f) if n in SETTLE_TAGS else f) for n, f in ANIMS]
+# v11 (AA) polish: every weapon art eases back toward idle too (a frame appended after all the frames the engine reads), except the
+# looping whirlwind and the Echo (its last frame hands over to the mirrored art); then stamp (tag, frame) on every weapon cel
+ANIMS = [(n, settled_art(f) if n.startswith("art_") and n.split("__")[0] not in ("art_whirlwind", "art_echo") else f) for n, f in ANIMS]
+ANIMS = [(n, stamp_tag(n, f)) for n, f in ANIMS]
 
 BODY_LAYERS = [l for l in LAYERS if l != "Sword"]
 PREVIEW_TAGS = ["idle", "attack1", "heavy", "attack_up"]

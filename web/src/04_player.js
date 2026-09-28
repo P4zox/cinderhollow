@@ -881,8 +881,8 @@ function startArt() {
   // hold O to charge (>= 0.6 s): the art is released charged; P.artCharged stays set while it plays
   P.artHold = true; P.artChargeT = 0; P.artCharged = false;
   P.fp -= cost; P.artId = id; P.artT = 0; P.artFired = false; P.artI = false; P.artLaunched = false; P.artGo = false; P.hitSet = new Set();
-  const own = 'art_' + id;
-  P.artOwn = pHas(own);
+  const own = artTagFor(id);   // AA: the class's own take on the art (art_<id>__<cls>) if the sheet has one
+  P.artTag = own; P.artOwn = pHas(own);
   const A = P.artOwn ? [own, 1] : ART_IMPL[id] ? ART_IMPL[id].fallback || ['attack1', 1] : { crescent: ['attack2', 1.0], moonwave: ['heavy', 1.35], bloodstep: ['air_attack', 1.2], stormleap: ['double_jump', 1], warcry: ['cast', 1.4], cinderblade: ['cast', 1.3] }[id];
   setP('art', pHas(A[0]) ? A[0] : 'attack1', false, A[1]);
   P.artRel = artRelease(id);
@@ -891,8 +891,12 @@ function startArt() {
   if (id === 'bloodstep') { sfx.roll(); P.artI = true; }
   if (ART_IMPL[id] && ART_IMPL[id].start) ART_IMPL[id].start();
 }
+// v11 (AA): an art's animation in the wielder's class pose language: art_<id>__<cls> when the sheet has it, else art_<id>.
+// The variant keeps the art's frame structure (release / held / looping frames), so ART_IMPL and ART_SYNC need no change.
+const ART_CLS = { sword: 'sw', dagger: 'dg', great: 'gs', spear: 'sp', katana: 'kt', staff: 'st', shield: 'sh', twin: 'tw', scythe: 'sc', whip: 'wh' };
+function artTagFor(id) { const v = 'art_' + id + '__' + (ART_CLS[wcls()] || 'sw'); return pHas(v) ? v : 'art_' + id; }
 function artRelease(id) {
-  const m = ASSETS.player_meta && ASSETS.player_meta.moves && ASSETS.player_meta.moves['art_' + id];
+  const mv = ASSETS.player_meta && ASSETS.player_meta.moves, m = mv && ((P.artTag && mv[P.artTag]) || mv['art_' + id]);
   if (P.artOwn && m) return m.active[0];
   if (ART_IMPL[id]) return ART_IMPL[id].release ?? 3;
   return { crescent: 2, moonwave: 4, bloodstep: 0, stormleap: 0, warcry: 3, cinderblade: 3 }[id];
@@ -957,14 +961,17 @@ function updateArt(dt, grav) {
   const id = P.artId, an = P.anim;
   if (updateArtCharge(dt, grav)) return;
   P.artT += dt;
-  if (P.artOwn && an.i < P.artRel && Math.random() < 0.6) {   // gathering glow before the release
-    const c = id === 'moonwave' ? 'frost' : id === 'cinderblade' ? 'fire' : id === 'bloodstep' ? 'blood' : SAVE.weapon === 'kalden' ? 'teal' : 'gold';
+  if (P.artOwn && an.i < P.artRel && Math.random() < 0.6) {   // gathering glow before the release (AA: a boss weapon gathers its boss's power)
+    const sg = typeof SIGS !== 'undefined' && SIGS[SAVE.weapon], bossPk = sg && sg.pk && ['cinderblade', 'bloodstep'].indexOf(id) < 0;
+    const c = bossPk ? sg.pk : id === 'moonwave' ? 'frost' : id === 'cinderblade' ? 'fire' : id === 'bloodstep' ? 'blood' : 'gold';
     particles.push({ x: P.x + P.face * rand(4, 18), y: P.y - rand(10, 34), vx: 0, vy: -rand(10, 40), life: 0.4, kind: c });
-    addLight(P.x + P.face * 10, P.y - 20, 36, id === 'moonwave' ? '160,210,255' : '255,200,120', 0.6);
+    addLight(P.x + P.face * 10, P.y - 20, 36, bossPk && sg.light ? sg.light : id === 'moonwave' ? '160,210,255' : '255,200,120', 0.6);
   }
+  // AA: the First Ember's Echo plays its own short stance (a golden afterimage peels away) before the mirrored art takes over
+  if (id === 'echo' && P.artOwn && an.i < P.artRel && !an.done) { P.vx = approach(P.vx, 0, 900 * dt); grav(); return; }
   if (ART_IMPL[id]) {
     ART_IMPL[id].update(dt, grav);
-    if (P.state === 'art' && P.artOwn && P.g2 && ART_SYNC[id] && P.anim.tag === 'art_' + id) ART_SYNC[id](P.anim, P.g2);
+    if (P.state === 'art' && P.artOwn && P.g2 && ART_SYNC[id] && P.anim.tag === P.artTag) ART_SYNC[id](P.anim, P.g2);
     return;
   }
   if (P.artOwn && id === 'stormleap') return updateStormleap(dt, grav);

@@ -125,9 +125,11 @@ def panel_2():
     # the knight and Venn watching, small, on the slope
     GS.walker_back(People, 150, int(hl[150]) + 2, 0.42, 0.0, (1, -0.3), DAWN[10])
     vm = polymask([(118, hl[118] + 2), (120, hl[118] - 16), (123, hl[118] - 22), (127, hl[118] - 22), (130, hl[118] - 16), (132, hl[118] + 2)])
-    People.put(vm, pick(GS.PALE, 0.25 + 0.3 * (XX > 126)))
-    People.put(ellmask(125, hl[118] - 25, 3, 3.5), GS.PALE[1])
-    People.dot(131, hl[118] - 12, GOLD[6])                  # her candle-lantern
+    People.put(vm, pick(GS.SIL, 0.35 + 0.4 * (XX > 126)))                    # her black habit (as portrait_venn)
+    People.put(ellmask(125, hl[118] - 25, 3, 3.5), GS.SIL[2])                 # the black veil
+    People.put(polymask([(126, hl[118] - 25), (128, hl[118] - 25), (128, hl[118] - 12), (126, hl[118] - 14)]), GS.PALE[4])  # silver hair
+    People.dot(128, hl[118] - 24, GS.PALE[3])                                 # her face
+    People.dot(131, hl[118] - 12, GS.PALE[5])                                 # her lantern: a white light
     rim(People, vm, 1, -0.3, DAWN[10])
     particles(FX, rnd, 40, (100, 60, 290, 170), [GOLD[5], GOLD[6], HOT[2]])
     return [Sky, Far, Hill, Tree, People, FX]

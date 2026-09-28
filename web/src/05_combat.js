@@ -293,7 +293,7 @@ function updateProps(dt) {
     if (p.type === 'fog') { if (p.on()) addLight(p.x, p.y - 40, 50, '255,210,130', 0.6); }
     if (p.type === 'anvil') { addLight(p.x, p.y - 10, 50, '255,150,70', 0.9, LX_FLICKER); if (Math.random() < 0.15) particles.push({ x: p.x + rand(-6, 6), y: p.y - 14, vx: rand(-40, 40), vy: -rand(30, 80), g: 300, life: 0.5, kind: 'fire' }); }
     if (p.type === 'npc' && p.id === 'ashwright') { addLight(p.x + 8, p.y - 8, 56, '255,150,70', 0.9, LX_FLICKER); if (Math.random() < 0.08) particles.push({ x: p.x + 10 + rand(-4, 4), y: p.y - 12, vx: rand(-40, 40), vy: -rand(30, 80), g: 300, life: 0.5, kind: 'fire' }); }
-    if (p.type === 'npc' && p.id === 'venn') addLight(p.x + 6, p.y - 16, 40, '255,200,120', 0.7);
+    if (p.type === 'npc' && p.id === 'venn') addLight(p.x + 6, p.y - 16, 40, '226,228,244', 0.7);
     if (p.type === 'lectern') addLight(p.x, p.y - 20, 46, '200,170,255', 0.8);
     if (p.type === 'candelabra') addLight(p.x, p.y - 26, 64, '255,190,110', 0.9, LX_FLICKER);
     if (p.type === 'throne') addLight(p.x, p.y - 40, 80, '255,240,210', 0.8);

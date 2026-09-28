@@ -68,10 +68,26 @@ def panel_1():
                      (AX_ + 18, AY_ - 5), (AX_ + 30, AY_)])
     Ash.put(heap, pick(ASH, 0.3 + 0.35 * radial(AX_ - 20, AY_ - 20, 60, 40) + 0.08 * fbm(6, 6, 11)))
     Ash.put(heap & ~shift(heap, 0, 1), ASH[6])
+    # what is left of her (agent VN, after portrait_venn): a scrap of her black veil with its silver-embroidered
+    # band lying over the drift, a few strands of silver hair, the little silver cross in the ash
+    veil = polymask([(AX_ - 5, AY_ - 16), (AX_ + 5, AY_ - 15), (AX_ + 13, AY_ - 8), (AX_ + 21, AY_ - 1), (AX_ + 9, AY_ - 2),
+                     (AX_ + 1, AY_ - 6), (AX_ - 8, AY_ - 9)])
+    Ash.put(veil, pick(SIL, 0.25 + 0.5 * radial(AX_ - 12, AY_ - 24, 44, 30)))
+    Ash.put(veil & ~shift(veil, 0, 1), WHITE[3])
+    for k in range(9):                                           # silver hair spilling from under it
+        Ash.dot(AX_ + 14 + k * 1.6, AY_ - 3 + (k % 3) * 0.7, WHITE[4] if k % 2 else WHITE[3])
+    CXc, CYc = AX_ - 17, AY_ - 3
+    for dy in range(-3, 2):
+        Ash.dot(CXc, CYc + dy, WHITE[5] if dy < 0 else WHITE[4])
+    Ash.dot(CXc - 1, CYc - 2, WHITE[4]); Ash.dot(CXc + 1, CYc - 2, WHITE[4])
+    # her halo: a thin white ring, broken
+    ang = np.degrees(np.arctan2((YY - (AY_ + 1)) / 3.2, (XX - (AX_ + 4)) / 13.0))
     ring = (np.abs(np.hypot((XX - (AX_ + 4)) / 13.0, (YY - (AY_ + 1)) / 3.2) - 1) < 0.12)
-    Ash.put(ring, ASH[5])
+    gaps = (np.abs(ang - 20) < 16) | (np.abs(ang + 120) < 12) | (np.abs(ang - 150) < 9)
+    Ash.put(ring & ~gaps, WHITE[4])
     shaft, _, _ = segs_mask([(AX_ - 40, AY_ + 2, AX_ + 44, AY_ - 3, 1.6, 1.3)])
-    Ash.put(shaft, ASH[4])
+    Ash.put(shaft, ASH[2])                                      # the ebony haft
+    Ash.put(shaft & ~shift(shaft, 0, 1), ASH[5])
     blade = polymask([(AX_ + 44, AY_ - 3), (AX_ + 58, AY_ - 5), (AX_ + 72, AY_ - 2), (AX_ + 78, AY_ + 1), (AX_ + 66, AY_),
                       (AX_ + 52, AY_ - 1)])
     Ash.put(blade, ASH[3])

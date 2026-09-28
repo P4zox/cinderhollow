@@ -2,8 +2,10 @@
 
 Same family as gen_sovereign.py (read-only reference): every part is a mask with a per-pixel surface normal
 (capsules, domes, bevelled cloth plates with animated fold fields, tapered tubes); a hue-shifted material ramp
-is picked from the lit normal; sel-out outline; emissive parts (pale flame: blade, veil, halo, wing fire) are
-flat colour on FX layers with stepped alpha.  One skeleton with fixed bone lengths drives every frame of every
+is picked from the lit normal; sel-out outline plus a cool rim on the black cloth so she reads on dark arenas;
+emissive parts (pale flame: blade, halo, wing fire) are flat colour on FX layers with stepped alpha.
+Look = the reference nun (assets/portrait_venn.png): black habit, veil and mantle with silver trim, silver hair,
+silver chain + cross, thin white halo; white / silver-gold flame (agent VN restyle, palette in HEX below).  One skeleton with fixed bone lengths drives every frame of every
 phase, so proportions never drift.  Faces RIGHT.  Frame 192x128, anchor = (96, 122) = the hem on the floor.
 """
 import math
@@ -14,25 +16,25 @@ AX, AY = 96, 122
 FLOOR = 121          # last pixel row above the floor line
 
 HEX = {
-    "OUT": "#0a090e",
-    # skin: young, pale, warm
-    "P0": "#2c2230", "P1": "#55434e", "P2": "#8e7479", "P3": "#c6aba2", "P4": "#ecd9cb", "P5": "#fff6ec",
-    # ivory robe
-    "W0": "#1d1a26", "W1": "#3b3748", "W2": "#686375", "W3": "#a39daa", "W4": "#d7d1cf", "W5": "#f6f0e3",
-    # ash grey (scapular, lining, sash)
-    "A0": "#111016", "A1": "#211f27", "A2": "#35323c", "A3": "#4f4b56", "A4": "#6e6a75", "A5": "#928d98",
-    # pale wood (the scythe)
-    "B0": "#211b19", "B1": "#433731", "B2": "#6d5d4f", "B3": "#9c8a74", "B4": "#c9b89c", "B5": "#ece1c8",
-    # ash-silver hair
-    "H0": "#28262e", "H1": "#4a4752", "H2": "#78747f", "H3": "#a8a3ac", "H4": "#d3ced3", "H5": "#f2eef0",
-    # charred root (phase-2 wings, root wraps)
-    "C0": "#0c0909", "C1": "#1d1513", "C2": "#33231e", "C3": "#4d3328", "C4": "#6b4633", "C5": "#8c5d40",
-    # pale gold thread
-    "G0": "#3a2410", "G1": "#6a4518", "G2": "#9c6c24", "G3": "#cf9d3a", "G4": "#f0cd6a", "G5": "#fff0b8",
-    # pale flame (emissive): white-gold
-    "F0": "#a8501c", "F1": "#e08a2c", "F2": "#ffc158", "F3": "#ffe4a0", "F4": "#fff5d8", "L": "#ffffff",
-    # embers
-    "E0": "#6e1a0a", "E1": "#b83a10", "E2": "#ee7424",
+    "OUT": "#060508",
+    # skin: young, pale, cool (matches portrait_venn)
+    "P0": "#3a2e36", "P1": "#5d4b52", "P2": "#8c767d", "P3": "#c2aeb2", "P4": "#e6dada", "P5": "#faf4f2",
+    # black habit: dress, mantle, veil (the reference nun; portrait VEIL ramp)
+    "W0": "#070609", "W1": "#0f0d13", "W2": "#18151e", "W3": "#241f2c", "W4": "#352f40", "W5": "#4d4659",
+    # charcoal (mantle lining, collar, cord)
+    "A0": "#040306", "A1": "#0a090d", "A2": "#121016", "A3": "#1b1921", "A4": "#27242f", "A5": "#383443",
+    # ebony shaft with a silvered lit edge (the scythe)
+    "B0": "#0b0a0f", "B1": "#16141c", "B2": "#26232e", "B3": "#3b3743", "B4": "#5f5a6a", "B5": "#9994a6",
+    # silver-white hair
+    "H0": "#3f3d49", "H1": "#5c5a68", "H2": "#817f8d", "H3": "#a5a3b1", "H4": "#c9c7d3", "H5": "#eeedf4",
+    # blackened root (phase-2 wings, root wraps)
+    "C0": "#040307", "C1": "#0c0a10", "C2": "#16131b", "C3": "#221e28", "C4": "#322c3a", "C5": "#474050",
+    # silver thread / embroidery / chain and cross
+    "G0": "#2a2833", "G1": "#4a4755", "G2": "#7a7788", "G3": "#aeabbb", "G4": "#dcdae6", "G5": "#ffffff",
+    # pale flame (emissive): white with a silver-gold foot
+    "F0": "#6c6452", "F1": "#a89c80", "F2": "#d3cab2", "F3": "#ebe6d8", "F4": "#f8f6f0", "L": "#ffffff",
+    # embers -> silver sparks
+    "E0": "#3a3846", "E1": "#8a879c", "E2": "#dcdaea",
 }
 RGBA = {k: tuple(int(v[i:i + 2], 16) for i in (1, 3, 5)) + (255,) for k, v in HEX.items()}
 RAMP = {m: [f"{m}{i}" for i in range(6)] for m in "PWABHCG"}
@@ -274,6 +276,7 @@ class Layer:
         self.name = name
         self.px = {}      # (x,y) -> [mat, n, bias, fixed, pid]
         self.part_n = 0
+        self.noout = set()   # pixels that never receive this layer's outline (e.g. her face under the hair)
 
     def paint(self, normals, mat, bias=0, ao=1, clip=None):
         self.part_n += 1
@@ -347,13 +350,19 @@ def render_layer(layer, outline="OUT"):
             col[(x, y)] = e[3]
             continue
         i = level_of(e, x, y)
+        rim = RIM.get(e[0])
+        if rim and not isinstance(e[3], tuple) and e[2] > -2:
+            if (x - 1, y) not in layer.px or (x, y - 1) not in layer.px:
+                i = max(i, rim[0] + min(0, e[2]))
+            elif (x + 1, y) not in layer.px:
+                i = max(i, rim[1] + min(0, e[2]))
         lvl[(x, y)] = i
         col[(x, y)] = RAMP[e[0]][i]
     if outline:
         for (x, y) in layer.px:
             for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 q = (x + a, y + b)
-                if not inb(*q) or q in layer.px:
+                if not inb(*q) or q in layer.px or q in layer.noout:
                     continue
                 e = layer.px[(x, y)]
                 c = outline
@@ -502,53 +511,71 @@ def blade_mask(geo, widen=1.0):
 
 
 # =========================================================================== parts
-ORDER = ["FXBack", "Wings", "Halo", "Hair", "VeilBack", "Sash", "ScyBack", "ArmFar", "Body", "Head", "Veil",
+ORDER = ["FXBack", "Wings", "Halo", "Sash", "ScyBack", "ArmFar", "Body", "Hair", "VeilBack", "Head", "Veil",
          "ArmNear", "ScyFront", "Glow", "FX"]
-SHADED = ["Wings", "Hair", "Sash", "ScyBack", "ArmFar", "Body", "Head", "ArmNear", "ScyFront"]
-FXL = ["FXBack", "Halo", "VeilBack", "Veil", "Glow", "FX"]
+
+
+SHADED = ["Wings", "Hair", "VeilBack", "Sash", "ScyBack", "ArmFar", "Body", "Head", "Veil", "ArmNear", "ScyFront"]
+
+
+FXL = ["FXBack", "Halo", "Glow", "FX"]
+
+# phase 3: where the white halo has cracked (deg, half-width at full break) and how each broken arc has slipped
 
 
 def draw_halo(F, j, p, fi, phase):
+    """A thin ring of white light behind her head; in phase 3 it is cracked into slipping arcs."""
     k = p["halo"]
     if k <= 0.02:
         return
-    c = j["Hc"]
-    R = 8.2 if phase == 1 else 9.2
+    c0 = j["Hc"]
+    R0 = 8.2 if phase == 1 else 9.2
     brk = p["halo_broken"]
-    for y in range(int(c[1] - R - 8), int(c[1] + R + 8)):
-        for x in range(int(c[0] - R - 8), int(c[0] + R + 8)):
-            dx, dy = x + .5 - c[0], (y + .5 - c[1]) * 1.06
-            d = math.hypot(dx, dy)
-            a = math.degrees(math.atan2(dy, dx))
-            if brk > 0:
-                gap = (hash01(int((a + 180) // 24), 3, 71) < brk * 0.85) or (-20 < a < 20 + 50 * brk)
-                if gap:
-                    if abs(d - R) < 0.8 and hash01(x, y + fi, 72) > 0.93:
-                        F.put([(x, y)], "F1", 190)
+    dim = min(1.0, k)
+    if brk <= 0:
+        arcs = [(-180.0, 180.0, 0.0, 0.0)]
+    else:
+        cuts = sorted(((a - w * brk, a + w * brk) for a, w in HALO_CUTS), key=lambda t: t[0])
+        arcs = []
+        for i in range(len(cuts)):
+            a0 = cuts[i][1]
+            a1 = cuts[(i + 1) % len(cuts)][0] + (360 if i == len(cuts) - 1 else 0)
+            dr, dy = HALO_SLIP[i % len(HALO_SLIP)]
+            dy += 0.5 * math.sin(fi * 0.9 + i * 1.7) * brk
+            arcs.append((a0, a1, dr * brk, dy * brk))
+    for a0, a1, dr, dy in arcs:
+        c = (c0[0], c0[1] + dy)
+        R = R0 + dr
+        for y in range(int(c[1] - R - 5), int(c[1] + R + 6)):
+            for x in range(int(c[0] - R - 5), int(c[0] + R + 6)):
+                ddx, ddy = x + .5 - c[0], (y + .5 - c[1]) * 1.06
+                d = math.hypot(ddx, ddy)
+                a = math.degrees(math.atan2(ddy, ddx))
+                if a < a0:
+                    a += 360
+                if not (a0 <= a <= a1):
                     continue
-            e = abs(d - R)
-            if e < 0.75:
-                F.put([(x, y)], ("F4" if hash01(x, y + fi, 73) > 0.25 else "L") if brk < 0.5 else "F3")
-            elif e < 1.55:
-                F.put([(x, y)], "F3" if brk < 0.5 else "F2", 190)
-            elif e < 1.55 + 1.6 * k and d > R:
-                if (x + y + fi) % 2 == 0 or d < R + 2.3:
+                e = abs(d - R)
+                end = brk > 0 and min(a - a0, a1 - a) < 5
+                if e < 0.62:
+                    F.put([(x, y)], "L" if (brk < 0.5 or end or hash01(x, y + fi, 76) > 0.3) else "F3", 255 if dim > 0.5 else 190)
+                elif e < 1.45 and d > R:
+                    F.under([(x, y)], "F3", 130 if (k > 1.15 and brk < 0.5) else 70)
+                elif d > R and e < 1.45 + 1.4 * max(0.0, k - 0.9) and (x + y + fi) % 2 == 0:
                     F.under([(x, y)], "F2", 70)
-            elif d < R - 1.55 and d > R - 3.2 and brk < 0.5:
-                F.under([(x, y)], "F3", 70)
-    # tongues of soft white fire leaning outward
-    n = 16
-    for i in range(n):
-        a = i / n * 2 * math.pi + 0.3 * math.sin(fi * 0.7 + i)
-        if brk > 0 and (hash01(int((math.degrees(a) + 180) // 24), 3, 71) < brk * 0.85):
-            continue
-        ln = (1.5 + 3.2 * hash01(i, fi, 74)) * k * (0.6 if brk > 0.5 else 1.0)
-        base = add(c, (math.cos(a) * (R + 1.2), math.sin(a) * (R + 1.2) / 1.06))
-        out = (math.cos(a) * 0.7, math.sin(a) * 0.7 - 0.7)
-        out = unit(out)
-        for s in range(int(ln) + 1):
-            q = add(base, mul(out, s))
-            F.put([q], "F4" if s == 0 else "F3" if s < ln * 0.6 else "F2", 255 if s < 2 else 190)
+    if brk > 0:
+        # splinters of light falling from the cracks
+        for i, (a, w) in enumerate(HALO_CUTS):
+            base = add(c0, (math.cos(math.radians(a)) * R0, math.sin(math.radians(a)) * R0 / 1.06))
+            for s in range(2):
+                t = ((fi * 0.13 + i * 0.37 + s * 0.5) % 1.0)
+                q = add(base, ((hash01(i, s, 75) - 0.5) * 3, 1 + t * 10 * brk))
+                F.put([q], "F4" if t < 0.4 else "F3", 255 if t < 0.5 else 130)
+    else:
+        # one soft glint travelling round the ring
+        a = math.radians(fi * 41 % 360)
+        q = add(c0, (math.cos(a) * (R0 + 1), math.sin(a) * (R0 + 1) / 1.06))
+        F.put([q], "F4", 130)
 
 
 def grow(start, ang, length, curv, sway, ph, up):
@@ -605,7 +632,7 @@ def draw_wings(Lw, FXb, FXg, j, p, fi, info, phase):
             web = poly_mask(poly)
             for q in web:
                 if hash01(q[0] // 2, q[1] // 2 + fi, 81) > 0.45:
-                    FXb.under([q], "F1" if hash01(*q, 82) > 0.5 else "F2", 70)
+                    FXb.under([q], "G2" if hash01(*q, 82) > 0.5 else "G3", 70)
         for b in geo:
             pts = b["pts"]
             nm, par = tube(pts, b["r0"] * min(1.25, 0.8 + 0.2 * scale), 0.5 if b["k"] >= 0 else 1.3, ex=1.2)
@@ -616,8 +643,8 @@ def draw_wings(Lw, FXb, FXg, j, p, fi, info, phase):
             # ember seams in the bark
             for i in range(2, n - 2, 2):
                 q = ipt(pts[i])
-                if hash01(q[0], q[1], 83 + b["k"]) > 0.72:
-                    Lw.decal([q], "E2" if hash01(*q, 84) > 0.5 else "E1")
+                if hash01(q[0], q[1], 83 + b["k"]) > 0.86:
+                    Lw.decal([q], "E1")
             # a twig or two
             for tw in ((0.55,) if b["k"] in (1, 3) else ()):
                 i = int(n * tw)
@@ -634,8 +661,8 @@ def draw_wings(Lw, FXb, FXg, j, p, fi, info, phase):
             # burning tips: tongues along the outer third
             outer = {q for q in nm if par[q] > (0.6 if b["k"] >= 0 else 0.85)}
             top = {q for q in outer if (q[0], q[1] - 1) not in nm}
-            flame_tongues(FXg, top, (0, -1), fi, 86 + b["k"] * 3 + (0 if s < 0 else 20), length=2.4 + 1.6 * p["fire"],
-                          cols=("F1", "F2", "F3", "F4"), density=0.4)
+            flame_tongues(FXg, top, (0, -1), fi, 86 + b["k"] * 3 + (0 if s < 0 else 20), length=1.4 + 1.2 * p["fire"],
+                          cols=("F0", "F1", "F2", "F3"), density=0.2, a=190)
             tp = pts[-1]
             FXg.put([ipt(tp)], "L")
             FXg.put([ipt(add(tp, (0, -1)))], "F4")
@@ -664,7 +691,7 @@ def draw_whips(Lw, FXg, j, p, fi, info):
             if hash01(*ipt(q), 150 + i) > 0.5:
                 Lw.decal([ipt(q)], "E2")
         top_e = {q for q in nm if par[q] > 0.35 and (q[0], q[1] - 1) not in nm}
-        flame_tongues(FXg, top_e, (0, -1), fi, 152 + i, length=2.4, cols=("F1", "F2", "F3"), density=0.55)
+        flame_tongues(FXg, top_e, (0, -1), fi, 152 + i, length=1.8, cols=("F0", "F1", "F2"), density=0.3, a=190)
         e = ipt(end)
         for dx in range(-6, 7):
             FXg.put([(e[0] + dx, FLOOR)], "F3" if abs(dx) < 3 else "F2")
@@ -694,33 +721,42 @@ def draw_lances(Lw, FXg, j, p, fi, info):
             FXg.put([ipt(add(tip, (s, 0)))], "L" if s < 2 else "F4")
         FXg.put([ipt(add(tip, (1, -1))), ipt(add(tip, (1, 1)))], "F3")
         top = {q for q in nm if par[q] > 0.5 and (q[0], q[1] - 1) not in nm}
-        flame_tongues(FXg, top, (0, -1), fi, 95 + i, length=2.5, cols=("F1", "F2", "F3"), density=0.6)
+        flame_tongues(FXg, top, (0, -1), fi, 95 + i, length=1.8, cols=("F0", "F1", "F2"), density=0.3, a=190)
     info["lance_px"] = px
 
 
 def draw_hair(Lh, j, p, fi, phase):
-    """Long ash-silver hair (visible once the veil has burned away)."""
+    """Long straight silver-white hair down her back.  Under the veil only its edge shows; once the veil is torn
+    back (phase 2+) it streams free and follows her motion like the cloth."""
     Hd = j["Hd"]
     ph = j["ph"]
     wind = j["wind"]
-    root = add(Hd, (-2.5, -2.5))
-    n, ln = 18, 30 + 4 * (phase >= 2)
+    free = 1.0 - max(0.0, min(1.0, p["veil"]))
+    root = add(Hd, (-2.2 + 0.4 * free, -3.0))
+    n, ln = 20, 29 + 7 * free
     lp, rp = [], []
     for i in range(n + 1):
         t = i / n
-        wv = math.sin(ph - t * 3.2) * (0.4 + 2.6 * t)
-        cx = root[0] - 3 * t - 7 * t * t + wind * 0.8 * t * t + wv
-        cy = root[1] + ln * t - abs(wind) * 0.35 * t * t * 8
-        hw = 2.4 + 3.2 * t - 2.6 * max(0, t - 0.8) * 3
+        wv = math.sin(ph - t * 3.2) * (0.4 + (2.2 + 1.2 * free) * t)
+        cx = root[0] - 2.5 * t - (6 + 3 * free) * t * t + wind * (0.8 + 0.4 * free) * t * t + wv
+        cy = root[1] + ln * t - abs(wind) * (0.35 + 0.15 * free) * t * t * 8
+        hw = 1.9 + (1.5 + 0.6 * free) * t - 1.8 * max(0, t - 0.8) * 3
         lp.append((cx - hw, cy))
-        rp.append((cx + hw * 0.7, cy))
-    poly = lp + list(reversed(rp))
+        rp.append((cx + hw * (0.75 + 0.2 * free), cy))
+    # the ends split into two locks
+    mid = lerp(lp[-1], rp[-1], 0.5)
+    tipL = add(lp[-1], (-0.5 + math.sin(ph) * 0.8, 2.5))
+    tipR = add(rp[-1], (0.3 + math.sin(ph + 1) * 0.8, 1.5))
+    poly = lp + [tipL, (mid[0], mid[1] - 1.0), tipR] + list(reversed(rp))
     m = poly_mask(poly)
-    Lh.paint(n_plate(m, bevel=2.2, tilt=(0.0, -0.1), strength=0.9,
-                     fold=lambda x, y: (0.55 * math.sin((x - root[0]) * 1.3 + (y - root[1]) * 0.15 - ph), 0.0)), "H")
-    for s in range(3):
-        st = [lerp(lp[i], rp[i], 0.25 + 0.25 * s) for i in range(2, n - 2)]
-        Lh.decal([ipt(q) for q in st if hash01(*ipt(q), 101 + s) > 0.35], ("H", 1 + s % 2))
+    nm = n_plate(m, bevel=2.0, tilt=(0.0, -0.15), strength=0.8,
+                 fold=lambda x, y: (0.45 * math.sin((x - root[0]) * 1.1 - ph), 0.0))
+    y_lo = root[1] + ln * 0.55
+    Lh.paint({q: v for q, v in nm.items() if q[1] < y_lo}, "H")
+    Lh.paint({q: v for q, v in nm.items() if q[1] >= y_lo}, "H", bias=-1, ao=0)
+    # the parting between locks: darker strands
+    Lh.decal(set(polyline([lerp(lp[i], rp[i], 0.5) for i in range(n // 2, n + 1)])), ("H", 2))
+    Lh.decal(set(polyline([lerp(lp[i], rp[i], 0.22) for i in range(2, n // 2)])), ("H", 5))
 
 
 def veil_burn_keep(q, top_y, bot_y, veil, seed=0):
@@ -737,79 +773,94 @@ def veil_burn_keep(q, top_y, bot_y, veil, seed=0):
     return 2
 
 
-def draw_veil_back(F, j, p, fi):
-    if p["veil"] <= 0.01:
-        return
+def draw_veil_back(Lv, G, j, p, fi):
+    """The long black veil down her back, silver-trimmed.  Torn back (phase 2+) it hangs short and ragged from
+    a fold at her nape."""
+    v = max(0.0, min(1.0, p["veil"]))
     Hd = j["Hd"]
     ph = j["ph"]
     wind = j["wind"]
-    root = add(Hd, (-3.6, -2.2))
-    n, ln = 20, 33
+    root = _veil_rear(Hd, v)
+    n, ln = 20, 17 + 17 * v
     lp, rp = [], []
     for i in range(n + 1):
         t = i / n
         wv = math.sin(ph * 1.0 - t * 3.6) * (0.5 + 3.0 * t)
-        cx = root[0] - 5 * t - 9 * t * t + wind * 1.0 * t * t + wv
+        cx = root[0] - 4.5 * t - 8.5 * t * t * (0.5 + 0.5 * v) + wind * 1.0 * t * t + wv
         cy = root[1] + ln * t - abs(wind) * 0.4 * t * t * 8
-        hw = 2.4 + 3.6 * t - 3.5 * max(0.0, t - 0.75) ** 1.2
+        hw = 2.6 + 3.8 * t - 3.5 * max(0.0, t - 0.75) ** 1.2
         lp.append((cx - hw, cy + t * 2))
-        rp.append((cx + hw * 0.6, cy - t * 2))
-    tail = [(lp[-1][0] + 2, lp[-1][1] + 2 + math.sin(ph) * 1.2), lerp(lp[-1], rp[-1], 0.55)]
+        rp.append((cx + hw * 0.55, cy - t * 2))
+    if v > 0.55:
+        tail = [(lp[-1][0] + 2, lp[-1][1] + 2 + math.sin(ph) * 1.2), lerp(lp[-1], rp[-1], 0.55)]
+    else:   # a torn, ragged hem
+        tail = []
+        for kk in range(1, 6):
+            q = lerp(lp[-1], rp[-1], kk / 6)
+            tail.append((q[0], q[1] + (2.6 + 1.2 * hash01(kk, 0, 115)) * (kk % 2) + math.sin(ph + kk) * 0.6))
     m = poly_mask(lp + tail + list(reversed(rp)))
-    e = edge_of(m)
-    top_y, bot_y = root[1], root[1] + ln + 4
-    for q in m:
-        st = veil_burn_keep(q, top_y, bot_y, p["veil"], 1)
-        if st == 0:
-            continue
-        if st == 1:
-            F.put([q], "E2" if hash01(*q, fi) > 0.5 else "F2")
-            continue
-        if q in e:
-            F.put([q], "F3", 190)
-        elif hash01(q[0] // 2, q[1] // 3 + fi, 112) > 0.6:
-            F.put([q], "F4", 190)
-        else:
-            F.put([q], "F4", 130)
-    outer = {q for q in e if (q[0] - 1, q[1]) not in m or (q[0], q[1] + 1) not in m}
-    if p["veil"] > 0.3:
-        flame_tongues(F, [q for q in outer if veil_burn_keep(q, top_y, bot_y, p["veil"], 1) == 2], (0, -1), fi, 113,
-                      length=2.2, cols=("F2", "F3", "F4"), density=0.45, a=190)
+    Lv.paint(n_plate(m, bevel=2.2, tilt=(-0.05, -0.1), strength=1.1,
+                     fold=lambda x, y: (0.5 * math.sin((x - root[0]) * 0.9 + (y - root[1]) * 0.25 - ph), 0.0)), "W", bias=0)
+    outer = {q for q in m if (q[0] - 1, q[1]) not in m}
+    hem = {q for q in m if (q[0], q[1] + 1) not in m}
+    Lv.decal({q for q in outer if q[1] > root[1] + 2}, ("G", 3))
+    if v > 0.55:
+        Lv.decal(hem, ("G", 3))
+        Lv.decal({q for q in hem if (q[0] + q[1]) % 3 == 0}, ("G", 4))
+    elif 0.02 < v:
+        G.put([q for q in hem if hash01(*q, fi + 116) > 0.5], "F3", 190)     # the tear still glows
+    if v < 0.99:   # the fold of veil gathered at the nape
+        Lv.paint(n_dome(add(root, (0.6, 0.4)), 2.8, 2.3, tilt=(-0.1, -0.2)), "W", bias=0)
 
 
-def draw_veil_front(F, j, p, fi, info):
-    if p["veil"] <= 0.01:
-        return
+def draw_veil_front(Lv, G, j, p, fi, info):
+    """High collar, the veil over her head with its silver brow band, the fringe, and the long lock of silver
+    hair that falls over her shoulder onto her breast."""
     Hd = j["Hd"]
+    X = j["X"]
     ph = j["ph"]
-    wv = math.sin(ph) * 0.7
-    cap = mask_disc(add(Hd, (-0.6, -0.7)), 4.4, 4.9)
-    drape = poly_mask([(Hd[0] + 3.2, Hd[1] - 3.6), (Hd[0] + 4.6, Hd[1] - 1.0), (Hd[0] + 5.0, Hd[1] + 3.0),
-                       (Hd[0] + 4.4 + wv * 0.5, Hd[1] + 10.5 + wv), (Hd[0] + 1.5, Hd[1] + 11.5 + wv * 0.6),
-                       (Hd[0] - 2.2, Hd[1] + 9.5), (Hd[0] - 4.6, Hd[1] + 3.5), (Hd[0] - 4.8, Hd[1] - 1)])
-    m = cap | drape
-    e = edge_of(m)
-    top_y, bot_y = Hd[1] - 6, Hd[1] + 12
-    for q in m:
-        st = veil_burn_keep(q, top_y, bot_y, p["veil"], 2)
-        if st == 0:
-            continue
-        if st == 1:
-            F.put([q], "E2" if hash01(*q, fi + 3) > 0.45 else "F2")
-            continue
-        if q in e:
-            F.put([q], "F3", 255 if q[1] < Hd[1] - 1 else 190)
-        else:
-            F.put([q], "F4", 190 if q[1] < Hd[1] - 1.5 or q[0] < Hd[0] - 1 else 130)
-    # the hem of the veil smoulders: a fringe of flame-drips along its bottom edge
-    bottom = {q for q in e if (q[0], q[1] + 1) not in m}
-    for q in bottom:
-        if veil_burn_keep(q, top_y, bot_y, p["veil"], 2) == 2 and (q[0] + fi) % 2 == 0:
-            F.put([q], "F2")
-    crown = {q for q in e if (q[0], q[1] - 1) not in m and q[1] < Hd[1]}
-    if p["veil"] > 0.5:
-        flame_tongues(F, crown, (0, -1), fi, 114, length=2.0, cols=("F3", "F4"), density=0.5, a=190)
+    wind = j["wind"]
+    v = max(0.0, min(1.0, p["veil"]))
+    # high black collar with a silver edge
+    col = poly_mask([X((95.4, 69.8)), X((99.6, 69.3)), X((100.9, 72.6)), X((95.0, 72.9))])
+    Lv.paint(n_plate(col, bevel=1.2, tilt=(0.1, -0.2), strength=0.8), "W", ao=0)
+    Lv.decal({q for q in col if (q[0], q[1] - 1) not in col}, ("G", 3))
+    m = set()
+    if v > 0.01:
+        cap = n_dome(add(Hd, (-0.9, -1.0)), 4.8, 5.2, tilt=(-0.05, -0.1))
+        drape = poly_mask([add(Hd, (-1.2, -1.0)), add(Hd, (-0.4, 3.4)), add(Hd, (-1.0, 7.2)), add(Hd, (-3.2, 9.4)),
+                           add(Hd, (-5.4, 5.0)), add(Hd, (-5.4, -1.0))])
+
+        def keep(q):
+            lx, ly = q[0] + .5 - Hd[0], q[1] + .5 - Hd[1]
+            if lx > -5.8 + 9.8 * v:          # torn back from the front edge
+                return False
+            if ly < -2.2:
+                return lx < 3.9
+            return lx < -1.5 - max(0.0, ly - 2) * 0.1
+        cm = {q: nv for q, nv in cap.items() if keep(q)}
+        cm.update({q: (-0.3, 0.1, 0.9) for q in drape if keep(q) and q not in cm})
+        Lv.paint(cm, "W", ao=0)
+        m = set(cm)
+        if v > 0.6:   # the silver-embroidered band across the brow
+            band = {q for q in m if (q[0], q[1] + 1) not in m and q[0] + .5 - Hd[0] > -1.8}
+            band |= {(q[0], q[1] - 1) for q in band if q[0] + .5 - Hd[0] > 0.6}
+            Lv.decal(band, ("G", 3))
+            Lv.decal({q for q in band if (q[0] + q[1]) % 2 == 0}, ("G", 5))
+            # embroidered trim down the veil's edge behind the face
+            trim = {q for q in m if (q[0] + 1, q[1]) not in m and q[1] + .5 - Hd[1] > -1.6}
+            Lv.decal(trim, ("G", 2))
+        if v < 0.99:  # the torn edge sparks
+            front = {q for q in m if (q[0] + 1, q[1]) not in m}
+            G.put([q for q in front if hash01(*q, fi + 117) > 0.45], "F3", 190)
     info["veil_px"] = m
+    # the long lock over her shoulder
+    sw = math.sin(ph - 0.9) * 0.7
+    pts = bezier(add(Hd, (-1.9, 0.2)), add(Hd, (-1.6, 5.0)), X((101.4 + sw * 0.5, 73.0)),
+                 X((101.9 + sw + wind * 0.25, 83.5 - abs(wind) * 0.2)), 24)
+    nm, par = tube(pts, 1.2, 0.6, ex=1.3)
+    Lv.paint(nm, "H", bias=0, ao=0)
+    Lv.decal([ipt(q) for q in pts[6:-3:3]], ("H", 3))
 
 
 def draw_head(L, FX, j, p, fi, phase, info):
@@ -820,41 +871,50 @@ def draw_head(L, FX, j, p, fi, phase, info):
     Hl.paint(head, "P")
     Hl.paint(n_dome(add(Hd, (1.9, 3.0)), 1.8, 1.4), "P", ao=0)
     face = set(head)
-    # hair cap over the back and top of the skull
+    # hair cap over the back and top of the skull (silver; under the veil in phase 1)
     cap = n_dome(add(Hd, (-1.1, -0.9)), 4.0, 4.4, tilt=(-0.1, -0.05))
     cm = {q: v for q, v in cap.items() if (q[0] + .5 - Hd[0]) < -0.2 - (q[1] + .5 - Hd[1]) * 0.55 or (q[1] + .5 - Hd[1]) < -2.6}
     cm = {q: v for q, v in cm.items() if q[1] < Hd[1] + 3.5}
     Hl.paint(cm, "H", ao=0)
     ex, ey = ipt(add(Hd, (2.1, -0.4)))
-    Hl.decal([(ex - 1, ey - 1), (ex, ey - 1)], ("P", 3))
+    # the fringe: silver strands over the brow, falling between the eyes
+    fr = [(ex - 1, ey - 2), (ex, ey - 2), (ex + 1, ey - 1)]
+    if p["veil"] < 0.6:
+        fr += [(ex - 2, ey - 2), (ex - 2, ey - 3), (ex - 1, ey - 3), (ex, ey - 3)]
+    Hl.decal([q for q in fr if q in Hl.px], ("H", 4))
+    Hl.decal([(ex + 1, ey - 1)] if (ex + 1, ey - 1) in Hl.px else [], ("H", 3))
     glow_eyes = p["eyes"] if phase == 1 else max(0.85, p["eyes"])
     if glow_eyes < 0.4:
-        Hl.decal([(ex - 1, ey), (ex, ey)], "P1")                 # closed, calm
+        # half-lidded grey eyes: a dark lid line over a grey iris
+        Hl.decal([(ex - 1, ey - 1), (ex, ey - 1)], ("P", 0))
+        Hl.decal([(ex, ey)], ("H", 1))
+        Hl.decal([(ex - 1, ey)], ("P", 2))
     else:
-        Hl.decal([(ex - 1, ey), (ex, ey)], "P0")
+        Hl.decal([(ex - 1, ey - 1), (ex, ey - 1)], ("P", 0))
+        Hl.decal([(ex - 1, ey + 1), (ex, ey + 1)], ("P", 2))
         FX.put([(ex, ey)], "L")
-        FX.put([(ex + 1, ey)], "F4" if phase < 3 else "F3")
+        FX.put([(ex - 1, ey)], "G3" if glow_eyes < 0.8 else "G4")
+        FX.put([(ex + 1, ey)], "F3", 130)
         if glow_eyes > 0.8:
-            FX.put([(ex - 1, ey)], "F3")
-            for i in range(1, 5):                               # the light streams back from the eye
-                FX.put([(ex - 1 - i, ey - (i // 3))], "F3" if i < 2 else "F2", 190 if i < 3 else 130)
+            for i in range(2, 4):                               # a wisp of light trails back from the eye
+                FX.put([(ex - i, ey - 1 - (i // 3))], "F3", 130 if i < 3 else 70)
             if phase >= 3:                                        # a tear of light
                 for i in range(1, 4):
-                    FX.put([(ex, ey + i)], "F3" if i < 2 else "F2", 190)
+                    FX.put([(ex, ey + i)], "F4" if i < 2 else "F3", 190)
     nb = ipt(add(Hd, (3.5, 0.3)))
     Hl.fill([nb], "P4")
     Hl.decal([(nb[0] - 1, nb[1] + 1)], ("P", 2))
     lp_ = ipt(add(Hd, (2.6, 2.4)))
-    Hl.decal([lp_], ("P", 2))
+    Hl.decal([lp_], ("P", 1))
     info["eye"] = (ex, ey)
     info["face_px"] = face
     # the hood of the pilgrim she wore (only for the unmasking in the intro)
     if p["hood"] > 0:
-        hood = n_dome(add(Hd, (-0.8, -0.6)), 4.6, 5.2, tilt=(-0.1, -0.1))
-        hm = {q: v for q, v in hood.items() if (q[0] + .5 - Hd[0]) < 2.2 - (q[1] + .5 - Hd[1]) * 0.2}
+        hood = n_dome(add(Hd, (-0.8, -0.6)), 5.0, 5.6, tilt=(-0.1, -0.1))
+        hm = {q: v for q, v in hood.items() if (q[0] + .5 - Hd[0]) < 2.6 - (q[1] + .5 - Hd[1]) * 0.2}
         drop = int(round((1 - p["hood"]) * 6))
         hm = {(q[0] - drop // 2, q[1] + drop): v for q, v in hm.items()}
-        Hl.paint(hm, "A", ao=0)
+        L["Veil"].paint(hm, "A", ao=0)
 
 
 def robe_geometry(j, p):
@@ -900,17 +960,12 @@ def draw_body(L, FX, j, p, info, phase, fi):
         sw = 0.8 * math.sin(ph - t * 2.4)
         return (0.6 * math.sin(u * 2.6 * math.pi + sw) * (0.2 + t), 0.0)
     Bd.paint(n_plate(robe, bevel=6, tilt=(0.05, -0.05), strength=1.3, fold=fold), "W")
-    # scapular: an ash-grey panel down the front of the robe
-    top = X((99.8, 73.5))
-    bot = ((hl[0] + hr[0]) / 2 + 5 + p["stride"] * 1.5 + p["crouch"] * 6, hy)
-    sc = poly_mask([add(top, (-1.2, 0)), add(top, (1.4, 0)), (bot[0] + 3.6, bot[1] + 1), (bot[0] - 2.4, bot[1] + 1)])
-    # the hem band
+    # the hem: a silver-embroidered band
     rows = {}
     for (x, y) in robe:
         rows[x] = max(rows.get(x, -1), y)
-    band = {(x, y) for (x, y) in robe if y >= rows[x] - 1}
-    Bd.decal(band, ("A", 3))
-    Bd.decal({(x, y) for (x, y) in robe if y == rows[x] - 2}, ("A", 4))
+    Bd.decal({(x, y) for (x, y) in robe if y == rows[x]}, ("W", 1))
+    Bd.decal({(x, y) for (x, y) in robe if y == rows[x] - 1}, ("G", 3))
     info["robe_px"] = set(robe)
     info["robe_bottom"] = rows
     # bodice
@@ -919,32 +974,45 @@ def draw_body(L, FX, j, p, info, phase, fi):
     bm = poly_mask(bod)
     Bd.paint(n_plate(bm, bevel=3.2, tilt=(0.1, -0.05), strength=1.3), "W")
     Bd.paint(n_dome(X((100.6, 77.0)), 2.3, 2.0, tilt=(0.1, 0.1)), "W", ao=0, clip=bm)
-    sc_m = {q for q in sc if q in robe or q in bm}
-    Bd.paint(n_plate(sc_m, bevel=1.5, tilt=(0.1, -0.1), strength=0.8,
-                     fold=lambda x, y: (0.25 * math.sin(y * 0.5 + ph), 0.0)), "A", ao=0)
-    sce = {q for q in sc_m if (q[0] - 1, q[1]) not in sc_m or (q[0] + 1, q[1]) not in sc_m}
-    # collar
-    col = poly_mask([X((95.0, 70.6)), X((100.8, 70.6)), X((100.4, 72.4)), X((95.2, 72.6))])
-    Bd.paint({q: (0.0, -0.4, 0.9) for q in col}, "A", ao=0)
-    # the kindling: a seed of white flame at her breast
-    kc = X((100.4, 78.0))
-    heart = [ipt(kc)]
-    FX.put(heart, "L")
-    FX.put([ipt(add(kc, (0, -1))), ipt(add(kc, (1, 0))), ipt(add(kc, (-1, 0))), ipt(add(kc, (0, 1)))],
-           "F4" if phase == 1 else "F3", 255 if phase > 1 else 190)
-    if phase >= 2:
-        for a in range(0, 360, 60):
-            q = add(kc, mul(dirv(a + fi * 13), 2.2))
-            FX.put([q], "F2", 190)
-    info["heart"] = kc
-    # waist cord + knot
+    # waist cord
     belt = set(line(X((91.6, 88.4)), X((101.6, 88.8)))) | set(line(X((91.6, 89.4)), X((101.6, 89.8))))
     Bd.paint({q: (0.0, -0.4, 0.9) if q[1] < X((96, 89))[1] + 0.3 else (0, 0.4, 0.9) for q in belt}, "A", ao=0)
-    # kneeling: a knee bulge where the thigh folds under the robe
+    Bd.decal(set(line(X((91.6, 88.4)), X((101.6, 88.8)))), ("G", 1))
+    # the layered mantle: a short cape over the shoulders, silver trim along its hem
+    wv = math.sin(ph - 0.5) * 0.6
+    cape = poly_mask([X((94.2, 70.8)), X((97.0, 69.9)), X((101.0, 70.6)), X((103.3, 73.4)), X((104.0, 78.0 + wv * 0.4)),
+                      X((101.8, 80.6)), X((97.6, 81.6 + wv)), X((93.2, 81.0 + wv)), X((89.8, 79.4 + wv)), X((90.6, 74.4))])
+    Bd.paint(n_plate(cape, bevel=2.4, tilt=(0.05, -0.25), strength=1.2,
+                     fold=lambda x, y: (0.45 * math.sin((x - X((96, 76))[0]) * 0.9 + ph * 0.5), 0.0)), "W")
+    Bd.decal({q for q in cape if (q[0], q[1] + 1) not in cape}, ("G", 3))
+    Bd.decal({q for q in cape if (q[0], q[1] + 2) not in cape and (q[0], q[1] + 1) in cape and q[0] % 2 == 0}, ("G", 1))
+    # the silver chain and cross; the kindling glows at the cross's heart
+    kc = X((100.4, 78.0))
+    chain = line(X((99.4, 72.8)), add(kc, (0, -3)))
+    Bd.fill([q for i, q in enumerate(chain) if i % 2 == 0], "G3")
+    Bd.fill([q for i, q in enumerate(chain) if i % 2 == 1], "G1")
+    c = ipt(kc)
+    cross_v = [(c[0], c[1] + dy) for dy in (-2, -1, 0, 1, 2)]
+    cross_h = [(c[0] - 1, c[1] - 1), (c[0] + 1, c[1] - 1)]
+    cross = cross_v + cross_h
+    # the cross hangs over everything at her breast (even the near sleeve), dark-edged so it reads on black
+    FX.under([(q[0] + a, q[1] + b) for q in cross for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1))
+              if (q[0] + a, q[1] + b) not in cross], "W0")
+    FX.put(cross_v[:3] + cross_h, "G4")
+    FX.put(cross_v[3:], "G3")
+    info["cross_px"] = set(cross)
+    FX.put([(c[0], c[1] - 1)], "L")
+    if phase >= 2:
+        FX.put([(c[0] - 2, c[1] - 1), (c[0] + 2, c[1] - 1), (c[0], c[1] - 3)], "F3", 130)
+        for a in range(0, 360, 60):
+            q = add(kc, mul(dirv(a + fi * 13), 3.4))
+            FX.put([add(q, (0, -1))], "F3", 130)
+    info["heart"] = kc
     return robe
 
 
 def draw_sash(L, j, p, info):
+    """The long tails of her mantle, hanging from the waist behind her."""
     Ls = L["Sash"]
     X = j["X"]
     ph = j["ph"]
@@ -960,8 +1028,9 @@ def draw_sash(L, j, p, info):
             y = base[1] + ln * 0.88 * t - abs(wind) * 0.45 * t * t * 3
             pts.append((x, min(FLOOR - 1, y)))
         nm, _ = tube(pts, 1.25, 0.8)
-        Ls.paint(nm, "W", bias=-1 - k, ao=0)
+        Ls.paint(nm, "W", bias=-k, ao=0)
     Ls.paint(n_dome(base, 1.8, 1.6), "A", bias=0)
+    Ls.decal([ipt(base)], ("G", 3))
 
 
 def draw_arm(Lr, FX, j, p, side, info, hand_pt):
@@ -1003,8 +1072,11 @@ def draw_arm(Lr, FX, j, p, side, info, hand_pt):
              abs((q[0] + .5 - M[0]) * p1[0] + (q[1] + .5 - M[1]) * p1[1]) < mw - 0.8}
     Lr.paint({q: (0.2, 0.3, 0.9) for q in mouth}, "A", bias=bias, ao=0)
     bottom = {q for q in drape if (q[0], q[1] + 1) not in drape and q not in mouth and q[1] > T[1] - 4}
-    Lr.decal(bottom, ("A", 3 if near else 2))
+    Lr.decal(bottom, ("G", 3 if near else 2))              # silver trim on the mantle's sleeve
     Lr.paint(n_capsule(M, wr, 1.0, 0.95), "P", bias=bias)
+    # the second chain, wound about the wrist
+    cw = sub(wr, mul(fa, 0.6))
+    Lr.fill([ipt(add(cw, mul(p1, s))) for s in (-0.9, 0.0, 0.9)], "G4" if near else "G2")
     hd = p["hn_dir"] if near else p["hf_dir"]
     palm = add(wr, mul(dirv(hd), 0.6))
     Lr.paint(n_dome(palm, 1.35, 1.35), "P", bias=bias, ao=0)
@@ -1064,17 +1136,17 @@ def draw_scythe(Ls, FX, geo, p, fi, phase, info, vis=1.0):
     # flame licking from the spine, streaming away from the edge
     sp_edge = {q for q in bm if min(math.hypot(q[0] + .5 - s[0], q[1] + .5 - s[1]) for s in spine[::2]) < 1.3}
     up = unit(add(mul(d, 0.6), (0, -1.0)))
-    flame_tongues(FX, sp_edge, up, fi, 123, length=2.2 + (1.6 if phase >= 2 else 0) + p["fire"],
-                  cols=("F1", "F2", "F3", "F4") if phase >= 2 else ("F2", "F3", "F4"), density=0.55)
+    flame_tongues(FX, sp_edge, up, fi, 123, length=1.8 + (1.2 if phase >= 2 else 0) + p["fire"],
+                  cols=("F1", "F2", "F3", "F4") if phase >= 2 else ("F2", "F3", "F4"), density=0.42)
     info["shaft_px"] = set(nm)
 
 
 def draw_flask(F, at, fi, k=1.0):
     x, y = ipt(at)
     glass = [(x, y - 4), (x - 1, y - 3), (x + 1, y - 3), (x - 1, y - 2), (x + 1, y - 2), (x - 1, y - 1), (x + 1, y - 1), (x, y)]
-    F.put(glass, "W5")
+    F.put(glass, "H5")
     F.put([(x, y - 3), (x, y - 2), (x, y - 1)], "F3" if k < 0.5 else "F4")
-    F.put([(x, y - 5)], "B3")
+    F.put([(x, y - 5)], "G2")
     if k > 0.3:
         F.under([(x + a, y - 2 + b) for a in (-2, 2) for b in (-2, 0, 2)], "F2", 70)
 
@@ -1170,9 +1242,12 @@ def render(p, fi, sec, phase, prev=None):
     draw_lances(L["Wings"], FX["Glow"], j, p, fi, info)
     draw_whips(L["Wings"], FX["Glow"], j, p, fi, info)
     draw_halo(FX["Halo"], j, p, fi, phase)
-    if p["veil"] < 0.999:
+    if p["veil"] >= 0.5:        # the veil hangs over her hair...
         draw_hair(L["Hair"], j, p, fi, phase)
-    draw_veil_back(FX["VeilBack"], j, p, fi)
+        draw_veil_back(L["VeilBack"], FX["Glow"], j, p, fi)
+    else:                       # ...torn back, her hair spills over what is left of it
+        draw_veil_back(L["Hair"], FX["Glow"], j, p, fi)
+        draw_hair(L["VeilBack"], j, p, fi, phase)
     draw_sash(L, j, p, info)
     sc = p["scy"]
     geo = scythe_geo(sc, phase) if sc else None
@@ -1186,7 +1261,8 @@ def render(p, fi, sec, phase, prev=None):
     draw_arm(L["ArmFar"], FX["Glow"], j, p, "f", info, hf)
     draw_body(L, FX["Glow"], j, p, info, phase, fi)
     draw_head(L, FX["Glow"], j, p, fi, phase, info)
-    draw_veil_front(FX["Veil"], j, p, fi, info)
+    L["Veil"].noout = set(info["face_px"])
+    draw_veil_front(L["Veil"], FX["Glow"], j, p, fi, info)
     draw_arm(L["ArmNear"], FX["Glow"], j, p, "n", info, hn)
     if geo:
         layer = L["ScyFront"] if sc.get("front", True) else L["ScyBack"]
@@ -1215,3 +1291,24 @@ def flatten(imgs, order=ORDER, w=W, h=H):
         if n in imgs:
             out.alpha_composite(imgs[n])
     return out
+
+
+# black cloth reads against dark arenas through a cool rim on its silhouette: (lit up/left edge, back/right edge)
+RIM = {"W": (4, 3), "A": (4, 3), "C": (4, 3)}
+
+
+
+
+HALO_CUTS = [(-8, 17), (58, 10), (132, 12), (-158, 10), (-96, 11)]
+
+
+HALO_SLIP = [(0.0, 0.0), (2.0, 1.0), (-1.0, 2.2), (2.4, 0.6), (0.8, -1.2)]   # (radius offset, drop) per arc
+
+
+
+
+def _veil_rear(Hd, v):
+    """Where the veil hangs from: the crown when whole, the nape once torn back."""
+    return add(Hd, (-3.4 + 0.4 * (1 - v), -2.6 + 6.0 * (1 - v)))
+
+

@@ -6,9 +6,11 @@
     python3 art/gen_venn.py --only idle,sweep --preview   quick iteration on some tags
 
 Outputs (per-tag sheets so every strip stays <= 4096 px):
-    assets/venn_boss_<tag>.png/.json       phase 1 (veiled, halo, flame scythe)
-    assets/venn_boss_p2_<tag>.png/.json    phase 2 (veil burned away, glowing eyes, wings of burning roots)
-    assets/venn_boss_p3_<tag>.png/.json    phase 3 (the halo breaks; desperate)
+    assets/venn_boss_<tag>.png/.json       phase 1 (black veil + silver brow band, white halo ring, pale flame scythe)
+    assets/venn_boss_p2_<tag>.png/.json    phase 2 (veil torn back over her silver hair, glowing grey-white eyes, wings of roots)
+    assets/venn_boss_p3_<tag>.png/.json    phase 3 (the white halo cracks and breaks; desperate)
+Look (agent VN restyle): the nun of the user's reference / assets/portrait_venn.png -- black habit and layered mantle with
+silver-embroidered trim, long silver-white hair, silver chain and cross, white halo, white/silver-gold flame.
     assets/venn_boss_meta.json             anchor / hurtbox / per-frame hit rects / spawn points / sheet map
     assets/fx_vn_*.png/.json               pillar, crescent wave, root lance, flare ring, impact
     art/previews/venn_*.png
@@ -202,7 +204,7 @@ def anim_summon():
         vis = max(0.0, min(1.0, (i - 3) / 6))
         hood = max(0.0, 1 - i / 4)
         K.append((130 if i < 11 else 200, dict(
-            hood=hood, halo=max(0.0, min(1.0, (i - 2) / 4)), veil=max(0.02, min(1.0, (i - 1) / 5)), keepveil=True,
+            hood=hood, halo=max(0.0, min(1.0, (i - 2) / 4)), veil=1.0, keepveil=True,
             scy=SC((110 - 2 * (1 - vis), 84 - 2 * vis), -78 + 30 * (1 - vis), 34, vis=vis) if vis > 0 else None,
             hn=(111, 88), hn_dir=10, hf=(93, 89.5), head=(0, 1 - t), fx=(("gather", 16, t),) if 3 <= i <= 8 else ())))
     return seq(K)
@@ -647,7 +649,7 @@ def apply_fx(FX, info, p, prev, fi, phase):
             for i in range(int(10 * f[2])):
                 x = f[1] + (R.hash01(i, 1, 31) - 0.5) * f[2] * 40
                 y = FLOOR - R.hash01(i, 2, 32) * 5
-                F.put([(x, y)], "W4" if i % 3 else "F3")
+                F.put([(x, y)], "H2" if i % 3 else "F3")
         elif k == "glowheart":
             c = info["heart"]
             fx_orb(F, c, 1.5 + 2.5 * f[1], fi)
