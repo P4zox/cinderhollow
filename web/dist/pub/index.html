@@ -9697,8 +9697,8 @@ function propHurtbox(p) {
   if (p.type === 'chest' && !p.open) return rect(p.x - 12, p.y - 18, p.x + 12, p.y);
   return null;
 }
-function propTarget(p) {
-  return { x: p.x, y: p.y, prop: p, hurtbox: () => propHurtbox(p), hit: info => hitProp(p, info) };
+function propTarget(p) {   // one wrapper per prop, so a swing's hit-set recognises it and a blow lands once, not every active frame
+  return p._tgt || (p._tgt = { get x() { return p.x; }, get y() { return p.y; }, prop: p, hurtbox: () => propHurtbox(p), hit: info => hitProp(p, info) });
 }
 function hitProp(p, info) {
   if (p.onHit) return p.onHit(info);
@@ -12004,6 +12004,7 @@ function renderTitle() {
   const opts = titleOptions();
   opts.forEach((o, i) => {
     const y = 96 + i * 13, sel = i === titleSel;
+    if (!TITLE_DIFF.open) uiHit(W / 2 - 60, y - 9, 120, 12, () => { titleSel = i; });
     text((sel ? '— ' : '') + o + (sel ? ' —' : ''), W / 2, y, 8.5, sel ? '#f5e3b0' : '#9a8f78', 'center', { weight: sel ? 600 : 400 });
   });
   if (!matchMedia('(pointer: coarse)').matches) controlsList().forEach(([k, v], i, CONTROLS) => {
@@ -12012,6 +12013,7 @@ function renderTitle() {
     text(k, x, y, 5.5, '#e6c77a', 'right', { weight: 600 }); text(short, x + 6, y, uiFit(short, 150, 5.5, 4.5, 400), '#c9bda2', 'left', { weight: 400 });
   });
   if (!document.hasFocus() && !matchMedia('(pointer: coarse)').matches) text('Click the game to take control', W / 2, 210, 6, '#f1e6c8', 'center', { alpha: 0.6 + 0.4 * Math.sin(time * 3) });
+  if (TITLE_DIFF.open) renderTitleDiff();   // 64_diffmode.js
 }
 let _ts = null, _tsT = -9;
 function titleSave() { if (time - _tsT > 2) { _ts = loadGame(); _tsT = time; } return _ts; }
@@ -12091,7 +12093,7 @@ function invList() {
 const SETTING_ROWS = [
   { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' }, { k: 'pad', label: 'Controller' }, { k: 'gfx', label: 'Graphics & shaders' },
   { k: 'music', label: 'Music volume', step: 0.1 }, { k: 'sfx', label: 'Effects volume', step: 0.1 },
-  { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
+  { k: 'diff', label: 'Difficulty' }, { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
   { k: 'cheats', label: 'Cheats (test)' }, { k: 'quit', label: 'Save & quit to title' },
 ];
 
@@ -12101,6 +12103,7 @@ function pauseInput(a) {
   if (M.guide) return guideInput(M, a);
   if (M.sub) return settingsSubInput(M, a);
   if (M.tab === 0 && M.pick) return pickInput(M, a);
+  if (M.confirmQuit) return quitConfirmInput(M, a);
   if (a === 'pause' || a === 'back' || a === 'heavy') { menu = null; state = 'play'; clearBuffer(); saveGame(); return; }
   if (a === 'spell' || a === 'map') { M.tab = (M.tab + (a === 'spell' ? 3 : 1)) % 4; M.sel = 0; sfx.menu(); return; }
   if (M.tab === 0) equipInput(M, a);
@@ -12113,7 +12116,8 @@ function pauseInput(a) {
     if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
     const R = SETTING_ROWS[M.sel];
     if (R.k === 'guide') { if (conf || a === 'right') { M.guide = { page: TOUCH_UI ? GUIDE_PAGES.length - 1 : 0, off: 0 }; sfx.menu(); } return; }
-    if (R.k === 'quit' && conf) { menu = null; saveGame(); state = 'title'; titleSel = 0; return; }
+    if (R.k === 'quit' && conf) { M.confirmQuit = { sel: 1 }; sfx.menu(); return; }   // asks first (quitConfirmInput)
+    if (R.k === 'diff') { if (a === 'left' || a === 'right' || conf) { setDiff((diffIdx() + (a === 'left' ? 2 : 1)) % 3); sfx.menu(); toast(`${diffCfg().name}: ${diffCfg().desc}`, 3.5); } return; }
     if (R.k === 'keys') { if (conf || a === 'right') { M.sub = { kind: 'keys', sel: 0, col: 0, off: 0 }; sfx.menu(); } return; }
     if (R.k === 'cheats') { if (conf || a === 'right') { M.sub = { kind: 'cheats', sel: 0 }; sfx.menu(); } return; }
     if (R.k === 'pad' || R.k === 'gfx') { if (conf || a === 'right') { M.sub = { kind: R.k, sel: 0, off: 0 }; sfx.menu(); } return; }
@@ -12124,6 +12128,27 @@ function pauseInput(a) {
       saveSettings(); sfx.menu();
     }
   }
+}
+// ---- "Save & quit to title" asks first
+function quitConfirmInput(M, a) {
+  const C = M.confirmQuit, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
+  if (['pause', 'back', 'heavy', 'roll'].includes(a)) { M.confirmQuit = null; sfx.menu(); return; }
+  if (['left', 'right', 'up', 'down'].includes(a)) { C.sel = 1 - C.sel; sfx.menu(); return; }
+  if (conf) { if (C.sel === 0) { menu = null; saveGame(); state = 'title'; titleSel = 0; } else { M.confirmQuit = null; sfx.menu(); } }
+}
+function renderQuitConfirm(M) {
+  const C = M.confirmQuit; UIM.hits.length = 0;   // only the popup is clickable while it is up
+  vctx.fillStyle = 'rgba(0,0,0,0.6)'; vctx.fillRect(ox, oy, W * scale, H * scale);
+  panel(102, 76, 180, 64);
+  text('Return to the title screen?', W / 2, 94, 7.2, '#f5e3b0', 'center', { weight: 600 });
+  text('Your journey is saved at the last shrine you rested at.', W / 2, 105, 5.2, '#b8ab90', 'center', { weight: 400 });
+  ['Quit', 'Stay'].forEach((l, i) => {
+    const x = W / 2 + (i ? 32 : -32), sel = C.sel === i;
+    if (sel) uiSel(x - 24, 115, 48, 13);
+    uiHit(x - 24, 115, 48, 13, () => { C.sel = i; });
+    text(l, x, 124.5, 6.8, sel ? '#f5e3b0' : '#9a8f78', 'center', { weight: sel ? 600 : 400 });
+  });
+  uiFooter([['←→', 'choose'], ['Enter', 'confirm'], ['Esc', 'cancel']]);
 }
 function statsLines() {
   const W = D.W, lv = D.wlv;
@@ -12153,10 +12178,12 @@ function renderPauseMenu() {
       text(R.label, 104, y, 6.8, sel ? '#f5e3b0' : ['guide', 'keys', 'cheats'].includes(R.k) ? UIC.gold : '#d8cdb4', 'left', { weight: sel || R.k === 'guide' ? 600 : 400 });
       if (['guide', 'keys', 'cheats'].includes(R.k)) { text('▸', 280 + (sel ? uiPulse(6) : 0), y, 6.8, UIC.gold, 'right'); uiFade(104, 280, y + rh / 2 - 2.5, UI_RGB.accent, 0.35); }
       if (SETTING_ACTIONS.includes(R.k)) return;
+      if (R.k === 'diff') { text((sel ? '◂ ' : '') + diffCfg().name + (sel ? ' ▸' : ''), 280, y, 6.8, ['#8fd89a', '#e8dcc0', '#e06050'][diffIdx()], 'right', { weight: 600 }); return; }
       const v = SETTINGS[R.k], label = R.toggle ? (v ? 'On' : 'Off') : R.k === 'shake' ? (v === 0 ? 'Off' : v < 1 ? 'Low' : 'Full') : Math.round(v * 100) + '%';
       text((sel ? '◂ ' : '') + label + (sel ? ' ▸' : ''), 280, y, 6.8, '#e8dcc0', 'right');
     });
     const R = SETTING_ROWS[M.sel];
+    if (M.confirmQuit) return renderQuitConfirm(M);
     uiFooter(['guide', 'keys', 'cheats'].includes(R.k) ? [['↑↓', 'select'], ['Enter', 'open'], ...tabHint(), ['Esc', 'close']]
       : SETTING_ACTIONS.includes(R.k) ? [['↑↓', 'select'], ['Enter', 'confirm'], ...tabHint(), ['Esc', 'close']]
       : [['↑↓', 'select'], ['←→', 'change'], ...tabHint(), ['Esc', 'close']]);
@@ -12513,9 +12540,10 @@ onPressHook = (a, repeat) => {
   audio();
   if (a === 'mute') { muted = !muted; toast(muted ? 'Sound off' : 'Sound on'); return; }
   if (state === 'title') {
+    if (TITLE_DIFF.open) { titleDiffInput(a); buffered.delete(a); return; }   // 64_diffmode.js
     const n = titleOptions().length;
     if (a === 'up' || a === 'down') { titleSel = (titleSel + (a === 'up' ? -1 : 1) + n) % n; sfx.menu(); }
-    else if (['confirm', 'attack', 'jump', 'interact'].includes(a)) { const o = titleOptions()[titleSel]; sfx.kindle(); clearBuffer(); if (o === 'Continue') continueGame(); else newGame(); }
+    else if (['confirm', 'attack', 'jump', 'interact'].includes(a)) { const o = titleOptions()[titleSel]; sfx.kindle(); clearBuffer(); if (o === 'Continue') continueGame(); else { TITLE_DIFF.open = true; TITLE_DIFF.sel = 1; } }
     return;
   }
   if (state === 'menu') { menuInput(a); buffered.delete(a); return; }
@@ -42141,7 +42169,7 @@ if (typeof window !== 'undefined' && window.__game && window.__game.feel) window
 const UIM = { hits: [], shown: [], x: -1, y: -1, moved: false, overKey: null, wheel: 0, eatT: 0, cursor: false };
 function uiHit(x, y, w, h, hover, click) { UIM.hits.push({ x, y, w, h, hover, click }); }
 function uiAct(a) { press(a); release(a); }
-function uiMouseOn() { return state === 'menu' && !!menu && !(typeof stActive === 'function' && stActive()); }
+function uiMouseOn() { return (state === 'menu' && !!menu && !(typeof stActive === 'function' && stActive())) || state === 'title'; }
 function uiEatsClick() { return uiMouseOn() || performance.now() < UIM.eatT; }   // 00_core: menu clicks never become attacks
 function uiPt(e) { const r = view.getBoundingClientRect(), k = view.width / (r.width || 1); return { x: ((e.clientX - r.left) * k - ox) / scale, y: ((e.clientY - r.top) * k - oy) / scale }; }
 function uiHitAt(p) {
@@ -42150,10 +42178,7 @@ function uiHitAt(p) {
 }
 function uiSetCursor(on) { if (on === UIM.cursor) return; UIM.cursor = on; try { view.style.cursor = on ? 'pointer' : ''; } catch (e) {} }
 
-const _uimRenderMenu = renderMenu;
-renderMenu = function () {
-  UIM.hits = [];
-  _uimRenderMenu();
+function uiAfterRender() {
   UIM.shown = UIM.hits;
   if (!uiMouseOn()) return;
   const h = UIM.x >= 0 ? uiHitAt(UIM) : null;
@@ -42163,7 +42188,11 @@ renderMenu = function () {
     if (key !== UIM.overKey) { UIM.overKey = key; if (h && h.hover) h.hover(); }
   }
   uiSetCursor(!!h);
-};
+}
+const _uimRenderMenu = renderMenu;
+renderMenu = function () { UIM.hits = []; _uimRenderMenu(); uiAfterRender(); };
+const _uimRenderTitle = renderTitle;
+renderTitle = function () { UIM.hits = []; _uimRenderTitle(); uiAfterRender(); };
 HOOKS.update.push(() => { if (!uiMouseOn()) { if (UIM.cursor && !(typeof stActive === 'function' && stActive())) uiSetCursor(false); UIM.overKey = null; } });
 
 addEventListener('pointermove', e => {
@@ -42190,6 +42219,80 @@ view.addEventListener('wheel', e => {
 
 // footer key chips: clicking one does what the key does
 const UI_KEY_ACT = { Esc: 'back', Enter: 'confirm', Tab: 'map', Q: 'spell' };
+
+// ------------------------------------------------------------------ Difficulty mode (per save: SAVE.diff 0 easy · 1 normal · 2 hard)
+// Chosen when a new journey starts (title screen) and changeable in Settings. It sits on top of the journey curve in
+// 59_difficulty.js and New Game+:
+//   Easy   : bosses 0.65x HP / 0.7x damage, other foes 0.8x HP, everything else hurts 0.75x; foes and urns give half the cinders
+//   Normal : the game as tuned
+//   Hard   : bosses 1.5x HP and 1.5x damage; the cinders you drop on death come back at half when you recover them
+const DIFFS = [
+  { name: 'Easy', bossHp: 0.65, bossDmg: 0.7, foeHp: 0.8, dmg: 0.75, cinders: 0.5,
+    desc: 'Foes are weaker and hit softer. Foes and urns give half the cinders.' },
+  { name: 'Normal', bossHp: 1, bossDmg: 1, foeHp: 1, dmg: 1, cinders: 1,
+    desc: 'The journey as it was meant to be walked.' },
+  { name: 'Hard', bossHp: 1.5, bossDmg: 1.5, foeHp: 1, dmg: 1, cinders: 1, halfRemnant: true,
+    desc: 'Great foes are half again as strong. Cinders lost in death return only in half.' },
+];
+function diffIdx() { const d = SAVE && SAVE.diff; return d === 0 || d === 2 ? d : 1; }
+function diffCfg() { return DIFFS[diffIdx()]; }
+function setDiff(d) { SAVE.diff = clamp(d, 0, 2); diffRescale(); saveGame(); }
+
+// HP: scale every boss body and foe once when it appears (and again by the ratio if the setting changes mid-fight)
+function diffScaleHp(o, m) {
+  if (!o || typeof o.hp !== 'number') return;
+  const was = o._dm || 1; if (Math.abs(was - m) < 1e-6) return;
+  const k = m / was; o._dm = m;
+  for (const f of ['hp', 'maxHp', 'displayHp', 'fullMax']) if (typeof o[f] === 'number' && o[f] > 0) o[f] = Math.max(1, Math.round(o[f] * k));
+}
+function diffRescale() {
+  if (!P) return;
+  const C = diffCfg();
+  if (boss) { diffScaleHp(boss, C.bossHp); if (boss.parts) for (const q of boss.parts) diffScaleHp(q, C.bossHp); }
+  for (const e of enemies) if (e.alive !== false) diffScaleHp(e, e.boss ? C.bossHp : C.foeHp);
+}
+HOOKS.update.push(diffRescale);
+
+// damage: boss fights use the boss factor for everything that hurts there; elsewhere the general one
+{ const _hurt = hurtPlayer; hurtPlayer = function (dmg, ...rest) {
+    const C = diffCfg(), inBoss = boss && boss.active && boss.alive;
+    return _hurt.call(this, dmg * (inBoss ? C.bossDmg : C.dmg), ...rest);
+  }; }
+// cinders from foes, urns and bosses (recovering your own remnant is not affected)
+{ const _gain = gainCinders; gainCinders = function (n, ...rest) { const k = diffCfg().cinders; return _gain.call(this, k < 1 ? Math.max(1, Math.round(n * k)) : n, ...rest); }; }
+// Hard: the remnant left where you fell only holds half of what you carried
+{ const _fd = finishDeath; finishDeath = function () {
+    _fd();
+    if (diffCfg().halfRemnant && SAVE.remnant && !SAVE.remnant.halved) {
+      SAVE.remnant.orig = SAVE.remnant.amount; SAVE.remnant.amount = Math.floor(SAVE.remnant.amount * 0.5); SAVE.remnant.halved = 1;
+      if (SAVE.remnant.amount <= 0) SAVE.remnant = null;
+      saveGame();
+    }
+  }; }
+// New Game+ keeps the difficulty
+{ const _ng = startNGPlus; startNGPlus = function (...a) { const d = SAVE.diff; const r = _ng.apply(this, a); SAVE.diff = d; saveGame(); return r; }; }
+
+// ---- title: New Game asks for a difficulty first (TITLE_DIFF is read by 09_main.js's title input and 08_ui.js's renderTitle)
+const TITLE_DIFF = { open: false, sel: 1 };
+function titleDiffInput(a) {
+  const conf = ['confirm', 'attack', 'jump', 'interact'].includes(a);
+  if (a === 'up' || a === 'down') { TITLE_DIFF.sel = (TITLE_DIFF.sel + (a === 'up' ? 2 : 1)) % 3; sfx.menu(); }
+  else if (['pause', 'back', 'heavy', 'roll'].includes(a)) { TITLE_DIFF.open = false; sfx.menu(); }
+  else if (conf) { TITLE_DIFF.open = false; sfx.kindle(); clearBuffer(); newGame(); SAVE.diff = TITLE_DIFF.sel; saveGame(); }
+}
+function renderTitleDiff() {
+  vctx.fillStyle = 'rgba(4,3,6,0.72)'; vctx.fillRect(ox, oy, W * scale, H * scale);
+  panel(92, 70, 200, 104);
+  text('CHOOSE YOUR PATH', W / 2, 86, 7.5, '#e6c77a', 'center', { spacing: 1.5 });
+  DIFFS.forEach((d, i) => {
+    const y = 104 + i * 14, sel = i === TITLE_DIFF.sel;
+    if (sel) uiSel(100, y - 10, 184, 13);
+    uiHit(100, y - 10, 184, 13, () => { TITLE_DIFF.sel = i; });
+    text(d.name, W / 2, y, 7.5, sel ? '#f5e3b0' : '#b8ab90', 'center', { weight: sel ? 600 : 400 });
+  });
+  wrap(DIFFS[TITLE_DIFF.sel].desc, 180, 5.6).forEach((l, i) => text(l, W / 2, 152 + i * 7.5, 5.6, '#c9bda2', 'center', { weight: 400 }));
+  text('You can change this later in Settings.', W / 2, 169, 5, '#7f745f', 'center', { weight: 400 });
+}
 
 };</script>
 <script>(() => { const SZ = {"assets0.json": 8993238, "assets1.json": 9003178, "assets2.json": 8895459, "assets3.json": 1034973}, got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };

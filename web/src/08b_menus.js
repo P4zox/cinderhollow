@@ -43,7 +43,7 @@ function invList() {
 const SETTING_ROWS = [
   { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' }, { k: 'pad', label: 'Controller' }, { k: 'gfx', label: 'Graphics & shaders' },
   { k: 'music', label: 'Music volume', step: 0.1 }, { k: 'sfx', label: 'Effects volume', step: 0.1 },
-  { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
+  { k: 'diff', label: 'Difficulty' }, { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
   { k: 'cheats', label: 'Cheats (test)' }, { k: 'quit', label: 'Save & quit to title' },
 ];
 
@@ -53,6 +53,7 @@ function pauseInput(a) {
   if (M.guide) return guideInput(M, a);
   if (M.sub) return settingsSubInput(M, a);
   if (M.tab === 0 && M.pick) return pickInput(M, a);
+  if (M.confirmQuit) return quitConfirmInput(M, a);
   if (a === 'pause' || a === 'back' || a === 'heavy') { menu = null; state = 'play'; clearBuffer(); saveGame(); return; }
   if (a === 'spell' || a === 'map') { M.tab = (M.tab + (a === 'spell' ? 3 : 1)) % 4; M.sel = 0; sfx.menu(); return; }
   if (M.tab === 0) equipInput(M, a);
@@ -65,7 +66,8 @@ function pauseInput(a) {
     if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
     const R = SETTING_ROWS[M.sel];
     if (R.k === 'guide') { if (conf || a === 'right') { M.guide = { page: TOUCH_UI ? GUIDE_PAGES.length - 1 : 0, off: 0 }; sfx.menu(); } return; }
-    if (R.k === 'quit' && conf) { menu = null; saveGame(); state = 'title'; titleSel = 0; return; }
+    if (R.k === 'quit' && conf) { M.confirmQuit = { sel: 1 }; sfx.menu(); return; }   // asks first (quitConfirmInput)
+    if (R.k === 'diff') { if (a === 'left' || a === 'right' || conf) { setDiff((diffIdx() + (a === 'left' ? 2 : 1)) % 3); sfx.menu(); toast(`${diffCfg().name}: ${diffCfg().desc}`, 3.5); } return; }
     if (R.k === 'keys') { if (conf || a === 'right') { M.sub = { kind: 'keys', sel: 0, col: 0, off: 0 }; sfx.menu(); } return; }
     if (R.k === 'cheats') { if (conf || a === 'right') { M.sub = { kind: 'cheats', sel: 0 }; sfx.menu(); } return; }
     if (R.k === 'pad' || R.k === 'gfx') { if (conf || a === 'right') { M.sub = { kind: R.k, sel: 0, off: 0 }; sfx.menu(); } return; }
@@ -76,6 +78,27 @@ function pauseInput(a) {
       saveSettings(); sfx.menu();
     }
   }
+}
+// ---- "Save & quit to title" asks first
+function quitConfirmInput(M, a) {
+  const C = M.confirmQuit, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
+  if (['pause', 'back', 'heavy', 'roll'].includes(a)) { M.confirmQuit = null; sfx.menu(); return; }
+  if (['left', 'right', 'up', 'down'].includes(a)) { C.sel = 1 - C.sel; sfx.menu(); return; }
+  if (conf) { if (C.sel === 0) { menu = null; saveGame(); state = 'title'; titleSel = 0; } else { M.confirmQuit = null; sfx.menu(); } }
+}
+function renderQuitConfirm(M) {
+  const C = M.confirmQuit; UIM.hits.length = 0;   // only the popup is clickable while it is up
+  vctx.fillStyle = 'rgba(0,0,0,0.6)'; vctx.fillRect(ox, oy, W * scale, H * scale);
+  panel(102, 76, 180, 64);
+  text('Return to the title screen?', W / 2, 94, 7.2, '#f5e3b0', 'center', { weight: 600 });
+  text('Your journey is saved at the last shrine you rested at.', W / 2, 105, 5.2, '#b8ab90', 'center', { weight: 400 });
+  ['Quit', 'Stay'].forEach((l, i) => {
+    const x = W / 2 + (i ? 32 : -32), sel = C.sel === i;
+    if (sel) uiSel(x - 24, 115, 48, 13);
+    uiHit(x - 24, 115, 48, 13, () => { C.sel = i; });
+    text(l, x, 124.5, 6.8, sel ? '#f5e3b0' : '#9a8f78', 'center', { weight: sel ? 600 : 400 });
+  });
+  uiFooter([['←→', 'choose'], ['Enter', 'confirm'], ['Esc', 'cancel']]);
 }
 function statsLines() {
   const W = D.W, lv = D.wlv;
@@ -105,10 +128,12 @@ function renderPauseMenu() {
       text(R.label, 104, y, 6.8, sel ? '#f5e3b0' : ['guide', 'keys', 'cheats'].includes(R.k) ? UIC.gold : '#d8cdb4', 'left', { weight: sel || R.k === 'guide' ? 600 : 400 });
       if (['guide', 'keys', 'cheats'].includes(R.k)) { text('▸', 280 + (sel ? uiPulse(6) : 0), y, 6.8, UIC.gold, 'right'); uiFade(104, 280, y + rh / 2 - 2.5, UI_RGB.accent, 0.35); }
       if (SETTING_ACTIONS.includes(R.k)) return;
+      if (R.k === 'diff') { text((sel ? '◂ ' : '') + diffCfg().name + (sel ? ' ▸' : ''), 280, y, 6.8, ['#8fd89a', '#e8dcc0', '#e06050'][diffIdx()], 'right', { weight: 600 }); return; }
       const v = SETTINGS[R.k], label = R.toggle ? (v ? 'On' : 'Off') : R.k === 'shake' ? (v === 0 ? 'Off' : v < 1 ? 'Low' : 'Full') : Math.round(v * 100) + '%';
       text((sel ? '◂ ' : '') + label + (sel ? ' ▸' : ''), 280, y, 6.8, '#e8dcc0', 'right');
     });
     const R = SETTING_ROWS[M.sel];
+    if (M.confirmQuit) return renderQuitConfirm(M);
     uiFooter(['guide', 'keys', 'cheats'].includes(R.k) ? [['↑↓', 'select'], ['Enter', 'open'], ...tabHint(), ['Esc', 'close']]
       : SETTING_ACTIONS.includes(R.k) ? [['↑↓', 'select'], ['Enter', 'confirm'], ...tabHint(), ['Esc', 'close']]
       : [['↑↓', 'select'], ['←→', 'change'], ...tabHint(), ['Esc', 'close']]);

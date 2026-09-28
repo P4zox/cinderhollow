@@ -192,8 +192,8 @@ function propHurtbox(p) {
   if (p.type === 'chest' && !p.open) return rect(p.x - 12, p.y - 18, p.x + 12, p.y);
   return null;
 }
-function propTarget(p) {
-  return { x: p.x, y: p.y, prop: p, hurtbox: () => propHurtbox(p), hit: info => hitProp(p, info) };
+function propTarget(p) {   // one wrapper per prop, so a swing's hit-set recognises it and a blow lands once, not every active frame
+  return p._tgt || (p._tgt = { get x() { return p.x; }, get y() { return p.y; }, prop: p, hurtbox: () => propHurtbox(p), hit: info => hitProp(p, info) });
 }
 function hitProp(p, info) {
   if (p.onHit) return p.onHit(info);

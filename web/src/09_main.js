@@ -230,9 +230,10 @@ onPressHook = (a, repeat) => {
   audio();
   if (a === 'mute') { muted = !muted; toast(muted ? 'Sound off' : 'Sound on'); return; }
   if (state === 'title') {
+    if (TITLE_DIFF.open) { titleDiffInput(a); buffered.delete(a); return; }   // 64_diffmode.js
     const n = titleOptions().length;
     if (a === 'up' || a === 'down') { titleSel = (titleSel + (a === 'up' ? -1 : 1) + n) % n; sfx.menu(); }
-    else if (['confirm', 'attack', 'jump', 'interact'].includes(a)) { const o = titleOptions()[titleSel]; sfx.kindle(); clearBuffer(); if (o === 'Continue') continueGame(); else newGame(); }
+    else if (['confirm', 'attack', 'jump', 'interact'].includes(a)) { const o = titleOptions()[titleSel]; sfx.kindle(); clearBuffer(); if (o === 'Continue') continueGame(); else { TITLE_DIFF.open = true; TITLE_DIFF.sel = 1; } }
     return;
   }
   if (state === 'menu') { menuInput(a); buffered.delete(a); return; }

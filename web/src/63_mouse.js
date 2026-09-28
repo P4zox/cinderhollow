@@ -7,7 +7,7 @@
 const UIM = { hits: [], shown: [], x: -1, y: -1, moved: false, overKey: null, wheel: 0, eatT: 0, cursor: false };
 function uiHit(x, y, w, h, hover, click) { UIM.hits.push({ x, y, w, h, hover, click }); }
 function uiAct(a) { press(a); release(a); }
-function uiMouseOn() { return state === 'menu' && !!menu && !(typeof stActive === 'function' && stActive()); }
+function uiMouseOn() { return (state === 'menu' && !!menu && !(typeof stActive === 'function' && stActive())) || state === 'title'; }
 function uiEatsClick() { return uiMouseOn() || performance.now() < UIM.eatT; }   // 00_core: menu clicks never become attacks
 function uiPt(e) { const r = view.getBoundingClientRect(), k = view.width / (r.width || 1); return { x: ((e.clientX - r.left) * k - ox) / scale, y: ((e.clientY - r.top) * k - oy) / scale }; }
 function uiHitAt(p) {
@@ -16,10 +16,7 @@ function uiHitAt(p) {
 }
 function uiSetCursor(on) { if (on === UIM.cursor) return; UIM.cursor = on; try { view.style.cursor = on ? 'pointer' : ''; } catch (e) {} }
 
-const _uimRenderMenu = renderMenu;
-renderMenu = function () {
-  UIM.hits = [];
-  _uimRenderMenu();
+function uiAfterRender() {
   UIM.shown = UIM.hits;
   if (!uiMouseOn()) return;
   const h = UIM.x >= 0 ? uiHitAt(UIM) : null;
@@ -29,7 +26,11 @@ renderMenu = function () {
     if (key !== UIM.overKey) { UIM.overKey = key; if (h && h.hover) h.hover(); }
   }
   uiSetCursor(!!h);
-};
+}
+const _uimRenderMenu = renderMenu;
+renderMenu = function () { UIM.hits = []; _uimRenderMenu(); uiAfterRender(); };
+const _uimRenderTitle = renderTitle;
+renderTitle = function () { UIM.hits = []; _uimRenderTitle(); uiAfterRender(); };
 HOOKS.update.push(() => { if (!uiMouseOn()) { if (UIM.cursor && !(typeof stActive === 'function' && stActive())) uiSetCursor(false); UIM.overKey = null; } });
 
 addEventListener('pointermove', e => {
