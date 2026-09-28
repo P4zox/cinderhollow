@@ -3,8 +3,10 @@
 // straight onto the view, or uploads it to a WebGL canvas and runs one fragment shader over it (texture filter, bloom,
 // colour grade, scanlines/CRT, chromatic aberration, vignette, grain) before the HUD and menus draw on top, crisp.
 // If WebGL is missing or the context is lost, the plain blit takes over and the shader rows say so.
-const GFX_DEFAULTS = { bright: 1, shaders: TOUCH_UI ? 0 : 1, tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 };
+const GFX_DEFAULTS = { bright: 1, shaders: 0, tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 };
 for (const [k, v] of Object.entries(GFX_DEFAULTS)) if (SETTINGS[k] === undefined) SETTINGS[k] = v;
+// shaders are opt-in now: switch them off once for saves from when they were on by default, then respect the player's choice
+if ((SETTINGS.gfxv || 0) < 2) { SETTINGS.shaders = 0; SETTINGS.gfxv = 2; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} }
 const GFX_KEYS = ['tex', 'bloom', 'vig', 'scan', 'grain', 'ca', 'grade'];
 const GFX_PRESETS = [
   ['Cinematic', { tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 }],
