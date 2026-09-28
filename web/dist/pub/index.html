@@ -33464,7 +33464,7 @@ const CHEAT_ROWS = [
   { k: 'nocd', label: 'No cooldowns', toggle: true, desc: 'Spells and weapon arts are ready again the moment they finish.' },
   { k: 'armory', label: 'Armory: unlock all gear', desc: 'Every weapon, art, spell and charm, plus wall-jump and double jump.' },
   { k: 'tech', label: 'Grant all techniques', desc: 'Root Hook, Ember Dash, Gale Cloak, Cinder Slam, swimming and the triple jump.' },
-  { k: 'shrines', label: 'Kindle every shrine', desc: 'Light every shrine so you can travel anywhere.' },
+  { k: 'shrines', label: 'Kindle shrines + reveal map', desc: 'Light every shrine and uncover the whole world map, so you can travel anywhere.' },
 ];
 
 function settingsSubInput(M, a) {
@@ -33483,7 +33483,12 @@ function settingsSubInput(M, a) {
     menu = null; state = 'play'; clearBuffer();
     if (R.k === 'armory') giveArmory();
     else if (R.k === 'tech') { grantTechniques(); SAVE.items.tidebreath = 1; SAVE.items.moonstep = 1; saveGame(); }
-    else if (R.k === 'shrines') { for (const r of ROOMS) if (r.shrine && !r.test && !SAVE.shrines.includes(r.id)) SAVE.shrines.push(r.id); saveGame(); sfx.kindle(); toast('Every shrine burns. Rest at one to travel.', 4); }
+    else if (R.k === 'shrines') {
+      for (const r of ROOMS) if (r.shrine && !r.test && !SAVE.shrines.includes(r.id)) SAVE.shrines.push(r.id);
+      if (!SAVE.seenAreas) SAVE.seenAreas = {};   // keep the first-visit region cards for regions you haven't walked into yet
+      for (const r of ROOMS) if (!r.test && !SAVE.visited[r.id]) SAVE.visited[r.id] = 1;   // the minimap and the travel map both draw from this
+      saveGame(); sfx.kindle(); toast('Every shrine burns and the whole map is known. Rest at one to travel.', 4);
+    }
     return;
   }
   // key bindings: rows = actions + a reset row
