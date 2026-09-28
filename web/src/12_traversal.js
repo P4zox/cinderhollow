@@ -190,3 +190,13 @@ HOOKS.update.push(() => {
   if (P.ground) P.fDash = 1;
   else if (!P.airDash && P.fDash && P.state !== 'roll') { P.airDash = true; P.fDash = 0; }
 });
+
+// pushing against burning ash: say what gets you through (a return-later gate should never look like a bug)
+HOOKS.update.push(() => {
+  if (!room || !room.veils || !room.veils.length || !P || P.state === 'dead' || phasing()) return;
+  const d = inputX(); if (!d) return;
+  const hb = rect(P.x - 6 + d * 3, P.y - 24, P.x + 6 + d * 3, P.y - 2);
+  if (!room.veils.some(v => overlap(hb, v))) return;
+  if ((P.veilHintT || 0) > time) return; P.veilHintT = time + 8;
+  toast(SAVE.items.emberdash ? 'Roll into the ash to burn through it.' : 'Burning ash bars the way. Something that burns could pass through here.', 3.2);
+});

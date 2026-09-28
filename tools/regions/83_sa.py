@@ -211,7 +211,7 @@ _sa_r = Room('TV16', 'The Witch\'s Larder', 'thornveil', 0, 58, 16, 14, indoor=T
                      _sa_s('lore', 3, 11, page='sa_4', look='book'),
                      dict(t='xsa', kind='motes', x=8, y=6, w=14, h=10, n=8, col='255,190,120')])
 _sa_r.walls().fill(0, 12, 15, 13)
-_sa_r.fill(0, 8, 0, 11, '%')                            # the burning thorn curtain (the Ember Dash goes through)
+_sa_r.fill(0, 8, 0, 11, '.').fill(1, 8, 1, 11, '%')   # one column in from the edge: a veil on a room's edge traps you at the seam                            # the burning thorn curtain (the Ember Dash goes through)
 _sa_r.fill(1, 1, 15, 3).fill(4, 1, 13, 3, '.').fill(4, 1, 13, 1)
 for _x, _y, _ch in [(12, 11, 'C'), (6, 4, 'k'), (10, 4, 'x')]:
     _sa_r.put(_x, _y, _ch)
