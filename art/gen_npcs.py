@@ -375,27 +375,32 @@ def hammer(L, hand, ang, head_len=3.4):
     return (hand[0] + ca * 6.4, hand[1] + sa * 6.4)
 
 
-ASH_HEAD_KEY = {"K": "OUT", "a": "S1", "b": "S2", "c": "S3", "d": "S4", "h": "H2", "H": "H3", "j": "H4",
-                "g": "H1", "m": "S0"}
+ASH_HEAD_KEY = {"K": "OUT", "a": "S1", "b": "S2", "c": "S3", "d": "S4", "g": "H1", "h": "H2", "H": "H3", "j": "H4",
+                "m": "S0", "r": "C3", "R": "C4"}
+# (user reference) wild grey mane falling behind to the shoulders, red headband, heavy brow, long beard; faces right
 ASH_HEAD = [
-    "...KKKKK...",
-    "..KcdddcK..",
-    ".KccddddcK.",
-    ".KbccdcccK.",
-    "KbbcccccccK",
-    "KabbcHHHHcK",
-    "KaabbcKcccK",
-    ".KabbcccddK",
-    ".KahjjjjjK.",
-    ".KhjjHHjjK.",
-    "..KhjjjjjK.",
-    "..KhhjjjK..",
-    "...KhhjK...",
-    "....KKK....",
+    "..K..KK.K.....",
+    ".KhK.KjKHK....",
+    ".KhhKjHjjjK...",
+    "KhHhjHjjHjHK..",
+    "KghhRRRRRRRRK.",
+    "KgHhrrbccdddcK",
+    "KghHhbcjjcdjjK",
+    "KgHhbbcKccdKcK",
+    "KhgHhbbcccdddK",
+    "KgHhhbjjjjjjK.",
+    "KghHjjjjHHjjK.",
+    ".KgHjjjHjjjjK.",
+    ".KhgHjjjjjjjK.",
+    ".KgghjjjHjjK..",
+    "..KgHKjjjjjK..",
+    "..KgK.KhjjK...",
+    "...K...KhK....",
+    "........K.....",
 ]
 ASH_HEAD_TALK = [r for r in ASH_HEAD]
-ASH_HEAD_TALK[9] = ".KhjjmmjjK."
-ASH_HEAD_TALK[10] = "..KhjjHjjK."
+ASH_HEAD_TALK[10] = "KghHjjjmmjjjK."
+ASH_HEAD_TALK[11] = ".KgHjjjjmjjjK."
 
 
 def stamp(L, rows, key, org):
@@ -467,26 +472,28 @@ def draw_ash(p, fi, sw):
     Bd = Ls["Body"]
     torso = [F(-5.4, 1.0), F(-6.6, -ln + 4.0), F(-5.0, -ln - 0.8), F(2.4, -ln - 1.6), F(6.4, -ln + 1.8),
              F(6.8, -ln + 6.4), F(5.6, 1.0)]
-    tm = R.plate(Bd, torso, "A", bevel=3.0, tilt=(-0.3, -0.2), strength=1.3, bias=-1)
+    tm = R.plate(Bd, torso, "S", bevel=3.0, tilt=(-0.3, -0.2), strength=1.4, bias=-1)   # bare, muscled (reference)
     R.dline(Bd, F(-5.4, 0.2), F(5.6, 0.2), ("J", 2))               # belt
     R.decal(Bd, [F(-3.4, 0.2), F(-2.6, 0.2)], ("G", 3))             # buckle
-    R.dline(Bd, F(-4.8, -ln + 3.0), F(-4.4, -1.0), ("A", 1))         # seam
+    R.dline(Bd, F(-4.8, -ln + 3.0), F(-4.4, -1.0), ("S", 1))         # back muscle shadow
+    R.dline(Bd, F(-5.0, -ln + 1.0), F(-1.0, 0.0), ("J", 3))           # riveted shoulder strap across the back
+    R.decal(Bd, [F(-3.6, -ln + 4.0), F(-2.2, -ln + 7.6)], ("A", 4))
     # ---- apron: soot-black leather bib to the knees, strap over the neck
     Ap = Ls["Apron"]
     ap = [F(0.4, -ln + 2.6), F(4.6, -ln + 2.4), F(6.0, -ln + 6.0), F(6.2, 2.0), F(6.8, 9.4), F(4.4, 10.0),
           F(1.0, 9.8), F(-1.8, 9.0), F(-1.6, 1.0), F(-0.4, -ln + 6.0)]
     am = R.mask(ap)
-    Ap.paint(n_plate(am, 1.8, (-0.1, 0.0), 1.1, fold=lambda x, y: (0.35 * math.sin(x * 1.4), 0)), "J", bias=0)
-    Ap.decal([q for q in am if hash01(q[0], q[1], 11) < 0.06], ("J", 3))   # scuffs
-    Ap.decal([q for q in am if (q[0], q[1] + 1) not in am], ("J", 1))
-    R.dline(Ap, F(1.6, 3.2), F(5.4, 3.2), ("J", 3))                         # pocket
-    R.decal(Ap, [F(1.6, 4.2), F(5.2, 4.4)], ("J", 3))
+    Ap.paint(n_plate(am, 1.8, (-0.1, 0.0), 1.1, fold=lambda x, y: (0.35 * math.sin(x * 1.4), 0)), "C", bias=0)   # red leather
+    Ap.decal([q for q in am if hash01(q[0], q[1], 11) < 0.06], ("C", 1))   # scorch marks
+    Ap.decal([q for q in am if (q[0], q[1] + 1) not in am], ("C", 1))
+    R.dline(Ap, F(1.6, 3.2), F(5.4, 3.2), ("C", 2))                         # pocket
+    R.decal(Ap, [F(1.6, 4.2), F(5.2, 4.4)], ("C", 2))
     R.dline(Ap, F(0.8, -ln + 2.4), add(Hd, (-1.8, 3.6)), ("J", 3))       # neck strap
     # ---- head: hand-pixelled (bald dome, heavy grey brow, long soot-grey beard)
     Hl = Ls["Head"]
     R.cap(Hl, F(0.6, -ln - 0.6), add(Hd, (-1.0, 3.0)), 2.6, 2.4, "S", bias=-1)   # bull neck
     head = ASH_HEAD_TALK if p["jaw"] else ASH_HEAD
-    stamp(Hl, head, ASH_HEAD_KEY, (int(round(Hd[0])) - 5, int(round(Hd[1])) - 6))
+    stamp(Hl, head, ASH_HEAD_KEY, (int(round(Hd[0])) - 7, int(round(Hd[1])) - 7))
     # ---- front arm: the gold prosthetic, swinging the hammer
     Fa = Ls["FrontArm"]
     Sh = Ls["Shoulder"]
@@ -1248,9 +1255,7 @@ def build_portraits():
              rims=[((70, 30), 44, (220, 70, 70), (60, 12, 20), ["Cape", "Body", "Head", "Face"], 0.45)],
              glow_r=30, glow_amt=0.45)
     # portrait_venn is drawn by art/gen_venn_portrait.py (redrawn from the user's reference)
-    portrait("portrait_ashwright", ["J0", "J1", "R0", "R1", "O0", "O1"], (62, 50), draw_p_ash,
-             rims=[((70, 44), 46, (255, 140, 60), (90, 30, 10), ["Body", "Gold", "Head", "Beard"], 0.55)],
-             glow_r=40, glow_amt=0.8)
+    # portrait_ashwright is drawn by art/gen_ash_portrait.py (redrawn from the user's reference)
     portrait("portrait_scribe", ["U0", "U1", "U2", "X0", "X1"], (40, 30), draw_p_scribe,
              rims=[((64, 64), 40, (255, 214, 140), (70, 50, 30), ["Robe", "Hood", "Skull", "Jaw"], 0.45)],
              glow_r=30, glow_amt=0.55)
