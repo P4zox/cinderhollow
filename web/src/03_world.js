@@ -38,8 +38,9 @@ function tileAtR(R, tx, ty) {
   if (tx >= 0 && ty >= 0 && tx < R.w && ty < R.h) return R.grid[ty * R.w + tx];
   const n = roomAtGlobal(R.def.gx + tx, R.def.gy + ty);
   if (!n) return (ty < 0 && !R.def.indoor) ? T_EMPTY : T_SOLID;
-  const t = cellType(charAt(n, R.def.gx + tx - n.gx, R.def.gy + ty - n.gy));
-  return t === T_BREAK || t === T_CRACK ? T_SOLID : t;
+  const lx = R.def.gx + tx - n.gx, ly = R.def.gy + ty - n.gy, t = cellType(charAt(n, lx, ly));
+  if (t === T_BREAK || t === T_CRACK) return SAVE.flags[brokenKey(n, lx, ly)] ? T_EMPTY : T_SOLID;   // a wall already broken from its own side is open
+  return t;
 }
 const isSolidT = t => t === T_SOLID || t === T_BREAK || t === T_CRACK || SOLID_EXT.has(t);
 function solidAtPx(x, y) {

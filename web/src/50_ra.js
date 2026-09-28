@@ -8,7 +8,7 @@
 // Every top-level name is prefixed ra/RA (all region files share one scope).
 const RA = { roomObj: null };
 function raReset() {
-  Object.assign(RA, { roomObj: room, voids: [], back: [], walls: [], lights: [], amb: [], chands: [], waters: [], locks: [], hints: [], painted: null, toll: 0, tollT: 0, lockT: 0 });
+  Object.assign(RA, { roomObj: room, voids: [], back: [], walls: [], lights: [], amb: [], chands: [], waters: [], locks: [], hints: [], painted: null, toll: 0, tollT: 0, lockT: 0, dropT: 0 });
 }
 function raEnsure() { if (RA.roomObj !== room) raReset(); }
 Object.assign(PCOL, { ra_bone: '200,188,160', ra_ink: '20,22,34', ra_drop: '120,130,160', ra_wax: '255,214,150', ra_root: '120,88,56' });
@@ -231,7 +231,7 @@ SPAWNS.ra_mist = (s, c) => {
     for (let i = 0; i < 9; i++) { const x = ((time * (6 + i) + i * 131) % (w + 160)) - 80 + x0, y = y0 + 8 + (i * 23) % (h - 12); g.fillRect(Math.round(x), Math.round(y), 70 + (i * 17) % 60, 2); }
   } });
 };
-SAFE_CHECKS.push((x, y) => !!RA.voids && RA.voids.some(v => x >= v.x0 - 8 && x <= v.x1 + 8 && y - 6 >= v.y0 && y - 6 <= v.y1));
+SAFE_CHECKS.push((x, y) => RA.roomObj === room && !!RA.voids && RA.voids.some(v => x >= v.x0 - 8 && x <= v.x1 + 8 && y - 6 >= v.y0 && y - 6 <= v.y1));
 function raTickVoid() {
   if (!RA.voids || P.state === 'dead') return;
   const hb = playerHurtbox();
@@ -263,6 +263,15 @@ function raTickHints() {
     } else if (s.near && !H.shown && Math.abs(P.x - H.x) < s.near && Math.abs(P.y - H.y) < 48) { H.shown = true; if (!SAVE.hints['ra:' + room.id + H.x]) { SAVE.hints['ra:' + room.id + H.x] = 1; toast(s.text, 3.5); } }
     if (H.n >= 3) { H.n = 0; toast(s.text, 5); }
   }
+}
+
+// ================================================================== a gentle reminder on thin floors (our wings drop through several)
+const RA_ROOMS = /^(R([5-9]|1[0-4])|C([7-9]|1[0-5])|K([5-9]|1[0-3])|W2|R3|K1|K2|K3s|C2|C3)$/;
+function raTickDropHint(dt) {
+  if (!RA_ROOMS.test(room.id) || (SAVE.hints.radrop || 0) >= 3) return;
+  const onPlat = P.ground && tileAt(Math.floor(P.x / TILE), Math.floor((P.y + 1) / TILE)) === T_PLAT;
+  RA.dropT = onPlat && Math.abs(P.vx) < 5 ? (RA.dropT || 0) + dt : 0;
+  if (RA.dropT > 1.6) { RA.dropT = -30; SAVE.hints.radrop = (SAVE.hints.radrop || 0) + 1; toast('Hold ↓ and press jump to drop through thin floors.', 3); }
 }
 
 // ================================================================== the Bellrope trial: the bell tolls at each third of par
@@ -327,7 +336,7 @@ HOOKS.update.push(dt => {
   if (room.back !== RA.painted) raPaint();   // a broken wall re-renders the room: paint the decor back in
   for (const [x, y, r, c, k, fl] of RA.lights) addLight(x, y, fl === 'pulse' ? r * (0.92 + 0.08 * Math.sin(time * 1.6)) : r, c, fl === 'pulse' ? k * (0.85 + 0.15 * Math.sin(time * 1.6)) : k, fl === 1 ? LX_FLICKER : undefined);
   if (RA.chands.length) raTickChands(dt);
-  raTickWater(dt); raTickVoid(); if (RA.locks.length) raTickLocks(dt); if (RA.hints.length) raTickHints(); raTickToll(dt);
+  raTickWater(dt); raTickVoid(); raTickDropHint(dt); if (RA.locks.length) raTickLocks(dt); if (RA.hints.length) raTickHints(); raTickToll(dt);
 });
 HOOKS.render.push(() => { if (RA.roomObj === room && RA.waters.length) raDrawWater(); });
 
@@ -358,7 +367,7 @@ Object.assign(LORE_PAGES, {
 
 // test harness hook (tools/shots/ra): render a whole room, camera panned tile by tile (no HUD), for contact sheets
 try { window.__ra = {
-  get room() { return room; }, RA,
+  get room() { return room; }, RA, rooms: ROOM_BY, tile: (tx, ty) => tileAt(tx, ty), solid: t => isSolidT(t), T_PLAT, travel() { menu = travelOpen(null); state = 'menu'; }, kill() { for (const e of enemies) if (e.alive) { e.hp = 0; e.state = 'dead'; e.gone = true; } enemies = []; },
   sheet() {
     const c = document.createElement('canvas'); c.width = room.pw; c.height = room.ph; const X = c.getContext('2d'); shake = 0;
     const span = (full, v, m) => { if (full <= v) return [[(full - v) / 2, 0, full]]; const out = []; for (let a = 0; ; a += v - 2 * m) { const cpos = Math.min(a, full - v); out.push([cpos, cpos === 0 ? 0 : cpos + m, cpos + v >= full ? full : cpos + v - m]); if (cpos >= full - v) break; } return out; };

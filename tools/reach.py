@@ -31,7 +31,7 @@ ROOT = os.path.dirname(HERE)
 TILE = 16
 DT = 1 / 60
 PW, PH = 10, 26
-VERSION = 8          # bump to invalidate the cache when the model changes
+VERSION = 11          # bump to invalidate the cache when the model changes
 
 
 def _consts():
@@ -53,7 +53,8 @@ POGO_V = 245.0
 ALL_NEEDS = ['talon', 'wings', 'hook', 'emberdash', 'gale', 'slam', 'tidebreath', 'moonstep']
 
 # cell codes
-EMPTY, SOLID, PLAT, SPIKE_UP, SPIKE_DN, HAZ, WATER, UPDRAFT, VEIL, NOCLING, EXIT, SKY = range(12)
+EMPTY, SOLID, PLAT, SPIKE_UP, SPIKE_DN, HAZ, WATER, UPDRAFT, VEIL, NOCLING, EXIT, SKY, STAR = range(13)
+STAR_LOWG = 0.4   # 35_starfall.js SF_LOWG: starlight '+' cancels 40% of gravity, falls cap at 170 px/s
 SOLIDISH = (SOLID, NOCLING)
 
 
@@ -82,6 +83,7 @@ class Grid:
                 elif ch == 'Y': c = EMPTY if slam else SOLID
                 elif ch == '%': c = VEIL if not emberdash else EMPTY
                 elif ch == '?': c = NOCLING
+                elif ch == '+': c = STAR
                 elif ch in hazard_chars: c = HAZ
                 elif ch == '|': c = UPDRAFT
                 elif ch == '"': c = WATER
@@ -99,6 +101,8 @@ class Grid:
             if T[i] in SOLIDISH and self.top[i] == EXIT: self.top[i] = SOLID
             if T[(self.h - 1) * self.w + i] in SOLIDISH and self.bot[i] == EXIT: self.bot[i] = SOLID
         self.springs = []
+        self.has_water = WATER in T
+        self.has_star = STAR in T
         self.hooks = [(x * TILE + 8, y * TILE + 8) for y in range(self.h) for x in range(self.w) if g[y][x] == '@'] if 'hook' in self.needs else []
         if kit:
             self._kit(R)
@@ -117,7 +121,7 @@ class Grid:
         w = self.w
         self.springs = []
         def plat(x, y):
-            if 0 <= x < w and 0 <= y < self.h and self.t[y * w + x] in (EMPTY, WATER, UPDRAFT):
+            if 0 <= x < w and 0 <= y < self.h and self.t[y * w + x] in (EMPTY, WATER, UPDRAFT, STAR):
                 self.t[y * w + x] = PLAT
         DEFW = {'mover': 3, 'lift': 3, 'crumble': 2, 'sinker': 2, 'phase': 2}
         for s in R.kw.get('spawns', []):
@@ -156,10 +160,12 @@ class Grid:
     def at_slow(self, tx, ty):
         if 0 <= tx < self.w and 0 <= ty < self.h:
             return self.t[ty * self.w + tx]
-        if tx < 0: return self.left[min(max(ty, 0), self.h - 1)] if 0 <= ty < self.h else SOLID
-        if tx >= self.w: return self.right[min(max(ty, 0), self.h - 1)] if 0 <= ty < self.h else SOLID
-        if ty < 0: return self.top[tx]
-        return self.bot[tx]
+        if 0 <= ty < self.h: return self.left[ty] if tx < 0 else self.right[ty]
+        if ty < 0:   # above the room: its own top edge, and for an outdoor room open sky beyond the corners too
+            if 0 <= tx < self.w: return self.top[tx]
+            return SKY if not self.R.kw.get('indoor') else SOLID
+        if 0 <= tx < self.w: return self.bot[tx]
+        return SOLID
 
     def solid(self, x, y, phasing=False):
         tx, ty, pd = int(x // TILE), int(y // TILE), self.pad
@@ -278,13 +284,13 @@ def pogo_ready(b, G):
 def prog(d, hold=True, dj=None, ms=None, dash=None, dash_d=None, glide=False, steer=None, walk=False):
     dash_d = d if dash_d is None else dash_d
     state = {'apex': None, 'dj_t': None, 'dash_done': False, 'ms_done': False}
+    steers = steer if isinstance(steer, list) else ([steer] if steer else [])
     def f(i, t, b, info):
         ax = d
-        if steer is not None and t >= steer[0]: ax = steer[1]
+        for st in steers:
+            if t >= st[0]: ax = st[1]
         jp = rp = False
-        jh = hold if not walk else False
-        if hold is not True and not walk: jh = t < hold
-        if walk and i == 0: jh = False
+        jh = hold if isinstance(hold, bool) else t < hold   # jump held (a body already rising keeps its height)
         if not walk and i == 0: jp = True
         if state['apex'] is None and b.vy >= 0 and t > 0.05: state['apex'] = t
         # double jump
@@ -299,6 +305,7 @@ def prog(d, hold=True, dj=None, ms=None, dash=None, dash_d=None, glide=False, st
         if glide and b.vy > 20: jh = True
         if dj is not None and state['dj_t'] is not None: jh = True
         return ax, jh, jp, rp
+    f.long = bool(glide)
     return f
 
 
@@ -333,7 +340,11 @@ def maneuvers(needs, from_wall=False):
     if wings or moon:
         M.append(('up-dj', lambda: prog(0, dj='apex')))
         if wings and moon: M.append(('up-triple', lambda: prog(0, dj='apex', ms=True)))
-    if gale: M.append(('up-glide', lambda: prog(0, glide=True)))
+    if gale:
+        M.append(('up-glide', lambda: prog(0, glide=True)))
+        for tt in (0.6, 1.2, 2.0, 3.0):   # ride an updraft, then drift out of it either way
+            for d in (1, -1): M.append((f'up-glide-drift{tt}{d}', lambda tt=tt, d=d: prog(0, glide=True, steer=(tt, d))))
+        for d in (1, -1): M.append(('glide-back', lambda d=d: prog(d, glide=True, steer=(0.8, -d))))
     return M
 
 
@@ -357,10 +368,16 @@ class Sim:
         self.aj_max = (1 if 'wings' in needs else 0) + (1 if 'moonstep' in needs else 0)
         self.ember = 'emberdash' in needs
 
-    def run(self, b, program, max_t=2.6, first_frame_ground_jump=True, from_wall=0):
+    def in_water(self, b):
+        G = self.G
+        return G.at(int(b.x // TILE), int((b.y - 3) // TILE)) == WATER or G.at(int(b.x // TILE), int((b.y - 20) // TILE)) == WATER
+
+    def run(self, b, program, max_t=None, first_frame_ground_jump=True, from_wall=0):
         """returns dict(land=(x,y) or None, wall=(x,y,side,aj,dash) or None, exit=code, hooks=[...], pts=[(x,y)...], dead=bool)"""
         G, needs = self.G, self.needs
-        out = {'land': None, 'wall': None, 'exit': None, 'hooks': [], 'pts': [], 'dead': False}
+        out = {'land': None, 'wall': None, 'exit': None, 'hooks': [], 'pts': [], 'dead': False, 'water': None}
+        if max_t is None: max_t = 8.0 if getattr(program, 'long', False) else 4.0   # glides can hang in the air a long time
+        dry = not self.in_water(b)
         coy = 0.0
         t = 0.0; i = 0
         roll_t = -1.0; roll_dur = 0.0; roll_face = 1
@@ -422,6 +439,9 @@ class Sim:
                     out['wall'] = (b.x, b.y, ax_eff, b.aj, b.ms); return out
                 if 'gale' in needs and jh and b.vy > 20 and b.dj <= 0 and b.mode == 'air':
                     b.mode = 'glide'
+            if G.has_star and not b.ground and b.mode in ('air', 'idle') and G.at(int(b.x // TILE), int((b.y - 13) // TILE)) == STAR:
+                b.vy -= (GRAV_UP if b.vy < 0 else GRAV_DN) * STAR_LOWG * DT   # starlight: gentler fall, higher leaps
+                if b.vy > 170: b.vy = approach(b.vy, 170, 900 * DT)
             # pogo: a down-strike just before the spikes bounces you (refunds the air attack, restores dash/jump)
             if b.vy > 0 and b.mode in ('air', 'glide') and pogo_ready(b, G):
                 b.vy = -POGO_V; b.adash = True; b.aj = max(b.aj, 1 if 'wings' in needs else 0); b.mode = 'air'
@@ -444,6 +464,13 @@ class Sim:
                     if b.y - 13 < 0 and G.R.kw.get('indoor'): b.y = 30
             if hazard_hit(b, G):
                 out['dead'] = True; return out
+            if G.has_water:   # into deep water: the swim model takes over (a water node)
+                wet = self.in_water(b)
+                if wet and dry:
+                    tx = int(b.x // TILE); ty = int((b.y - 20) // TILE)
+                    if G.at(tx, ty) != WATER: ty = int((b.y - 3) // TILE)
+                    out['water'] = (tx, ty); out['pts'].append((b.x, b.y)); return out
+                if not wet: dry = True
             if i % 2 == 0: out['pts'].append((b.x, b.y))
             if G.hooks and b.mode != 'roll':
                 for hi, (hx, hy) in enumerate(G.hooks):
@@ -470,7 +497,7 @@ def standable(G, tx, ty):
     """can the player stand with feet on the top of row ty+1, body in cells ty and ty-1?"""
     if not (0 <= tx < G.w and 0 <= ty < G.h): return False
     c, above, below = G.at(tx, ty), G.at(tx, ty - 1), G.at(tx, ty + 1)
-    body_ok = c in (EMPTY, WATER, UPDRAFT, PLAT) and above in (EMPTY, WATER, UPDRAFT, PLAT, SKY, EXIT)
+    body_ok = c in (EMPTY, WATER, UPDRAFT, PLAT, STAR) and above in (EMPTY, WATER, UPDRAFT, PLAT, SKY, EXIT, STAR)
     return body_ok and below in (SOLID, NOCLING, PLAT)
 
 
@@ -499,6 +526,16 @@ class Reach:
         self.aj_max = self.sim.aj_max
         self.man = maneuvers(self.needs); self.walk = walkoffs(self.needs)
         self.env = {}   # maneuver name -> relative bbox in free space (for pruning)
+        # cells beside a clingable wall (open body cells, solid on one side): wall-jump shafts have no standing cells
+        self.cling = set()
+        if 'talon' in self.needs:
+            for y in range(1, G.h):
+                for x in range(G.w):
+                    if G.at(x, y) in (SOLID, NOCLING, VEIL) or G.at(x, y - 1) in (SOLID, NOCLING): continue
+                    if (G.at(x - 1, y) == SOLID and G.at(x - 1, y - 1) == SOLID) or (G.at(x + 1, y) == SOLID and G.at(x + 1, y - 1) == SOLID):
+                        if (x, y) not in self.span_of: self.cling.add((x, y))
+        self.has_updraft = UPDRAFT in G.t
+        self.waters_all = [(x, y) for y in range(G.h) for x in range(G.w) if G.at(x, y) == WATER]
 
     def envelope(self, name, fac):
         if name in self.env: return self.env[name]
@@ -506,7 +543,7 @@ class Reach:
         E.w = E.h = 200; E.pw = E.ph = 200 * TILE; E.t = bytearray(200 * 200); E.hooks = []; E.needs = self.needs
         E.left = E.right = [SOLID] * 200; E.top = E.bot = [SOLID] * 200
         for x in range(200): E.t[150 * 200 + x] = SOLID
-        E.R = type('R', (), {'kw': {'indoor': True}})()
+        E.R = type('R', (), {'kw': {'indoor': True}})(); E.has_water = False; E.has_star = False; E.springs = []
         E._pad()
         sim = Sim(E, self.needs)
         b = Body(100 * TILE + 8, 150 * TILE, MAXV * (1 if 'walk' not in name else 1), 0, True, self.aj_max, False, True)
@@ -520,13 +557,21 @@ class Reach:
     def search(self, seeds, targets_fn=None, stop_on_exit=False, budget=60000):
         """seeds: list of ('stand', tx, ty) | ('air', Body) | ('door', tx, ty). Returns the reach record."""
         G = self.G
-        stand, walls, hooks = {}, set(), set()
-        pts = set(); exits = set(); frontier = []
+        from collections import deque
+        stand, walls, hooks, waters = {}, set(), set(), set()
+        pts = set(); exits = set(); frontier = deque()   # FIFO: every seed is expanded before anything it leads to
+        wallc = set()   # wall-cling cells visited (for pruning)
         def add_stand(tx, ty, aj=None):
             si = self.span_of.get((tx, ty))
-            if si is None: return
-            if si in stand: return
+            if si is None or si in stand: return
             stand[si] = True; frontier.append(('span', si))
+            sty, a, b = self.spans[si]   # walking out along the floor counts at once (no budget can starve it)
+            if a == 0 and G.left[sty] == EXIT: exits.add(('W', sty))
+            if b == G.w - 1 and G.right[sty] == EXIT: exits.add(('E', sty))
+        def add_water(tx, ty):
+            rid = self.water_region(tx, ty)
+            if rid is None or rid in waters: return
+            waters.add(rid); frontier.append(('water', rid))
         def add_pts(P):
             for x, y in P: pts.add((int(x // 4), int(y // 4)))
         def land(o):
@@ -539,28 +584,31 @@ class Reach:
                 add_stand(tx, ty)
             if o['wall']:
                 x, y, side, aj, ms = o['wall']; k = (int(x // TILE), int(y // TILE), side, aj, ms)
-                if k not in walls: walls.add(k); frontier.append(('wall', k, x, y))
+                if k not in walls: walls.add(k); wallc.add((k[0], k[1])); frontier.append(('wall', k, x, y))
             for hk in o['hooks']:
                 if hk[0] not in hooks: hooks.add(hk[0]); frontier.append(('hook', hk[0]))
             if o['exit']: exits.add(o['exit'])
+            if o.get('water'): add_water(*o['water'])
             add_pts(o['pts'])
+        self._tf = lambda x0, x1, y0, y1: targets_fn(x0, x1, y0, y1, stand, pts, exits, wallc) if targets_fn else True
         for s in seeds:
             if s[0] in ('stand', 'door'): add_stand(s[1], s[2])
-            else:
-                for fac in (lambda: prog(s[2], walk=True), lambda: prog(0, walk=True), lambda: prog(-s[2], walk=True)):
-                    b = s[1]; bb = Body(b.x, b.y, b.vx, b.vy, False, b.aj, b.ms, b.adash)
-                    land(self.sim.run(bb, fac(), max_t=3.0))
+            else:   # arriving in the air (a gap, a drop from above, a jump up through a floor): try the ways to steer it
+                b = s[1]
+                for f in self.air_progs(s[2]):
+                    bb = Body(b.x, b.y, b.vx, b.vy, False, self.aj_max if b.aj < 0 else b.aj, b.ms, b.adash)
+                    land(self.sim.run(bb, f))
         work = 0
         while frontier and work < budget:
             if stop_on_exit and exits: break
-            if targets_fn is not None and not stop_on_exit and not targets_fn(-1e9, 1e9, -1e9, 1e9, stand, pts, exits): break
-            node = frontier.pop()
-            if node[0] == 'span':
+            if targets_fn is not None and not stop_on_exit and not targets_fn(-1e9, 1e9, -1e9, 1e9, stand, pts, exits, None): break
+            node = frontier.popleft()
+            if node[0] == 'water':
+                for o in self.swim(node[1], exits, add_pts):
+                    land(o); work += 1
+            elif node[0] == 'span':
                 ty, x0, x1 = self.spans[node[1]]
                 add_pts([(x * TILE + 8, (ty + 1) * TILE) for x in range(x0, x1 + 1)])
-                # walking out of the room along the floor
-                if x0 == 0 and G.left[ty] == EXIT: exits.add(('W', ty))
-                if x1 == G.w - 1 and G.right[ty] == EXIT: exits.add(('E', ty))
                 if G.hooks:
                     for x in range(x0, x1 + 1):
                         for hi, (hx, hy) in enumerate(G.hooks):
@@ -628,7 +676,58 @@ class Reach:
                 for o in self.swing(node[1]):
                     land(o); work += 1
         self.work = work
-        return {'stand': stand, 'pts': pts, 'exits': exits, 'walls': walls, 'hooks': hooks}
+        return {'stand': stand, 'pts': pts, 'exits': exits, 'walls': walls, 'hooks': hooks, 'waters': waters}
+
+    def air_progs(self, d):
+        """steering programs for a body already in the air (no jump press; jump held so a rising body keeps its height)"""
+        P_ = []
+        for dd in ((d, 0, -d) if d else (1, 0, -1)):
+            P_.append(prog(dd, walk=True, hold=True))
+            if self.aj_max: P_.append(prog(dd, walk=True, hold=True, dj='apex'))
+            P_.append(prog(dd, walk=True, hold=True, dash='apex'))
+            if 'gale' in self.needs: P_.append(prog(dd, walk=True, glide=True))
+            if 'talon' in self.needs: P_.append(prog(dd, walk=True, hold=True, steer=(0.25, -dd)))
+        return P_
+
+    # ---- deep water ('"', the Barrows): with tidebreath swim anywhere in the body; without, float and paddle on the surface
+    def water_region(self, tx, ty):
+        G = self.G
+        if not hasattr(self, '_wreg'): self._wreg, self._wcells = {}, []
+        if G.at(tx, ty) != WATER:
+            for dy in (1, -1, 2):
+                if G.at(tx, ty + dy) == WATER: ty += dy; break
+            else: return None
+        if (tx, ty) in self._wreg: return self._wreg[(tx, ty)]
+        tb = 'tidebreath' in self.needs
+        if not tb:   # rise to the surface of this column first
+            while G.at(tx, ty - 1) == WATER: ty -= 1
+            if (tx, ty) in self._wreg: return self._wreg[(tx, ty)]
+        rid = len(self._wcells); cells = []; st = [(tx, ty)]; seen = {(tx, ty)}
+        while st:
+            x, y = st.pop(); cells.append((x, y)); self._wreg[(x, y)] = rid
+            nb = ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)) if tb else ((x + 1, y), (x - 1, y))
+            for q in nb:
+                if q not in seen and 0 <= q[0] < G.w and 0 <= q[1] < G.h and G.at(*q) == WATER:
+                    seen.add(q); st.append(q)
+        self._wcells.append(cells)
+        return rid
+
+    def swim(self, rid, exits, add_pts):
+        G = self.G; outs = []
+        cells = self._wcells[rid]
+        add_pts([(x * TILE + 8, (y + 1) * TILE - 4) for x, y in cells] + [(x * TILE + 8, y * TILE + 12) for x, y in cells])
+        for x, y in cells:   # swimming (or paddling) out through an edge
+            if x == 0 and G.left[y] == EXIT: exits.add(('W', y))
+            if x == G.w - 1 and G.right[y] == EXIT: exits.add(('E', y))
+            if y == G.h - 1 and G.bot[x] == EXIT: exits.add(('S', x))
+            if y == 0 and G.top[x] == EXIT: exits.add(('N', x))
+        for x, y in cells:   # leap out of the surface: vy -300, as dbSwimUpdate does
+            if G.at(x, y - 1) in (WATER, SOLID, NOCLING): continue
+            for d in (1, 0, -1):
+                for f in (prog(d, walk=True, hold=True), prog(d, walk=True, hold=True, dash='apex'), prog(d, walk=True, hold=True, dj='apex')):
+                    b = Body(x * TILE + 8, y * TILE + 17, 0, -300, False, 0, False, True)
+                    outs.append(self.sim.run(b, f))
+        return outs
 
     @staticmethod
     def _dir(f):
@@ -638,11 +737,12 @@ class Reach:
     def _worth(self, sx, sy, e, stand, name, fac, pts, exits, targets_fn):
         """prune: skip a maneuver whose free-flight box holds nothing unreached"""
         if targets_fn is None: return True
+        if ('glide' in name and self.has_updraft) or self.G.has_star: return True   # updrafts/starlight carry you past the free-flight box   # an updraft carries a glide far past its free-flight box
         x0, x1, y0, y1 = sx / TILE + e[0], sx / TILE + e[1], sy / TILE + e[2], sy / TILE + e[3]
         if name.startswith('jump') or name.startswith('dash') or name.startswith('glide') or name.startswith('dj') or name.startswith('triple') or name.startswith('hop'):
             # direction-agnostic box (the program's d flips the x extent)
             w = max(abs(e[0]), abs(e[1])); x0, x1 = sx / TILE - w, sx / TILE + w
-        return targets_fn(x0, x1, y0, y1, stand, pts, exits)
+        return self._tf(x0, x1, y0, y1)
 
     def swing(self, hi):
         """Root Hook: zip to rope length, pump, release at many points of the arc (port of updateHook/releaseHook)."""
@@ -723,14 +823,16 @@ def entrances(G, R):
             if not seeds:   # arriving mid-air (a shaft or a ledge-less opening): fall in from the lowest open cell
                 for y in range(b, a - 1, -1):
                     if G.at(x, y) not in SOLIDISH and G.at(x, y - 1) not in SOLIDISH:
-                        seeds.append(('air', Body(x * TILE + 8 - d * 2, (y + 1) * TILE - 1, d * MAXV, 0, False, 0, False, True), d)); break
+                        seeds.append(('air', Body(x * TILE + 8 - d * 2, (y + 1) * TILE - 1, d * MAXV, 0, False, -1, False, True), d)); break
             if seeds: E.append((f'{side} edge rows {a}-{b}', seeds, (side, a, b)))
     for side, arr in (('N', G.top), ('S', G.bot)):
         for a, b in runs(arr):
             seeds = []
             for x in range(a, b + 1, 2):
-                if side == 'N': seeds.append(('air', Body(x * TILE + 8, 28, 0, 40, False, 0, False, True), 0))
-                else: seeds.append(('air', Body(x * TILE + 8, G.ph - 1, 0, -260, False, 0, False, True), 0))
+                if side == 'N': seeds.append(('air', Body(x * TILE + 8, 28, 0, 40, False, -1, False, True), 0))
+                else:   # coming up through a floor opening: at least 260 px/s upward (checkRoomExit), jump held, the air jump unspent
+                    for vy in (-260, -JUMP_V) + ((-WJ_VY,) if 'talon' in G.needs else ()):   # a fresh jump at the boundary at best; a wall jump with the talon
+                        seeds.append(('air', Body(x * TILE + 8, G.ph - 1, 0, vy, False, -1, False, True), 0))
             E.append((f'{side} edge cols {a}-{b}', seeds, (side, a, b)))
     for s in R.kw.get('spawns', []):
         if s.get('t') == 'sys' and s.get('kind') == 'door':
@@ -778,7 +880,11 @@ def check_room(R, cell_of, solid_chars, hazard_chars='^v*(', cache=None):
         # targets for pruning: unreached spans, targets, exits
         def make_targets(rc):
             done = set()
-            def fn(x0, x1, y0, y1, stand, pts, exits):
+            def fn(x0, x1, y0, y1, stand, pts, exits, wallc):
+                if wallc is not None and rc.cling:   # an unvisited wall-jump surface in reach: a shaft may lead on
+                    for (cx, cy) in rc.cling:
+                        if (cx, cy) not in wallc and x0 <= cx <= x1 and y0 <= cy <= y1: return True
+                if wallc is not None and rc.waters_all and x0 <= max(c[0] for c in rc.waters_all) and min(c[0] for c in rc.waters_all) <= x1: return True
                 for si, (ty, a, b) in enumerate(rc.spans):
                     if si in stand: continue
                     if b >= x0 and a <= x1 and y0 <= ty <= y1: return True
@@ -809,6 +915,13 @@ def check_room(R, cell_of, solid_chars, hazard_chars='^v*(', cache=None):
                 msgs.append((lvl, f'{R.id}: reach: exit {label} can\'t be reached from any entrance'))
         # soft-lock: from each entrance, can you get out again (any exit, incl. walking back / a door)?
         doors = [s for s in R.kw.get('spawns', []) if s.get('t') == 'sys' and s.get('kind') == 'door']
+        if R.kw.get('world_link') or R.kw.get('reach_both_ways'):   # a connector must work in both directions: every exit from every entrance
+            for label, seeds, info in ents:
+                r3 = Reach(G, needs); r3.env = reach.env
+                res3 = r3.search(seeds, make_targets(r3))
+                for l2, ek in exit_keys:
+                    if ek[0] == 'D' or l2 == label: continue
+                    if not exit_hit(res3, ek): msgs.append((lvl, f"{R.id}: reach: entering by {label}, exit {l2} can't be reached"))
         for label, seeds, info in ents:
             r2 = Reach(G, needs); r2.env = reach.env
             res2 = r2.search(seeds, make_targets(r2), stop_on_exit=True)
@@ -1021,20 +1134,97 @@ def selftest():
     L.append(('hook pit, no hook', hookpit(), [], False))
     L.append(('hook pit + hook', hookpit(), ['hook'], True))
     # 7. pogo: a wide spike floor under a high goal ledge — bouncing on spikes gets you there
+    # ---- Expansion 3 §8 fixes (each: rows, needs, expect, options)
+    W = lambda rows: [r.replace(' ', '.') for r in rows]
+    def pool(extra=''):   # deep water with a page on the bottom; ledges both sides
+        rows = ['#' * 24] + ['#' + '.' * 22 + '#' for _ in range(6)] + ['#.......""......#'] * 5 + ['#......."i"......#'.replace('""i"', '"i""'.replace('i', 'i'))] + ['#' * 24]
+        rows = ['#' * 24] + ['#' + '.' * 22 + '#' for _ in range(6)]
+        rows += ['#' + '.' * 7 + '"' * 8 + '.' * 7 + '#'] * 1
+        rows += ['#' + '#' * 7 + '"' * 8 + '#' * 7 + '#'] * 4
+        rows += ['#' + '#' * 7 + '"' * 3 + 'i' + '"' * 4 + '#' * 7 + '#']
+        rows += ['#' * 24]
+        return rows
+    L2 = []
+    L2.append(('pool floor, no tidebreath (floats)', pool(), [], False, {'entry': [(-1, 7), (-1, 6)]}))
+    L2.append(('pool floor + tidebreath (swims down)', pool(), ['tidebreath'], True, {'entry': [(-1, 7), (-1, 6)]}))
+    def moat():   # 12 tiles of deep water between two ledges, far side has the page: paddle across the surface
+        rows = ['#' * 24] + ['#' + '.' * 22 + '#' for _ in range(8)]
+        rows += ['#...' + '"' * 16 + '..i#']
+        rows += ['####' + '"' * 16 + '####'] * 3 + ['#' * 24]
+        return rows
+    L2.append(('moat: paddle across the surface', moat(), [], True, {'entry': [(-1, 9), (-1, 8)]}))
+    def over_wall(indoor):   # steps up to a ledge by a wall that reaches the top edge: outdoors you hop over it through the sky
+        rows = ['#' + '.' * 9 + '#' + '.' * 12 + '#' for _ in range(11)]
+        rows[8] = '#===' + rows[8][4:]
+        rows[5] = '#....===' + rows[5][8:]
+        rows[2] = '#.......===' + rows[2][11:]
+        rows[10] = '#' + '.' * 9 + '#' + '.' * 10 + 'i.#'
+        rows = [('#' * 24) if indoor else ('..........#.............')] + rows[1:] + ['#' * 24]
+        return rows
+    L2.append(('outdoor: over a wall through the sky', over_wall(False), [], True, {'indoor': False, 'entry': [(-1, 10), (-1, 9)]}))
+    L2.append(('indoor: the same wall is a wall', over_wall(True), [], False, {'entry': [(-1, 10), (-1, 9)]}))
+    def up_hole(gap):   # arriving up through a floor opening: the first ledge `gap` px above the bottom edge
+        rows = ['#' * 24] + ['#' + '.' * 22 + '#' for _ in range(12)] + ['#.....' + '#' * 17 + '#']
+        ly = 13 - gap // 16
+        rows[ly] = '#' + '....' + '======' + '.' * 12 + '#'
+        rows[ly - 1] = '#' + '.' * 6 + 'C' + '.' * 15 + '#'   # a chest: you must stand on the ledge
+        return rows
+    L2.append(('up through a floor hole: ledge 3 tiles up', up_hole(48), [], True, {'entry': [(1, 14), (2, 14), (3, 14), (4, 14), (5, 14)]}))
+    L2.append(('up through a floor hole: ledge 4 tiles up', up_hole(64), [], False, {'entry': [(1, 14), (2, 14), (3, 14), (4, 14), (5, 14)]}))
+    L2.append(('up through a floor hole: 4 up + wings', up_hole(64), ['wings'], True, {'entry': [(1, 14), (2, 14), (3, 14), (4, 14), (5, 14)]}))
+    def perch():   # a long glide from a high perch over 30 tiles of lava (> 2.6 s in the air)
+        rows = ['#' * 48] + ['#' + '.' * 46 + '#' for _ in range(22)]
+        rows[4] = '#' + '#' * 4 + '.' * 42 + '#'
+        rows[22] = '#' + '.' * 44 + 'C.#'
+        rows += ['#' * 5 + '*' * 38 + '#' * 5]
+        return rows
+    L2.append(('long glide from a high perch', perch(), ['gale'], True, {'entry': [(-1, 3), (-1, 2)]}))
+    L2.append(('the same, no gale', perch(), [], False, {'entry': [(-1, 3), (-1, 2)]}))
+    def draft():   # an updraft column to a ledge offset 4 tiles to the side (ride up, then drift out)
+        rows = ['#' * 24] + ['#' + '.' * 22 + '#' for _ in range(20)] + ['#' * 24]
+        for y in range(3, 21): rows[y] = rows[y][:6] + '|' + rows[y][7:]
+        rows[5] = '#' + '.' * 9 + '=====' + '.' * 8 + '#'
+        rows[4] = '#' + '.' * 11 + 'i' + '.' * 10 + '#'
+        return rows
+    L2.append(('updraft, then drift to a side ledge', draft(), ['gale'], True, {'entry': [(-1, 20), (-1, 19)]}))
+    def tall_shaft():   # a 30-tile wall-jump shaft with nothing to stand on until the top (pruning must not skip it)
+        rows = ['#' * 24] + ['#' * 9 + '...' + '#' * 12 for _ in range(30)] + ['#' * 24]
+        rows[29] = '.' * 12 + '#' * 12; rows[30] = '.' * 12 + '#' * 12
+        rows[1] = '#' * 9 + '.i.' + '#' * 12
+        return rows
+    L2.append(('30-tile wall-jump shaft + talon', tall_shaft(), ['talon'], True, {'entry': [(-1, 30), (-1, 29)]}))
     ok_all = True
     cell_of = lambda gx, gy: (None, None)
-    for name, rows, needs, expect in L:
-        R = _Room('ST', rows, needs=needs or ['start'], indoor=True)
-        # the left end of row 11 is the entrance: open the wall there
-        R.g[11][0] = '.'; R.g[10][0] = '.'
-        cof = lambda gx, gy: ((object(), '.') if gx == -1 and gy in (10, 11) else (None, None))
+    runs = [(n, r, nd, e, None) for n, r, nd, e in L] + L2
+    for name, rows, needs, expect, opt in runs:
+        opt = opt or {}
+        R = _Room('ST', rows, needs=needs or ['start'], indoor=opt.get('indoor', True))
+        if 'entry' in opt:
+            ent = set(opt['entry'])
+            for (ex, ey) in ent:   # open the wall cell next to each entrance cell
+                if ex == -1: R.g[ey][0] = '.'
+                elif ey == R.h: R.g[R.h - 1][ex] = '.'
+            cof = lambda gx, gy, ent=ent: ((object(), '.') if (gx, gy) in ent else (None, None))
+        else:
+            # the left end of row 11 is the entrance: open the wall there
+            R.g[11][0] = '.'; R.g[10][0] = '.'
+            cof = lambda gx, gy: ((object(), '.') if gx == -1 and gy in (10, 11) else (None, None))
         msgs = check_room(R, cof, solid)
-        errs = [m for m in msgs if 'item' in m[1]]
+        errs = [m for m in msgs if 'item' in m[1] or 'chest' in m[1]]
         got = not errs
         flag = 'ok ' if got == expect else 'BAD'
         if got != expect: ok_all = False
         print(f'{flag} {name:38s} expect {"reachable" if expect else "unreachable":12s} got {"reachable" if got else "unreachable"}   {msgs[:1]}')
-    return ok_all
+    # seed starvation: two entrances, no search budget at all: both edge exits must still be recorded from the seeds
+    rows = ['#' * 24] + ['#' + '.' * 22 + '#' for _ in range(10)] + ['#' * 24]
+    R = _Room('ST', rows, needs=['start'], indoor=True)
+    for y in (9, 10): R.g[y][0] = '.'; R.g[y][23] = '.'
+    ent = {(-1, 9), (-1, 10), (24, 9), (24, 10)}
+    G = Grid(R, lambda gx, gy: ((object(), '.') if (gx, gy) in ent else (None, None)), solid, [])
+    res = Reach(G, []).search([('stand', 0, 10), ('stand', 23, 10)], budget=0)
+    got = ('W', 10) in res['exits'] and ('E', 10) in res['exits']
+    print(f'{"ok " if got else "BAD"} seed exits recorded with budget 0            {sorted(res["exits"])}')
+    return ok_all and got
 
 
 if __name__ == '__main__':

@@ -39,10 +39,6 @@ def _xa(kind, x, y, **kw):          # SB decor that hangs / floats (not grounded
     return dict(t='xsb', kind=kind, x=x, y=y, air=True, **kw)
 
 
-def _door(x, y, id, to, toId=None, look='arch', **kw):
-    return dict(t='sys', kind='door', x=x, y=y, id=id, to=to, toId=toId or id, look=look, **kw)
-
-
 def _lore(x, y, page, look='stone', **kw):
     return dict(t='sys', kind='lore', x=x, y=y, page=page, look=look, **kw)
 
@@ -56,17 +52,28 @@ def _nvd(kind, x, y, **kw):         # the Necropolis' own decor (33_necropolis.j
 
 
 # ================================================================== anchors (old rooms: door spawns only)
-ROOM('NV3').kw['spawns'].append(_door(15, 41, 'xw', 'NV8', look='arch'))           # the Bone Spire's foot: down to the Deadward
-ROOM('NV4').kw['spawns'].append(_door(14, 16, 'xl', 'NV10', look='arch'))          # beside the Yard Gate Shrine (barred from the stair side)
-ROOM('NV6').kw['spawns'].append(_door(9, 14, 'xt', 'NV10', look='arch'))           # the Hollow Court: down the Catafalque Stair
-ROOM('DU4').kw['spawns'].append(_door(17, 35, 'xr', 'DU9', look='arch'))           # the Sandfall Shaft's foot: the Buried Road
-ROOM('DU5').kw['spawns'].append(_door(15, 11, 'xh', 'DU11', look='arch'))          # beside the Scarab Gate Shrine (barred from the hall side)
+# Integration pass (EXPANSION3 §8): the wings join their old rooms edge to edge. Old rooms are patched here in their own
+# (unshifted) local coordinates; rooms.py shifts necropolis/dunes old rooms down 90 when it builds them.
+_r = ROOM('NV3')      # the Bone Spire's foot: a grate in the floor drops into the Charnel Well (NV17)
+_r.fill(15, 42, 17, 45, '.').fill(15, 42, 17, 42, '=').fill(15, 45, 17, 45, '=')
+_r.kw['spawns'].append(_xa('dropmark', 16, 41))
+_r = ROOM('NV4')      # beside the Yard Gate Shrine: a grate down into the Undercroft (NV18); its bar is lifted from the stair side
+_r.fill(14, 17, 16, 19, '.').fill(14, 17, 16, 17, '=').fill(14, 19, 16, 19, '=')
+_r.kw['spawns'].append(_xa('dropmark', 15, 16))
+_r = ROOM('NV6')      # the Hollow Court: a shaft down to the Catafalque Stair's summit (sealed below until the Executioners fall)
+_r.fill(28, 15, 30, 17, '.').fill(28, 15, 30, 15, '=').fill(28, 17, 30, 17, '=')
+_r.kw['spawns'].append(_xa('dropmark', 29, 14))
+_r = ROOM('DU4')      # the Sandfall Shaft's foot: the east wall gives onto the Sand Stair (DU19)
+_r.open('E', 32, 35)
+_r = ROOM('DU8')      # the Sanctum's lobby: a grate down into the Sea of Dunes (a gate below is barred from the lobby side)
+_r.fill(2, 15, 4, 17, '.').fill(2, 15, 4, 15, '=').fill(2, 17, 4, 17, '=').put(3, 14, '.')
+_r.kw['spawns'].append(_xa('dropmark', 3, 14))
 
 # ================================================================== NECROPOLIS
 # ---------------------------------------------------------------- NV8 The Cemetery Gate (path)
-r = Room('NV8', 'The Cemetery Gate', 'necropolis', 84, 158, 48, 14, indoor=True, needs=['talon'], x3=True,
+r = Room('NV8', 'The Cemetery Gate', 'necropolis', 84, 246, 48, 14, indoor=True, needs=['talon'], x3=True,
          xsb_paint=[['fence', 6, 10], ['fence', 39, 10], ['gateleaves', 23.5, 10]],
-         spawns=[_door(44, 10, 'xw', 'NV3'), _lore(40, 10, 'sb_1'),
+         spawns=[_lore(40, 10, 'sb_1'),
                  _en('nv_hound', 26, 10), _en('nv_noble', 11, 10), _en('nv_ringer', 23, 4),
                  _xd('lamppost', 36, 10), _xd('lamppost', 7, 10), _xd('headstone', 32, 10), _xd('headstone', 15, 10, v=1),
                  _xd('mourner', 47 - 13, 4, face=-1), _xd('tombchest', 20, 10), _xa('cage', 41, 2), _xa('cage', 9, 2),
@@ -79,12 +86,13 @@ for _y in (8, 5, 2):
 r.fill(17, 5, 30, 6)                                        # the gatehouse: its wall-walk is a lintel over the road
 r.fill(17, 2, 17, 4).fill(30, 2, 30, 3)                     # merlons (the east one leaves a gap to hop through)
 r.fill(12, 8, 14, 8, '=').fill(33, 8, 35, 8, '=')           # steps up to the wall-walk
-r.fill(44, 2, 46, 4)                                        # a heavy lintel over the Bone Spire stair
+r.fill(44, 2, 46, 4)                                        # a heavy lintel over the arch to the Charnel Well
+r.open('E', 7, 10)
 for _x, _y, _ch in [(20, 10, 'b'), (38, 10, 'k'), (3, 10, 'k'), (24, 2, 'x'), (10, 2, 'x'), (37, 2, 'x')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- NV13 The Legion Yard (gauntlet)
-r = Room('NV13', 'The Legion Yard', 'necropolis', 84, 142, 48, 16, indoor=True, needs=['talon'], x3=True, gauntlet=True,
+r = Room('NV13', 'The Legion Yard', 'necropolis', 84, 230, 48, 16, indoor=True, needs=['talon'], x3=True, gauntlet=True,
          xsb_paint=[['fence', 15, 12], ['fence', 38, 12]],
          spawns=[dict(t='kit', kind='gate', x=7, y=12, id='gY', open=True),
                  dict(t='sys', kind='gauntlet', x=27, y=12, id='legion', look='drum', name='The Legion Yard', gates=['gY'],
@@ -106,19 +114,19 @@ for _x, _y, _ch in [(25, 12, 'b'), (46, 12, 'k'), (30, 2, 'x'), (20, 2, 'x')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- NV9 Street of Lanterns (path)
-r = Room('NV9', 'Street of Lanterns', 'necropolis', 20, 157, 64, 16, indoor=True, needs=['talon'], x3=True,
+r = Room('NV9', 'Street of Lanterns', 'necropolis', 20, 245, 64, 16, indoor=True, needs=['talon'], x3=True,
          xsb_paint=[['tombwall', 19, 11], ['tombwall', 38, 11], ['tombwall', 56, 11]],
-         spawns=[_en('nv_noble', 40, 11), _en('nv_ringer', 27, 7), _en('nv_hound', 16, 11), _en('gloom_wisp', 50, 5, air=True),
+         spawns=[_en('nv_noble', 40, 11), _en('nv_ringer', 27, 8), _en('nv_hound', 16, 11), _en('gloom_wisp', 50, 5, air=True),
                  *[_xd('lamppost', _x, 11) for _x in (6, 21, 35, 49, 61)],
                  _xd('tombchest', 45, 8), _xd('headstone', 31, 11), _xd('headstone', 3, 11, v=1), _xd('mourner', 12, 8),
-                 _xd('tombchest', 27, 7, v=1), _nvd('candles', 18, 11), _nvd('skulls', 55, 11), _nvd('coffin', 38, 11),
+                 _xd('tombchest', 26, 8, v=1), _nvd('candles', 18, 11), _nvd('skulls', 55, 11), _nvd('coffin', 38, 11),
                  _xa('dropmark', 57, 11)])
 r.walls().open('E', 8, 11).open('W', 8, 11)
 r.fill(0, 0, 63, 1)
 r.fill(0, 12, 63, 15)
 r.fill(56, 12, 58, 15, '.').fill(56, 12, 58, 12, '=').fill(56, 15, 58, 15, '=')    # a grate over the Bellwalk
 r.fill(9, 9, 14, 11)                                        # mausoleum
-r.fill(24, 8, 30, 11)                                       # the great mausoleum (a ringer keeps its roof)
+r.fill(24, 9, 30, 11)                                       # the great mausoleum (a ringer keeps its roof)
 r.fill(15, 6, 23, 6, '=')                                   # a lantern-wire walk between the roofs
 r.fill(31, 6, 35, 6, '=').fill(43, 9, 47, 11)               # and on east over the street
 r.fill(36, 4, 40, 4, '=')
@@ -131,25 +139,26 @@ for _x, _y, _ch in [(8, 2, 'x'), (32, 2, 'x'), (52, 2, 'x'), (20, 11, 'b'), (52,
 # Three ways up: the east ledges (main), the west chimney (talon), the bell walkways across the middle (timed by the
 # great bell hung under the throne landing). The summit: the catafalque of the last king (the landmark), a sealed door to
 # the Hollow Court, and a cracked slab over the Ossuary of Kings.
-r = Room('NV10', 'The Catafalque Stair', 'necropolis', -28, 113, 48, 60, indoor=True, needs=['talon'], x3=True, grand=True,
+r = Room('NV10', 'The Catafalque Stair', 'necropolis', -28, 201, 48, 60, indoor=True, needs=['talon'], x3=True, grand=True,
+         shrine='Shrine of the Bier',
          bells=dict(every=4.2, warn=1.3),
          xsb_paint=[['catafalque', 18, 7], ['tombwall', 6, 55], ['tombwall', 40, 19], ['tombwall', 24, 44]],
          reach_open=[(x, y) for x in (1, 2, 3) for y in (8, 9)],
-         spawns=[_door(44, 7, 'xt', 'NV6'), _door(44, 28, 'xl', 'NV4'),
+         spawns=[
                  dict(t='sys', kind='passage', x=38, y=7, w=2, h=3, id='throne', cond={'flag': 'boss:executioners'}, drift='nvghost',
                       light='150,200,255'),
                  dict(t='kit', kind='gate', x=40, y=28, id='bar', persist=True),
-                 dict(t='kit', kind='lever', x=37, y=28, id='lbar', targets=['bar'], once=True, msg='The bar lifts. The Tolling Streets lie beyond.'),
+                 dict(t='kit', kind='lever', x=37, y=28, id='lbar', targets=['bar'], once=True, msg='The bar lifts. The undercroft climbs to the Tolling Streets.'),
                  dict(t='nv_bell', x=20, y=10, big=1),
                  _lore(10, 7, 'sb_2'),
-                 _en('nv_hound', 8, 55), _en('nv_noble', 24, 22), _en('nv_ringer', 35, 16), _en('gloom_wisp', 25, 40, air=True),
+                 _en('nv_hound', 11, 55), _en('nv_noble', 24, 22), _en('nv_ringer', 35, 16), _en('gloom_wisp', 25, 40, air=True),
                  _en('nv_noble', 30, 7), _en('nv_hound', 42, 40),
                  _xd('lamppost', 6, 40), _xd('lamppost', 44, 40), _xd('lamppost', 8, 25), _xd('lamppost', 33, 7), _xd('lamppost', 3, 7),
                  _xd('tombchest', 30, 49, v=1), _xd('tombchest', 37, 52), _xd('tombchest', 25, 22), _xd('tombchest', 36, 16, v=1),
                  _xd('mourner', 12, 25), _xd('mourner', 26, 7, face=-1), _xd('headstone', 13, 55), _xd('headstone', 42, 55, v=1),
                  _nvd('brazier', 6, 7), _nvd('candles', 28, 7), _nvd('skulls', 11, 40), _nvd('candles', 39, 28), _nvd('brazier', 26, 55),
                  _xa('cage', 32, 1), _xa('cage', 14, 13), _xa('cage', 45, 31)])
-r.walls().open('E', 52, 55).open('W', 37, 40).open('E', 37, 40).open('W', 10, 12)
+r.walls().open('E', 52, 55).open('W', 37, 40).open('E', 37, 40).open('W', 10, 12).open('E', 25, 28)
 r.fill(0, 56, 47, 59)
 r.fill(17, 57, 20, 59, '.').fill(17, 56, 20, 56, '=').fill(17, 59, 20, 59, '=')     # grate down to the Dirge's well
 # the summit: the throne landing, its one-way gap, the Ossuary slab and pocket, the sealed door's niche
@@ -157,8 +166,10 @@ r.fill(0, 8, 27, 9).fill(36, 8, 47, 9).fill(28, 8, 35, 8, '=')
 r.fill(1, 8, 3, 9, 'Y')
 r.fill(1, 10, 3, 12, '.').fill(4, 10, 4, 12).fill(0, 13, 4, 13)
 r.fill(36, 1, 47, 3).fill(38, 4, 39, 4)
+r.fill(42, 0, 44, 3, '.').fill(42, 5, 44, 5, '=').fill(42, 2, 44, 2, '=')   # the niche's shaft up into the Hollow Court
 # the lower flights (east entrance -> west)
 r.fill(34, 53, 39, 55).fill(28, 50, 33, 55)
+r.fill(22, 53, 26, 53, '=')                                 # a coffin-shelf step: the west hall's way back up
 r.fill(22, 47, 26, 47, '=').fill(14, 44, 18, 44, '=')
 r.fill(1, 41, 10, 42)                                        # L1: the west landing (the Headsman's Run lies beyond)
 # east ledges -> the Barracks ledge -> the barred door's ledge
@@ -177,11 +188,11 @@ r.fill(30, 26, 33, 26, '=').fill(22, 23, 27, 24).fill(15, 23, 18, 23, '=')
 r.fill(29, 20, 32, 20, '=').fill(33, 17, 38, 18)
 r.fill(27, 14, 30, 14, '=').fill(31, 11, 34, 11, '=')
 for _x, _y, _ch in [(20, 1, 'x'), (9, 1, 'x'), (30, 10, 'x'), (6, 10, 'x'), (44, 24, 'x'), (13, 45, 'x'), (24, 45, 'x'), (3, 55, 'b'),
-                    (22, 55, 'k'), (45, 55, 'b'), (9, 40, 'b'), (7, 25, 'k'), (46, 40, 'k'), (44, 51, 'x')]:
+                    (22, 55, 'k'), (45, 55, 'b'), (9, 40, 'b'), (7, 25, 'k'), (46, 40, 'k'), (44, 51, 'x'), (6, 55, 'S')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- NV14 Charnel Barracks (gauntlet)
-r = Room('NV14', 'Charnel Barracks', 'necropolis', 20, 143, 40, 14, indoor=True, needs=['talon'], x3=True, gauntlet=True,
+r = Room('NV14', 'Charnel Barracks', 'necropolis', 20, 231, 40, 14, indoor=True, needs=['talon'], x3=True, gauntlet=True,
          spawns=[dict(t='kit', kind='gate', x=3, y=10, id='gB', open=True),
                  dict(t='sys', kind='gauntlet', x=31, y=10, id='charnel', look='rack', name='Charnel Barracks', gates=['gB'],
                       waves=[[_en('nv_noble', 12, 10), _en('nv_noble', 24, 10), _en('hollow_soldier', 36, 10)],
@@ -200,7 +211,7 @@ for _x, _y, _ch in [(19, 10, 'b'), (7, 2, 'x'), (30, 2, 'x'), (34, 10, 'k')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- NV11 The Bellwalk (parkour)
-r = Room('NV11', 'The Bellwalk', 'necropolis', 20, 173, 64, 18, indoor=True, needs=['talon'], x3=True, parkour=True,
+r = Room('NV11', 'The Bellwalk', 'necropolis', 20, 261, 64, 18, indoor=True, needs=['talon'], x3=True, parkour=True,
          bells=dict(every=3.2, warn=1.1), items=['gold'], xsb_paint=[['tombwall', 4, 13], ['tombwall', 57, 13]],
          spawns=[dict(t='nv_bell', x=34, y=2, big=1), dict(t='nv_bell', x=13, y=2),
                  _xd('lamppost', 3, 13), _xd('lamppost', 52, 13), _xd('headstone', 60, 13), _nvd('candles', 55, 13),
@@ -225,7 +236,7 @@ for _x, _y, _ch in [(34, 10, 'b'), (19, 11, 'k'), (60, 2, 'x'), (6, 2, 'x'), (50
 # Five bells hang at five heights; the lower a bell hangs, the lower it sounds. The dirge slab by the door shows the
 # melody as marks on a stave. Ring it and the well gate (up into the Catafalque Stair) and the crypt gate open.
 _DB = [('b1', 9, 7, 4), ('b2', 13, 9, 0), ('b3', 17, 5, 7), ('b4', 21, 8, 2), ('b5', 25, 6, 5)]     # id, col, row, note
-r = Room('NV12', 'The Dirge', 'necropolis', -12, 173, 32, 20, indoor=True, xsb_hall=True, needs=['talon'], x3=True, puzzle=True, chests=['shard'],
+r = Room('NV12', 'The Dirge', 'necropolis', -12, 261, 32, 20, indoor=True, xsb_hall=True, needs=['talon'], x3=True, puzzle=True, chests=['shard'],
          xsb_paint=[['dirgeslab', 28, 8]],
          spawns=[*[dict(t='kit', kind='bell', x=_x, y=_y, id=_i, group='dirge', note=_n) for _i, _x, _y, _n in _DB],
                  dict(t='kit', kind='seq', x=15, y=12, id='dirge', group='dirge', order=['b2', 'b1', 'b4', 'b3', 'b5', 'b2'],
@@ -251,7 +262,7 @@ for _x, _y, _ch in [(3, 13, 'k'), (30, 13, 'k'), (9, 18, 'b'), (18, 18, 'b')]:
 # The axes hang low from the execution roof: jump each blade as it sweeps under you, or dash through it. Between the two
 # corridor axes there is one hand's breadth of safety. Then the crumbling ledges (a third axe over the middle one), the
 # ash veil (Ember Dash), and a wall-jump chimney up to the reliquary.
-r = Room('NV15', "The Headsman's Run", 'necropolis', -84, 141, 56, 20, indoor=True, needs=['talon', 'emberdash'], x3=True, trial=True,
+r = Room('NV15', "The Headsman's Run", 'necropolis', -84, 229, 56, 20, indoor=True, needs=['talon', 'emberdash'], x3=True, trial=True,
          spawns=[dict(t='sys', kind='trial', x=51, y=12, id='run', par=8, reward='c_x3_hood', name="The Headsman's Run"),
                  dict(t='sys', kind='trial_goal', x=4, y=3, trial='run'),
                  dict(t='kit', kind='pendulum', x=45, y=9, len=3, period=1.6, amp=70, phase=0.0),
@@ -274,7 +285,7 @@ for _x, _y, _ch in [(50, 12, 'b'), (10, 3, 'k'), (41, 12, 'b')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- NV16 Ossuary of Kings (secret)
-r = Room('NV16', 'Ossuary of Kings', 'necropolis', -44, 113, 16, 14, indoor=True, xsb_hall=True, needs=['talon', 'slam'], x3=True, secret=True,
+r = Room('NV16', 'Ossuary of Kings', 'necropolis', -44, 201, 16, 14, indoor=True, xsb_hall=True, needs=['talon', 'slam'], x3=True, secret=True,
          chests=['seed'],
          spawns=[_lore(9, 12, 'sb_5', look='tablet'), _xd('kingskull', 5, 12), _xd('kingskull', 12, 12, v=1),
                  _nvd('candles', 3, 12), _nvd('candles', 11, 12), _xa('cage', 8, 2)])
@@ -293,14 +304,14 @@ def _rungs(r, x0, x1, rows):
 
 
 # ---------------------------------------------------------------- DU9 Caravan Road (path)
-r = Room('DU9', 'Caravan Road', 'dunes', 520, 159, 64, 16, indoor=True, needs=['talon'], x3=True,
+r = Room('DU9', 'Caravan Road', 'dunes', 520, 248, 64, 16, indoor=True, needs=['talon'], x3=True,
          xsb_paint=[['wagon', 38, 11], ['wagon2', 15, 8], ['camelbones', 55, 11]],
-         spawns=[_door(58, 11, 'xr', 'DU4'), _lore(50, 11, 'sb_6'),
+         spawns=[_lore(50, 11, 'sb_6'),
                  _en('du_scarab', 36, 9), _en('du_scarab', 40, 9), _en('du_scarab', 15, 8), _en('du_priest', 4, 11),
                  dict(t='xsb_scarab', x=31, y=11, crack=[28, 29]),
                  _xd('jars', 33, 11), _xd('jars', 1, 11, v=1), _xd('crates', 45, 8), _xd('obelisk', 61, 11), _xd('palmdead', 24, 11),
                  _xa('dropmark', 45, 11), _xd('banner_du', 27, 11)])
-r.walls().open('W', 8, 11)
+r.walls().open('W', 8, 11).open('E', 8, 11)
 r.fill(0, 0, 63, 1).fill(0, 12, 63, 15)
 du_slope(r, 6, 12, 13, 9)
 r.fill(13, 9, 18, 15)
@@ -313,7 +324,7 @@ for _x, _y, _ch in [(8, 2, 'x'), (27, 2, 'x'), (50, 2, 'x'), (32, 11, 'b'), (52,
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- DU18 Scarab Cache (secret)
-r = Room('DU18', 'Scarab Cache', 'dunes', 540, 175, 16, 14, indoor=True, xsb_hall=True, needs=['talon'], x3=True, secret=True,
+r = Room('DU18', 'Scarab Cache', 'dunes', 540, 264, 16, 14, indoor=True, xsb_hall=True, needs=['talon'], x3=True, secret=True,
          chests=['emberstone'], items=['gold'],
          spawns=[_xd('scarabidol', 12, 11), _xd('hoard', 5, 11), _xd('jars', 2, 11), _en('du_scarab', 10, 11)])
 r.walls().open('N', 8, 9)
@@ -324,7 +335,7 @@ for _x, _y, _ch in [(1, 11, 'k'), (13, 2, 'x')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- DU16 Sandfall Descent (trial: glide down a spiked sandfall shaft)
-r = Room('DU16', 'Sandfall Descent', 'dunes', 560, 175, 24, 64, indoor=True, needs=['talon', 'gale'], x3=True, trial=True,
+r = Room('DU16', 'Sandfall Descent', 'dunes', 560, 264, 24, 64, indoor=True, needs=['talon', 'gale'], x3=True, trial=True,
          spawns=[dict(t='sys', kind='trial', x=5, y=3, id='fall', reward='c_x3_scarab', name='The Sandfall Descent', par=27),
                  dict(t='sys', kind='trial_goal', x=15, y=60, trial='fall'),
                  dict(t='kit', kind='wind', x=20, y=1, w=3, h=60, vy=-340),
@@ -346,7 +357,7 @@ r.fill(13, 60, 17, 60, '.')
 # Low road: over the dunes, through two quicksand basins (sinking stones) — the sandstorm shoves you about.
 # High road: the broken colonnade of the sun-road, lintel to lintel (talon up the first column).
 # The landmark: the buried sun-spire on the plateau, its gilded disc still burning.
-r = Room('DU10', 'The Sea of Dunes', 'dunes', 400, 147, 120, 28, indoor=True, needs=['talon'], x3=True, grand=True, items=['gold'],
+r = Room('DU10', 'The Sea of Dunes', 'dunes', 400, 236, 120, 28, indoor=True, needs=['talon'], x3=True, grand=True, items=['gold'],
          xsb_paint=[['sunspire', 63, 17], ['wagon2', 115, 23], ['ruinarch', 45.5, 22], ['colossushand', 9, 21]],
          spawns=[{'t': 'du_storm', 'x': 2, 'y': 21, 'air': True, 'dir': 1},
                  _lore(60, 17, 'sb_10'),
@@ -378,19 +389,26 @@ r.fill(4, 22, 7, 27, '.').fill(4, 22, 7, 22, '=').fill(4, 25, 7, 25, '=').fill(4
 r.fill(44, 23, 47, 27, '.').fill(44, 23, 47, 23, '=').fill(44, 26, 47, 26, '=')  # -> the Tomb Entry Hall
 r.fill(90, 23, 93, 27, '.').fill(90, 23, 93, 23, '=').fill(90, 26, 93, 26, '=')  # -> the Sinking Sands
 # the colonnade (high road)
-r.fill(27, 11, 28, 16)                                       # first column, rising from the crest's shoulder
+r.fill(27, 11, 28, 14)                                       # first column (the sand has scoured its foot away: the low road passes under)
 r.fill(22, 14, 25, 14, '=')
 r.fill(29, 11, 36, 11, '=').fill(40, 10, 46, 10, '=')
 r.fill(52, 9, 53, 17).fill(54, 9, 59, 9, '=')               # the second column over the plateau
-r.fill(64, 10, 70, 10, '=').fill(74, 10, 75, 22).fill(76, 11, 82, 11, '=')
+r.fill(64, 10, 70, 10, '=').fill(74, 10, 75, 16).fill(76, 11, 82, 11, '=')
 r.fill(86, 10, 92, 10, '=').fill(96, 9, 97, 18)             # the last column; its capital holds a sun-gilded purse
 r.put(96, 8, 'i')
-r.fill(0, 2, 5, 3).fill(30, 2, 33, 4).fill(60, 2, 70, 3).fill(104, 2, 110, 5)   # rock hanging from the cavern roof
+# the loop-back: a chamber under the Veiled Sanctum's lobby. Its bar is lifted from inside (the lobby side), so the wing
+# never lets you past the Scarab Knight; once open it is a shortcut from the Antechamber down into the Sea.
+r.fill(2, 0, 4, 1, '.').fill(5, 0, 5, 8).fill(0, 13, 9, 13)
+_rungs(r, 2, 4, [1, 4, 7, 10])
+r.fill(9, 19, 11, 19, '=').fill(10, 16, 12, 16, '=')       # up from the flats to the chamber's ledge
+r.kw['spawns'] += [dict(t='kit', kind='gate', x=5, y=12, id='bar', persist=True),
+                   dict(t='kit', kind='lever', x=1, y=12, id='lbar', targets=['bar'], once=True, msg='The bar lifts. The Sea of Dunes lies below.')]
+r.fill(30, 2, 33, 4).fill(60, 2, 70, 3).fill(104, 2, 110, 5)   # rock hanging from the cavern roof
 for _x, _y, _ch in [(16, 2, 'x'), (48, 2, 'x'), (86, 2, 'x'), (1, 21, 'b'), (62, 17, 'k'), (116, 23, 'k')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- DU15 The Last Oasis (vista)
-r = Room('DU15', 'The Last Oasis', 'dunes', 400, 175, 36, 18, indoor=True, needs=['talon'], x3=True, vista=True,
+r = Room('DU15', 'The Last Oasis', 'dunes', 400, 264, 36, 18, indoor=True, needs=['talon'], x3=True, vista=True,
          xsb_sky='sunset', reach_open=[(x, y) for x in (9, 10, 11) for y in (13, 14)],
          spawns=[dict(t='sys', kind='bench', x=31, y=12, id='bench', view=[18, 8], lore='sb_7'),
                  dict(t='xsb_pool', x=16, y=13, w=12, air=True),
@@ -407,7 +425,7 @@ for _x, _y, _ch in [(34, 12, 'k')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- DU17 The Nameless Tomb (secret)
-r = Room('DU17', 'The Nameless Tomb', 'dunes', 404, 193, 16, 14, indoor=True, xsb_hall=True, needs=['talon', 'slam'], x3=True, secret=True,
+r = Room('DU17', 'The Nameless Tomb', 'dunes', 404, 282, 16, 14, indoor=True, xsb_hall=True, needs=['talon', 'slam'], x3=True, secret=True,
          chests=['seed'],
          spawns=[_lore(11, 11, 'sb_9', look='tablet'), _xd('sarcophagus', 13, 11), _xd('jars', 2, 11), _xd('jars', 9, 11, v=1)])
 r.walls().open('N', 5, 7)
@@ -419,19 +437,18 @@ for _x, _y, _ch in [(1, 11, 'k'), (14, 11, 'k')]:
 
 # ---------------------------------------------------------------- DU11 Tomb Entry Hall (path)
 # The painted hall: four cartouches spell the Pharaoh's titles in order (the Hieroglyph Seal below asks for them).
-r = Room('DU11', 'Tomb Entry Hall', 'dunes', 436, 175, 48, 16, indoor=True, xsb_hall=True, needs=['talon'], x3=True,
+r = Room('DU11', 'Tomb Entry Hall', 'dunes', 436, 264, 48, 16, indoor=True, xsb_hall=True, needs=['talon'], x3=True,
          xsb_paint=[['titles', 34, 8]],
-         spawns=[_door(3, 11, 'xh', 'DU5'),
-                 dict(t='kit', kind='gate', x=6, y=11, id='bar', persist=True),
-                 dict(t='kit', kind='lever', x=13, y=11, id='lbar', targets=['bar'], once=True, msg='The bar lifts. The Hieroglyph Halls lie beyond.'),
+         shrine='Shrine of the Painted Hall',
+         spawns=[
                  _en('du_priest', 29, 11), _en('du_jackal', 41, 11), _en('du_scarab', 17, 11),
                  _xd('sarcophagus', 25, 11, v=1), _xd('sarcophagus', 44, 11), _xd('jars', 16, 11), _xd('brazier_du', 27, 11),
                  _xd('brazier_du', 42, 11), _xd('statue_du', 19, 11)])
 r.walls().open('E', 8, 11)
 r.fill(0, 0, 47, 1).fill(8, 0, 11, 1, '.').fill(0, 12, 47, 15)
 _rungs(r, 8, 11, [0, 3, 6, 9])
-r.fill(6, 2, 6, 2)
 r.fill(20, 12, 22, 15, '.').fill(20, 12, 22, 12, '=').fill(20, 15, 22, 15, '=')   # the stair down to the Seal
+r.put(3, 11, 'S')
 for _x, _y, _ch in [(15, 2, 'x'), (39, 2, 'x'), (33, 11, 'k'), (46, 11, 'b')]:
     r.put(_x, _y, _ch)
 r.kw['spawns'].append(_xa('dropmark', 21, 11))
@@ -439,7 +456,7 @@ r.kw['spawns'].append(_xa('dropmark', 21, 11))
 # ---------------------------------------------------------------- DU14 The Hieroglyph Seal (puzzle)
 # Six title-glyphs on the walls; touch the four the painted hall names, in its order, and the seal rolls aside.
 _GL = [('g1', 12, 13, 5), ('g2', 16, 11, 1), ('g3', 25, 13, 2), ('g4', 28, 10, 7), ('g5', 13, 8, 3), ('g6', 26, 6, 0)]   # id, col, row, sym
-r = Room('DU14', 'The Hieroglyph Seal', 'dunes', 436, 191, 32, 20, indoor=True, xsb_hall=True, needs=['talon'], x3=True, puzzle=True, chests=['shard'],
+r = Room('DU14', 'The Hieroglyph Seal', 'dunes', 436, 280, 32, 20, indoor=True, xsb_hall=True, needs=['talon'], x3=True, puzzle=True, chests=['shard'],
          xsb_paint=[['sealdoor', 9, 16]],
          spawns=[*[dict(t='kit', kind='glyph', x=_x, y=_y, id=_i, group='titles', sym=_s, note=_n) for _n, (_i, _x, _y, _s) in enumerate(_GL)],
                  dict(t='kit', kind='seq', x=18, y=15, id='titles', group='titles', order=['g3', 'g1', 'g6', 'g4'], targets=['seal'],
@@ -456,7 +473,7 @@ for _x, _y, _ch in [(2, 16, 'k'), (29, 16, 'k')]:
     r.put(_x, _y, _ch)
 
 # ---------------------------------------------------------------- DU12 Sinking Sands (parkour)
-r = Room('DU12', 'Sinking Sands', 'dunes', 484, 175, 56, 18, indoor=True, needs=['talon'], x3=True, parkour=True, du_abyss=True,
+r = Room('DU12', 'Sinking Sands', 'dunes', 484, 264, 56, 18, indoor=True, needs=['talon'], x3=True, parkour=True, du_abyss=True,
          items=['gold'],
          spawns=[*[dict(t='kit', kind='sinker', x=_x, y=12, w=2, depth=4, rate=1.1, delay=0.1) for _x in (15, 19, 32, 40)],
                  *[dict(t='kit', kind='crumble', x=_x, y=11, w=2, delay=0.4, respawn=2.5) for _x in (28, 43)],
@@ -474,15 +491,15 @@ for _x, _y, _ch in [(20, 2, 'x'), (44, 2, 'x'), (2, 11, 'k'), (54, 11, 'b')]:
 
 # ---------------------------------------------------------------- DU13 The Sun Dial (puzzle)
 # Noon falls through a hole in the roof. Three mirrors carry it down, across and up to the sun-socket over the door.
-r = Room('DU13', 'The Sun Dial', 'dunes', 500, 193, 40, 24, indoor=True, xsb_hall=True, needs=['talon'], x3=True, puzzle=True, chests=['emberstone'],
+r = Room('DU13', 'The Sun Dial', 'dunes', 500, 282, 40, 24, indoor=True, xsb_hall=True, needs=['talon'], x3=True, puzzle=True, chests=['emberstone'],
          xsb_paint=[['sundial', 20, 17], ['sealdoor', 4, 17]],
          spawns=[dict(t='kit', kind='beam', x=26, y=2, dir='down', id='sun'),
                  dict(t='kit', kind='mirror', x=26, y=13, id='M1', rot=0),
                  dict(t='kit', kind='mirror', x=14, y=13, id='M2', rot=2),
                  dict(t='kit', kind='mirror', x=14, y=6, id='M3', rot=0),
                  dict(t='kit', kind='mirror', x=20, y=9, id='M4', rot=1),
-                 dict(t='kit', kind='socket', x=6, y=6, id='so', targets=['door'], msg='The sun reaches the door. It opens.'),
-                 dict(t='kit', kind='gate', x=4, y=17, id='door', persist=True),
+                 dict(t='kit', kind='socket', x=6, y=6, id='so', targets=['sundoor'], msg='The sun reaches the door. It opens.'),
+                 dict(t='kit', kind='gate', x=4, y=17, id='sundoor', persist=True),
                  _lore(31, 17, 'sb_11', look='tablet'),
                  _xd('brazier_du', 9, 17), _xd('statue_du', 38, 17, face=-1), _xd('jars', 29, 17), _xa('sunshaft', 26, 2)])
 r.walls().open('N', 34, 36)
@@ -491,4 +508,54 @@ _rungs(r, 34, 36, [0, 3, 6, 9, 12, 15])
 r.fill(12, 9, 16, 9, '=')                                    # a ledge to reach the high mirror
 r.put(2, 17, 'C')
 for _x, _y, _ch in [(1, 17, 'k'), (38, 2, 'x')]:
+    r.put(_x, _y, _ch)
+
+
+# ================================================================== §8 connectors (walkable joins to the old rooms)
+# ---------------------------------------------------------------- NV17 The Charnel Well (path: from the Bone Spire's floor down to the Cemetery Gate)
+r = Room('NV17', 'The Charnel Well', 'necropolis', 132, 202, 18, 58, indoor=True, needs=['talon'], x3=True, shrine='Mourners\u2019 Shrine',
+         spawns=[_en('nv_noble', 13, 33), _en('gloom_wisp', 8, 20, air=True), _en('nv_hound', 13, 54),
+                 _xd('lamppost', 15, 54), _xd('headstone', 2, 54, v=1), _xd('tombchest', 4, 45), _xd('tombchest', 13, 21, v=1),
+                 _xd('mourner', 3, 9), _nvd('candles', 9, 54), _nvd('skulls', 14, 36), _xa('cage', 8, 3), _xa('cage', 9, 27), _xa('cage', 8, 41)])
+r.walls().open('N', 13, 15).open('W', 51, 54)
+r.fill(0, 55, 17, 57)
+for _k, _y in enumerate(range(52, 3, -3)):                  # a well of tomb-ledges, left and right, three rows apart
+    _x0, _x1 = (10, 16) if _k % 2 == 0 else (1, 7)
+    r.fill(_x0, _y, _x1, _y, '#' if _k % 4 == 3 else '=')
+r.fill(13, 0, 15, 0, '=')                                   # a slab in the Bone Spire's grate (hold ↓ + jump to go on down)
+r.fill(0, 24, 0, 30)
+for _x, _y, _ch in [(5, 54, 'S'), (16, 2, 'x'), (1, 18, 'x'), (16, 40, 'x'), (11, 54, 'b'), (16, 54, 'k')]:
+    r.put(_x, _y, _ch)
+
+# ---------------------------------------------------------------- NV18 The Undercroft (path: under the Headsman's Yard; loop-back to the Tolling Streets)
+r = Room('NV18', 'The Undercroft', 'necropolis', 20, 201, 56, 30, indoor=True, needs=['talon'], x3=True,
+         xsb_paint=[['tombwall', 10, 28]],
+         spawns=[_en('nv_hound', 12, 28), _en('nv_ringer', 31, 21), _en('gloom_wisp', 38, 8, air=True),
+                 _lore(6, 28, 'sb_12', look='corpse'),
+                 _xd('tombchest', 23, 24), _xd('lamppost', 17, 28), _xd('lamppost', 33, 21), _xd('headstone', 26, 24, v=1),
+                 _nvd('skulls', 50, 11), _nvd('candles', 29, 21), _nvd('brazier', 3, 28),
+                 _xa('cage', 12, 2), _xa('cage', 20, 2), _xa('cage', 44, 1), _xa('cage', 27, 2)])
+r.walls().open('W', 25, 28).open('N', 52, 54)
+r.fill(0, 0, 55, 0).fill(52, 0, 54, 0, '.')
+r.fill(20, 25, 27, 28).fill(28, 22, 35, 28)                 # tomb tiers rising east
+r.fill(36, 19, 40, 19, '=').fill(41, 16, 45, 16, '=')
+r.fill(47, 13, 54, 28)                                      # the pier under the Tolling Streets
+_rungs(r, 50, 54, [10, 7, 4, 1])                            # chain-hung slabs up to the grate
+for _x, _y, _ch in [(8, 1, 'x'), (16, 1, 'x'), (24, 1, 'x'), (38, 1, 'x'), (46, 1, 'x'), (14, 28, 'b'), (30, 21, 'b'), (48, 12, 'k')]:
+    r.put(_x, _y, _ch)
+
+# ---------------------------------------------------------------- DU19 The Sand Stair (path: from the Sandfall Shaft's foot down to the Caravan Road)
+r = Room('DU19', 'The Sand Stair', 'dunes', 584, 202, 24, 62, indoor=True, needs=['talon'], x3=True, shrine='Caravanserai Shrine',
+         spawns=[_en('du_scarab', 18, 57), _en('du_priest', 18, 36), _en('du_scarab', 4, 21),
+                 _xd('jars', 3, 7), _xd('obelisk', 20, 57), _xd('ruincol', 5, 45, v=1), _xd('palmdead', 17, 24), _xd('jars', 16, 48, v=1),
+                 _xd('crates', 7, 33), _xd('banner_du', 10, 57), _xa('sunshaft', 12, 2)])
+r.walls().open('W', 4, 7).open('W', 54, 57)
+r.fill(0, 0, 23, 1).fill(1, 8, 9, 9)                        # roof, and the landing off the Sandfall Shaft
+r.fill(0, 58, 23, 61)
+_lv = list(range(55, 9, -3))                                # terraces three rows apart, alternating sides
+for _k, _y in enumerate(_lv):
+    _x0, _x1 = (13, 22) if _k % 2 == 0 else (1, 10)
+    if _y == 10: _x0, _x1 = 11, 16                          # the last step: a plank bridging to the landing
+    r.fill(_x0, _y, _x1, _y, '=' if _k % 3 == 1 or _y == 10 else '#')
+for _x, _y, _ch in [(5, 57, 'S'), (12, 2, 'x'), (22, 57, 'k'), (2, 57, 'b')]:
     r.put(_x, _y, _ch)

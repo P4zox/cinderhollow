@@ -275,19 +275,14 @@ XS_KIND.veins = (s, c) => xsProp(s, c, { draw() {
   });
 } });
 XS_KIND.lenshint = (s, c) => { xsEnsure(); XS.lensTurns = 0; XS.lensHint = 0; };
-// ---- one-way shortcut doors: the old room's side stays sealed until you've come through from the new wing once
-const XS_LOCK = { SF6: { sfx: 'SF11:sf6' }, SF4: { sfc: 'SF12:sf4' }, E1: { field: 'E5:e1' } };
-const XS_KEY = { SF11: { sf6: 1 }, SF12: { sf4: 1 }, E5: { e1: 1 } };
-HOOKS.enter.push(def => {
-  const L = XS_LOCK[def.id], K = XS_KEY[def.id];
-  for (const p of props) if (p.type === 'sys_door') {
-    const id = p.s.id;
-    if (L && L[id] && !SAVE.flags['xs:open:' + L[id]]) {
-      const pr = p.prompt, it = p.interact;
-      p.prompt = () => SAVE.flags['xs:open:' + L[id]] ? pr() : 'Sealed';
-      p.interact = () => { if (SAVE.flags['xs:open:' + L[id]]) return it(); sfx.deny(); toast('Sealed from the other side.', 2.4); };
-    }
-    if (K && K[id]) { const it = p.interact; p.interact = () => { SAVE.flags['xs:open:' + def.id + ':' + id] = 1; return it(); }; }
+// ---- boss-sealed passages (Astrel's east wall, the Hollow's floor, Oswin's west wall): when the guardian falls in the room,
+// the passage opens there and then (sys passages are otherwise only evaluated on room entry)
+HOOKS.update.push(() => {
+  if (!room || !['SF7', 'E3', 'H1'].includes(room.id) || (XS.passT = (XS.passT || 0) + 1) % 20) return;
+  for (const p of props) if (p.type === 'sys_passage' && !p.open && p.s.cond && typeof sysCond === 'function' && sysCond(p.s.cond)) {
+    p.open = true; for (const [x, y] of p.cells) room.grid[y * room.w + x] = T_EMPTY;
+    renderRoomLayers(room); XS.baked = false;
+    if (typeof SYS !== 'undefined') { SYS.reveal = { p, t: 0 }; if (typeof x3 === 'function') x3().seen[p.key] = 1; }
   }
 });
 
@@ -374,8 +369,16 @@ XS_KIND.alarmlamp = (s, c) => xsProp(s, c, { y: s.y * TILE + 2, update() {
   const on = typeof SYS !== 'undefined' && SYS.gaunt;
   xsR(this.x - 4, this.y - 2, 8, 4, '#26263e'); drawGlow(() => xsR(this.x - 3, this.y + 2, 6, 3, on && Math.floor(time * 6) % 2 ? '#ff2a40' : '#6a1020'));
 } });
+SAFE_CHECKS.push((x, y) => !!room && XS.roomObj === room && XS.steams.some(v => Math.abs(x - v.x) < 20 && y <= v.y + 2 && y >= v.y - v.h));
+// never keep a respawn point on a meteor stone or a maglev car (a kit slab under both feet, no tile): it is gone by the time you respawn
+SAFE_CHECKS.push((x, y) => {
+  if (!room || !room.def.x3 || !P || Math.abs(P.x - x) > 1 || Math.abs(P.y - y) > 1) return false;   // only the spot you stand on
+  const ty = Math.floor((y + 1) / TILE), ok = t => t === T_PLAT || isSolidT(t);
+  return !ok(tileAt(Math.floor((x - 4) / TILE), ty)) && !ok(tileAt(Math.floor((x + 4) / TILE), ty));
+});
 XS_KIND.steam = (s, c) => {   // a vent that blasts steam upward on a timer (hurts: hurtPlayer, so trials catch it)
   const v = { x: c.cx, y: c.fy, period: s.period || 3, phase: s.phase || 0, on: s.on || 1.0, warn: 0.6, h: (s.h || 3.5) * TILE, id: ++hazardId, prev: 'off' };
+  xsEnsure(); XS.steams.push(v);
   xsProp(s, c, { vent: v, update() {
     const k = (((NHR.t || time) + v.phase) % v.period + v.period) % v.period, st = k < v.on ? 'on' : k > v.period - v.warn ? 'warn' : 'off', vis = xsVis(v.x, v.y, 30);
     if (st !== v.prev) { if (st === 'on' && vis) xsSfx.steam(0.8); if (st === 'warn' && vis) xsSfx.hiss(0.5); v.prev = st; }
@@ -630,7 +633,7 @@ HOOKS.enter.push(def => {
 function xsMaglevDraw(o) {
   const X = Math.round(o.d.x0), Y = Math.round(o.d.y0), w = o.w, lane = (o.spec.path && o.spec.path[0][1]) * TILE;
   if (X + w < cam.x - 10 || X > cam.x + W + 10) return;
-  const surf = 15 * TILE;   // the data stream's surface: the car is hidden below it (it surfaces / sinks through it)
+  const surf = isSolidT(tileAt(Math.floor((X + w / 2) / TILE), 13)) ? 13 * TILE : 15 * TILE;   // the stream's surface, or a portal's top: the car hides below it
   if (Y >= surf) return;
   g.save(); g.beginPath(); g.rect(X - 4, Y - 20, w + 8, surf - (Y - 20)); g.clip();
   const vx = o.v || 0, dir = (o.spec.path[1][0] - o.spec.path[0][0]) > 0 ? 1 : -1;
@@ -709,7 +712,7 @@ if (typeof KIT !== 'undefined') KIT.onChange.push((id, value, obj) => {
 });
 
 // ================================================================== vista backdrops (painted skies behind the benches)
-const XS_BG = { SF16: 'xsc_bg_meteor', SF17: 'xsc_bg_crater', NH15: 'xsc_bg_skyline', H3: 'xsc_bg_garden', H2: 'xsc_bg_garden', E6: 'xsc_bg_hearth' };
+const XS_BG = { W6: 'xsc_bg_meteor', SF16: 'xsc_bg_meteor', SF17: 'xsc_bg_crater', NH15: 'xsc_bg_skyline', H3: 'xsc_bg_garden', H2: 'xsc_bg_garden', E6: 'xsc_bg_hearth' };
 const XS_CELLAR = { c: null };
 function xsCellar() {   // Oswin's stash is under the floorboards: packed earth and roots behind it, not sky
   if (XS_CELLAR.c) return XS_CELLAR.c;
@@ -756,4 +759,18 @@ if (typeof window !== 'undefined' && window.__game) window.__game.xs = {
   XS, get KIT() { return typeof KIT !== 'undefined' ? KIT : null }, get SYS() { return typeof SYS !== 'undefined' ? SYS : null },
   clean() { toasts.length = 0; areaCard = null; bannerMsg = null; if (window.__ui) window.__ui.regionCard = null; },
   get lights() { return lights.length; },
+  hazardAt(tx, ty) { const t = tileAt(tx, ty); return t === T_SPIKE || (typeof NH_T_VOID !== 'undefined' && t === NH_T_VOID) || unsafeAt(tx * TILE + 8, (ty + 1) * TILE); },
+  travel() { menu = travelOpen(null); state = 'menu'; },
+  sheet(maxW = 2048) {   // whole-room render for contact sheets: the camera pans tile by tile, the pieces are stitched (then scaled to maxW)
+    const c = document.createElement('canvas'); c.width = room.pw; c.height = room.ph; const X = c.getContext('2d'); shake = 0;
+    const span = (full, v, m) => { if (full <= v) return [[(full - v) / 2, 0, full]]; const out = []; for (let a = 0; ; a += v - 2 * m) { const cp = Math.min(a, full - v); out.push([cp, cp === 0 ? 0 : cp + m, cp + v >= full ? full : cp + v - m]); if (cp >= full - v) break; } return out; };
+    for (const [cy, y0, y1] of span(room.ph, H, 40)) for (const [cx, x0, x1] of span(room.pw, W, 60)) {
+      cam.x = cx; cam.y = cy; renderWorld(); presentWorld();
+      const a = Math.max(x0, 0), b = Math.max(y0, 0);
+      X.drawImage(view, ox + (a - cx) * scale, oy + (b - cy) * scale, (x1 - a) * scale, (y1 - b) * scale, a, b, x1 - a, y1 - b);
+    }
+    if (c.width <= maxW) return c.toDataURL('image/png');
+    const k = maxW / c.width, d = document.createElement('canvas'); d.width = maxW; d.height = Math.round(c.height * k);
+    d.getContext('2d').drawImage(c, 0, 0, d.width, d.height); return d.toDataURL('image/png');
+  },
 };

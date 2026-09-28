@@ -374,6 +374,7 @@ WORLD_LINKS = [('R3', 'SP1', 'W1', 'The Sea-Wall Climb', 'spire'), ('C2', 'NV1',
                ('K3', 'A1', 'W5', 'The Ink Stair', 'archives'), ('X4', 'SF1', 'W6', 'The Sky Stair', 'starfall')]
 def _world_shafts():
     for a, b, wid, name, biome in WORLD_LINKS:
+        if any(R.id == wid for R in ROOMS): continue   # a region file built its own version of this shaft
         A, B = ROOM(a), ROOM(b)
         up, lo = (A, B) if A.gy < B.gy else (B, A)
         top, bot = up.gy + up.h, lo.gy
@@ -389,10 +390,14 @@ def _world_shafts():
         for x in cols: r.g[0][x - x0] = '.'; r.g[h - 1][x - x0] = '.'
         # zigzag one-way ledges every 3 rows, so the climb back up needs nothing but a jump
         inner = w - 2; lw = max(2, min(4, inner // 2 + 1))
-        for i, y in enumerate(range(h - 4, 2, -3)):
-            xa = 1 if i % 2 == 0 else w - 1 - lw
+        # first ledge 3 rows up (reachable when you rise out of the room below), last one within a jump of the top edge
+        ys = list(range(h - 3, 1, -3))
+        if ys[-1] > 3: ys.append(2)
+        for i, y in enumerate(ys):
+            xa = (1 if i % 2 == 0 else w - 1 - lw) if inner <= 8 else (w // 2 - lw if i % 2 == 0 else w // 2 + 1)   # wide shafts zigzag near the middle
             r.fill(xa, y, xa + lw - 1, y, '=')
 _world_shafts()
+for _f in globals().get('POST_LINKS', []): _f()   # region modules may dress the shaft they own (EXPANSION3 §8)
 
 # ============================================================ validation
 def cell(gx, gy):

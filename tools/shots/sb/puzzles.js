@@ -29,9 +29,9 @@ strike(26, 17, 3, true); out.push(' M1 rot ' + K.byId.M1.rot);
 strike(14, 17, 3, true); out.push(' M2 rot ' + K.byId.M2.rot);
 at('DU13', 13, 8); for (let k = 0; k < 1; k++) { at('DU13', 13, 8); hit('right'); } out.push(' M3 rot ' + K.byId.M3.rot);
 for (let i = 0; i < 200; i++) G.step(1);
-out.push('sundial socket ' + K.byId.so.active + ' door ' + K.byId.door.on);
+out.push('sundial socket ' + K.byId.so.active + ' door ' + K.byId.sundoor.on);
 await snap('pz_sundial');
 // persistence: re-enter the rooms
 G.tp('NV8', 10, 10); G.step(20); at('NV12', 16, 13); G.step(60); out.push('dirge after re-entry ' + K.byId.dirge.active + ' gw ' + K.byId.gw.on);
-G.tp('NV8', 10, 10); G.step(20); at('DU13', 20, 17); G.step(60); out.push('sundial after re-entry ' + K.byId.so.active + ' door ' + K.byId.door.on + ' M1 ' + K.byId.M1.rot);
+G.tp('NV8', 10, 10); G.step(20); at('DU13', 20, 17); G.step(60); out.push('sundial after re-entry ' + K.byId.so.active + ' door ' + K.byId.sundoor.on + ' M1 ' + K.byId.M1.rot);
 return out;

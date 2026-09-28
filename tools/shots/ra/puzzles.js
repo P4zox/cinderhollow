@@ -13,12 +13,12 @@ await snap('p_c12_solved');
 mv(8, 13); for (let i = 0; i < 60; i++) G.step(1, ['left']); out.push('C12 into the vault: x=' + (G.P.x / 16).toFixed(1));
 G.tp('C12', 20, 13); G.step(10); out.push('C12 re-entered, still solved: ' + K().byId.vault.on);
 // ---- Organ Loft: the hymn Sun, Bell, Moon, Root
-for (const x of [17, 20, 11, 14]) hit('K10', x, 14);
+for (const x of [14, 11, 20, 17]) hit('K10', x, 14);
 G.step(60); out.push('K10 solved: ' + K().byId.hymn.active + ' gate: ' + K().byId.vestry.on);
 await snap('p_k10_solved');
 // ---- Winch House: low winch, then run for the high one
-hit('R12', 5, 16); out.push('R12 wA on: ' + K().byId.wA.active);
-hit('R12', 23, 4); G.step(10); out.push('R12 wB on: ' + K().byId.wB.active + ' port open: ' + K().byId.port.on);
+hit('R12', 27, 16); out.push('R12 wA on: ' + K().byId.wA.active);
+hit('R12', 7, 4); G.step(10); out.push('R12 wB on: ' + K().byId.wB.active + ' port open: ' + K().byId.port.on);
 G.step(600); out.push('R12 timers out, port still open (persist): ' + K().byId.port.on);
 await snap('p_r12');
 return out;

@@ -17,7 +17,7 @@ G.tp('D13', 3, 7); wait(20); const sh0 = G.SAVE.shards; const rel = G.props.find
 log.push('reliquary: shards ' + sh0 + ' -> ' + G.SAVE.shards);
 G.tp('D10', 30, 11); wait(10); G.tp('D13', 30, 4); wait(20); log.push('re-entry keeps the stair: ' + st());
 // ---- the egg
-G.tp('LF1', 100, 17); wait(40); await snap('f_egg_0');
+G.tp('LF1', 12, 16); wait(40); await snap('f_egg_0');
 X.hatch(); for (let k = 0; k < 6; k++) { wait(30); await snap('f_egg_' + (k + 1)); }
 wait(200); log.push('spell owned: ' + G.SAVE.spellsOwned.includes('ember_hatchling') + ' eq ' + G.SAVE.spellsEq.join(',') + ' flag ' + G.SAVE.flags['xrc:egg'] + ' state ' + G.state);
 for (let i = 0; i < 5 && G.state !== 'play'; i++) { G.step(1, [], ['interact']); wait(10); G.step(1, [], ['pause']); wait(10); }
@@ -28,9 +28,9 @@ const e0 = G.enemies.filter(e => e.alive).map(e => e.type + ':' + e.hp);
 G.step(1, [], ['cast']); wait(30); await snap('f_cub_1');
 for (let i = 0; i < 12; i++) { wait(20); if (i === 5) await snap('f_cub_2'); }
 log.push('cub: ' + JSON.stringify(e0) + ' -> ' + JSON.stringify(G.enemies.map(e => e.type + ':' + e.hp)) + ' cub ' + !!X.XRC.cub);
-wait(400); log.push('after 10 s cub gone: ' + !X.XRC.cub);
+wait(400); log.push('after 10.7 s cub: ' + (X.XRC.cub ? X.XRC.cub.state + ' t' + X.XRC.cub.t.toFixed(1) : 'gone')); wait(300); log.push('after 15 s cub gone: ' + !X.XRC.cub);
 // ---- gauntlets
-for (const [r, x, y] of [['D14', 22, 10], ['D15', 19, 12], ['X10', 34, 11]]) {
+for (const [r, x, y] of [['D14', 19, 10], ['D15', 19, 12], ['X10', 34, 11]]) {
   G.tp(r, x, y); wait(40); G.step(1, [], ['interact']); wait(30);
   let waves = 0, names = [];
   for (let w = 0; w < 3; w++) {
@@ -43,10 +43,14 @@ for (const [r, x, y] of [['D14', 22, 10], ['D15', 19, 12], ['X10', 34, 11]]) {
   wait(400);
   log.push(`${r}: ${names.join(' | ')} cleared ${G.SAVE.flags['x3:' + r + ':g1']} es ${G.SAVE.inv.emberstone || 0} shards ${G.SAVE.shards}`);
 }
-// ---- the one-way shortcut gates
-for (const [r, lx, ly, gid] of [['SP11', 37, 3, 'sg'], ['SP13', 8, 45, 'stg'], ['D12', 58, 7, 'bg'], ['X9', 50, 11, 'pg']]) {
-  G.tp(r, lx, ly); wait(20); const b = S.kitOn ? S.kitOn(gid) : null;
+// ---- the one-way shortcut gate (Belt Runner) and the Sluice Stair's grate (sealed under the magma until the escape is won)
+for (const [r, lx, ly, gid] of [['D12', 51, 7, 'bg']]) {
+  G.tp(r, lx, ly); wait(20);
   G.step(1, [], ['interact']); wait(60);
-  const k = X.kit(); log.push(`${r} gate ${gid}: ${JSON.stringify(k.byId[gid] && { open: k.byId[gid].on ?? k.byId[gid].open })} flag ${G.SAVE.flags['x3:' + r + ':' + gid]}`);
+  const k = X.kit(); log.push(`${r} gate ${gid}: ${JSON.stringify(k.byId[gid] && { open: k.byId[gid].on ?? k.byId[gid].open })}`);
+}
+for (const f of [0, 1]) {
+  G.SAVE.flags['dp:sluice'] = f; G.tp('D5', 24, 10); wait(10); G.tp('D6', 12, 30); wait(20);
+  const R = X.room; log.push(`D6 grate with dp:sluice=${f}: cell (7,32) ${R.grid[32 * R.w + 7] === 1 ? 'sealed' : 'open'}, dropmark ${G.props.some(p => p.type === 'xrc_dropmark')}`);
 }
 return log;

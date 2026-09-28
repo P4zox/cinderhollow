@@ -74,7 +74,7 @@ HOOKS.update.push(() => {
 
 // ================================================================== shared state (per room)
 const XRB = { roomObj: null, fg: [], areas: [], ambush: [], hints: [], books: null, freeze: [], feet: [], stuck: 0, wet: 0, notes: [], drops: undefined };
-const xrbMine = def => def && /^(M(7|8|9|1[0-4])|A([89]|1[0-6])|HF([89]|1[0-5]))$/.test(def.id);
+const xrbMine = def => def && /^(M(7|8|9|1[0-4])|A([89]|1[0-6])|HF([89]|1[0-6])|W3|W5)$/.test(def.id);
 function xrbEnsure() { if (XRB.roomObj !== room) Object.assign(XRB, { roomObj: room, fg: [], areas: [], ambush: [], hints: [], books: null, freeze: [], feet: [], stuck: 0, wet: 0, notes: [], wrongs: 0, drops: undefined, aurora: null }); }
 const xrbSh = n => sheet(n);
 function xrbFrame(sh, tag, i = 0) { if (!sh.ok || !sh.has(tag)) return -1; const t = sh.tag(tag); return t.from + (((i % (t.to - t.from + 1)) + (t.to - t.from + 1)) % (t.to - t.from + 1)); }
@@ -623,7 +623,7 @@ function xrbUpdateHints() {
 
 // ================================================================== room entry, update, render
 HOOKS.enter.push(def => {
-  if (!xrbMine(def) && !['M2', 'M4', 'A2', 'A5', 'HF2', 'HF6'].includes(def.id)) return;
+  if (!xrbMine(def)) return;
   xrbEnsure();
   if (def.id === 'A11') for (const o of (KIT.objs || [])) if (o.kind === 'phase') o.draw = () => xrbDrawPage(o);   // loose pages, not planks
   if (def.trial) for (const p of props) if (p.type === 'hf_icicle') p.regrow = true;   // trial icicles grow back (and reset with the run)
@@ -685,4 +685,22 @@ HOOKS.render.push(() => {
 });
 
 // debug access for headless tests
-if (typeof window !== 'undefined') window.__rb = { XRB, get kit() { return KIT; }, sim(n = 1, hold = [], tap = []) { tap.forEach(press); hold.forEach(a => held.add(a)); for (let i = 0; i < n; i++) update(1 / 60); hold.forEach(release); tap.forEach(a => { release(a); buffered.delete(a); }); }, pull: (n) => { const B = XRB.books; const b = B && B.books.find(q => q.n === n); if (b) xrbPullBook(B, b); return !!b; } };
+// test support (tools/shots/rb/walker.js): exact room-entry snapshots so a route search can retry from where it came in
+function xrbSnap() {
+  const p = {}; for (const k of Object.keys(P)) { const v = P[k]; if (v === null || ['number', 'boolean', 'string'].includes(typeof v)) p[k] = v; }
+  const a = P.anim ? { tag: P.anim.tag, from: P.anim.from, n: P.anim.n, i: P.anim.i, t: P.anim.t, loop: P.anim.loop, speed: P.anim.speed, done: P.anim.done } : null;
+  return { room: room.id, p, a, safe: { ...P.safe }, frost: typeof HF !== 'undefined' ? HF.frost : 0,
+    flags: JSON.stringify(SAVE.flags), x3: JSON.stringify(SAVE.x3 || {}), items: JSON.stringify(SAVE.items), x: P.x, y: P.y };
+}
+function xrbRestore(S) {
+  SAVE.flags = JSON.parse(S.flags); SAVE.x3 = JSON.parse(S.x3); SAVE.items = JSON.parse(S.items);
+  P.hook = null; enterRoom(S.room, S.p.x, S.p.y, { quiet: true });
+  for (const k of Object.keys(P)) { const v = P[k]; if (v === null || ['number', 'boolean', 'string'].includes(typeof v)) if (!(k in S.p)) delete P[k]; }
+  Object.assign(P, S.p); P.safe = { ...S.safe }; P.hook = null;
+  if (S.a) Object.assign(P.anim, S.a);
+  if (typeof HF !== 'undefined') { HF.frost = S.frost; HF.slowT = 0; HF.shots = []; }
+  KIT.lastRide = null; KIT.boost = null; KIT.carry = null; hitstop = 0; if (typeof slowmo !== 'undefined') slowmo = 0; shake = 0;
+  for (const a of [...held]) release(a); buffered.clear();
+}
+if (typeof window !== 'undefined') window.__rb = { XRB, get kit() { return KIT; }, snap: xrbSnap, restore: xrbRestore, ROOM_BY, isSolid: t => isSolidT(t), get grid() { return room.grid; },
+  clearFoes() { enemies.length = 0; projectiles = projectiles.filter(q => q.owner === 'player'); hazards = []; if (boss) boss = null; }, sim(n = 1, hold = [], tap = []) { tap.forEach(press); hold.forEach(a => held.add(a)); for (let i = 0; i < n; i++) update(1 / 60); hold.forEach(release); tap.forEach(a => { release(a); buffered.delete(a); }); }, pull: (n) => { const B = XRB.books; const b = B && B.books.find(q => q.n === n); if (b) xrbPullBook(B, b); return !!b; } };

@@ -1,12 +1,13 @@
 // ------------------------------------------------------------------ EXPANSION 3 — agent SA: Thornveil Wood, Drowned Barrows, Crimson Manor
 // New rooms (tools/regions/83_sa.py): TV9–TV16, DB10–DB17, CM9–CM17. Art: art/gen_xsa*.py -> assets/xsa_*.
-// One spawn kind `xsa` (kind = prop | skins | flies | motes | shaft | seal | sign | rite | …) dresses and wires them.
+// One spawn kind `xsa` (kind = prop | skins | flies | motes | shaft | sign | rite | …) dresses and wires them.
 // Trial charms: c_x3_thorn (Thornstep Ring: three airborne attacks per jump), c_x3_lung (Drowned Lung: double breath,
 // swim 25% faster). Every top-level name is prefixed sa/SA (all region files share one scope).
 const SA = { roomObj: null };
 function saReset() {
-  Object.assign(SA, { roomObj: room, back: [], skins: [], flies: [], motes: [], shafts: [], seals: [], signs: [], rites: [], fronts: [],
-    snares: [], tides: [], pearls: [], leaks: [], wheels: [], gazes: [], books: [], keygates: [], pianos: [], bubbles: [], hint: {} });
+  Object.assign(SA, { roomObj: room, back: [], skins: [], flies: [], motes: [], shafts: [], signs: [], rites: [], fronts: [],
+    snares: [], tides: [], pearls: [], leaks: [], wheels: [], gazes: [], books: [], keygates: [], pianos: [], bubbles: [], hint: {},
+    flood: null, tgates: [], fpaint: [], glass: false });
 }
 function saEnsure() { if (SA.roomObj !== room) saReset(); }
 const saIn = () => !!(room && room.def.x3 && /^(TV|DB|CM)\d/.test(room.def.id));
@@ -208,61 +209,8 @@ function saDrawAmbient() {
   });
 }
 
-// ================================================================== signs (a line of text the first time you stand at a door) and seals
+// ================================================================== signs: a line of text the first time you stand at a spot
 SA_KIND.sign = (s, c) => SA.signs.push({ x: c.cx, y: c.fy, text: s.text, key: `xsa:sign:${c.id}:${s.x},${s.y}` });
-// a one-way shortcut: the partner of a wing's last door. Sealed (roots / chains / a locked servants' door) until you come
-// out through it once; then it opens for good (SAVE.flags['x3:<room>:seal_<door>']).
-SA_KIND.seal = (s, c) => {
-  const key = `x3:${c.id}:seal_${s.door}`, q = { door: s.door, key, x: c.cx, y: c.fy, look: s.look || 'roots', msg: s.msg, open: !!SAVE.flags[key], t: 0, burst: 0 };
-  SA.seals.push(q);
-};
-function saSealsAfterBuild() {
-  for (const q of SA.seals) {
-    const p = props.find(o => o.type === 'sys_door' && o.s.id === q.door); if (!p) continue;
-    q.p = p;
-    if (!q.open) {
-      const use = p.interact, prm = p.prompt;
-      p.prompt = () => q.open ? prm() : 'Examine';
-      p.interact = () => { if (q.open) return use(); sfx.deny(); toast(q.msg || 'It is sealed from the other side.', 3); };
-    }
-    const draw = p.draw;
-    p.draw = () => { draw(); saDrawSeal(q); };
-  }
-}
-function saUpdateSeals(dt) {
-  for (const q of SA.seals) {
-    if (!q.p) continue;
-    // arriving through the sealed door from the far side opens it
-    if (!q.open && SYS.doorLock && SYS.doorLock.room === room.id && SYS.doorLock.id === q.door) {
-      q.open = true; q.burst = 1; SAVE.flags[q.key] = 1; saSfx.unseal(); shake = Math.max(shake, 3); flashScreen = Math.max(flashScreen, 0.15);
-      toast(q.look === 'roots' ? 'The roots let go. A way back opens.' : q.look === 'chains' ? 'The chains fall away. A way back opens.' : 'The bolt slides back. A way back opens.', 3);
-      for (let i = 0; i < 24; i++) particles.push({ x: q.x + rand(-10, 10), y: q.y - rand(0, 40), vx: rand(-80, 80), vy: -rand(20, 110), g: 320, life: rand(0.5, 1), kind: q.look === 'roots' ? 'tv_leaf' : 'rock' });
-      saveGame();
-    }
-    q.burst = Math.max(0, q.burst - dt);
-  }
-}
-function saDrawSeal(q) {
-  if (q.open && q.burst <= 0) return;
-  const a = q.open ? q.burst : 1, x = Math.round(q.x), y = Math.round(q.y);
-  g.save(); g.globalAlpha = a;
-  if (q.look === 'roots') {
-    for (let i = 0; i < 7; i++) {
-      const ox = -12 + i * 4, wob = Math.sin(i * 1.7) * 2;
-      g.fillStyle = i % 2 ? '#3a2a1c' : '#4d3824'; g.fillRect(x + ox, y - 40 + (i % 3) * 3, 3, 40 - (i % 3) * 3);
-      g.fillStyle = '#5f7a3e'; g.fillRect(x + ox + wob, y - 30 + i * 3, 2, 3);
-    }
-    g.fillStyle = '#2a1e14'; g.fillRect(x - 14, y - 24, 28, 3); g.fillRect(x - 12, y - 12, 24, 3);
-  } else if (q.look === 'chains') {
-    g.fillStyle = '#4a4a52'; for (let i = 0; i < 9; i++) { g.fillRect(x - 12 + i * 3, y - 36 + (i % 2) * 2, 2, 3); g.fillRect(x + 12 - i * 3, y - 18 + (i % 2) * 2, 2, 3); }
-    g.fillStyle = '#8a7a50'; g.fillRect(x - 3, y - 26, 6, 7); g.fillStyle = '#2a2418'; g.fillRect(x - 1, y - 24, 2, 3);
-  } else {
-    g.fillStyle = '#2a1414'; g.fillRect(x - 10, y - 32, 20, 32); g.fillStyle = '#4a2020'; g.fillRect(x - 9, y - 31, 18, 30);
-    g.fillStyle = '#b08a4a'; g.fillRect(x + 4, y - 17, 3, 3); g.fillStyle = '#6a3a2a'; for (let i = 0; i < 4; i++) g.fillRect(x - 9, y - 28 + i * 8, 18, 1);
-  }
-  g.restore();
-}
-
 // ================================================================== Thornveil: snares on the Hunter's Trail, the coven's rite
 // a rusted jaw trap: steps on it snap it shut (hurts, holds you a moment); it creaks open again after a while
 function saSnare(p, s) {
@@ -431,7 +379,7 @@ function saFloodSetup() {
 KIT.onChange.push(id => { const F = SA.flood; if (F && F.apply && SA.roomObj === room && F.s.wheels.includes(id)) { F.apply(); saSfx.creak(); shake = Math.max(shake, 2); } });
 function saDrawFloodPipes() {   // the pipes on the wall: from each wheel to its two basins (the clue, in iron)
   const F = SA.flood; if (!F || !F.st) return;
-  const bx = { lA: 6 * TILE, lB: 19 * TILE, lC: 32 * TILE }, y0 = 3 * TILE;
+  const bx = {}, y0 = 3 * TILE; for (const b of F.s.basins) bx[b] = KIT.byId[b] ? KIT.byId[b].x : 0;
   F.s.wheels.forEach((w, i) => {
     const o = KIT.byId[w]; if (!o) return; const lit = kitOn(w), c = lit ? '#b89a5a' : '#4a4640', hl = lit ? '#e8d09a' : '#6a655c';
     const yy = y0 - 8 + i * 4;
@@ -493,50 +441,51 @@ function saDrawGaze() {
   }
 }
 
-// ================================================================== Crimson: the library's false bookcase (hides the door to CM17 until struck)
-SA_KIND.bookcase = (s, c) => SA.books.push({ door: s.door, x: c.cx, y: c.fy, key: `x3:${c.id}:bookcase`, open: !!SAVE.flags[`x3:${c.id}:bookcase`], k: 0 });
+// ================================================================== Crimson: the library's false bookcase (stands in the wall to CM17 until struck)
+SA_KIND.bookcase = (s, c) => SA.books.push({ s, x: c.cx, y: c.fy, key: `x3:${c.id}:bookcase`, open: !!SAVE.flags[`x3:${c.id}:bookcase`], k: 0 });
 function saBooksSetup() {
   for (const B of SA.books) {
-    const p = props.find(o => o.type === 'sys_door' && o.s.id === B.door); if (!p) continue;
-    B.p = p; B.k = B.open ? 1 : 0;
-    const draw = p.draw, prm = p.prompt, use = p.interact, sh = sheet('xsa_cm');
-    p.draw = () => {
-      if (B.k > 0.02) draw();
-      const ox = Math.round(B.k * 22);
-      if (sh.ok && sh.has('bookcase')) drawSprite(sh, sh.first('bookcase'), p.x + ox, p.y, 1, { bottom: true });
-      else { g.fillStyle = '#3a2016'; g.fillRect(Math.round(p.x) - 12 + ox, Math.round(p.y) - 44, 24, 44); }
-    };
-    p.prompt = () => B.open ? prm() : null;
-    p.interact = () => { if (B.open) use(); };
-    // strike the bookcase: it gives a hollow knock, then swings aside on the third blow
-    const target = { type: 'xsa_bookcase', x: p.x, y: p.y, face: 1, anim: { update() {} }, draw() {}, hits: 0,
-      hurtbox: () => B.open ? null : rect(p.x - 12, p.y - 44, p.x + 12, p.y),
-      onHit() { this.hits++; noise(0.2, 300, 0.8, 0.25, 'lowpass', 0.4); tone(110, 0.2, 0.08, 'triangle', 0.7); if (this.hits >= 3) { B.open = true; SAVE.flags[B.key] = 1; saSfx.creak(); shake = 3; toast('The bookcase swings inward on a hidden hinge.', 3); saveGame(); } } };
-    props.push(target);
+    B.k = B.open ? 1 : 0;
+    const cells = B.s.cells || [], shut = v => { for (const [x, y] of cells) room.grid[y * room.w + x] = v ? T_SOLID : T_EMPTY; };
+    if (!B.open) shut(true);
+    const sh = sheet('xsa_cm'), bx = cells.length ? cells[0][0] * TILE + 8 : B.x, by = cells.length ? (Math.max(...cells.map(q => q[1])) + 1) * TILE : B.y;
+    props.push({ type: 'xsa_bookcase', x: bx, y: by, face: 1, anim: { update() {} }, hits: 0,
+      draw() {
+        const ox = Math.round(B.k * 20);
+        if (B.k > 0.02) { g.fillStyle = 'rgba(6,2,4,0.92)'; g.fillRect(bx - 8, by - cells.length * TILE, 16, cells.length * TILE); }
+        if (sh.ok && sh.has('bookcase')) drawSprite(sh, sh.first('bookcase'), bx - 4 - ox, by, 1, { bottom: true });
+        else { g.fillStyle = '#3a2016'; g.fillRect(Math.round(bx) - 12 - ox, Math.round(by) - 44, 24, 44); }
+      },
+      hurtbox: () => B.open ? null : rect(bx - 16, by - 44, bx + 8, by),
+      onHit() {   // a hollow knock, and on the third blow it swings aside on its hidden hinge
+        this.hits++; noise(0.2, 300, 0.8, 0.25, 'lowpass', 0.4); tone(110, 0.2, 0.08, 'triangle', 0.7);
+        if (this.hits >= 3 && !B.open) { B.open = true; SAVE.flags[B.key] = 1; shut(false); saSfx.creak(); shake = 3; toast('The bookcase swings aside on a hidden hinge.', 3); saveGame(); }
+      } });
   }
 }
 function saUpdateBooks(dt) { for (const B of SA.books) B.k = approach(B.k, B.open ? 1 : 0, dt * 1.5); }
 
-// ================================================================== Crimson: the Count's study door (three keys) — a sys door that stays locked until unlocked
+// ================================================================== Crimson: the Count's study gate (three keys) — a KM gate held shut until unlocked
 SA_KIND.keygate = (s, c) => SA.keygates.push({ s, x: c.cx, y: c.fy, open: !!SAVE.flags[s.flag] });
 function saKeygatesSetup() {
   for (const q of SA.keygates) {
-    const p = props.find(o => o.type === 'sys_door' && o.s.id === q.s.door); if (!p) continue;
-    const use = p.interact, prm = p.prompt, draw = p.draw, keys = q.s.keys;
-    p.prompt = () => q.open ? prm() : keys.every(k => SAVE.items[k]) ? 'Unlock' : 'Examine';
-    p.interact = () => {
-      if (q.open) return use();
-      const have = keys.filter(k => SAVE.items[k]).length;
-      if (have < keys.length) { sfx.deny(); toast(have ? `The Count's study door: three keyholes. ${have} of your keys fit${have === 1 ? 's' : ''}.` : 'A heavy door with three keyholes: the Count\'s study. The keys must be somewhere in the manor.', 3.5); return; }
-      q.open = true; SAVE.flags[q.s.flag] = 1; saSfx.key(); saSfx.creak(); shake = 3; toast('Three keys turn. The study door swings open.', 3); saveGame();
-    };
-    p.draw = () => {
-      draw();
-      if (q.open) return;
-      const x = Math.round(p.x), y = Math.round(p.y);
-      g.fillStyle = '#2a1414'; g.fillRect(x - 9, y - 30, 18, 30); g.fillStyle = '#4a2020'; g.fillRect(x - 8, y - 29, 16, 28);
-      for (let i = 0; i < 3; i++) { const got = SAVE.items[keys[i]], ky = y - 24 + i * 8; g.fillStyle = got ? '#e8c070' : '#0a0808'; g.fillRect(x - 1, ky, 2, 3); if (got) addLight(x, ky + 1, 10, '255,200,120', 0.4); }
-    };
+    const keys = q.s.keys, gid = q.s.gate;
+    kitForce(gid, q.open);
+    const o = KIT.byId[gid], gx = (o ? o.x : q.x) + 12;
+    props.push({ type: 'xsa_keylock', x: gx, y: q.y, face: 1, anim: { update() {} },
+      prompt: () => q.open ? null : keys.every(k => SAVE.items[k]) ? 'Unlock' : 'Examine',
+      interact: () => {
+        if (q.open) return;
+        const have = keys.filter(k => SAVE.items[k]).length;
+        if (have < keys.length) { sfx.deny(); toast(have ? `The Count's study gate: three keyholes. ${have} of your keys fit${have === 1 ? 's' : ''}.` : 'A barred gate with three keyholes: the Count\'s study. The keys must be somewhere in the manor.', 3.5); return; }
+        q.open = true; SAVE.flags[q.s.flag] = 1; kitForce(gid, true); saSfx.key(); saSfx.creak(); shake = 3; toast('Three keys turn. The study gate lifts.', 3); saveGame();
+      },
+      draw() {
+        if (q.open) return;
+        const x = Math.round(gx) - 12, y = Math.round(q.y) - 22;
+        g.fillStyle = '#2a1818'; g.fillRect(x - 3, y, 6, 12); g.fillStyle = '#6a4a30'; g.fillRect(x - 2, y + 1, 4, 10);
+        for (let i = 0; i < 3; i++) { const got = SAVE.items[keys[i]], ky = y + 2 + i * 3; g.fillStyle = got ? '#e8c070' : '#0a0808'; g.fillRect(x - 1, ky, 2, 2); if (got) addLight(x, ky + 1, 10, '255,200,120', 0.4); }
+      } });
   }
 }
 
@@ -581,17 +530,16 @@ function saDrawPianos() {   // keys dipping on their own
 // ================================================================== room setup and per-frame
 HOOKS.enter.push(def => {
   saEnsure();
-  if (!saIn() && !SA.seals.length && !SA.signs.length) return;
+  if (!saIn() && !SA.signs.length) return;
   saReskinVeils();
   saRepaint();
-  saSealsAfterBuild();
   saDropReachHelpers(); saFloodSetup(); saGazeSetup(); saBooksSetup(); saKeygatesSetup();
   if (SA.back.length || SA.fpaint) { const need = SA.back.map(t => sheet(t.sh)).concat((SA.fpaint || []).map(q => sheet(q.sheet))).filter(s => s.ok && !s.img.complete); for (const s of need) s.img.addEventListener('load', () => { if (SA.roomObj === room) saRepaint(); }, { once: true }); }
   const ks = sheet('xsa_skin'); if (SA.skins.length && ks.ok && !ks.img.complete) ks.img.addEventListener('load', () => { if (SA.roomObj === room) saRepaint(); }, { once: true });
 });
 HOOKS.update.push(dt => {
   if (SA.roomObj !== room) return;
-  saUpdateAmbient(dt); saUpdateSeals(dt); saUpdateRites(dt); saUpdateWater(dt); saUpdateTides(dt); saUpdateTrialGates();
+  saUpdateAmbient(dt); saUpdateRites(dt); saUpdateWater(dt); saUpdateTides(dt); saUpdateTrialGates();
   saUpdateBooks(dt); saUpdatePianos(dt);
   for (const q of SA.signs) if (!SAVE.flags[q.key] && Math.abs(P.x - q.x) < 20 && Math.abs(P.y - q.y) < 24) { SAVE.flags[q.key] = 1; toast(q.text, 3.5); }
   for (const p of SA.fronts) if (p.anim && p.anim.update) p.anim.update(dt);
@@ -601,6 +549,13 @@ HOOKS.render.push(() => {
   saDrawRites(); saDrawWater(); saDrawGaze(); saDrawPianos();
   for (const p of SA.fronts) p.draw();
   saDrawAmbient();
+});
+// respawn safety (04_player.js SAFE_CHECKS): never set a spike respawn point on a snare, in the coven's rite or in deep water
+if (typeof SAFE_CHECKS !== 'undefined') SAFE_CHECKS.push((x, y) => {
+  if (SA.roomObj !== room || !saIn()) return false;
+  for (const p of props) if (p.type === 'xsa_snare' && Math.abs(p.x - x) < 14 && Math.abs(p.y - y) < 8) return true;
+  for (const r of SA.rites) if (r.k > 0.05 && x > r.x0 && x < r.x1) return true;
+  return saWet(x, y - 3) && !SAVE.items.tidebreath;
 });
 // debug handle for the headless tests (tools/shots/sa)
 if (typeof window !== 'undefined' && window.__game) window.__game.sa = { SA, KIT, kitOn, kitForce, get SYS() { return SYS; }, get room() { return room; }, wet: (x, y) => saWet(x, y), tileAt: (x, y) => tileAt(x, y), get DBS() { return typeof DBS !== 'undefined' ? DBS : null; }, get time() { return time; }, tideY: () => (typeof DBW !== 'undefined' && DBW.tide ? DBW.tide.y / 16 : null) };

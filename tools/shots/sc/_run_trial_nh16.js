@@ -1,13 +1,15 @@
 // SC trial autopilot helpers (prepended to a trial script). G = window.__game.
 const T16 = 16, S = () => window.__sys.SYS;
-const px = () => G.P.x / T16, py = () => G.P.y / T16;          // py: feet in tiles (standing row + 1)
+let MIRROR = 0;   // a room built mirrored: MIRROR = its pixel width; the pilot then works in the unmirrored frame
+const PXp = () => MIRROR ? MIRROR - G.P.x : G.P.x, VXp = () => MIRROR ? -G.P.vx : G.P.vx, WDp = () => MIRROR ? -G.P.wallDir : G.P.wallDir;
+const px = () => PXp() / T16, py = () => G.P.y / T16;          // py: feet in tiles (standing row + 1)
 const att = () => (S().trial ? S().trial.attempts : -1);
 const LOG = [];
 const log = m => LOG.push(`[${(S().trial ? S().trial.t : 0).toFixed(2)}] ${m} @${px().toFixed(2)},${py().toFixed(2)} ${G.P.state}`);
 function stepN(n, hold = [], tap = []) { G.step(n, hold, tap); }
 // walk to tile-centre x on the ground
 function walkTo(x, tol = 0.15, max = 400) {
-  for (let i = 0; i < max; i++) { const d = x - px(); if (Math.abs(d) < tol && Math.abs(G.P.vx) < 30) return true; G.step(1, Math.abs(d) < tol ? [] : d > 0 ? ['right'] : ['left']); if (Math.abs(d) < 0.6 && Math.abs(d) >= tol) G.step(1); }
+  for (let i = 0; i < max; i++) { const d = x - px(); if (Math.abs(d) < tol && Math.abs(VXp()) < 30) return true; G.step(1, Math.abs(d) < tol ? [] : d > 0 ? ['right'] : ['left']); if (Math.abs(d) < 0.6 && Math.abs(d) >= tol) G.step(1); }
   return false;
 }
 // a jump arc toward a target standing cell (tx, ty = the row you stand in). jumps: max extra jumps to spend; dash: allow an air dash
@@ -18,7 +20,7 @@ function leap(tx, ty, o = {}) {
   if (att() !== a0) { log('RESET at takeoff to ' + tx + ',' + ty + ' why=' + S().trial.why); return false; }
   for (t = 0; t < (o.max || 240); t++) {
     if (att() !== a0) { log('RESET during leap to ' + tx + ',' + ty + ' why=' + S().trial.why); return false; }
-    const d = (tx + 0.5) * T16 - G.P.x, hold = ((G.P.vy < 0 && (o.holdT === undefined || t < o.holdT)) || o.glide) ? ['jump'] : [], tap = [];
+    const d = (tx + 0.5) * T16 - PXp(), hold = ((G.P.vy < 0 && (o.holdT === undefined || t < o.holdT)) || o.glide) ? ['jump'] : [], tap = [];
     if (o.steer !== false) { if (Math.abs(d) > (o.tol || 3)) hold.push(d > 0 ? 'right' : 'left'); }
     if (o.delaySteer && t < o.delaySteer) { const j = hold.includes('jump'); hold.length = 0; if (j) hold.push('jump'); hold.push(dir0 > 0 ? 'right' : 'left'); }
     const below = G.P.y > feet - (o.margin ?? 6);
@@ -43,14 +45,15 @@ function waitSolid(id, lead = 0, max = 600, span = 0.5) {
 }
 let TRACE = null;
 const _gstep = G.step.bind(G);
-G.step = (n = 60, h = [], t = []) => { const r = _gstep(n, h, t); if (TRACE && (TRACE.n++ % (TRACE.every || 4) === 0)) TRACE.out.push(`${px().toFixed(1)},${py().toFixed(1)} vy=${G.P.vy | 0} ${G.P.state} ${h.join('+')}${t.length ? ' !' + t.join('+') : ''}`); return r; };
+const _swap = a => a.map(k => MIRROR ? (k === 'left' ? 'right' : k === 'right' ? 'left' : k) : k);
+G.step = (n = 60, h = [], t = []) => { const r = _gstep(n, _swap(h), _swap(t)); if (TRACE && (TRACE.n++ % (TRACE.every || 4) === 0)) TRACE.out.push(`${px().toFixed(1)},${py().toFixed(1)} vy=${G.P.vy | 0} ${G.P.state} ${h.join('+')}${t.length ? ' !' + t.join('+') : ''}`); return r; };
 // climb a chimney between walls at tile columns wl (left wall) and wr (right wall) until feet are above row topY
-function chimney(wl, wr, topY, max = 600) {
+function chimney(wl, wr, topY, max = 600, done = null) {
   const a0 = att(); let dir = -1;
   for (let i = 0; i < max; i++) {
     if (att() !== a0) { log('RESET in chimney why=' + S().trial.why); return false; }
-    if (G.P.y < topY * T16) { log('chimney top'); return true; }
-    if (G.P.state === 'wall') { dir = -G.P.wallDir; G.step(1, ['jump'], ['jump']); continue; }
+    if (done ? done() : G.P.y < topY * T16) { log('chimney top'); return true; }
+    if (G.P.state === 'wall') { dir = -WDp(); G.step(1, ['jump'], ['jump']); continue; }
     if (G.P.ground) { G.step(1, [dir > 0 ? 'right' : 'left', 'jump'], ['jump']); continue; }
     const hold = [dir > 0 ? 'right' : 'left']; if (G.P.vy < 0) hold.push('jump');
     G.step(1, hold);
@@ -82,7 +85,7 @@ function waitTakeoff(target, flight, cur = null, pre = 0.08, post = 0.3) {
 function airTo(tx, ty, o = {}) {
   const a0 = att(), feet = (ty + 1) * T16, jumps = o.jumps ?? 2; let used = 0, dashed = false, lastJ = -20;
   for (let t = 0; t < (o.max || 300); t++) {
-    const d = (tx + 0.5) * T16 - G.P.x, hold = [], tap = [];
+    const d = (tx + 0.5) * T16 - PXp(), hold = [], tap = [];
     if ((G.P.vy < 0 && (o.holdT === undefined || t < o.holdT)) || (o.glide && G.P.vy > 0)) hold.push('jump');
     if (Math.abs(d) > (o.tol || 3)) hold.push(d > 0 ? 'right' : 'left');
     const below = G.P.y > feet - (o.margin ?? 6);
@@ -104,7 +107,7 @@ function hookSwing(dir, relX, o = {}) {
   if (G.P.state !== 'hook') { log('hook: no attach'); return false; }
   for (let i = 0; i < 300; i++) {
     const past = dir > 0 ? px() > relX : px() < relX;
-    if (past && G.P.vx * dir > (o.minV ?? 90)) { G.step(1, [k], ['jump']); log('hook release'); return true; }
+    if (past && VXp() * dir > (o.minV ?? 90)) { G.step(1, [k], ['jump']); log('hook release'); return true; }
     G.step(1, [k]);
     if (att() !== a0) { log('RESET in hook why=' + S().trial.why); return false; }
   }
@@ -118,6 +121,7 @@ function hopDashTo(dir, tx, ty, dashAfter = 3, o = {}) {
   for (let i = 0; i < (o.dashFrames ?? 8); i++) G.step(1, [k]);
   return airTo(tx, ty, { jumps: 0, ...o });
 }
+function hopTo(fromX, tx, ty, o = {}) { walkTo(fromX, 0.2); return leap(tx, ty, o); }
 // NH16 The Glitch Run: a full scripted clear (needs talon, emberdash)
 await boot(); G.grantTechniques(); Object.assign(G.SAVE.items, { talon: 1 });
 G.tp('NH16', 4, 20); G.step(30); G.step(1, [], ['interact']); G.step(5); log('sigil');

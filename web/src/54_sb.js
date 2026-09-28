@@ -14,6 +14,7 @@ try {
     sb_3: { region: 'necropolis', title: 'Roll of the Charnel Guard', text: 'Headsmen, chain-bearers and the bell-guard slept here in tiers, boots on, axes racked where a hand could find them in the dark.\nThe last entry in the roll is not a name. It reads: None relieved. We keep the watch.' },
     sb_4: { region: 'necropolis', title: 'The Dirge of Kings', text: 'The dirge was rung for kings alone: six strokes, as the slab by the door is cut.\nA bell that hangs low speaks low. The mark set lowest on the stave is the bell that hangs deepest; the mark set highest is the bell nearest the roof. Ring them left to right, as the mourners walk.' },
     sb_5: { region: 'necropolis', title: 'The Twelfth Niche', text: 'Beneath the throne lie the eleven kings before Vael, crowns still on, their names worn away by the hands of pilgrims.\nVael came down here the night the Pale Root rose. He left the twelfth niche empty. He meant it for himself. He never came back to fill it.' },
+    sb_12: { region: 'necropolis', title: 'The Headsman\u2019s Drain', text: 'Under the Headsman\u2019s Yard the city kept a drain for what the block let fall. It runs to the old bell-pits and no farther.\nThe undercroft was never swept. The executioners said the dead should be allowed to leave the way they came, a little at a time.' },
     sb_6: { region: 'dunes', title: 'The Buried Road', text: 'The caravans came down this road with salt, linen and the dead of far cities, who paid in gold to lie near the sun-kings.\nThe sand took the road a little at a time. The last caravan did not turn back. Scarabs nest in its wagons now, and some of them are gold.' },
     sb_7: { region: 'dunes', title: 'The Last Oasis', text: 'The sun-kings kept one pool the sand was forbidden to touch. Here they came to watch the evening, which they held to be a death that always returns.\nFar above, the true sun still sets. Its light falls down a shaft of glass a thousand feet deep and arrives here as evening, every evening, on water that has never learned it is underground.' },
     sb_8: { region: 'dunes', title: 'The Seal', text: 'Speak the king’s titles as the painters set them in the hall above, from the door inward, and the seal will know its master.\nIt is patient with strangers. It was built to be.' },
@@ -227,9 +228,9 @@ SPAWNS.xsb_scarab = (s, c) => {
 };
 
 // ================================================================== room hooks: paint, dunes ambience, hints
-const SB_DU_AMB = { DU9: 0.3, DU10: 0.22, DU11: 0.5, DU12: 0.3, DU13: 0.46, DU14: 0.52, DU15: 0.16, DU16: 0.36, DU17: 0.6, DU18: 0.5 };
+const SB_DU_AMB = { DU19: 0.28, DU9: 0.3, DU10: 0.22, DU11: 0.5, DU12: 0.3, DU13: 0.46, DU14: 0.52, DU15: 0.16, DU16: 0.36, DU17: 0.6, DU18: 0.5 };
 try {
-  if (typeof DU_OPEN !== 'undefined') for (const id of ['DU9', 'DU10', 'DU12', 'DU15']) DU_OPEN.add(id);
+  if (typeof DU_OPEN !== 'undefined') for (const id of ['DU9', 'DU10', 'DU12', 'DU15', 'DU19']) DU_OPEN.add(id);
   if (typeof DU_AMB !== 'undefined') Object.assign(DU_AMB, SB_DU_AMB);
 } catch (e) { console.warn('sb dunes', e); }
 HOOKS.enter.push(def => {
@@ -261,7 +262,7 @@ const SB_SEQ_HINT = {
   NV12: ['dirge', 'The slab by the door: the lower a mark is cut, the lower its bell hangs. Six strokes, left to right.'],
   DU14: ['titles', 'The painted hall above names his titles in order, from the door inward. Touch the same four runes.'],
 };
-const SB_BARS = { NV10: { gate: 'bar', door: [44, 28], side: 1 }, DU11: { gate: 'bar', door: [3, 11], side: -1 } };
+const SB_BARS = { NV10: { gate: 'bar', x: 40 }, DU10: { gate: 'bar', x: 5 } };   // loop-back gates: their lever is on the far (west) side
 HOOKS.update.push(dt => {
   if (!room || SBX.roomRef !== room || !room.def.x3) return;
   const id = room.id;
@@ -285,11 +286,44 @@ HOOKS.update.push(dt => {
     if (SBX.mir >= 14 && !SBX.hint.mir && so && !so.active) { SBX.hint.mir = 1; toast('Follow the light: down from the roof, across, then up and over to the socket above the door. The fourth mirror is a liar.', 6); }
   }
   const bar = SB_BARS[id];
-  if (bar && P.ground) {   // arrived through the barred door: say why it won't open from this side
-    const gx = (bar.door[0] + 0.5) * TILE, gate = KIT.byId[bar.gate];
-    if (gate && !gate.on && Math.abs(P.x - gx) < 40 && Math.abs(P.y - (bar.door[1] + 1) * TILE) < 6 && !SBX.hint.bar) { SBX.hint.bar = 1; toast('Barred from the other side.', 3); }
+  if (bar && P.ground) {   // at the barred gate from the wing side: say why it won't open from here
+    const gate = KIT.byId[bar.gate], gx = (bar.x + 0.5) * TILE;
+    if (gate && !gate.on && P.x > gx && P.x - gx < 40 && Math.abs(P.y - gate.y) < 6 && !SBX.hint.bar) { SBX.hint.bar = 1; toast('Barred from the other side.', 3); }
   }
 });
 
-// ================================================================== debug handle for the SBX test scripts
+// ================================================================== dune slopes: step up onto the rock at the top of a slope
+// A slope line ends exactly on a block's top edge, but a body on the slope stands a few pixels lower when its side
+// reaches the block, so walking uphill stalled against a 2-4 px lip. Lift it onto the block (dunes rooms only).
+HOOKS.update.push(dt => {
+  if (!room || room.def.biome !== 'dunes' || !P || !P.duSlope || !P.ground) return;
+  const dir = inputX(); if (!dir) return;
+  const px = P.x + dir * ((P.w || 10) / 2 + 1), tx = Math.floor(px / TILE), ty = Math.floor((P.y - 1) / TILE);
+  if (!isSolidT(tileAt(tx, ty)) || isSolidT(tileAt(tx, ty - 1)) || isSolidT(tileAt(tx, ty - 2))) return;
+  const top = ty * TILE; if (P.y - top > 6 || P.y - top <= 0) return;
+  P.y = top; P.x = dir > 0 ? tx * TILE + 0.5 : (tx + 1) * TILE - 0.5; P.vy = 0; P.duSlope = 0;
+});
+
+// ================================================================== respawn safety: never put the player back inside a hazard of these rooms
+// (quicksand, a headsman's axe sweep, a bell walkway that tolls away)
+try {
+  SAFE_CHECKS.push((x, y) => {
+    if (!room || !room.def.x3 || !/^(NV|DU)\d/.test(room.id)) return false;
+    const tx = Math.floor(x / TILE), ty = Math.floor((y + 1) / TILE);
+    for (let dx = -1; dx <= 1; dx++) {
+      const t = tileAt(tx + dx, ty), t1 = tileAt(tx + dx, ty - 1);
+      if (typeof DU_T_QS !== 'undefined' && (t === DU_T_QS || t1 === DU_T_QS)) return true;
+      if (typeof NV_T_A !== 'undefined' && (t === NV_T_A || t === NV_T_B)) return true;
+    }
+    if (typeof NVR !== 'undefined' && NVR.walks && NVR.walks.some(w => !w.on && Math.abs(w.x - tx) <= 1 && w.y === ty)) return true;   // a walkway that is away right now
+    if (typeof KIT !== 'undefined' && KIT.roomObj === room) for (const o of KIT.objs) {
+      if (o.kind !== 'pendulum') continue;
+      const L = (o.spec.len ?? 4) * TILE + 12;
+      if (Math.hypot(x - o.x, (y - 13) - o.y) < L && y - 13 > o.y) return true;
+    }
+    return false;
+  });
+} catch (e) { console.warn('sb safe', e); }
+
+// ================================================================== debug handle for the SB test scripts
 if (window.__game) Object.assign(window.__game, { sb: SBX, sbHurt: d => hurtPlayer(d, 1, 'sbtest' + Math.random(), {}) });

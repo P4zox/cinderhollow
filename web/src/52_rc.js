@@ -324,7 +324,7 @@ XRC_KIND.grate = (s, c) => {
     }
     if (p.st === 'burst') {
       for (let i = 0; i < 3; i++) particles.push({ x: p.x + p.face * rand(6, 20), y: p.y + rand(-8, 8), vx: p.face * rand(120, 260), vy: rand(-40, 60), g: 260, life: rand(0.4, 0.9), kind: 'xrc_foam' });
-      if (s.push && overlap(playerHurtbox(), ar) && !['hook', 'rest', 'dead'].includes(P.state)) P.pushVx = (P.pushVx || 0) + s.push * (P.ground ? 1 : 1.2);
+      if (s.push && !XRC.noPush && overlap(playerHurtbox(), ar) && !['hook', 'rest', 'dead'].includes(P.state)) P.pushVx = (P.pushVx || 0) + s.push * (P.ground ? 1 : 1.2);
     } else if (p.st === 'warn' && Math.random() < 0.3) particles.push({ x: p.x + rand(-8, 8), y: p.y + 6, vx: 0, vy: 30, g: 300, life: 0.5, kind: 'xrc_foam' });
   };
   props.push(p);
@@ -712,15 +712,15 @@ const XRC_PIPE_COL = [['#7a3e24', '#b8683a', '#4a2416'], ['#4e5260', '#8a90a0', 
 // ================================================================== The Last Field: wheat that sways and parts around you
 XRC_KIND.wheat = () => {
   const W0 = [], rows = room.h, cols = room.w;
-  const skip = x => x < 6 || x > 109;                              // the cliff and the old ash
+  const skip = x => x < 2 || x > 105;                              // the old ash (west) and the storm-cliff (east)
   for (let tx = 0; tx < cols; tx++) {
     if (skip(tx)) continue;
     let ty = 0; while (ty < rows && !isSolidT(room.grid[ty * cols + tx])) ty++;
     if (ty >= rows || ty < 4) continue;
-    const base = ty * TILE, thin = (tx >= 6 && tx <= 9) || (tx >= 72 && tx <= 76) || (tx >= 44 && tx <= 46) || tx === 98 || tx === 106 ? 0.35 : 1;
+    const base = ty * TILE, thin = (tx >= 102 && tx <= 105) || (tx >= 35 && tx <= 39) || (tx >= 65 && tx <= 67) || tx === 13 || tx === 5 ? 0.35 : 1;
     for (let k = 0; k < 7; k++) {
       if (hash2(tx * 7 + k, 11) > thin) continue;
-      const front = hash2(tx, k * 3 + 5) < 0.34 && !(tx >= 98 && tx <= 106);   // the nest's hollow: only the far wheat stands behind it
+      const front = hash2(tx, k * 3 + 5) < 0.34 && !(tx >= 5 && tx <= 13);   // the nest's hollow: only the far wheat stands behind it
       W0.push({ x: tx * TILE + (k + hash2(tx, k)) * (TILE / 7), y: base + 1, h: (front ? 11 : 16) + Math.floor(hash2(tx * 3, k) * (front ? 8 : 13)),
                 ph: hash2(k, tx) * 6.28, tone: Math.floor(hash2(tx + k, 9) * 3), front, bend: 0 });
     }
@@ -935,6 +935,42 @@ function xrcDrawDraughts() {
   }
 }
 
+// ================================================================== drop markers over the wing's floor grates (↓ + jump to go through)
+XRC_KIND.dropmark = (s, c) => {
+  if (s.flag && !SAVE.flags[s.flag]) return;   // the grate is still sealed
+  const p = { type: 'xrc_dropmark', x: c.cx, y: c.fy, face: 1, anim: { update() {} }, k: 0, hinted: false };
+  p.update = dt => {
+    const near = Math.abs(P.x - p.x) < 28 && Math.abs(P.y - p.y) < 20;
+    p.k = approach(p.k, near ? 1 : 0.35, dt * 3);
+    if (near && P.ground && !p.hinted && !XRC.hint['drop' + room.id]) { p.hinted = XRC.hint['drop' + room.id] = true;
+      toast(matchMedia('(pointer: coarse)').matches ? 'Hold ▼ and press Jump to drop through the grate' : 'Hold ↓ and press Space to drop through the grate', 3.5); }
+  };
+  p.draw = () => {
+    if (!isSolidT(tileAt(Math.floor(p.x / TILE), Math.floor(p.y / TILE))) && tileAt(Math.floor(p.x / TILE), Math.floor(p.y / TILE)) !== T_PLAT) return;
+    const x = p.x, y = p.y - 16 + Math.sin(time * 4) * 2, a = (0.35 + 0.35 * Math.sin(time * 4)) * p.k + 0.1;
+    drawGlow(() => { g.fillStyle = `rgba(255,190,110,${a})`;
+      for (let i = 0; i < 4; i++) g.fillRect(Math.round(x - 4 + i), Math.round(y + i), 8 - i * 2, 1);
+      g.fillRect(Math.round(x - 1), Math.round(y - 5), 2, 5); });
+  };
+  props.push(p);
+};
+
+// ================================================================== the Crow's Nest: sea-spray makes every wall too slick to hold
+HOOKS.update.push(() => {
+  if (!room || room.id !== 'SP17' || P.state !== 'wall') return;
+  setP('air', 'jump_fall', false); P.wallDir = 0;
+  if (!XRC.hint.slick) { XRC.hint.slick = 1; toast('The rock is slick with sea-spray. Nothing here will hold you.', 3); }
+});
+
+// ================================================================== respawn safety: never put the player back into a vent, a bolt or a rail
+SAFE_CHECKS.push((x, y) => {
+  if (!room || XRC.roomObj !== room) return false;
+  for (const p of props) if (p.type === 'xrc_geyser' && Math.abs(x - p.x) < 20 && y > p.y - p.h - 8 && y <= p.y + 4) return true;
+  if (XRC.bolts) for (const c of XRC.bolts.cols) if (Math.abs(x - c.x) < 14) return true;
+  for (const k of XRC.carts) if (Math.abs(y - k.y) < 6) return true;   // the rails: carts come through on a beat
+  return false;
+});
+
 // ================================================================== room entry, per-frame, rendering
 HOOKS.enter.push(def => {
   xrcEnsure();
@@ -943,11 +979,6 @@ HOOKS.enter.push(def => {
   room.xrcReady = true; xrcPaintBack(room);
   // wide draught fields: the stock updraft sprite per column turns into a wall of noise, so draw them as soft rising streaks
   if (XRC_SOFT_UPDRAFT.has(def.id)) { props = props.filter(p => p.type !== 'updraft'); props.push({ type: 'xrc_draught', x: 0, y: 0, anim: { update() {} }, glow: true, draw: xrcDrawDraughts }); }
-  // SP7: the crack door behind the Last Field passage exists only once the wall has opened
-  if (def.id === 'SP7') {
-    const pas = props.find(p => p.type === 'sys_passage' && p.s && p.s.id === 'lastfield');
-    if (pas && !pas.open) props = props.filter(p => !(p.type === 'sys_door' && p.s && p.s.id === 'lf'));
-  }
   if (def.id === 'LF1' && !SAVE.hints.xrc_lf) { SAVE.hints.xrc_lf = 1; sysLater(1.2, () => xrcSfx.chime(0.75)); }
   if (def.id === 'D13' && !SAVE.hints.xrc_sluice) { SAVE.hints.xrc_sluice = 1; sysLater(1.4, () => toast('A crucible hangs over empty moulds. Pipes run from it through four valves.', 4)); }
   if (def.id === 'SP16' && !SAVE.items.gale && !SAVE.hints.xrc_gale) { SAVE.hints.xrc_gale = 1; sysLater(1.2, () => toast('Warm air roars up out of the storm. Something light could ride it.', 4)); }

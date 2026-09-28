@@ -226,7 +226,7 @@ function kitMoverUpdate(o, dt, running) {
   if (o.v <= 0) { o.dir = dir0; return; }
   let u = o.u + o.v * dt, i = o.i, arrived = false;
   if (u >= L) { arrived = true; u = stop ? L : u - L; }
-  const k = clamp(u / L, 0, 1), nx = a.x + (b.x - a.x) * k, ny = a.y + (b.y - a.y) * k;
+  const k = arrived ? 1 : clamp(u / L, 0, 1), nx = a.x + (b.x - a.x) * k, ny = a.y + (b.y - a.y) * k;   // passing a corner: go to the corner first, then on along the next segment
   o.dir = dir0;
   if (!kitSlabMove(o, Math.round(nx), Math.round(ny), dt)) { o.v = 0; o.blockT += dt; return; }
   o.blockT = 0;

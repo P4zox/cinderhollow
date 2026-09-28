@@ -1,6 +1,7 @@
-// E7 Trial of the First Flame: a full scripted clear (every technique)
+// E7 Trial of the First Flame: a full scripted clear (every technique). E7 is built facing east and mirrored in the world,
+// so the pilot runs in the unmirrored frame (MIRROR, pilot.js).
 await boot(); G.grantTechniques(); Object.assign(G.SAVE.items, { moonstep: 1, wings: 1, talon: 1 });
-G.tp('E7', 58, 37); G.step(30); G.step(1, [], ['interact']); G.step(5); log('sigil');
+MIRROR = 64 * 16; G.tp('E7', 63 - 58, 37); G.step(30); G.step(1, [], ['interact']); G.step(5); log('sigil');
 walkTo(54.3); hopDashTo(-1, 50, 37, 3, { dashFrames: 6 });
 TRACE = null;
 hookSwing(-1, 44.5, { pre: 6 });

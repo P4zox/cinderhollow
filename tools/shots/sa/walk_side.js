@@ -1,0 +1,30 @@
+// SA: every side edge crossed both ways by walking (each test starts from one teleport into the first room).
+const R = [];
+const edge = (name, fn) => { const a = ROOMSEQ.length; try { fn(); } catch (e) { LOG.push(name + ' EXC ' + e.message); } R.push(`${name}: ${ROOMSEQ.slice(Math.max(0, a - 1)).join(' > ')}`); };
+edge('TV10<>TV13', () => { G.tp('TV10', 4, 11); wait(20); run(-3, { room: 'TV13' }); run(33, { tol: 0.5 }); run(45, { room: 'TV10' }); wait(10); });
+edge('TV9<>TV12', () => { G.tp('TV9', 9, 27); wait(20); run(5.5, { noJump: true, noGap: true, room: 'TV12' }); fall(); hop(8, 13); hop(3, 10); hop(8, 7); hop(5.5, 4); climb(27.5, 'right', { room: 'TV9' }); });
+edge('TV12<>TV15', () => { G.tp('TV12', 58, 10); wait(20); run(70, { room: 'TV15' }); wait(10); run(2, { tol: 0.5 }); run(-5, { room: 'TV12' }); wait(10); });
+edge('TV9<>TV14', () => { G.tp('TV9', 104, 27); wait(20); run(115, { room: 'TV14' }); wait(10); run(-5, { room: 'TV9' }); wait(10); });
+edge('TV14<>TV15', () => { G.tp('TV14', 8, 13); wait(20); run(5.2, { noJump: true, noGap: true, room: 'TV15' }); fall(); here('nook'); climb(13.5, 'left', { room: 'TV14' }); wait(10); });
+edge('TV9<>TV16', () => { G.tp('TV9', 104, 11); wait(20); run(108.5, { tol: 0.4 }); step(['right'], ['roll']); run(115, { room: 'TV16' }); wait(10); run(3, { tol: 0.5 }); step(['left'], ['roll']); run(-5, { room: 'TV9' }); wait(10); });
+edge('K2<>W4<>DB1', () => { G.tp('K2', 37, 10); wait(20); run(39.5, { tol: 0.3 }); drop(); for (let i = 0; i < 40 && S().y < 88.5; i++) { fall(); if (S().y < 88.5) drop(); } run(5.6, { noJump: true, noGap: true, room: 'DB1' }); fall(); here('DB1');
+  hop(4.5, 6); climb(88, 'right', { room: 'W4' }); here('W4 foot');
+  for (let y = 84; y >= 3; y -= 3) { let xs = []; for (let x = 1; x <= 6; x++) if (tileAt(x, y) === 2) xs.push(x); const cx = xs.length ? (xs[0] + xs[xs.length - 1]) / 2 + 0.5 : 3.5; hop(cx, y, { tries: 3 }); }
+  here('W4 top'); jump(null, { to: 4, hold: 22 }); here('grate?'); climb(11.2, 'left', { room: 'K2', maxF: 300 }); wait(10); });
+edge('W4<>DB14', () => { G.tp('W4', 5, 5); wait(20); run(12, { room: 'DB14' }); wait(10); run(-4, { room: 'W4' }); wait(10); });
+edge('W4<>DB16', () => { G.tp('W4', 2, 20); wait(20); run(-4, { room: 'DB16' }); wait(10); run(70, { room: 'W4' }); wait(10); });
+edge('W4<>DB10', () => { G.tp('W4', 2, 50); wait(20); run(-4, { room: 'DB10' }); wait(10); run(90, { room: 'W4' }); wait(10); });
+edge('W4<>DB13', () => { G.tp('W4', 5, 62); wait(20); run(12, { room: 'DB13' }); wait(10); run(-4, { room: 'W4' }); wait(10); });
+edge('DB14>DB15>W4', () => { G.tp('DB14', 25, 21); wait(20); G.sa.kitForce('gX', true); wait(5); run(40, { noJump: true, room: 'DB15' }); fall(); drop(); drop(); wait(60);
+  swim(13, 12); for (let i = 0; i < 40; i++) { step(['left', 'jump'], i === 0 ? ['jump'] : []); if (i > 3 && S().gr) break; } run(4.6, { tol: 0.3 }); use(); wait(60); run(-4, { room: 'W4' }); wait(10); run(12, { room: 'DB15' }); wait(10); });
+edge('DB15>DB14 (drain up)', () => { G.tp('DB15', 25, 12); wait(30); swim(29, 11.8); leap(31.2); hop(33.5, 6); hop(33.5, 3); climb(21.5, 'left', { room: 'DB14' }); wait(10); });
+edge('DB13<>DB17', () => { G.tp('DB13', 17, 21); wait(20); for (let i = 0; i < 6 && G.room === 'DB13'; i++) { step(['down'], ['attack']); wait(25); } for (let i = 0; i < 200 && G.room === 'DB13'; i++) step(['down']);
+  swim(5, 3, { maxF: 400 }); for (let i = 0; i < 200 && G.room === 'DB17'; i++) step(['up', 'jump'], i % 30 === 0 ? ['jump'] : []); wait(10); });
+edge('CM10<>CM15', () => { G.tp('CM10', 20, 11); wait(20); run(30, { room: 'CM15' }); wait(10); run(-4, { room: 'CM10' }); wait(10); });
+edge('CM10<>CM12', () => { G.tp('CM10', 5, 2); wait(20); jump(null, { to: 5.5, hold: 22 }); hop(11.5, 16, { tries: 2 }); here('turret'); hop(8, 14); here('roof');
+  run(10.5, { noJump: true, noGap: true, tol: 0.3 }); drop(); for (let i = 0; i < 8 && G.room === 'CM12'; i++) { fall(); drop(); } fall(); });
+edge('CM11<>CM13', () => { G.tp('CM11', 40, 11); wait(20); run(60, { room: 'CM13' }); wait(10); run(-4, { room: 'CM11' }); wait(10); });
+edge('CM13<>CM14', () => { G.SAVE.items.xsa_key1 = G.SAVE.items.xsa_key2 = G.SAVE.items.xsa_key3 = 1; G.tp('CM14', 3, 15); wait(20); use(); wait(60); G.tp('CM13', 34, 15); wait(20); run(50, { room: 'CM14' }); wait(10); run(-4, { room: 'CM13' }); wait(10); });
+edge('CM9<>CM17', () => { G.tp('CM9', 79, 7); wait(20); G.P.face = 1; for (let i = 0; i < 4; i++) { step(['right'], ['attack']); wait(20); } run(95, { room: 'CM17' }); wait(10); run(-4, { room: 'CM9' }); wait(10); });
+edge('CM9<>CM16', () => { G.tp('CM9', 78, 26); wait(20); run(95, { room: 'CM16' }); wait(10); run(-4, { room: 'CM9' }); wait(10); });
+LOG.push(...R.map(r => 'EDGE ' + r));

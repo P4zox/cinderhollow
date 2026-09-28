@@ -1,6 +1,6 @@
 await boot(); G.grantTechniques(); G.SAVE.items.tidebreath=1; G.SAVE.items.moonstep=1; G.SAVE.items.talon=1; G.giveArmory && G.giveArmory();
 const spots = [['NV8',40,10],['NV13',20,12],['NV9',10,11],['NV10',30,55],['NV10',20,22],['NV10',14,7],['NV14',20,10],['NV11',50,13],['NV12',16,13],['NV15',48,12],['NV16',8,12],
- ['DU9',50,11],['DU10',10,21],['DU10',62,17],['DU15',20,12],['DU17',8,11],['DU11',30,11],['DU14',16,16],['DU12',10,11],['DU13',20,17],['DU16',6,3],['DU18',8,11]];
+ ['DU9',50,11],['DU10',10,21],['DU10',62,17],['DU15',20,12],['DU17',8,11],['DU11',30,11],['DU14',16,16],['DU12',10,11],['DU13',20,17],['DU16',6,3],['DU18',8,11],['NV17',8,54],['NV17',4,20],['NV18',10,28],['NV18',50,12],['DU19',8,57],['DU19',5,7]];
 const acts=['left','right','jump','attack','heavy','roll','parry','spell','art','hook','down','up'];
 const errs=[]; window.addEventListener('error', e=>errs.push(String(e.message)));
 const out=[]; const t0 = performance.now();

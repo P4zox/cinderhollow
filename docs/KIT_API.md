@@ -320,10 +320,15 @@ and a free spot for a few common sizes.
   - `… item at (x,y) / chest / trial goal / door / lore … is unreachable with needs […]`
   - `… exit W edge rows 7-10 can't be reached from any entrance`
   - `… entering by N edge cols 8-11 there is no way out again` (a soft-lock)
+  - `… entering by S edge cols 1-3, exit N edge cols 1-3 can't be reached` (rooms with `world_link=True` or
+    `reach_both_ways=True`: every exit must be reachable from every entrance). Leaving through a top opening needs the
+    player's feet above 13 px from the top edge (`checkRoomExit`), so the last ledge must sit ≤ 2–3 rows below it.
 - The checker simulates the real physics frame by frame (numbers read from `04_player.js`): run 122 px/s, jump ≈ 57 px
   (3 tiles + a little; the ledge assist can pop you onto a 4th only with perfect timing — don't design for it), running
   jump ≈ 7 tiles across, base air dash +4.4 tiles, wall jumps, double jump (`wings`), Moonstep, Gale glide + updrafts,
-  Root Hook swings (`@`, range 130 px), **pogo off spikes** (a spike floor can be crossed by pogoing: use lava `*`,
+  Root Hook swings (`@`, range 130 px), deep water `"` (swim anywhere with `tidebreath`, otherwise float/paddle on the surface
+  and leap out at 300 px/s), starlight `+` (40% less gravity), open sky above outdoor rooms, entering up through a floor
+  opening at 260–272 px/s with jump held and the air jump unspent (300 with `talon`), **pogo off spikes** (a spike floor can be crossed by pogoing: use lava `*`,
   bottomless drops or `rising` floors for hard barriers), drop-through `=`. KM movers/lifts count as their swept path,
   crumble/sinker/phase/spring/crate as ledges where they start, swings as grab points; gates count as open.
 - Results are cached per room in `tools/.reach_cache.json` (only changed rooms re-run; uncached rooms run in parallel,

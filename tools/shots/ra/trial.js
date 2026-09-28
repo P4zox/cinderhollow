@@ -1,9 +1,9 @@
 // the Bellrope Trial: a scripted clear (pump each rope, let go swinging toward the next, double jump, grab)
 await boot(); G.SAVE.items.wings = 1; G.SAVE.items.talon = 1; G.SETTINGS.god = false;
-const S = window.__sys, out = [], ropes = [[15, 44], [8, 36], [15, 28], [8, 20], [15, 12]], goalX = 4;
+const S = window.__sys, out = [], ropes = [[15, 30], [8, 23], [15, 16], [8, 9]], goalX = 19;
 const P = () => G.P;
 const run = async (label) => {
-  G.tp('K12', 20, 52); G.step(10); G.step(1, [], ['interact']); G.step(5);
+  G.tp('K12', 20, 38); G.step(10); G.step(1, [], ['interact']); G.step(5);
   if (!S.SYS.trial) { out.push('no trial started'); return; }
   let i = 0, phase = 'floor', t = 0, dj = false, target = 0, log = [], jt = 0;
   for (let f = 0; f < 60 * 70 && S.SYS.trial && !S.SYS.trial.done; f++) {
@@ -18,7 +18,7 @@ const run = async (label) => {
       if (Math.abs(H.av) > 1.4 && H.av * dir > 0 && H.ang * dir > 0.85) { tap.push('jump'); hold = []; phase = 'fly'; jt = 0; }
     } else if (phase === 'floor') {
       target = ropes.findIndex(r => r[1] * 16 < p.y - 20); if (target < 0) target = ropes.length;
-      const tx = target < ropes.length ? ropes[target][0] * 16 + 8 : goalX * 16, far = p.y > 50 * 16 ? 2.8 : 3.5;
+      const tx = target < ropes.length ? ropes[target][0] * 16 + 8 : goalX * 16, far = p.y > 36 * 16 ? 2.8 : 3.5;
       if (Math.abs(p.x - tx) > far * 16) hold.push(p.x < tx ? 'right' : 'left'); else { hold.push(p.x < tx ? 'right' : 'left'); if (p.ground) tap.push('jump'); phase = 'fly'; jt = 0; dj = false; }
     } else {
       const tx = target < ropes.length ? ropes[target][0] * 16 + 8 : goalX * 16;
@@ -38,7 +38,7 @@ await run('first');
 G.step(60); await snap('t_k12_done');
 G.step(200); out.push('charms: ' + JSON.stringify(G.SAVE.charms) + ' eq ' + JSON.stringify(G.SAVE.charmsEq));
 // the charm: double jump apex with and without it
-const apex = (on) => { G.SAVE.charmsEq = on ? ['c_x3_chime'] : []; G.tp('K7', 40, 32); G.step(20); const y0 = G.P.y; let m = y0; G.step(1, ['jump'], ['jump']); for (let i = 0; i < 14; i++) G.step(1, ['jump']); G.step(1, ['jump'], ['jump']); for (let i = 0; i < 60; i++) { G.step(1, ['jump']); m = Math.min(m, G.P.y); } return Math.round(y0 - m); };
+const apex = (on) => { G.SAVE.charmsEq = on ? ['c_x3_chime'] : []; G.tp('K7', 40, 26); G.step(20); const y0 = G.P.y; let m = y0; G.step(1, ['jump'], ['jump']); for (let i = 0; i < 14; i++) G.step(1, ['jump']); G.step(1, ['jump'], ['jump']); for (let i = 0; i < 60; i++) { G.step(1, ['jump']); m = Math.min(m, G.P.y); } return Math.round(y0 - m); };
 const a0 = apex(false), a1 = apex(true); out.push(`jump+double jump height: ${a0} px without, ${a1} px with the Chime of Ascent`);
 out.push('charm got: ' + !!(G.SAVE.charms && G.SAVE.charms.includes('c_x3_chime')) + ' rec ' + JSON.stringify(S.x3().trials));
 return out;
