@@ -21,7 +21,7 @@ r.kw['spawns'] = [
 
 # ---------------------------------------------------------------- A7 The Unbound Folio (secret, above the Inkwell)
 r = Room('A7', 'The Unbound Folio', 'archives', 324, -60, 24, 14, indoor=True, secret=True,
-         items=['emberstone', 'emberstone'], chests=['art:backstep_slash'],
+         items=['emberstone', 'emberstone'], chests=['ash_cache'],
          spawns=[{'t': 'ar2_lore', 'x': 14, 'y': 12}])
 r.walls().fill(5, 13, 7, 13, '=')                   # the shaft mouth: a thin ledge you can jump up through (drop: down + jump)
 r.fill(20, 1, 22, 9)                                # a stack of fallen shelves in the corner ...

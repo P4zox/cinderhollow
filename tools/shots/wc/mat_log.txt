@@ -1,0 +1,66 @@
+{
+ "out": [
+  "longsword -> grave_knight: mat=metal sparks=4 flashes=0 parts=mote,mote,spark,spark,spark,spark,spark",
+  "longsword -> cm_gargoyle: mat=stone sparks=0 flashes=0 parts=mote,mote,mote,mote,spark,spark,spark,spark,spark,dust,dust,dust,dust,rock,rock",
+  "longsword -> gloom_wisp: mat=ink sparks=0 flashes=0 parts=mote,mote,spark,spark,spark,spark,spark,ink,ink,ink,ink",
+  "longsword -> rot_hulk: mat=flesh sparks=0 flashes=0 parts=mote,mote,spark,spark,spark,spark,spark,blood,blood,blood,blood",
+  "longsword -> hf_golem: mat=frost sparks=4 flashes=0 parts=mote,mote,spark,spark,spark,spark,spark,frost,frost,frost",
+  "colossus_hammer -> hollow_soldier: mat=metal sparks=8 flashes=0 parts=mote,mote,ember,fire,ember,ember,fire,ember,ember,ember,spark,spark,spark,spark,spark,spark,spark,spark,spark,fire,ember",
+  "frostbrand -> hollow_soldier: mat=metal sparks=6 flashes=0 parts=mote,mote,mote,mote,spark,spark,spark,spark,spark,frost,frost,frost,mote,mote",
+  "oathbrand -> hollow_soldier: mat=metal sparks=6 flashes=0 parts=mote,spark,spark,spark,spark,spark,mote,mote,mote",
+  "kalden -> hollow_soldier: mat=metal sparks=7 flashes=0 parts=mote,mote,mote,mote,mote,mote,mote,teal,teal,teal,teal,teal,gold,teal,teal,teal,spark,spark,spark,spark,spark,teal,gold,",
+  "vael_greatsword -> rot_hulk: mat=flesh sparks=0 flashes=0 parts=mote,mote,mote,mote,mote,mote,frost,teal,frost,frost,frost,frost,frost,frost,spark,spark,spark,spark,spark,spark,spark,s",
+  "orrery_whip -> grave_knight: mat=metal sparks=5 flashes=0 parts=mote,mote,mote,mote,spark,spark,spark,spark,spark",
+  "sanguine_rapier -> rot_hulk: mat=flesh sparks=0 flashes=0 parts=mote,mote,blood,blood,blood,blood,blood,blood,spark,spark,spark,spark,spark,blood,blood,blood,blood,blood,fire,blood,fir"
+ ],
+ "crops": {
+  "m00_longsword_grave_knight": [
+   515,
+   504
+  ],
+  "m01_longsword_cm_gargoyle": [
+   520,
+   504
+  ],
+  "m02_longsword_gloom_wisp": [
+   520,
+   504
+  ],
+  "m03_longsword_rot_hulk": [
+   520,
+   504
+  ],
+  "m04_longsword_hf_golem": [
+   520,
+   504
+  ],
+  "m05_colossus_hammer_hollow_soldier": [
+   519,
+   504
+  ],
+  "m06_frostbrand_hollow_soldier": [
+   520,
+   504
+  ],
+  "m07_oathbrand_hollow_soldier": [
+   520,
+   504
+  ],
+  "m08_kalden_hollow_soldier": [
+   520,
+   504
+  ],
+  "m09_vael_greatsword_rot_hulk": [
+   518,
+   504
+  ],
+  "m10_orrery_whip_grave_knight": [
+   518,
+   504
+  ],
+  "m11_sanguine_rapier_rot_hulk": [
+   520,
+   504
+  ]
+ }
+}

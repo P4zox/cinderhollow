@@ -1,0 +1,17 @@
+[
+ "pad seen: true name=Xbox Wireless Controller",
+ "A jumps: true",
+ "X attack state: attack1",
+ "stick right moves: vx=122",
+ "Start -> menu",
+ "dpad down in menu sel=2",
+ "RB tab=1",
+ "B -> play",
+ "state stays play: play pstate=idle",
+ "air attacks started in one jump (max 2): 2 lock=false",
+ "after landing lock=false n=0",
+ "shaders setting=0 gl ok=null",
+ "tab=3",
+ "sub=gfx",
+ "sub=pad"
+]

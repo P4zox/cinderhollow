@@ -1,0 +1,216 @@
+{
+ "out": [
+  "sword fin state=attack3 i=3 kick=1.77,0.00 trail=3 sparks=8",
+  "sword combo hitstops 0.051 0.051 0.066",
+  "sword heavy heavy hitstop=0.086",
+  "sword air air_attack ground=false",
+  "sword land sq=0.59",
+  "dagger fin state=dg_4 i=2 kick=1.59,0.00 trail=7 sparks=11",
+  "dagger combo hitstops 0.03 0.03 0.03 0.045",
+  "dagger heavy dg_heavy hitstop=0.065",
+  "dagger air dg_air ground=false",
+  "dagger land sq=0.49",
+  "great fin state=gs_3 i=5 kick=3.71,0.00 trail=2 sparks=10",
+  "great combo hitstops 0.075 0.075 0.09",
+  "great heavy gs_heavy hitstop=0.11",
+  "great air gs_air ground=false",
+  "great land sq=0.70",
+  "spear fin state=sp_3 i=3 kick=2.39,0.00 trail=2 sparks=8",
+  "spear combo hitstops 0.047 0.047 0.062",
+  "spear heavy sp_heavy hitstop=0.082",
+  "spear air sp_air ground=false",
+  "spear land sq=0.57",
+  "katana fin state=kt_3 i=3 kick=2.20,0.00 trail=2 sparks=8",
+  "katana combo hitstops 0.043 0.043 0.058",
+  "katana heavy kt_heavy hitstop=0.078",
+  "katana air kt_air ground=false",
+  "katana land sq=0.55",
+  "staff fin state=st_4 i=4 kick=2.14,0.00 trail=2 sparks=6",
+  "staff combo hitstops 0.042 0.042 0.042 0.057",
+  "staff heavy st_heavy hitstop=0.077",
+  "staff air st_air ground=false",
+  "staff land sq=0.54",
+  "shield fin state=sh_3 i=2 kick=2.60,0.00 trail=1 sparks=8",
+  "shield combo hitstops 0.051 0.051 0.066",
+  "shield heavy sh_heavy hitstop=0.086",
+  "shield air riposte ground=true",
+  "shield land sq=0.00",
+  "twin fin state=tw_5 i=2 kick=1.63,0.00 trail=2 sparks=7",
+  "twin combo hitstops 0.031 0.031 0.031 0.031 0.046",
+  "twin heavy tw_heavy hitstop=0.066",
+  "twin air tw_air ground=false",
+  "twin land sq=0.49",
+  "scythe fin state=sc_3 i=4 kick=2.92,0.00 trail=5 sparks=9",
+  "scythe combo hitstops 0.058 0.058 0.073",
+  "scythe heavy sc_heavy hitstop=0.093",
+  "scythe air sc_air ground=false",
+  "scythe land sq=0.62",
+  "whip fin state=wh_3 i=3 kick=1.78,0.00 trail=4 sparks=7",
+  "whip combo hitstops 0.034 0.034 0.049",
+  "whip heavy wh_heavy hitstop=0.069",
+  "whip air wh_air ground=false",
+  "whip land sq=0.51"
+ ],
+ "crops": {
+  "sword_a_fin": [
+   509,
+   504
+  ],
+  "sword_b_heavy": [
+   506,
+   504
+  ],
+  "sword_c_air": [
+   514,
+   455
+  ],
+  "sword_d_land": [
+   515,
+   504
+  ],
+  "dagger_a_fin": [
+   506,
+   504
+  ],
+  "dagger_b_heavy": [
+   513,
+   504
+  ],
+  "dagger_c_air": [
+   514,
+   459
+  ],
+  "dagger_d_land": [
+   512,
+   504
+  ],
+  "great_a_fin": [
+   502,
+   504
+  ],
+  "great_b_heavy": [
+   517,
+   492
+  ],
+  "great_c_air": [
+   517,
+   466
+  ],
+  "great_d_land": [
+   516,
+   504
+  ],
+  "spear_a_fin": [
+   498,
+   504
+  ],
+  "spear_b_heavy": [
+   513,
+   504
+  ],
+  "spear_c_air": [
+   516,
+   455
+  ],
+  "spear_d_land": [
+   511,
+   504
+  ],
+  "katana_a_fin": [
+   502,
+   504
+  ],
+  "katana_b_heavy": [
+   514,
+   504
+  ],
+  "katana_c_air": [
+   516,
+   463
+  ],
+  "katana_d_land": [
+   514,
+   504
+  ],
+  "staff_a_fin": [
+   499,
+   504
+  ],
+  "staff_b_heavy": [
+   503,
+   504
+  ],
+  "staff_c_air": [
+   517,
+   455
+  ],
+  "staff_d_land": [
+   515,
+   504
+  ],
+  "shield_a_fin": [
+   504,
+   504
+  ],
+  "shield_b_heavy": [
+   512,
+   504
+  ],
+  "shield_c_air": [
+   565,
+   504
+  ],
+  "shield_d_land": [
+   569,
+   504
+  ],
+  "twin_a_fin": [
+   522,
+   504
+  ],
+  "twin_b_heavy": [
+   519,
+   504
+  ],
+  "twin_c_air": [
+   513,
+   459
+  ],
+  "twin_d_land": [
+   512,
+   504
+  ],
+  "scythe_a_fin": [
+   501,
+   504
+  ],
+  "scythe_b_heavy": [
+   506,
+   504
+  ],
+  "scythe_c_air": [
+   516,
+   449
+  ],
+  "scythe_d_land": [
+   514,
+   504
+  ],
+  "whip_a_fin": [
+   508,
+   504
+  ],
+  "whip_b_heavy": [
+   509,
+   504
+  ],
+  "whip_c_air": [
+   516,
+   449
+  ],
+  "whip_d_land": [
+   515,
+   504
+  ]
+ }
+}

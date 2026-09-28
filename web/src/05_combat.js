@@ -223,8 +223,8 @@ function grantItem(id, x, y) {
   else if (id === 'slot') SAVE.spellSlots++;
   else if (id === 'charmslot') SAVE.charmSlots++;
   else if (id === 'emberstone' || id === 'tear') SAVE.inv[id] = (SAVE.inv[id] || 0) + 1;
-  else if (it.weapon) { if (SAVE.weapons[it.weapon] === undefined) SAVE.weapons[it.weapon] = 0; const art = WEAPONS[it.weapon].art; if (!SAVE.arts.includes(art)) SAVE.arts.push(art); }
-  else if (it.art) { if (!SAVE.arts.includes(it.art)) SAVE.arts.push(it.art); }
+  else if (it.weapon) { if (SAVE.weapons[it.weapon] === undefined) SAVE.weapons[it.weapon] = 0; }   // its art is part of it (60_wbal.js)
+  else if (it.cache) { for (const [k, n] of Object.entries(it.cache)) { if (k === 'cinders') gainCinders(n, x ?? P.x, y ?? P.y - 20); else SAVE.inv[k] = (SAVE.inv[k] || 0) + n; } }   // old art chests / "Ash of X"
   else if (it.spell) { if (!SAVE.spellsOwned.includes(it.spell)) SAVE.spellsOwned.push(it.spell); autoEquipSpell(it.spell); }
   else if (it.charm) { if (!SAVE.charms.includes(id)) SAVE.charms.push(id); if (SAVE.charmsEq.length < SAVE.charmSlots) { SAVE.charmsEq.push(id); refreshDerived(); } }
   else SAVE.items[id] = 1;

@@ -1,0 +1,69 @@
+{
+ "out": [
+  "great fin state=gs_3 i=5 kick=0.00,0.00 trail=0 sparks=0",
+  "great combo hitstops 0.09 0.09 0.09",
+  "great heavy gs_heavy hitstop=0.09",
+  "great air air_attack ground=false",
+  "great land sq=0.00",
+  "dagger fin state=dg_4 i=2 kick=0.00,0.00 trail=0 sparks=0",
+  "dagger combo hitstops 0.05 0.05 0.05 0.09",
+  "dagger heavy dg_heavy hitstop=0.09",
+  "dagger air air_attack ground=false",
+  "dagger land sq=0.00",
+  "sword fin state=attack3 i=2 kick=0.00,0.00 trail=0 sparks=0",
+  "sword combo hitstops 0.05 0.05 0.09",
+  "sword heavy heavy hitstop=0.09",
+  "sword air air_attack ground=false",
+  "sword land sq=0.00"
+ ],
+ "crops": {
+  "great_a_fin": [
+   513,
+   504
+  ],
+  "great_b_heavy": [
+   517,
+   504
+  ],
+  "great_c_air": [
+   515,
+   452
+  ],
+  "great_d_land": [
+   516,
+   504
+  ],
+  "dagger_a_fin": [
+   511,
+   504
+  ],
+  "dagger_b_heavy": [
+   519,
+   504
+  ],
+  "dagger_c_air": [
+   511,
+   449
+  ],
+  "dagger_d_land": [
+   513,
+   504
+  ],
+  "sword_a_fin": [
+   514,
+   504
+  ],
+  "sword_b_heavy": [
+   515,
+   504
+  ],
+  "sword_c_air": [
+   514,
+   452
+  ],
+  "sword_d_land": [
+   515,
+   504
+  ]
+ }
+}

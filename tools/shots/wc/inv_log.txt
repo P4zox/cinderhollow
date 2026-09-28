@@ -1,0 +1,14 @@
+[
+ "longsword        determinism: frame 219: land:0:4115:1760:999800/idle,659503/wal hits 30/23 dmg 1005/790 | off→on(no hitstop change): same hits 30/30 dmg 1005/1005 | on+hitstop: unfrozen frame 219: land:0:4115:1760:999800/idle,659503/walk,999757/i hits 23 dmg 790 frozen 290→108",
+ "dagger           determinism: frame 323: land:0:4189:1760:849840/attack,699738/i hits 29/29 dmg 614/614 | off→on(no hitstop change): same hits 29/29 dmg 614/614 | on+hitstop: unfrozen frame 323: land:0:4189:1760:849840/attack,699738/idle,699731 hits 29 dmg 614 frozen 240→207",
+ "greatsword       determinism: same hits 21/21 dmg 1144/1144 | off→on(no hitstop change): same hits 21/21 dmg 1144/1144 | on+hitstop: unfrozen same hits 21 dmg 1144 frozen 102→96",
+ "spear            determinism: same hits 32/32 dmg 1126/1126 | off→on(no hitstop change): same hits 32/32 dmg 1126/1126 | on+hitstop: unfrozen same hits 32 dmg 1126 frozen 90→73",
+ "katana           determinism: same hits 49/48 dmg 1758/1728 | off→on(no hitstop change): same hits 49/48 dmg 1758/1728 | on+hitstop: unfrozen same hits 48 dmg 1728 frozen 106→81",
+ "quarterstaff     determinism: frame 316: land:0:4185:1760:999750/attack,999560/h hits 36/37 dmg 827/849 | off→on(no hitstop change): frame 316: land:0:4185:1760:999750/attack,999560/hurt,999831/attack vs land:0:4148:1760:999750/attack,999560/hurt,999831/attack hits 36/37 dmg 827/849 | on+hitstop: unfrozen frame 316: land:0:4185:1760:999750/attack,999560/hurt,999831 hits 37 dmg 849 frozen 238→220",
+ "knight_shield    determinism: frame 346: land:0:4198:1760:999857/attack,999330/i hits 28/24 dmg 846/718 | off→on(no hitstop change): frame 346: land:0:4198:1760:999857/attack,999330/idle,999846/attack vs land:0:4173:1760:999857/attack,999330/idle,999846/attack hits 28/24 dmg 846/718 | on+hitstop: unfrozen frame 346: land:0:4198:1760:999857/attack,999330/idle,999846 hits 24 dmg 718 frozen 278→134",
+ "twinfangs        determinism: same hits 43/43 dmg 917/917 | off→on(no hitstop change): same hits 43/43 dmg 917/917 | on+hitstop: unfrozen same hits 43 dmg 917 frozen 268→222",
+ "briar_scythe     determinism: same hits 27/27 dmg 972/972 | off→on(no hitstop change): same hits 27/27 dmg 972/972 | on+hitstop: unfrozen same hits 27 dmg 972 frozen 82→80",
+ "headsman_chain   determinism: same hits 46/46 dmg 1405/1405 | off→on(no hitstop change): same hits 46/46 dmg 1405/1405 | on+hitstop: unfrozen same hits 46 dmg 1405 frozen 106→78",
+ "kalden           determinism: same hits 35/35 dmg 1709/1709 | off→on(no hitstop change): same hits 35/35 dmg 1709/1709 | on+hitstop: unfrozen same hits 35 dmg 1709 frozen 280→278",
+ "colossus_hammer  determinism: same hits 15/14 dmg 1122/1043 | off→on(no hitstop change): same hits 15/14 dmg 1122/1043 | on+hitstop: unfrozen same hits 14 dmg 1043 frozen 92→89"
+]

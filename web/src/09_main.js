@@ -214,8 +214,8 @@ function continueGame() {
 let wantArmory = false;
 try { wantArmory = location.hash === '#armory'; } catch (e) {}
 function giveArmory() {
-  for (const id of Object.keys(WEAPONS)) { if (SAVE.weapons[id] === undefined) SAVE.weapons[id] = 0; const a = WEAPONS[id].art; if (!SAVE.arts.includes(a)) SAVE.arts.push(a); }
-  for (const id of Object.keys(ARTS)) if (!SAVE.arts.includes(id)) SAVE.arts.push(id);
+  for (const id of Object.keys(WEAPONS)) if (SAVE.weapons[id] === undefined) SAVE.weapons[id] = 0;   // each carries its own art (60_wbal.js)
+  if (typeof wbLockArt === 'function') wbLockArt();
   for (const id of Object.keys(SPELL_DEFS)) if (!SAVE.spellsOwned.includes(id)) SAVE.spellsOwned.push(id);
   for (const id of Object.keys(CHARMS)) if (!SAVE.charms.includes(id)) SAVE.charms.push(id);
   SAVE.spellSlots = Math.max(SAVE.spellSlots, 4); SAVE.charmSlots = Math.max(SAVE.charmSlots, 4);

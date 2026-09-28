@@ -1,0 +1,152 @@
+{
+ "sword_1up": [
+  696,
+  505,
+  "attack_up:attack_up:2"
+ ],
+ "sword_2air": [
+  696,
+  357,
+  "air_attack:air_attack:2"
+ ],
+ "sword_3down": [
+  696,
+  355,
+  "attack_down:attack_down:2"
+ ],
+ "dagger_1up": [
+  696,
+  505,
+  "dg_up:dg_up:2"
+ ],
+ "dagger_2air": [
+  699,
+  355,
+  "dg_air:dg_air:2"
+ ],
+ "dagger_3down": [
+  701,
+  311,
+  "dg_down:dg_down:2"
+ ],
+ "great_1up": [
+  696,
+  505,
+  "gs_up:gs_up:2"
+ ],
+ "great_2air": [
+  699,
+  406,
+  "gs_air:gs_air:3"
+ ],
+ "great_3down": [
+  700,
+  358,
+  "gs_down:gs_down:2"
+ ],
+ "spear_1up": [
+  696,
+  505,
+  "sp_up:sp_up:1"
+ ],
+ "spear_2air": [
+  888,
+  505,
+  "idle:idle:1"
+ ],
+ "spear_3down": [
+  888,
+  355,
+  "sp_down:sp_down:2"
+ ],
+ "katana_1up": [
+  696,
+  505,
+  "kt_up:kt_up:2"
+ ],
+ "katana_2air": [
+  699,
+  355,
+  "kt_air:kt_air:2"
+ ],
+ "katana_3down": [
+  705,
+  311,
+  "kt_down:kt_down:2"
+ ],
+ "staff_1up": [
+  696,
+  505,
+  "st_up:st_up:1"
+ ],
+ "staff_2air": [
+  699,
+  356,
+  "st_air:st_air:2"
+ ],
+ "staff_3down": [
+  705,
+  355,
+  "st_down:st_down:2"
+ ],
+ "shield_1up": [
+  696,
+  505,
+  "sh_up:sh_up:2"
+ ],
+ "shield_2air": [
+  698,
+  356,
+  "sh_air:sh_air:2"
+ ],
+ "shield_3down": [
+  702,
+  355,
+  "sh_down:sh_down:2"
+ ],
+ "twin_1up": [
+  696,
+  505,
+  "tw_up:tw_up:2"
+ ],
+ "twin_2air": [
+  700,
+  355,
+  "tw_air:tw_air:3"
+ ],
+ "twin_3down": [
+  702,
+  311,
+  "tw_down:tw_down:2"
+ ],
+ "scythe_1up": [
+  696,
+  505,
+  "sc_up:sc_up:2"
+ ],
+ "scythe_2air": [
+  699,
+  357,
+  "sc_air:sc_air:2"
+ ],
+ "scythe_3down": [
+  701,
+  355,
+  "sc_down:sc_down:2"
+ ],
+ "whip_1up": [
+  696,
+  505,
+  "wh_up:wh_up:2"
+ ],
+ "whip_2air": [
+  697,
+  357,
+  "wh_air:wh_air:2"
+ ],
+ "whip_3down": [
+  697,
+  316,
+  "wh_down:wh_down:3"
+ ]
+}

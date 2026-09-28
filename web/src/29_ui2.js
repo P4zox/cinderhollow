@@ -125,7 +125,8 @@ function wClassName(id) {
 }
 function gearEntry(kind, id) {
   if (kind === 'weapon') { const w = WEAPONS[id]; return w && { kind, id, name: w.name, icon: 'w_' + id, desc: w.desc || '', lv: SAVE.weapons[id] || 0, eq: SAVE.weapon === id }; }
-  if (kind === 'art') { const r = ARTS[id]; return r && { kind, id, name: r.name, icon: 'a_' + id, desc: r.desc || '', fp: r.fp, eq: SAVE.art === id }; }
+  if (kind === 'art') { const r = ARTS[id]; if (!r) return null; const ws = Object.keys(WEAPONS).filter(w => wbArtOf(w) === id), own = ws.filter(w => SAVE.weapons[w] !== undefined);
+    return { kind, id, name: r.name, icon: 'a_' + id, desc: r.desc || '', fp: r.fp, eq: SAVE.art === id, bound: (own.length ? own : ws).map(w => WEAPONS[w].name) }; }
   if (kind === 'spell') { const s = SPELLS[id]; if (!s) return null; const slot = SAVE.spellsEq.indexOf(id); return { kind, id, name: s.name, icon: s.icon || 's_' + id, desc: s.desc || (SPELL_DEFS[id] && SPELL_DEFS[id].desc) || '', fp: spellCost(id), slot, eq: slot >= 0 }; }
   if (kind === 'charm') { const c = CHARMS[id]; if (!c) return null; const slot = SAVE.charmsEq.indexOf(id); return { kind, id, name: c.name, icon: id, desc: c.desc || '', slot, eq: slot >= 0 }; }
   const d = ITEMS[id]; return d && { kind, id, name: d.name, icon: d.icon, desc: d.desc || '' };
@@ -146,7 +147,7 @@ function materialEntries() {
 }
 const INV_CATS = [
   { k: 'weapon', name: 'Weapons', icon: 'w_longsword', ids: () => Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined), total: () => Object.keys(WEAPONS).length },
-  { k: 'art', name: 'Weapon Arts', icon: 'a_crescent', ids: () => Object.keys(ARTS).filter(id => SAVE.arts.includes(id)), total: () => Object.keys(ARTS).length },
+  { k: 'art', name: 'Weapon Arts', icon: 'a_crescent', ids: () => [...new Set(Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined).map(wbArtOf))], total: () => new Set(Object.keys(WEAPONS).map(wbArtOf)).size },   // each bound to its weapon (60_wbal.js)
   { k: 'spell', name: 'Spells', icon: 'ash_bolt', ids: () => knownSpells(), total: () => Object.keys(SPELLS).length },
   { k: 'charm', name: 'Charms', icon: 'c_crimson', ids: () => Object.keys(CHARMS).filter(id => SAVE.charms.includes(id)), total: () => Object.keys(CHARMS).length },
   { k: 'key', name: 'Key Items', icon: 'i_bell', ids: keyItemIds },
@@ -212,9 +213,10 @@ function drawDetail(e, px, py, pw, ph, cmp) {
       if (c && c !== n) text(n > c ? '▲' : '▼', X + 27, y + 9.4, 4.6, (lab === 'Weight' ? n < c : n > c) ? UIC.up : UIC.down, 'left');
     });
     y += 16;
-    const art = ARTS[w.art];
-    if (art) { icon('a_' + w.art, x - 1, y - 1, 10); text(art.name, x + 12, y + 6.5, 5.8, UIC.body, 'left', { weight: 500 }); text(`${art.fp} FP`, R, y + 6.5, 5.2, UIC.fp, 'right', { weight: 600 }); text('ART', x + 12 + textW(art.name, 5.8, 500) + 4, y + 6.3, 4.4, UIC.faint, 'left', { spacing: 1 }); }
+    const aid = wbArtOf(e.id), art = ARTS[aid];   // the weapon's own art: bound to it, shown read-only
+    if (art) { const cd = cdBase('art', aid), fpS = `${art.fp} FP · ${cd % 1 ? cd.toFixed(1) : cd}s`; icon('a_' + aid, x - 1, y - 1, 10); text(art.name, x + 12, y + 6.5, 5.8, UIC.body, 'left', { weight: 500 }); text(fpS, R, y + 6.5, 5.2, UIC.fp, 'right', { weight: 600 }); text('ART', x + 12 + textW(art.name, 5.8, 500) + 4, y + 6.3, 4.4, UIC.faint, 'left', { spacing: 1 }); }
     y += 13;
+    if (w.sigInfo) { uiDiamond(x + 1.5, y + 2.6, 1.1, '#f0c890'); for (const l of wrap(w.sigInfo, pw - 24, 5.2)) { text(l, x + 5, y + 4.5, 5.2, '#f0c890', 'left', { weight: 500 }); y += 6.8; } y += 3; }   // the signature, in a line (WEAPONS[id].sigInfo)
     let tx = x; const tags = weaponTags(w);
     for (const [s, c] of tags) {
       const tw = textW(s, 4.8, 600) + 6; if (tx + tw > R + 0.5) { tx = x; y += 9.5; }
@@ -227,11 +229,13 @@ function drawDetail(e, px, py, pw, ph, cmp) {
     text(String(e.fp), x, y + 15, 9.5, UIC.fp, 'left');
     if (cmp && cmp.kind === e.kind && cmp.id !== e.id) uiDelta(x + textW(String(e.fp), 9.5) + 3, y + 14.5, e.fp - cmp.fp, true);
     { const cd = cdBase(e.kind, e.id); text('COOLDOWN', x + 36, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 }); text((cd % 1 ? cd.toFixed(1) : String(cd)) + 's', x + 36, y + 15, 9.5, UIC.muted, 'left'); }
-    text('USE', x + 74, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 });
-    let kx = x + 74; for (const [k, l] of e.kind === 'art' ? [['O', 'use'], ['hold O', 'charge']] : [['U', 'cast'], ['Q', 'switch']]) {
+    const ux = x + (e.kind === 'art' ? 84 : 74);   // (the art's cooldown label is wider than its column)
+    text('USE', ux, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 });
+    let kx = ux; for (const [k, l] of e.kind === 'art' ? [['O', 'use'], ['hold O', 'charge']] : [['U', 'cast'], ['Q', 'switch']]) {
       kx += uiKey(k, kx, y + 14.5, { size: 5 }) + 2; text(l, kx, y + 14.5, 4.8, UIC.faint, 'left', { weight: 400 }); kx += textW(l, 4.8, 400) + 6;
     }
     y += 24;
+    if (e.kind === 'art' && e.bound && e.bound.length) { const bs = 'Bound to ' + e.bound.join(', '); text(bs, x, y + 2, uiFit(bs, pw - 18, 5, 3.8, 500), UIC.muted, 'left', { weight: 500 }); y += 9; }
   } else if (e.kind === 'mat' && e.big) {
     text('HELD', x, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 }); text(e.big, x, y + 15, 9, UIC.text, 'left'); y += 24;
   }
@@ -243,7 +247,7 @@ function drawDetail(e, px, py, pw, ph, cmp) {
 function slotEntry(r) {
   if (!r) return null;
   if (r.k === 'weapon') return gearEntry('weapon', SAVE.weapon);
-  if (r.k === 'art') return SAVE.art ? gearEntry('art', SAVE.art) : { empty: true, title: 'Weapon Art', sub: 'Empty', desc: 'Choose an art for O.' };
+  if (r.k === 'art') return gearEntry('art', wbArtOf(SAVE.weapon));   // read-only: the weapon's own art
   if (r.k === 'spell') { const s = SAVE.spellsEq[r.i]; if (s) return gearEntry('spell', s); const n = knownSpells().length; return { empty: true, title: `Spell slot ${r.i + 1}`, sub: 'Empty', desc: `You know ${n} spell${n === 1 ? '' : 's'}. Press ${kl('Enter')} to choose one. Learn more on the skill tree, from the Hollow Scribe, or from great foes.` }; }
   const c = SAVE.charmsEq[r.i]; if (c) return gearEntry('charm', c);
   return { empty: true, title: `Charm slot ${r.i + 1}`, sub: 'Empty', desc: `You carry ${SAVE.charms.length} charm${SAVE.charms.length === 1 ? '' : 's'}. Press ${kl('Enter')} to wear one.` };
@@ -251,17 +255,18 @@ function slotEntry(r) {
 function slotKind(r) { return r.k === 'weapon' ? 'weapon' : r.k; }
 function pickIds(r) {
   if (r.k === 'weapon') return Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined);
-  if (r.k === 'art') return Object.keys(ARTS).filter(id => SAVE.arts.includes(id));
+  if (r.k === 'art') return [];   // arts are bound to weapons: nothing to pick
   if (r.k === 'spell') return [null, ...knownSpells()];
   return [null, ...Object.keys(CHARMS).filter(id => SAVE.charms.includes(id))];
 }
 function openPicker(M, r) {
+  if (r.k === 'art') { sfx.deny(); toast('The art is bound to the weapon', 1.6); return; }
   const list = pickIds(r), cur = r.k === 'weapon' ? SAVE.weapon : r.k === 'art' ? SAVE.art : r.k === 'spell' ? SAVE.spellsEq[r.i] || null : SAVE.charmsEq[r.i] || null;
   M.pick = { row: r, list, sel: Math.max(0, list.indexOf(cur)), off: 0 }; sfx.menu();
 }
 function applyEquip(r, id) {
-  if (r.k === 'weapon') { if (!id) return; SAVE.weapon = id; const a = WEAPONS[id].art; if (SAVE.arts.includes(a) && !SAVE.artPinned) SAVE.art = a; }
-  else if (r.k === 'art') { if (!id) return; SAVE.art = id; SAVE.artPinned = true; }
+  if (r.k === 'weapon') { if (!id) return; SAVE.weapon = id; wbOnEquip(id); }   // its art comes with it
+  else if (r.k === 'art') return;
   else {
     const key = r.k === 'spell' ? 'spellsEq' : 'charmsEq', eq = [...SAVE[key]], j = id ? eq.indexOf(id) : -1, cur = eq[r.i] || null;
     if (!id) eq[r.i] = null;
@@ -324,7 +329,8 @@ function renderSlots(M, rows) {
     const nm = e.empty ? '— empty —' : e.name + (r.k === 'weapon' && e.lv ? ` +${e.lv}` : '');
     text(nm, 34, Y + 8.6, uiFit(nm, 104, 6.2, 4.8, sel ? 600 : 500), e.empty ? UIC.faint : sel ? UIC.hi : UIC.text, 'left', { weight: sel ? 600 : 500 });
     if (!e.empty && (r.k === 'spell' || r.k === 'art')) text(`${e.fp}`, 156, Y + 8.4, 5, UIC.fp, 'right', { weight: 600, alpha: sel ? 0 : 0.8 });
-    if (sel) { const k = uiPulse(6); text('◂', 143.5 - k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); text('▸', 155.5 + k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); }
+    if (sel && r.k === 'art') text('BOUND', 156, Y + 8.4, 4.4, UIC.faint, 'right', { spacing: 1 });
+    else if (sel) { const k = uiPulse(6); text('◂', 143.5 - k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); text('▸', 155.5 + k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); }
   }
   vctx.restore();
   uiScroll(161, top, view, M.slotOff, view, y);
@@ -372,7 +378,8 @@ function invInput(M, a) {
   }
   if (conf) {   // OK equips straight from the bag: weapons and arts replace, spells and charms fill a free slot (or come off)
     const e = L[M.isel]; if (!e) return;
-    if (e.kind === 'weapon' || e.kind === 'art') { if (e.eq) { sfx.deny(); return; } applyEquip({ k: e.kind }, e.id); toast(`${e.name} equipped`, 1.6); }
+    if (e.kind === 'art') { sfx.deny(); toast('The art is bound to its weapon', 1.6); }
+    else if (e.kind === 'weapon') { if (e.eq) { sfx.deny(); return; } applyEquip({ k: e.kind }, e.id); toast(`${e.name} equipped`, 1.6); }
     else if (e.kind === 'spell' || e.kind === 'charm') {
       const key = e.kind === 'spell' ? 'spellsEq' : 'charmsEq', slots = e.kind === 'spell' ? SAVE.spellSlots : SAVE.charmSlots;
       if (e.eq) { applyEquip({ k: e.kind, i: e.slot }, null); toast(`${e.name} removed`, 1.6); }
@@ -407,13 +414,13 @@ function renderInvTab(M) {
   uiScroll(161, 74, INV_ROWS * 21 - 3, M.ioff, INV_ROWS, rows);
   panel(170, 30, 202, 172, 0.8);
   const e = M.bar ? null : L[M.isel];
-  if (e) drawDetail(e, 170, 30, 202, 172, e.kind === 'weapon' ? gearEntry('weapon', SAVE.weapon) : e.kind === 'art' && SAVE.art ? gearEntry('art', SAVE.art) : null);
+  if (e) drawDetail(e, 170, 30, 202, 172, e.kind === 'weapon' ? gearEntry('weapon', SAVE.weapon) : null);   // arts are bound: nothing to compare against
   else {   // category focused: a short summary of the category
     icon(C.icon, 250, 70, 40, 0.9);
     text(C.name, 271, 128, 8, UIC.gold, 'center');
     text(L.length ? `${L.length} held · ↓ to browse` : 'You carry none yet.', 271, 140, 5.4, UIC.muted, 'center', { weight: 400 });
   }
-  const act = e && (e.kind === 'weapon' || e.kind === 'art') ? (e.eq ? '' : 'equip') : e && (e.kind === 'spell' || e.kind === 'charm') ? (e.eq ? 'remove' : 'equip') : '';
+  const act = e && e.kind === 'weapon' ? (e.eq ? '' : 'equip') : e && (e.kind === 'spell' || e.kind === 'charm') ? (e.eq ? 'remove' : 'equip') : '';
   uiFooter(M.bar ? [['←→', 'category'], ['↓', 'browse'], ...tabHint(), ['Esc', 'close']]
     : [['↑↓←→', 'browse'], ...(act ? [['Enter', act]] : []), ...tabHint(), ['Esc', 'close']]);
 }

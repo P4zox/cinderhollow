@@ -468,29 +468,29 @@ const AREAS = {
 // scaling letters -> coefficient (bonus = coef * (stat - 10) / 35)
 const GRADE = { S: 1.1, A: 0.9, B: 0.7, C: 0.5, D: 0.3, E: 0.15, '-': 0 };
 const WEAPONS = {
-  longsword: { name: 'Ashen Longsword', base: 30, sc: { str: 'D', dex: 'C', fth: '-' }, speed: 1.0, reach: 1.0, stam: 1.0, poise: 1.0, art: 'crescent',
+  longsword: { name: 'Ashen Longsword', base: 42, sc: { str: 'D', dex: 'C', fth: '-' }, speed: 1.0, reach: 1.0, stam: 1.0, poise: 1.0, art: 'crescent',
     desc: 'The blade you woke holding. Balanced, dependable, dull with old ash.' },
-  dagger: { name: 'Hollow Fang', base: 21, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.4, reach: 0.72, stam: 0.65, poise: 0.6, bleed: 26, art: 'bloodstep',
+  dagger: { name: 'Hollow Fang', base: 21, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.45, reach: 0.72, stam: 0.6, poise: 0.6, bleed: 14, art: 'bloodstep',
     desc: 'A grave-robber’s curved knife. Quick cuts that open old wounds.' },
-  greatsword: { name: 'Gravecleaver', base: 46, sc: { str: 'A', dex: 'D', fth: '-' }, speed: 0.76, reach: 1.25, stam: 1.45, poise: 1.9, armor: true, art: 'stormleap',
+  greatsword: { name: 'Gravecleaver', base: 57, sc: { str: 'A', dex: 'D', fth: '-' }, speed: 0.76, reach: 1.25, stam: 1.45, poise: 1.9, armor: true, art: 'warcry',
     desc: 'A slab of iron carved with runes of the ramparts’ dead. Carries the weight of a hundred oaths.' },
-  spear: { name: 'Rootspear', base: 29, sc: { str: 'D', dex: 'B', fth: '-' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 0.9, art: 'warcry',
+  spear: { name: 'Rootspear', base: 37, sc: { str: 'D', dex: 'B', fth: '-' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 0.9, art: 'warcry',
     desc: 'Its haft is a living root of the Pale Tree. It still reaches for the light.' },
   katana: { name: 'Duskveil', base: 29, sc: { str: 'E', dex: 'A', fth: 'E' }, speed: 1.15, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 18, art: 'moonwave',
     desc: 'A blade forged under a dying moon. Its edge is pale and cold.' },
-  maul: { name: 'Cinder Maul', base: 50, sc: { str: 'S', dex: '-', fth: '-' }, speed: 0.74, reach: 1.05, stam: 1.5, poise: 2.1, fire: 0.25, armor: true, art: 'cinderblade',
+  maul: { name: 'Cinder Maul', base: 46, sc: { str: 'S', dex: '-', fth: '-' }, speed: 0.74, reach: 1.05, stam: 1.5, poise: 2.1, fire: 0.25, armor: true, art: 'cinderblade',
     desc: 'The head is a lump of the Root’s heartwood, still smouldering after the fall.' },
-  oathbrand: { name: 'Oathbrand', base: 27, sc: { str: 'D', dex: 'D', fth: 'A' }, speed: 1.0, reach: 1.0, stam: 1.0, poise: 1.0, holy: 0.15, art: 'crescent',
+  oathbrand: { name: 'Oathbrand', base: 34, sc: { str: 'D', dex: 'D', fth: 'A' }, speed: 1.0, reach: 1.0, stam: 1.0, poise: 1.0, holy: 0.15, art: 'cinderblade',
     desc: 'A cathedral sword that remembers every prayer said over it. Spells cast by its bearer burn 15% brighter.' },
-  kalden: { name: 'Oath of Kalden', base: 44, sc: { str: 'B', dex: 'B', fth: '-' }, speed: 0.9, reach: 1.2, stam: 1.2, poise: 1.5, armor: true, art: 'moonwave',
+  kalden: { name: 'Oath of Kalden', base: 35, sc: { str: 'B', dex: 'B', fth: '-' }, speed: 0.9, reach: 1.2, stam: 1.2, poise: 1.5, armor: true, art: 'moonwave',
     desc: 'Ser Kalden swore on this blade to guard the Ashen Bell. He kept that oath past death, and past himself.' },
-  gravetusk: { name: 'Gravetusk', base: 48, sc: { str: 'A', dex: 'D', fth: '-' }, speed: 0.78, reach: 1.25, stam: 1.4, poise: 1.9, armor: true, art: 'stormleap', boss: true,
+  gravetusk: { name: 'Gravetusk', base: 62, sc: { str: 'A', dex: 'D', fth: '-' }, speed: 0.78, reach: 1.25, stam: 1.4, poise: 1.9, armor: true, art: 'stormleap', boss: true,
     desc: 'The Hound\u2019s own tusk, still bound in golden root. Its finishing blows call roots up from the earth.' },
-  omen: { name: 'Morvain\u2019s Eclipse', base: 34, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, art: 'crescent', boss: true,
+  omen: { name: 'Morvain\u2019s Eclipse', base: 31, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, art: 'backstep_slash', boss: true,
     desc: 'The Omen\u2019s blade drinks the light it cuts through. Its swings leave golden arcs; heavy blows loose spears of light.' },
-  rotmaw: { name: 'Rotmaw Cleaver', base: 50, sc: { str: 'S', dex: '-', fth: '-' }, speed: 0.74, reach: 1.05, stam: 1.5, poise: 2.0, armor: true, art: 'warcry', rot: true, boss: true,
+  rotmaw: { name: 'Rotmaw Cleaver', base: 52, sc: { str: 'S', dex: '-', fth: '-' }, speed: 0.74, reach: 1.05, stam: 1.5, poise: 2.0, armor: true, art: 'warcry', rot: true, boss: true,
     desc: 'Hacked from the Vessel\u2019s many bones. Every wound it opens festers, and heavy blows leave pools of rot.' },
-  scepter: { name: 'Sovereign\u2019s Rootspear', base: 34, sc: { str: 'D', dex: 'C', fth: 'B' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 0.9, holy: 0.15, art: 'moonwave', boss: true,
+  scepter: { name: 'Sovereign\u2019s Rootspear', base: 31, sc: { str: 'D', dex: 'C', fth: 'B' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 0.9, holy: 0.15, art: 'moonwave', boss: true,
     desc: 'The queen\u2019s own scepter. Its finishing thrusts loose lances of light; heavy blows call down pillars from the sky.' },
 };
 const ARTS = {
@@ -1256,7 +1256,7 @@ const ROOMS = [
     "############YYYYYY##############################",
     "################################################",
   ] },
-  { ...{"id": "A7", "name": "The Unbound Folio", "biome": "archives", "gx": 324, "gy": -130, "w": 24, "h": 14, "indoor": true, "secret": true, "items": ["emberstone", "emberstone"], "chests": ["art:backstep_slash"], "spawns": [{"t": "ar2_lore", "x": 14, "y": 12}]}, map: [
+  { ...{"id": "A7", "name": "The Unbound Folio", "biome": "archives", "gx": 324, "gy": -130, "w": 24, "h": 14, "indoor": true, "secret": true, "items": ["emberstone", "emberstone"], "chests": ["ash_cache"], "spawns": [{"t": "ar2_lore", "x": 14, "y": 12}]}, map: [
     "########################",
     "#.x.l....R.....l....####",
     "#...................####",
@@ -7839,7 +7839,7 @@ const ATK = {
   heavy: { active: [4, 5], mult: 1.0, poise: 45, reach: [-2, 42], ys: [-42, 0], cost: 28, fx: 'heavy', fxAt: [18, -17], lunge: 70, speed: 1, kind: 'heavy' },
   attack_up: { active: [2, 3], mult: 1.0, poise: 12, reach: [-18, 18], ys: [-60, -16], cost: 12, fx: 'slash_up', fxAt: [0, -26], lunge: 0, speed: 1.15, kind: 'light', up: true },
   attack_down: { active: [1, 3], mult: 1.0, poise: 12, reach: [-8, 8], ys: [-8, 22], cost: 10, fx: null, lunge: 0, speed: 1.1, kind: 'light', down: true },
-  air_attack: { active: [1, 2], mult: 1.0, poise: 12, reach: [-2, 36], ys: [-36, -4], cost: 12, fx: 'slash_air', fxAt: [18, -18], lunge: 0, speed: 1.15, kind: 'light' },
+  air_attack: { active: [2, 3], mult: 1.0, poise: 12, reach: [-2, 36], ys: [-36, -4], cost: 12, fx: 'slash_air', fxAt: [18, -18], lunge: 0, speed: 1.15, kind: 'light', air: true },
 };
 // ---- per-weapon movesets: class animations authored in gen_player.py, hitboxes from assets/player_meta.json
 const WEAPON_CLASS = { longsword: 'sword', oathbrand: 'sword', kalden: 'sword', dagger: 'dagger', greatsword: 'great', maul: 'great', spear: 'spear', katana: 'katana',
@@ -7853,24 +7853,28 @@ const WEAPON_CLASS = { longsword: 'sword', oathbrand: 'sword', kalden: 'sword', 
   headsman_chain: 'whip', gravechain: 'whip', orrery_whip: 'whip', thornwood_staff: 'staff', sun_sceptre: 'staff',
   choir_harpoon: 'spear', scarab_spear: 'spear', saint_lance: 'spear', tidecleaver: 'great', vael_greatsword: 'great', meteor_maul: 'great',
   barnacle_fang: 'dagger', carving_knife: 'dagger', sanguine_rapier: 'sword', pharaoh_khopesh: 'sword', starblade: 'katana', plasma_katana: 'katana' };
+// up / air / down: each class's own directional attacks (v10); the sword's are the v3 attack_up / air_attack / attack_down
 const MOVESETS = {
-  sword: { combo: ['attack1', 'attack2', 'attack3'], extra: 'attack4', heavy: 'heavy' },
-  dagger: { combo: ['dg_1', 'dg_2', 'dg_3', 'dg_4'], extra: 'dg_2', heavy: 'dg_heavy' },
-  great: { combo: ['gs_1', 'gs_2', 'gs_3'], extra: 'gs_1', heavy: 'gs_heavy' },
-  spear: { combo: ['sp_1', 'sp_2', 'sp_3'], extra: 'sp_1', heavy: 'sp_heavy' },
-  katana: { combo: ['kt_1', 'kt_2', 'kt_3'], extra: 'kt_1', heavy: 'kt_heavy' },
-  staff: { combo: ['st_1', 'st_2', 'st_3', 'st_4'], extra: 'st_2', heavy: 'st_heavy' },
-  shield: { combo: ['sh_1', 'sh_2', 'sh_3'], extra: 'sh_1', heavy: 'sh_heavy' },
-  twin: { combo: ['tw_1', 'tw_2', 'tw_3', 'tw_4', 'tw_5'], extra: 'tw_2', heavy: 'tw_heavy' },
-  scythe: { combo: ['sc_1', 'sc_2', 'sc_3'], extra: 'sc_2', heavy: 'sc_heavy' },
-  whip: { combo: ['wh_1', 'wh_2', 'wh_3'], extra: 'wh_2', heavy: 'wh_heavy' },
+  sword: { combo: ['attack1', 'attack2', 'attack3'], extra: 'attack4', heavy: 'heavy', up: 'attack_up', air: 'air_attack', down: 'attack_down' },
+  dagger: { combo: ['dg_1', 'dg_2', 'dg_3', 'dg_4'], extra: 'dg_2', heavy: 'dg_heavy', up: 'dg_up', air: 'dg_air', down: 'dg_down' },
+  great: { combo: ['gs_1', 'gs_2', 'gs_3'], extra: 'gs_1', heavy: 'gs_heavy', up: 'gs_up', air: 'gs_air', down: 'gs_down' },
+  spear: { combo: ['sp_1', 'sp_2', 'sp_3'], extra: 'sp_1', heavy: 'sp_heavy', up: 'sp_up', air: 'sp_air', down: 'sp_down' },
+  katana: { combo: ['kt_1', 'kt_2', 'kt_3'], extra: 'kt_1', heavy: 'kt_heavy', up: 'kt_up', air: 'kt_air', down: 'kt_down' },
+  staff: { combo: ['st_1', 'st_2', 'st_3', 'st_4'], extra: 'st_2', heavy: 'st_heavy', up: 'st_up', air: 'st_air', down: 'st_down' },
+  shield: { combo: ['sh_1', 'sh_2', 'sh_3'], extra: 'sh_1', heavy: 'sh_heavy', up: 'sh_up', air: 'sh_air', down: 'sh_down' },
+  twin: { combo: ['tw_1', 'tw_2', 'tw_3', 'tw_4', 'tw_5'], extra: 'tw_2', heavy: 'tw_heavy', up: 'tw_up', air: 'tw_air', down: 'tw_down' },
+  scythe: { combo: ['sc_1', 'sc_2', 'sc_3'], extra: 'sc_2', heavy: 'sc_heavy', up: 'sc_up', air: 'sc_air', down: 'sc_down' },
+  whip: { combo: ['wh_1', 'wh_2', 'wh_3'], extra: 'wh_2', heavy: 'wh_heavy', up: 'wh_up', air: 'wh_air', down: 'wh_down' },
 };
+const SWORD_AER = { up: 'attack_up', air: 'air_attack', down: 'attack_down' };
+// the air attack of these classes circles the body: it hits both sides, a little softer on each
+const AIR_SPIN = { staff: true, scythe: true, whip: true };
 const CLASS_TUNING = {   // per-class feel: damage mults along the combo, poise, stamina, lunge, fx
   dagger: { mult: [0.8, 0.8, 0.85, 1.25], poise: 7, cost: 7, lunge: 45, fx: ['slash', 'slash2', 'slash', 'slash3'], heavy: { mult: 1.3, poise: 25, cost: 16, lunge: 160, fx: 'slash3' } },
   great: { mult: [1.0, 1.05, 1.4], poise: 32, cost: 22, lunge: 40, fx: ['heavy', 'slash_up', 'slash3'], heavy: { mult: 1.25, poise: 70, cost: 34, lunge: 30, fx: 'heavy', slam: true } },
   spear: { mult: [0.95, 1.0, 1.3], poise: 14, cost: 13, lunge: 80, fx: ['slash_air', 'slash_air', 'slash3'], heavy: { mult: 1.15, poise: 45, cost: 26, lunge: 230, fx: 'slash_air' } },
   katana: { mult: [1.0, 1.0, 1.35], poise: 12, cost: 12, lunge: 60, fx: ['slash2', 'slash', 'slash3'], heavy: { mult: 1.35, poise: 45, cost: 26, lunge: 200, fx: 'slash3' } },
-  // v8: staff hits ~75-80% of the spear's, faster; its heavy is an instant 360-degree spin paid with 80% of max stamina
+  // v8: staff hits ~75-80% of the spear's, faster; its heavy is an instant 360-degree spin paid with 45% of max stamina
   staff: { mult: [0.74, 0.76, 0.8, 1.02], poise: 12, cost: 11, lunge: 60, fx: ['slash_air', null, 'slash', 'heavy'],
            heavy: { mult: 1.2, poise: 95, cost: 0, lunge: 20, fx: null, staffSpin: true, noCharge: true, spin: true } },
   shield: { mult: [0.92, 0.96, 1.3], poise: 12, cost: 10, lunge: 50, fx: ['slash', 'slash2', 'slash_air'],
@@ -7912,6 +7916,15 @@ const PLUNGE_A = { active: [0, 0], mult: 1, poise: 70, reach: [-26, 40], ys: [-3
                        cost: Hh.cost, fx: Hh.fx, fxAt: m.fxAt || [18, -17], lunge: Hh.lunge, speed: 1, kind: 'heavy', cls, slam: Hh.slam, big: true,
                        staffSpin: Hh.staffSpin, noCharge: Hh.noCharge, spin: Hh.spin, bash: Hh.bash, reap: Hh.reap, pull: Hh.pull, chain: Hh.chain, crack: Hh.crack };
     if (cls === 'whip') ATK[set.heavy].reach[1] += 10;
+    // v10 directional attacks: mult relative to the combo opener (up x1.0, air x1.0 (spins x0.8), down x0.9); boxes from the meta
+    for (const d of ['up', 'air', 'down']) {
+      const tag = set[d], am = PM[tag]; if (!tag || !am || !am.hit) continue;
+      const spin = d === 'air' && !!AIR_SPIN[cls];
+      const A = ATK[tag] = { active: am.active, mult: T.mult[0] * (d === 'down' ? 0.9 : 1) * (spin ? 0.8 : 1), poise: T.poise, reach: [am.hit[0], am.hit[2]], ys: [am.hit[1], am.hit[3]],
+                             cost: T.cost, fx: null, fxAt: am.fxAt || [18, -17], lunge: d === 'air' ? T.lunge : 0, speed: 1, kind: 'light', cls, big: cls === 'great',
+                             up: d === 'up', air: d === 'air', down: d === 'down', spin, pull: !!T.pull, crack: !!T.crack, hang: cls === 'great' && d === 'air' };
+      if (cls === 'whip') { if (spin) { A.reach[0] -= 8; A.reach[1] += 8; } else if (d === 'up') A.ys[0] -= 8; else A.ys[1] += 4; }   // the crack reaches past the drawn lash
+    }
   }
   for (const [tag, T] of Object.entries(TECH_ATK)) {
     const m = PM[tag] || {};
@@ -7933,6 +7946,8 @@ function moveset() {
   if (cls !== 'sword' && !(pHas(set.combo[0]) && ATK[set.combo[0]])) return MOVESETS.sword;
   return set;
 }
+// the class's up / air / down attack (d), or the sword's if this sheet / meta predates it
+function aerTag(d) { const t = moveset()[d]; return t && ATK[t] && pHas(t) ? t : SWORD_AER[d]; }
 const MAXV = 122, JUMP_V = 272, GRAV_UP = 640, GRAV_DN = 860, FALL_MAX = 430;
 let P = null, D = null;
 
@@ -7983,10 +7998,10 @@ function startAttack(name) {
   const tag = A.anim || name;
   setP(name, pHas(tag) ? tag : 'attack1', false, A.speed * (A.kind === 'light' ? D.castSpeed : 1) * (A.cls ? 1 : D.W.speed));
 }
-function staffSpinCost() { return D.maxSt * 0.8 * (charmOn('c_brand') ? 0.8 : 1); }
+function staffSpinCost() { return D.maxSt * 0.45 * (charmOn('c_brand') ? 0.8 : 1); }
 function startHeavy() {
   const A = ATK[moveset().heavy];
-  if (A && A.staffSpin && P.st < staffSpinCost() - 0.5) { sfx.deny(); P.denyT = 0.5; toast('The spin needs 80% of your stamina', 1.4); return false; }
+  if (A && A.staffSpin && P.st < staffSpinCost() - 0.5) { sfx.deny(); P.denyT = 0.5; toast('The spin needs 45% of your stamina', 1.4); return false; }
   startAttack(moveset().heavy); return true;
 }
 // guard counter: attack right after a clean parry / block. Katana: +40% and quicker.
@@ -8066,10 +8081,10 @@ function updatePlayer(dt) {
     else if (peek('heavy') && P.st > 0 && !P.ground && P.state !== 'wall' && pHas('plunge') && smashReady()) { take('heavy'); if (ax) P.face = ax; smashStart(); startPlunge(); }
     else if (peek('attack') && P.st > 0) {
       take('attack'); if (ax) P.face = ax;
-      if (held.has('up')) startAttack('attack_up');
-      else if (!P.ground && held.has('down')) startAttack('attack_down');
+      if (held.has('up')) startAttack(aerTag('up'));
+      else if (!P.ground && held.has('down')) startAttack(aerTag('down'));
       else if (!P.ground && P.vy < -30 && wcls() === 'spear' && pHas('sp_jump')) startSpDive();
-      else if (!P.ground) startAttack('air_attack');
+      else if (!P.ground) startAttack(aerTag('air'));
       else { P.combo = 1; startAttack(moveset().combo[0]); P.comboStep = 0; }
     }
     else if (peek('parry') && P.ground && P.st > 0) { take('parry'); startParry(); }
@@ -8149,7 +8164,8 @@ function updatePlayer(dt) {
         if (A.slam) { shake = 7; sfx.boom(); spawnFx('shockwave', P.x + P.face * 22, P.y, 1); spawnFx('ground_crack', P.x + P.face * 22, P.y, 1); for (let i = 0; i < 14; i++) particles.push({ x: P.x + P.face * 22 + rand(-16, 16), y: P.y - 2, vx: rand(-80, 80), vy: -rand(30, 110), g: 320, life: 0.6, kind: 'dust' }); }
       }
       if (P.ground) { P.vx *= Math.pow(0.0008, dt); grav(); }
-      else if (P.state === 'attack_down') { P.vx = approach(P.vx, ax * MAXV * 0.6, 500 * dt); grav(); }
+      else if (A.hang && an.i < A.active[0]) { P.vx *= Math.pow(0.02, dt); P.vy = Math.min(Math.max(P.vy, 0) + GRAV_DN * 0.2 * dt, 50); }   // the great air cleave: the rise stops, you hang for the heave
+      else if (A.down) { P.vx = approach(P.vx, ax * MAXV * 0.6, 500 * dt); grav(); }
       else { P.vx = approach(P.vx, ax * MAXV * 0.8, 500 * dt); grav(); }
       if (an.i >= A.active[0] && an.i <= A.active[1]) { playerStrike(A); const sg = SIGS[SAVE.weapon]; if (sg) sigTrail(A, sg); }
       if (an.i > A.active[1]) {   // recovery: chain combo or roll-cancel
@@ -8160,7 +8176,7 @@ function updatePlayer(dt) {
         if (peek('roll') && P.st > 0) { take('roll'); doRoll(ax); break; }
         if (!P.ground && peek('jump') && P.airJumps > 0) { take('jump'); P.airJumps--; doJump(JUMP_V * 0.9, true); break; }
       }
-      if (an.done || (!P.ground && !['air_attack', 'attack_down', 'attack_up'].includes(P.state) && P.vy > 60)) {
+      if (an.done || (!P.ground && !(A.air || A.down || A.up) && P.vy > 60)) {
         P.combo = 0; setP(P.ground ? 'idle' : 'air', P.ground ? 'idle' : 'jump_fall', P.ground);
       }
       break;
@@ -8219,7 +8235,7 @@ function updatePlayer(dt) {
     P.dj = false;
     if (preState === 'slam') traversalAfterMove('slam');
     else if (P.state === 'air' || P.state === 'wall' || P.state === 'glide') setP('land', pHas('land') ? 'land' : 'idle', false);
-    if (P.state === 'air_attack' || P.state === 'attack_down') { P.combo = 0; setP('land', 'land', false); }
+    if (ATK[P.state] && (ATK[P.state].air || ATK[P.state].down)) { P.combo = 0; setP('land', 'land', false); }
     if (preState === 'plunge' && P.state === 'plunge' && P.anim.tag !== 'plunge_land') plungeImpact(false);
     if (preState === 'spdive' && P.state === 'spdive') { setP('land', 'land', false); shake = Math.max(shake, 3); sfx.land(); spawnFx('dust', P.x + P.face * 10, P.y, P.face); }
   }
@@ -8563,7 +8579,9 @@ function playerStrike(A) {
   if (P.twinBuff && P.hitSet.size && [...P.hitSet].some(x => x !== 'brk')) P.twinBuff = false;
   // pogo off spikes + break walls/urns
   if (A.down && !P.pogoed) {
-    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE) { pogo(); airRefund(); break; } }
+    // (brambles too, for every class's down attack -- 30_thornveil.js only knows the sword's attack_down tag)
+    const bram = typeof TV_T_BRAMBLE !== 'undefined' ? TV_T_BRAMBLE : -1;
+    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE || t === bram) { pogo(); airRefund(); break; } }
   }
   hitBreakables(r);
 }
@@ -8861,7 +8879,15 @@ function updateStormleap(dt, grav) {
   if (an.done) { P.artLaunched = false; setP('idle', 'idle', true); }
 }
 
-// ------------------------------------------------------------------ boss weapons: each carries its former owner's signature effects
+// ------------------------------------------------------------------ boss weapons: each carries its former owner's signature
+// Weapon-feel pass (agent WB, docs/WEAPON_FEEL_CONTRACT.md B1): a signature is the boss's power shown through light, particles,
+// slash FX and tone -- a flourish, not a second weapon. Its gameplay part is small and bounded:
+//   * damage only on the combo finisher or a charged heavy (the staff's spin counts), behind an internal cooldown (>= 2.5 s)
+//   * on-hit procs: >= 2 s per target and small numbers, or purely visual
+//   * nothing that deals damage reaches past 1.5x the weapon's own melee reach (sigLimit); projectiles are short flourishes
+//   * no real sustain, no crowd control on bosses
+// Budget: signature damage <= ~8% of the weapon's sustained DPS in tools/shots/wb/bench_real.js. `info` is the one-line
+// in-world summary the gear panel shows (WEAPONS[id].sigInfo, set in 60_wbal.js).
 const REACH_MUL = 1.12;   // global forward-reach bonus for side attacks
 function isFinisher(state) { const ms = moveset(); return state === ms.combo[ms.combo.length - 1] || state === 'attack4'; }
 function sigRect(A) {
@@ -8873,194 +8899,348 @@ const SIG_ROT = { attack1: 0.45, attack2: -0.45, attack3: 0, attack4: 0.2, heavy
   gs_1: 0.6, gs_2: -0.6, gs_3: 0, gs_heavy: 0.9, sp_1: 0, sp_2: -0.35, sp_3: 0.5, sp_heavy: 0,
   st_1: 0, st_2: -0.8, st_3: 0.2, st_4: 0.9, st_heavy: 0, sh_1: 0.5, sh_2: -0.6, sh_3: 0, sh_heavy: 0, sh_counter: 0,
   tw_1: 0.5, tw_2: 0.5, tw_3: -0.6, tw_4: 0, tw_5: 0.9, tw_heavy: 0.4, counter: -0.6, backstep: -0.3 };
+// per-class directional tags (<cls>_up / _air / _down, agent WA) fall back on their ATK flags
+function sigRot(A) { const r = SIG_ROT[P.state]; if (r !== undefined) return r; A = A || ATK[P.state] || {}; return A.up ? -1.3 : A.down ? 1.5 : A.air ? 0.25 : 0; }
 function sigTrail(A, sg) {
   const r = sigRect(A);
   for (let i = 0; i < 3; i++) particles.push({ x: P.face > 0 ? r.x1 - rand(0, 10) : r.x0 + rand(0, 10), y: rand(r.y0, r.y1), vx: P.face * rand(10, 50), vy: -rand(0, 30), life: rand(0.2, 0.45), kind: Math.random() < 0.75 ? sg.pk : sg.pk2 });
   addLight((r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2, 46, sg.light, 0.8);
 }
 function burst(x, y, n, k1, k2, spd = 100) { for (let i = 0; i < n; i++) particles.push({ x: x + rand(-8, 8), y: y + rand(-12, 12), vx: P.face * rand(20, spd), vy: -rand(10, 70), g: 160, life: rand(0.3, 0.7), kind: Math.random() < 0.7 ? k1 : k2 }); }
-// player-owned ground effects that hurt foes: root spikes and light pillars
-function groundFx(kind, x, delay, dmg) {
-  const f = { proot: ['root_spike', [0.18, 0.5]], ppillar: ['lightpillar', [0.3, 0.62]] }[kind];
-  let fy = Math.floor(P.y / TILE) * TILE;
-  for (let k = 0; k < 4 && !solidAtPx(x, fy + 1); k++) fy += TILE;   // find the floor under the point
-  if (!solidAtPx(x, fy + 1) || solidAtPx(x, fy - 4)) return;
-  projectiles.push({ owner: 'player', kind, x, y: fy, vx: 0, vy: 0, dmg, life: 0.9, r: 9, t: 0, pierce: true, static: true, fxName: f[0], win: f[1], hits: new Set(), poise: 40, face: P.face,
-                    delay, onStart: () => kind === 'ppillar' ? sfx.pillar() : sfx.crumble() });
+
+// ---- the gameplay budget: trigger, cooldown, reach
+const SIG_ICD = 2.5;
+function sigReach() {   // the weapon's own melee reach in px ahead of the player (its current moveset)
+  const ms = moveset(); let r = 30;
+  for (const tag of [...ms.combo, ms.heavy]) { const A = ATK[tag]; if (A) r = Math.max(r, A.reach[1] * (A.cls ? 1 : D.W.reach) * REACH_MUL); }
+  return r;
 }
+const sigLimit = () => sigReach() * 1.5;
+const sigBig = A => !!A && ATK[P.state] === A && (isFinisher(P.state) && A.kind !== 'heavy' || (A.kind === 'heavy' && (P.charged || A.staffSpin)));   // finisher / charged heavy (the spin); never a plunge
+function sigGo(A, key = 'fx', cd = SIG_ICD) {   // may this swing's flourish deal damage? (finisher / charged heavy, off cooldown)
+  if (!sigBig(A)) return false;
+  P.sigCd = P.sigCd || {}; if ((P.sigCd[key] || 0) > time) return false;
+  P.sigCd[key] = time + cd; return true;
+}
+function sigTargetCd(t, key, cd) { if (!t || t.prop) return false; const k = '_sigT_' + key; if ((t[k] || 0) > time) return false; t[k] = time + cd; return true; }
+// clip a damage rect to [ox - L, ox + L]; null when nothing is left
+function sigClip(r, ox = P.x, L = sigLimit()) { const x0 = Math.max(r.x0, ox - L), x1 = Math.min(r.x1, ox + L); return x1 > x0 ? rect(x0, r.y0, x1, r.y1) : null; }
+function sigStrike(r, dmg, opt = {}) { const c = sigClip(r, opt.ox, opt.L); return c ? wStrike(c, dmg, opt) : []; }
+const sigSmallFoe = t => !t.prop && !t.boss && !(t.cfg && t.cfg.elite);
+function sigFrontTarget(x, y, range, dirFace = P.face) {
+  let best = null, bd = 1e9;
+  for (const t of targets()) {
+    if (t.prop) continue; const hb = hbOf(t); if (!hb) continue;
+    const near = dirFace > 0 ? hb.x0 : hb.x1, dx = (near - x) * dirFace;   // distance to the facing edge of the foe
+    if (dx < -((hb.x1 - hb.x0) / 2 + 10) || dx > range || Math.abs((hb.y0 + hb.y1) / 2 - y) > 60) continue;
+    if (dx < bd) { bd = dx; best = t; }
+  }
+  return best;
+}
+const hbMid = t => { const hb = t.hurtbox(); return { x: (hb.x0 + hb.x1) / 2, y: (hb.y0 + hb.y1) / 2 }; };
+
+// ---- shared flourishes (purely visual)
+// a crescent of the signature's light swept through the blow
+function sigArc(p, col, rot, opt = {}) {
+  const face = P.face, R = opt.r || 20, life = opt.life || 0.26, w = opt.w || 3;
+  wfx({ life, draw() {
+    const k = this.t / life, a = (1 - k) * (opt.alpha ?? 0.9), r = R * (0.85 + 0.35 * k);
+    g.save(); g.translate(Math.round(p.x), Math.round(p.y)); g.scale(face, 1); g.rotate(rot);
+    g.lineCap = 'round';
+    for (const [c, lw, al] of [[col, w + 3, 0.28], [col, w, 0.8], ['#ffffff', 1, 0.9]]) {
+      g.globalAlpha = a * al; g.strokeStyle = c; g.lineWidth = lw; g.beginPath(); g.arc(-r * 0.55, 0, r, -1.05 + k * 0.25, 1.05 + k * 0.25); g.stroke();
+    }
+    g.restore(); addLight(p.x, p.y, R + 18, opt.light || '255,230,190', 0.7 * (1 - k));
+  } });
+}
+// the finisher's colour flourish: an arc, a spray of the boss's motes and a two-note tone
+function sigFlourish(A, sg, r, opt = {}) {
+  const p = sigPoint(r), heavy = A.kind === 'heavy';
+  sigArc(p, sg.glow, sigRot(A), { r: heavy ? 26 : 20, light: sg.light, w: heavy ? 4 : 3 });
+  burst(p.x, p.y, heavy ? 16 : 10, sg.pk, sg.pk2, 130);
+  if (opt.tone !== false) { tone(opt.f0 || 520, 0.3, 0.04, 'triangle', 0.8); tone((opt.f0 || 520) * 1.5, 0.25, 0.025, 'sine', 0.9, 0.05); }
+}
+// a sprite flourish that flies a short way and fades (spears, lances, needles): dies at `dist` px, or at the limit
+function sigBolt(o) {
+  const L = Math.min(o.dist ?? 1e9, o.L ?? sigLimit()) - Math.abs(o.x - P.x);
+  return wfx(Object.assign({ skip: new Set(), ox: P.x, x0: o.x, life: 1, update(dt) {
+    this.x += this.vx * dt; this.y += this.vy * dt;
+    const gone = Math.abs(this.x - this.x0);
+    if (gone >= L || solidAtPx(this.x, this.y)) { this.onEnd && this.onEnd(); return false; }
+    this.k = gone / Math.max(1, L);
+    if (this.dmg > 0) for (const t of sigStrike(rect(this.x - 6, this.y - 4, this.x + 6, this.y + 4), this.dmg, { skip: this.skip, poise: this.poise || 10, dir: Math.sign(this.vx) || 1, kind: 'spell', ox: this.ox, L: this.Lmax })) this.onHit && this.onHit(t);
+    if (this.trail && Math.random() < 0.7) particles.push({ x: this.x - Math.sign(this.vx) * 6, y: this.y + rand(-1, 1), vx: -this.vx * 0.1, vy: rand(-10, 10), life: 0.25, kind: this.trail });
+  }, draw() {
+    const a = Math.max(0, 1 - Math.max(0, (this.k || 0) - 0.45) / 0.55) * (this.alpha ?? 1), f = Math.sign(this.vx) || 1;
+    if (this.fx) { const s = fxSheet(this.fx); if (s.ok) { const tg = s.tag(Object.keys(s.tags)[0]); drawRotated(s, tg.from + Math.floor(this.t * 14) % (tg.to - tg.from + 1), this.x, this.y, Math.atan2(this.vy, this.vx), a); } }
+    else if (!wfxDraw(this.sheet, this.t, this.x, this.y, f, { center: true, loop: true, alpha: a, rot: Math.atan2(this.vy, Math.abs(this.vx)) * f })) { g.globalAlpha = a; g.fillStyle = this.col || '#fff'; g.fillRect(this.x - 4, this.y - 1, 8, 2); g.globalAlpha = 1; }
+    addLight(this.x, this.y, 26, this.light || '255,255,255', 0.6 * a);
+  } }, o, { Lmax: o.L ?? sigLimit() }));
+}
+function sigFloorX(x) { const fy = wFloorBelow(x, P.y - 6); return fy !== null && Math.abs(fy - P.y) <= 24 && !solidAtPx(x, fy - 8) ? fy : null; }
+
+// ================================================================== the signatures
 const SIGS = {
   kalden: { glow: '#7ff0d0', light: '120,230,200', pk: 'teal', pk2: 'gold', replaceFx: true,
+    info: 'Moonlit teal slashes that ring like a struck bell. No extra effect.',
     swing(A, r) {
-      const p = sigPoint(r), heavy = A.kind === 'heavy', rot = SIG_ROT[P.state] ?? 0;
+      const p = sigPoint(r), heavy = A.kind === 'heavy', rot = sigRot(A);
       spawnFx(fxOr('kalden_slash', 'slash3'), p.x, p.y, P.face, null, { rot, speed: heavy ? 0.8 : 1.15, alpha: 0.95 });
       if (heavy || isFinisher(P.state)) { spawnFx(fxOr('kalden_slash', 'slash3'), p.x + P.face * 8, p.y, P.face, null, { rot: rot * 0.5, speed: 0.7, alpha: 0.55 }); shake = Math.max(shake, heavy ? 4 : 2); }
       tone(heavy ? 330 : 440, 0.35, 0.05, 'triangle', 0.55); tone(heavy ? 660 : 880, 0.25, 0.03, 'sine', 0.7);
       burst(p.x, p.y, heavy ? 18 : 9, 'teal', 'gold');
-    } },
+    },
+    finisher(A, r) { if (sigBig(A)) sigArc(sigPoint(r), '#7ff0d0', sigRot(A), { r: 28, life: 0.34, light: '120,230,200' }); } },
   gravetusk: { glow: '#ffd27a', light: '255,200,110', pk: 'root', pk2: 'gold',
+    info: 'Finisher or charged heavy: golden roots split the ground where the blow lands · every 2.5 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 10, 'root', 'gold'); tone(150, 0.3, 0.06, 'sawtooth', 0.6); },
     finisher(A, r) {
-      const n = A.kind === 'heavy' ? 4 : 2, d = D.heavy * (A.kind === 'heavy' ? 1.0 : 0.7);
-      for (let k = 0; k < n; k++) groundFx('proot', P.x + P.face * (30 + k * 20), 0.08 + k * 0.09, d);
-      shake = Math.max(shake, 3);
+      if (!sigBig(A) && A.kind !== 'heavy') return;
+      const go = sigGo(A), skip = new Set(), L = sigLimit(), n = A.kind === 'heavy' ? 4 : 3;
+      sfx.crumble(); shake = Math.max(shake, 3); if (sigBig(A)) sigFlourish(A, this, r, { f0: 196 });
+      for (let k = 0; k < n; k++) {
+        const x = P.x + P.face * Math.min(L - 4, 22 + k * 14), fy = sigFloorX(x); if (fy === null) break;
+        const at = 0.06 + k * 0.07;
+        wfx({ life: at + 0.5, x, fy, done: false, update() {
+          if (this.t < at || this.done) return; this.done = true;
+          spawnFx(fxOr('root_spike', 'hit'), this.x, this.fy, P.face, null, { bottom: true });
+          for (let i = 0; i < 6; i++) particles.push({ x: this.x + rand(-5, 5), y: this.fy - 2, vx: rand(-40, 40), vy: -rand(40, 120), g: 380, life: 0.5, kind: i % 2 ? 'gold' : 'root' });
+          if (go) sigStrike(rect(this.x - 8, this.fy - 30, this.x + 8, this.fy + 1), D.light * 0.3, { skip, poise: 20 });
+        }, draw() { if (this.t >= at) addLight(this.x, this.fy - 12, 28, '255,200,110', 0.7 * Math.max(0, 1 - (this.t - at) / 0.5)); } });
+      }
     } },
   omen: { glow: '#ffcf6a', light: '255,210,120', pk: 'gold', pk2: 'ember', replaceFx: true,
+    info: 'Golden arcs on every blow. Finisher or charged heavy: a fan of light spears that fades a tile past the blade · every 2.5 s',
     swing(A, r) {
-      const p = sigPoint(r), heavy = A.kind === 'heavy', rot = SIG_ROT[P.state] ?? 0;
+      const p = sigPoint(r), heavy = A.kind === 'heavy', rot = sigRot(A);
       spawnFx(fxOr('boss_slash', 'slash3'), p.x, p.y, P.face, null, { rot, speed: heavy ? 0.85 : 1.2, alpha: 0.95 });
       burst(p.x, p.y, heavy ? 16 : 8, 'gold', 'ember'); tone(heavy ? 392 : 523, 0.3, 0.05, 'triangle', 0.6);
     },
     finisher(A, r) {
-      const n = A.kind === 'heavy' ? 2 : 1;
-      for (let k = 0; k < n; k++) projectiles.push({ owner: 'player', kind: 'sunspear', face: P.face, t: 0, hits: new Set(), x: P.x + P.face * 16, y: P.y - 20 + (k - (n - 1) / 2) * 7,
-        vx: P.face * (330 + k * 20), vy: (k - (n - 1) / 2) * 25, dmg: D.light * 0.65, life: 1.0, r: 6, pierce: true, sh: 'fx_light_spear' });
-      sfx.spear(); flashScreen = Math.max(flashScreen, 0.08);
+      if (!sigBig(A)) return;
+      const go = sigGo(A), p = sigPoint(r), n = A.kind === 'heavy' ? 5 : 3;
+      for (let k = 0; k < n; k++) {
+        const off = k - (n - 1) / 2;
+        sigBolt({ x: P.x + P.face * 14, y: p.y - 2 + off * 6, vx: P.face * 360, vy: off * 45, dist: Math.abs(p.x - P.x) + 18, fx: 'light_spear', trail: 'gold', light: '255,220,140',
+          dmg: go && off === 0 ? D.light * 0.3 : 0, poise: 12 });
+      }
+      sfx.spear(); flashScreen = Math.max(flashScreen, 0.06); sigFlourish(A, this, r, { f0: 587 });
     } },
   rotmaw: { glow: '#9ae05a', light: '150,210,90', pk: 'spore', pk2: 'ember',
+    info: 'Charged heavy: a brief pool of rot where the blow lands · every 3 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 10, 'spore', 'ember'); if (A.kind === 'heavy' || isFinisher(P.state)) spawnFx(fxOr('rot_hit', 'hit'), p.x, p.y, P.face); },
     finisher(A, r) {
-      if (A.kind !== 'heavy') return;
-      projectiles.push({ owner: 'player', kind: 'mist', x: P.x + P.face * 34, y: P.y, vx: 0, vy: 0, dmg: D.heavy * 0.22, life: 3.2, r: 26, pierce: true, tick: 0.45, static: true, t: 0, hits: new Set(), face: P.face, sh: 'fx_rotmist' });
+      if (!sigBig(A)) return;
+      sigFlourish(A, this, r, { f0: 147 });
+      if (A.kind !== 'heavy' || !sigGo(A, 'fx', 3)) return;
+      const x = P.x + P.face * Math.min(30, sigLimit() - 20);
+      projectiles.push({ owner: 'player', kind: 'mist', x, y: P.y, vx: 0, vy: 0, dmg: D.heavy * 0.05, life: 1.6, r: 18, pierce: true, tick: 0.5, static: true, t: 0, hits: new Set(), face: P.face, sh: 'fx_rotmist' });
       sfx.fire();
     } },
   scepter: { glow: '#fff2c8', light: '255,245,220', pk: 'petal', pk2: 'gold',
+    info: 'Finisher: a short lance of pale light. Charged heavy: a pillar falls just ahead · every 2.5 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'petal', 'gold'); tone(988, 0.25, 0.04, 'sine', 1.3); },
     finisher(A, r) {
+      if (!sigBig(A)) return;
+      const go = sigGo(A), p = sigPoint(r); sigFlourish(A, this, r, { f0: 659 });
       if (A.kind === 'heavy') {
-        groundFx('ppillar', P.x + P.face * 56, 0.05, D.heavy * 1.7);
+        const x = P.x + P.face * Math.min(56, sigLimit() - 12), fy = sigFloorX(x);
         spawnFx(fxOr('holy_burst', 'parry_flash'), P.x + P.face * 30, P.y - 18, P.face, null, { alpha: 0.8 });
+        if (fy !== null) {
+          const skip = new Set(); sfx.pillar();
+          wfx({ life: 0.7, x, fy, done: false, update() {
+            if (this.t < 0.12 || this.done) return; this.done = true; shake = Math.max(shake, 4); flashScreen = Math.max(flashScreen, 0.06);
+            spawnFx(fxOr('lightpillar', 'holy_burst'), this.x, this.fy, P.face, null, { bottom: true });
+            if (go) sigStrike(rect(this.x - 10, this.fy - 80, this.x + 10, this.fy + 1), D.heavy * 0.35, { skip, poise: 30, big: true });
+          }, draw() { const k = Math.min(1, this.t / 0.12); addLight(this.x, this.fy - 30, 50, '255,240,200', 0.8 * k * Math.max(0, 1 - (this.t - 0.12) / 0.58)); } });
+        }
       } else {
-        projectiles.push({ owner: 'player', kind: 'sovlance', face: P.face, t: 0, hits: new Set(), x: P.x + P.face * 20, y: P.y - 18, vx: P.face * 360, vy: 0, dmg: D.light * 1.1, life: 0.9, r: 6, pierce: true, sh: 'fx_sov_lance' });
+        sigBolt({ x: P.x + P.face * 18, y: p.y, vx: P.face * 380, vy: 0, dist: Math.abs(p.x - P.x) + 20, fx: 'sov_lance', trail: 'petal', light: '255,245,220', dmg: go ? D.light * 0.3 : 0, poise: 14 });
         sfx.spear();
       }
     } },
-  // ---- v8 expansion boss weapons (helpers wfx / wStrike / zap / addFrost / addBurn live in 13_weapons.js)
+  // ---- v8 expansion boss weapons (helpers wfx / wStrike / wZap / wAddFrost / wAddBurn live in 13_weapons.js)
   inkquill: { glow: '#b890ff', light: '170,120,240', pk: 'ink', pk2: 'gold',
+    info: 'A wound it opens is signed with a glyph that bursts a moment later (once per foe every 2.5 s). The spin flings a little ink.',
     swing(A, r) {
       const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 14 : 7, 'ink', 'gold');
       tone(A.kind === 'heavy' ? 311 : 523, 0.25, 0.04, 'sine', 0.6);
-      if (A.staffSpin) sigInkBlots();
+      if (A.staffSpin) { sigInkBlots(sigGo(A)); sigFlourish(A, this, r, { f0: 311 }); }
     },
     hit(t, info) { sigInkGlyph(t, info); } },
   twinborne: { get glow() { return P && P.sigCharge > 0 ? '#ff9a40' : '#a8dcff'; }, get light() { return P && P.sigCharge > 0 ? '255,160,70' : '170,220,255'; },
     get pk() { return P && P.sigCharge > 0 ? 'ember' : 'frost'; }, pk2: 'frost',
+    info: 'Blocking stokes the blade (up to 3): the next blow bursts into flame for a little more. Blocks chill lesser attackers.',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, P.sigCharge > 0 ? 'fire' : 'frost', 'frost'); },
     hit(t, info) {   // a stoked blade: the next blow bursts into flame
       if (!(P.sigCharge > 0) || t.prop) return;
       P.sigCharge--;
-      t.hit({ dmg: D.light * 0.75, poise: 20, dir: info.dir, kind: 'spell', x: info.x, y: info.y, big: true, fire: true });
-      wAddBurn(t, 3.5, D.light * 0.35);
+      t.hit({ dmg: D.light * 0.3, poise: 12, dir: info.dir, kind: 'spell', x: info.x, y: info.y, big: true, fire: true, sig: true });
       spawnFx(fxOr('cinderblade', 'hit'), info.x, info.y, P.face); sfx.fire();
+      sigArc({ x: info.x, y: info.y }, '#ff9a40', rand(-0.6, 0.6), { r: 16, light: '255,160,70' });
       for (let i = 0; i < 14; i++) particles.push({ x: info.x, y: info.y, vx: rand(-70, 70), vy: -rand(30, 120), g: 120, life: rand(0.3, 0.7), kind: 'fire' });
     },
     block(src) {   // blocking chills the attacker and stokes the blade
       P.sigCharge = Math.min(3, (P.sigCharge || 0) + 1);
       tone(1320, 0.2, 0.05, 'triangle', 0.7); tone(220, 0.3, 0.05, 'sawtooth', 1.4);
       for (let i = 0; i < 10; i++) particles.push({ x: P.x + P.face * 14, y: P.y - rand(10, 26), vx: P.face * rand(30, 140), vy: rand(-40, 20), life: rand(0.3, 0.6), kind: 'frost' });
-      if (src && !src.prop && typeof src.hit === 'function' && src.hurtbox && src.hurtbox()) wAddFrost(src, 38);
+      if (src && !src.prop && !src.boss && typeof src.hit === 'function' && src.hurtbox && src.hurtbox()) wAddFrost(src, 24);
     } },
   colossus_hammer: { glow: '#ff9a40', light: '255,150,60', pk: 'ember', pk2: 'fire',
+    info: 'Heavies crack the ground with glowing seams. A fully charged heavy makes them burn and erupt · every 3 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 16 : 8, 'ember', 'fire'); tone(90, 0.3, 0.06, 'sawtooth', 0.6); },
-    finisher(A) { if (A.kind === 'heavy') sigLavaCrack(!!P.charged); } },
+    finisher(A, r) { if (A.kind !== 'heavy') return; const hot = !!P.charged && sigGo(A, 'fx', 3); sigLavaCrack(hot); if (sigBig(A)) sigFlourish(A, this, r, { f0: 110 }); } },
   stormfang: { glow: '#9fd0ff', light: '150,200,255', pk: 'frost', pk2: 'spark',
+    info: 'Finisher: lightning arcs into the foe before you. Charged heavy: a bolt falls on it · every 2.5 s, melee range only',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'frost', 'spark'); noise(0.08, 4000, 2, 0.08, 'highpass'); },
-    finisher(A, r) { if (A.kind === 'heavy') sigSkyBolt(); else sigChain(sigPoint(r)); },
-    dive(t, info) { sigChain({ x: info.x, y: info.y }); } },
+    finisher(A, r) {
+      if (!sigBig(A)) return;
+      const go = sigGo(A); sigFlourish(A, this, r, { f0: 880, tone: false });
+      if (A.kind === 'heavy') sigSkyBolt(go); else sigChain(sigPoint(r), go);
+    },
+    dive(t, info) { wZap(info.x - P.face * 20, info.y - 6, info.x, info.y, 0.14); noise(0.1, 3500, 2, 0.1, 'highpass'); } },
   windstaff: { glow: '#c8fff4', light: '200,250,240', pk: 'mote', pk2: 'dust',
+    info: 'Every blow sends a puff of wind. Finisher: a gust that buffets. The spin looses a short whirlwind · every 2.5 s',
     swing(A, r) {
       const p = sigPoint(r); burst(p.x, p.y, 6, 'mote', 'dust');
-      if (A.staffSpin) sigWhirlwind(); else if (A.kind === 'light') sigGust(p);
+      if (A.staffSpin) { sigWhirlwind(sigGo(A)); sigFlourish(A, this, r, { f0: 262 }); }
+      else if (A.kind === 'light') { const big = isFinisher(P.state); sigGust(p, big && sigGo(A)); if (big) sigFlourish(A, this, r, { f0: 330, tone: false }); }
     } },
   first_ember: { glow: '#ffb050', light: '255,180,90', pk: 'ember', pk2: 'gold',
+    get info() { return `Mirrors your ${wbClassLabel(wcls())} (the last weapon you fought with). Every blow leaves a golden echo; a finisher's echo strikes again for 15% · once per foe every 2.5 s`; },
     swing(A, r) { sigEmberEcho(A, r); },
-    hit(t, info) {   // every blow strikes again a moment later
+    hit(t, info, A) {   // the echo: always seen, only a finisher's lands
       if (t.prop) return;
+      const lands = !!A && isFinisher(P.state) && sigTargetCd(t, 'echo', SIG_ICD);
       wfx({ life: 0.36, update() {
         if (this.t < 0.3 || this.done) return; this.done = true;
         if (t.alive === false) return;
-        t.hit({ dmg: info.dmg * 0.25, poise: (info.poise || 0) * 0.3, dir: info.dir, kind: 'light', x: info.x, y: info.y, fire: true, melee: true });
-        spawnFx(fxOr('embers', 'hit'), info.x, info.y, info.dir); tone(740, 0.2, 0.04, 'triangle', 0.8);
-        for (let i = 0; i < 8; i++) particles.push({ x: info.x, y: info.y, vx: rand(-60, 60), vy: -rand(20, 90), g: 100, life: rand(0.3, 0.6), kind: 'ember' });
+        if (lands) t.hit({ dmg: info.dmg * 0.15, poise: (info.poise || 0) * 0.2, dir: info.dir, kind: 'light', x: info.x, y: info.y, fire: true, sig: true });
+        spawnFx(fxOr('embers', 'hit'), info.x, info.y, info.dir, null, lands ? {} : { alpha: 0.6 }); tone(lands ? 740 : 988, 0.2, lands ? 0.04 : 0.02, 'triangle', 0.8);
+        for (let i = 0; i < (lands ? 10 : 5); i++) particles.push({ x: info.x, y: info.y, vx: rand(-60, 60), vy: -rand(20, 90), g: 100, life: rand(0.3, 0.6), kind: 'ember' });
       } });
     } },
   // ---- v9 (Expansion 2) boss weapons
   antler_scythe: { glow: '#9fe8a0', light: '140,230,150', pk: 'spore', pk2: 'root',
+    info: 'Finisher or charged heavy: thorns wake along the sweep · every 2.5 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 14 : 7, 'spore', 'root'); },
-    finisher(A) { sig9Thorns(A.kind === 'heavy' ? 4 : 3, A.kind === 'heavy' ? 0.5 : 0.35); } },
+    finisher(A, r) { if (!sigBig(A)) return; sig9Thorns(A.kind === 'heavy' ? 4 : 3, sigGo(A) ? 0.3 : 0); sigFlourish(A, this, r, { f0: 247 }); } },
   choir_harpoon: { glow: '#7ff0e0', light: '100,230,210', pk: 'teal', pk2: 'frost',
+    info: 'Finisher or charged heavy: a lance of black water leaps off the tip and drags lesser foes in · every 2.5 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'teal', 'frost'); },
-    finisher(A, r) { const p = sigPoint(r); if (A.kind === 'heavy') for (const vy of [-50, 0, 50]) sig9WaterLance(p, vy, 0.6); else sig9WaterLance(p, 0, 0.8); },
-    dive(t, info) { sig9WaterLance({ x: info.x, y: info.y }, 0, 0.6); } },
+    finisher(A, r) {
+      if (!sigBig(A)) return;
+      const go = sigGo(A), p = sigPoint(r); sigFlourish(A, this, r, { f0: 220, tone: false });
+      if (A.kind === 'heavy') for (const vy of [-50, 0, 50]) sig9WaterLance(p, vy, go && vy === 0 ? 0.3 : 0); else sig9WaterLance(p, 0, go ? 0.3 : 0);
+    },
+    dive(t, info) { burst(info.x, info.y, 10, 'teal', 'frost'); noise(0.2, 1200, 0.8, 0.1, 'bandpass', 0.6); } },
   sanguine_rapier: { glow: '#ff5060', light: '240,60,80', pk: 'blood', pk2: 'fire',
+    info: 'Finisher or charged heavy: a needle of blood. A critical blow drinks a sip (3% HP) · every 6 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 6, 'blood', 'blood'); },
-    finisher(A, r) { const p = sigPoint(r); sig9BloodLance(p, 0); if (A.kind === 'heavy') { sig9BloodLance(p, -40); sig9BloodLance(p, 40); } },
-    crit(t, dmg) {   // every critical blow drinks deep
-      const h = Math.round(Math.min(D.maxHp * 0.25, dmg * 0.3));
-      P.hp = Math.min(D.maxHp, P.hp + h); popup(P.x, P.y - 34, h, '#ff6a7a'); sfx.bleed();
+    finisher(A, r) {
+      if (!sigBig(A)) return;
+      const go = sigGo(A), p = sigPoint(r); sigFlourish(A, this, r, { f0: 440, tone: false });
+      sig9BloodLance(p, 0, go); if (A.kind === 'heavy') { sig9BloodLance(p, -40, false); sig9BloodLance(p, 40, false); }
+    },
+    crit(t, dmg) {   // every critical blow drinks -- a sip, not a meal
+      const drink = (P.sigDrinkT || 0) <= time;
       for (let i = 0; i < 16; i++) particles.push({ x: t.x + rand(-8, 8), y: t.y - rand(6, 26), vx: (P.x - t.x) * rand(2, 3), vy: -rand(0, 30), life: 0.45, kind: 'blood' });
+      if (!drink) return;
+      P.sigDrinkT = time + 6;
+      const h = Math.round(D.maxHp * 0.03);
+      P.hp = Math.min(D.maxHp, P.hp + h); popup(P.x, P.y - 34, h, '#ff6a7a'); sfx.bleed();
     } },
   vael_greatsword: { glow: '#a8dcff', light: '150,200,255', pk: 'frost', pk2: 'teal',
+    info: 'Wounds flicker with ghost-fire. Charged heavy: spectral chains rise and bind the foe before you (lesser foes are slowed) · every 3 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, A.kind === 'heavy' ? 16 : 8, 'frost', 'teal'); tone(A.kind === 'heavy' ? 180 : 260, 0.35, 0.04, 'sine', 0.6); },
-    hit(t, info) { if (!t.prop) wAddBurn(t, 2.5, D.light * 0.16); },   // ghost-fire in the wound
-    finisher(A) { if (A.kind === 'heavy') sig9Chains(); } },
+    hit(t, info) { if (!t.prop) sigGhostFire(t); },   // ghost-fire in the wound: seen, not felt
+    finisher(A, r) { if (!sigBig(A)) return; sigFlourish(A, this, r, { f0: 165, tone: false }); if (A.kind === 'heavy') sig9Chains(sigGo(A, 'fx', 3)); } },
   pharaoh_khopesh: { glow: '#ffd070', light: '255,210,120', pk: 'gold', pk2: 'dust',
-    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'gold', 'dust'); },
-    finisher(A, r) { if (A.kind === 'heavy') sig9Sand(); else sig9SunDisc(sigPoint(r)); } },
+    info: 'Finisher: a disc of sunlight flung out and back. Charged heavy: a burst of scouring sand · every 2.5 s',
+    swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'gold', 'dust'); if (A.kind === 'heavy') sig9Sand(false, true); },
+    finisher(A, r) { if (!sigBig(A)) return; const go = sigGo(A); sigFlourish(A, this, r, { f0: 494 }); if (A.kind === 'heavy') sig9Sand(go); else sig9SunDisc(sigPoint(r), go); } },
   starblade: { glow: '#c8d8ff', light: '190,210,255', pk: 'mote', pk2: 'frost',
+    info: 'Finisher or charged heavy: shards of the sky fall on what stands within reach · every 2.5 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'mote', 'frost'); tone(1480, 0.2, 0.03, 'sine', 1.3); },
-    finisher(A) { sig9Stars(A.kind === 'heavy' ? 5 : 3); } },
+    finisher(A, r) { if (!sigBig(A)) return; sig9Stars(A.kind === 'heavy' ? 5 : 3, sigGo(A)); sigFlourish(A, this, r, { f0: 1175, tone: false }); } },
   saint_lance: { glow: '#70fff8', light: '120,255,250', pk: 'teal', pk2: 'spark',
+    info: 'Wounds glitch (a flicker, and once per foe every 2.5 s a small echo). Finisher or charged heavy: a neon line cut through the air ahead · every 2.5 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 6, 'teal', 'spark'); tone(1760, 0.08, 0.04, 'square', 0.5); },
-    finisher(A, r) { sig9Laser(sigPoint(r), A.kind === 'heavy'); },
+    finisher(A, r) { if (!sigBig(A)) return; sig9Laser(sigPoint(r), A.kind === 'heavy', sigGo(A)); sigFlourish(A, this, r, { f0: 1319, tone: false }); },
     hit(t, info) { sig9Glitch(t, info); },
-    dive(t, info) { sig9Laser({ x: info.x, y: info.y }, false); } },
+    dive(t, info) { sig9Laser({ x: info.x - P.face * 24, y: info.y }, false, false); } },
   last_kindling: { glow: '#fff4d0', light: '255,244,210', pk: 'mote', pk2: 'gold',
+    info: 'Wounds flare with pale fire. Finisher or charged heavy: a pyre rises where the foe stands and burns a moment · every 2.5 s',
     swing(A, r) { const p = sigPoint(r); burst(p.x, p.y, 8, 'mote', 'gold'); },
-    hit(t, info) { sig9Pyre(t.x, t.y, t); },
-    finisher(A) { if (A.kind === 'heavy') for (const k of [0, 1]) sig9Pyre(P.x + P.face * (8 + k * 26), P.y, null, true); } },
+    hit(t, info) { if (!t.prop && sigTargetCd(t, 'flare', 0.8)) sigPaleFlare(info.x, info.y); },
+    finisher(A, r) {
+      if (!sigBig(A)) return;
+      const go = sigGo(A), t = sigFrontTarget(P.x, P.y - 16, sigReach()), L = sigLimit();
+      sigFlourish(A, this, r, { f0: 523, tone: false });
+      const x = t ? clamp(hbMid(t).x, P.x - L + 10, P.x + L - 10) : P.x + P.face * Math.min(34, L - 10);
+      sig9Pyre(x, P.y, go);
+      if (A.kind === 'heavy') sig9Pyre(P.x + P.face * 10, P.y, false);
+    } },
 };
 // ---- v9 signature helpers (entities live in 13_weapons.js's WFX list)
 const sig9Pyres = [];
-function sig9Thorns(n, mult) {   // thorns erupt along the sweep, one after another
+function sig9Thorns(n, mult) {   // thorns erupt along the sweep, one after another; one shared cut per foe
   sfx.crumble();
+  const skip = new Set(), L = sigLimit();
   for (let k = 0; k < n; k++) {
-    const x = P.x + P.face * (22 + k * 14), fy = wFloorBelow(x, P.y - 6);
-    if (fy === null || Math.abs(fy - P.y) > 24 || solidAtPx(x, fy - 8)) break;
-    wfx({ life: 0.55 + k * 0.07, x, fy, at: k * 0.07, face: P.face, done: false, skip: new Set(),
+    const x = P.x + P.face * Math.min(L - 6, 22 + k * 14), fy = sigFloorX(x);
+    if (fy === null) break;
+    wfx({ life: 0.55 + k * 0.07, x, fy, at: k * 0.07, face: P.face, done: false,
       update() {
-        if (this.t >= this.at + 0.05 && !this.done) { this.done = true; wStrike(rect(this.x - 7, this.fy - 26, this.x + 7, this.fy + 1), D.light * mult, { poise: 22, skip: this.skip, dir: this.face });
+        if (this.t >= this.at + 0.05 && !this.done) { this.done = true; if (mult > 0) sigStrike(rect(this.x - 7, this.fy - 26, this.x + 7, this.fy + 1), D.light * mult, { poise: 16, skip, dir: this.face });
           for (let i = 0; i < 5; i++) particles.push({ x: this.x + rand(-5, 5), y: this.fy - 2, vx: rand(-40, 40), vy: -rand(40, 110), g: 380, life: 0.5, kind: i % 2 ? 'spore' : 'root' }); }
       },
       draw() { if (this.t >= this.at) { if (!wfxDraw('thorn', this.t - this.at, this.x, this.fy + 1, this.face)) { g.fillStyle = '#6a8a40'; g.fillRect(this.x - 1, this.fy - 18, 3, 18); } addLight(this.x, this.fy - 10, 22, '140,230,150', 0.5); } } });
   }
 }
-function sig9Proj(o) {   // a straight player projectile drawn from a wpn_fx sheet, rotated along its flight
-  return wfx(Object.assign({ skip: new Set(), life: 0.6, update(dt) {
-    this.x += this.vx * dt; this.y += this.vy * dt;
-    if (solidAtPx(this.x, this.y)) { this.onEnd && this.onEnd(); return false; }
-    for (const t of wStrike(rect(this.x - 6, this.y - 4, this.x + 6, this.y + 4), this.dmg, { skip: this.skip, poise: this.poise || 12, dir: Math.sign(this.vx) || 1, kind: 'spell' })) this.onHit && this.onHit(t);
-    if (this.trail && Math.random() < 0.7) particles.push({ x: this.x - Math.sign(this.vx) * 6, y: this.y + rand(-1, 1), vx: -this.vx * 0.1, vy: rand(-10, 10), life: 0.3, kind: this.trail });
-  }, draw() { const a = Math.atan2(this.vy, Math.abs(this.vx)); if (!wfxDraw(this.sheet, this.t, this.x, this.y, Math.sign(this.vx) || 1, { center: true, loop: true, rot: a * (Math.sign(this.vx) || 1) })) { g.fillStyle = this.col || '#fff'; g.fillRect(this.x - 4, this.y - 1, 8, 2); } addLight(this.x, this.y, 26, this.light || '255,255,255', 0.6); } }, o));
-}
 function sig9WaterLance(p, vy, mult) {
   sfx.spear(); noise(0.2, 1200, 0.8, 0.12, 'bandpass', 0.6);
-  sig9Proj({ x: p.x, y: p.y, vx: P.face * 300, vy, dmg: D.light * mult, sheet: 'waterlance', trail: 'teal', light: '100,230,210', col: '#70e8d8', poise: 16,
-    onHit(t) { if (!t.prop && !t.boss && !(t.cfg && t.cfg.elite) && t.vx !== undefined) { t.vx = -P.face * 120; weaponPull(t, { chain: false }); } } });   // the tide drags them in
+  sigBolt({ x: p.x, y: p.y, vx: P.face * 300, vy, dist: Math.abs(p.x - P.x) + 26, sheet: 'waterlance', trail: 'teal', light: '100,230,210', col: '#70e8d8', dmg: D.light * mult, poise: 12,
+    onHit(t) { if (sigSmallFoe(t) && t.vx !== undefined) { t.vx = -P.face * 120; weaponPull(t, { chain: false }); } } });   // the tide drags lesser foes in
 }
-function sig9BloodLance(p, vy) {
-  sig9Proj({ x: p.x, y: p.y, vx: P.face * 360, vy, dmg: D.light * 0.45, sheet: 'bloodlance', trail: 'blood', light: '240,60,80', col: '#e02040', poise: 10,
-    onHit(t) { if (t.hit && !t.prop) t.hit({ dmg: 0, poise: 0, dir: P.face, kind: 'spell', x: t.x, y: t.y - 14, bleed: 16, quiet: true }); } });
+function sig9BloodLance(p, vy, go) {
+  sigBolt({ x: p.x, y: p.y, vx: P.face * 360, vy, dist: Math.abs(p.x - P.x) + 20, sheet: 'bloodlance', trail: 'blood', light: '240,60,80', col: '#e02040', dmg: go ? D.light * 0.2 : 0, poise: 8,
+    onHit(t) { if (t.hit && !t.prop) t.hit({ dmg: 0, poise: 0, dir: P.face, kind: 'spell', x: t.x, y: t.y - 14, bleed: 8, quiet: true }); } });
   tone(880, 0.15, 0.04, 'sawtooth', 0.5);
 }
-function sig9Chains() {   // spectral chains burst from the ground and bind the nearest foe ahead
-  const t = sigFrontTarget(P.x, P.y - 16, 130); if (!t) return;
+function sigGhostFire(t) {   // a pale-blue flicker in the wound (no damage)
+  if (!sigTargetCd(t, 'ghost', 0.5)) return;
+  const hb = t.hurtbox && t.hurtbox(); if (!hb) return;
+  wfx({ life: 1.2, draw() {
+    const h2 = t.hurtbox && t.hurtbox(); if (!h2) return;
+    const a = Math.max(0, 1 - this.t / 1.2);
+    if (Math.random() < 0.5) particles.push({ x: rand(h2.x0 + 4, h2.x1 - 4), y: rand(h2.y0 + 6, h2.y1 - 4), vx: rand(-6, 6), vy: -rand(15, 40), life: 0.4, kind: Math.random() < 0.6 ? 'frost' : 'teal' });
+    addLight((h2.x0 + h2.x1) / 2, (h2.y0 + h2.y1) / 2, 30, '150,200,255', 0.5 * a);
+  } });
+}
+function sigPaleFlare(x, y) {   // a small pale flame licks up from the wound (no damage)
+  tone(620, 0.2, 0.02, 'sine', 1.4);
+  wfx({ life: 0.5, x, y, draw() { const a = 1 - this.t / 0.5; wfxDraw('pyre', this.t, this.x, this.y + 8, 1, { alpha: 0.55 * a }); addLight(this.x, this.y, 24, '255,244,210', 0.5 * a); } });
+  for (let i = 0; i < 5; i++) particles.push({ x: x + rand(-4, 4), y: y + rand(-6, 6), vx: rand(-10, 10), vy: -rand(20, 50), life: 0.4, kind: 'mote' });
+}
+function sig9Chains(go) {   // spectral chains burst from the ground and bind the nearest foe within reach
+  const L = sigLimit(), t = sigFrontTarget(P.x, P.y - 16, L - 10);
+  tone(120, 0.6, 0.08, 'sawtooth', 1.4); noise(0.4, 2400, 1, 0.15, 'highpass');
+  if (!t) {   // nothing in reach: the chains lash the air where the blow lands
+    const x = P.x + P.face * Math.min(40, L - 10), fy = sigFloorX(x) ?? P.y;
+    wfx({ life: 0.5, draw() { const a = 1 - this.t / 0.5; g.globalAlpha = a; for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? '#8fc8ff' : '#dff0ff'; g.fillRect(Math.round(x + (i - 4) * 3), Math.round(fy - 4 - i * 3 * Math.min(1, this.t * 6)), 2, 2); } g.globalAlpha = 1; addLight(x, fy - 12, 28, '150,200,255', 0.6 * a); } });
+    return;
+  }
   const hb = t.hurtbox(); if (!hb) return;
   const fy = wFloorBelow((hb.x0 + hb.x1) / 2, hb.y1 - 4) ?? hb.y1;
-  tone(120, 0.6, 0.08, 'sawtooth', 1.4); noise(0.4, 2400, 1, 0.15, 'highpass');
-  wfx({ life: 1.4, t0: t, anchors: [(hb.x0 + hb.x1) / 2 - 22, (hb.x0 + hb.x1) / 2 + 22], fy, bound: false,
+  wfx({ life: 1.4, anchors: [(hb.x0 + hb.x1) / 2 - 22, (hb.x0 + hb.x1) / 2 + 22], fy, bound: false,
     update() {
       if (!this.bound && this.t > 0.25) {
-        this.bound = true; if (t.alive !== false && t.hit) { t.hit({ dmg: D.heavy * 0.9, poise: 40, dir: P.face, kind: 'spell', x: t.x, y: t.y - 16, big: true }); t._slowT = t.boss ? 1.2 : 2.0; wSlowWrap(t); }
+        this.bound = true;
+        if (t.alive !== false && t.hit) {
+          if (go) t.hit({ dmg: D.heavy * 0.35, poise: 30, dir: P.face, kind: 'spell', x: t.x, y: t.y - 16, big: true, sig: true });
+          if (sigSmallFoe(t)) { t._slowT = 1.0; wSlowWrap(t); }   // lesser foes only: kings are not bound
+        }
       }
       if (t.alive === false) return false;
     },
@@ -9075,35 +9255,35 @@ function sig9Chains() {   // spectral chains burst from the ground and bind the 
       g.restore(); addLight(cx, cy, 34, '150,200,255', 0.6 * a);
     } });
 }
-function sig9SunDisc(p) {   // a disc of sunlight flung out that comes back to the hand
+function sig9SunDisc(p, go) {   // a disc of sunlight flung out to the end of reach, then back to the hand
   sfx.heavySwing(); tone(660, 0.3, 0.04, 'triangle', 1.2);
-  wfx({ life: 1.4, x: p.x, y: p.y, vx: P.face * 300, back: false, skip: new Set(),
+  const L = sigLimit(), ox = P.x, skip = new Set();
+  wfx({ life: 1.2, x: p.x, y: p.y, dir: P.face, back: false,
     update(dt) {
-      if (!this.back) { this.vx -= Math.sign(this.vx) * 520 * dt; if (Math.abs(this.vx) < 20 || solidAtPx(this.x + Math.sign(this.vx) * 6, this.y)) { this.back = true; this.skip = new Set(); } this.x += this.vx * dt; }
+      if (!this.back) { this.x += this.dir * 300 * dt; if (Math.abs(this.x - ox) >= L - 8 || solidAtPx(this.x + this.dir * 6, this.y)) this.back = true; }
       else { const dx = P.x - this.x, dy = P.y - 18 - this.y, d = Math.hypot(dx, dy) || 1; this.x += dx / d * 320 * dt; this.y += dy / d * 320 * dt; if (d < 10) return false; }
-      wStrike(rect(this.x - 7, this.y - 7, this.x + 7, this.y + 7), D.light * 0.3, { skip: this.skip, poise: 12, fire: true, kind: 'spell' });
+      if (go) sigStrike(rect(this.x - 7, this.y - 7, this.x + 7, this.y + 7), D.light * 0.25, { skip, poise: 10, fire: true, kind: 'spell', ox, L });
       if (Math.random() < 0.5) particles.push({ x: this.x, y: this.y, vx: rand(-20, 20), vy: rand(-20, 20), life: 0.3, kind: 'gold' });
     },
     draw() { if (!wfxDraw('sundisc', this.t, this.x, this.y, 1, { center: true, loop: true })) { g.fillStyle = '#ffd070'; g.fillRect(this.x - 4, this.y - 4, 8, 8); } addLight(this.x, this.y, 34, '255,210,120', 0.8); } });
 }
-function sig9Sand() {   // the heavy raises a burst of scouring sand around you
-  sfx.crumble(); shake = Math.max(shake, 4);
-  wStrike(rect(P.x - 44, P.y - 30, P.x + 44, P.y + 2), D.heavy * 0.45, { poise: 30, kind: 'spell' });
-  for (let i = 0; i < 40; i++) { const a = rand(0, Math.PI); particles.push({ x: P.x + Math.cos(a) * rand(4, 20), y: P.y - rand(0, 8), vx: Math.cos(a) * rand(60, 160) * (Math.random() < 0.5 ? 1 : -1), vy: -rand(20, 110), g: 260, life: rand(0.4, 0.9), kind: 'dust' }); }
-  spawnFx('shockwave', P.x, P.y, 1);
+function sig9Sand(go, soft) {   // the heavy raises a burst of scouring sand around you
+  if (!soft) { sfx.crumble(); shake = Math.max(shake, 4); spawnFx('shockwave', P.x, P.y, 1); }
+  if (go) sigStrike(rect(P.x - 40, P.y - 30, P.x + 40, P.y + 2), D.heavy * 0.25, { poise: 20, kind: 'spell' });
+  for (let i = 0; i < (soft ? 12 : 40); i++) { const a = rand(0, Math.PI); particles.push({ x: P.x + Math.cos(a) * rand(4, 20), y: P.y - rand(0, 8), vx: Math.cos(a) * rand(60, 160) * (Math.random() < 0.5 ? 1 : -1), vy: -rand(20, 110), g: 260, life: rand(0.4, 0.9), kind: 'dust' }); }
 }
-function sig9Stars(n) {   // star shards fall on what stands before you
-  const xs = [];
-  for (const t of targets()) { if (t.prop) continue; const hb = t.hurtbox(); if (!hb) continue; const cx = (hb.x0 + hb.x1) / 2; if ((cx - P.x) * P.face > -10 && Math.abs(cx - P.x) < 150) xs.push(cx); }
+function sig9Stars(n, go) {   // star shards fall on what stands within reach; only the first to strike a foe hurts it
+  const L = sigLimit(), xs = [], skip = new Set();
+  for (const t of targets()) { if (t.prop) continue; const hb = t.hurtbox(); if (!hb) continue; const near = P.face > 0 ? hb.x0 : hb.x1; if ((near - P.x) * P.face > -10 && Math.abs(near - P.x) < L - 8) xs.push(clamp((hb.x0 + hb.x1) / 2, P.x - L + 12, P.x + L - 12)); }
   for (let k = 0; k < n; k++) {
-    const x = xs.length ? xs[k % xs.length] + rand(-10, 10) : P.x + P.face * (30 + k * 18);
+    const x = xs.length ? xs[k % xs.length] + rand(-10, 10) : P.x + P.face * Math.min(L - 10, 26 + k * 14);
     const fy = wFloorBelow(x, P.y - 8) ?? P.y;
-    wfx({ life: 1.2, x: x + P.face * 30, y: fy - 110, tx: x, fy, at: k * 0.1, hit: false, skip: new Set(),
+    wfx({ life: 1.2, x: x + P.face * 30, y: fy - 110, tx: x, fy, at: k * 0.1, hit: false,
       update(dt) {
         if (this.t < this.at || this.hit) return this.hit ? this.t < this.hitT + 0.3 : undefined;
         const k2 = Math.min(1, (this.t - this.at) / 0.28); this.cx = this.x + (this.tx - this.x) * k2; this.cy = this.y + (this.fy - this.y) * k2;
         if (Math.random() < 0.8) particles.push({ x: this.cx, y: this.cy, vx: rand(-10, 10), vy: -rand(0, 20), life: 0.3, kind: 'mote' });
-        if (k2 >= 1) { this.hit = true; this.hitT = this.t; wStrike(rect(this.tx - 12, this.fy - 24, this.tx + 12, this.fy + 1), D.light * 0.65, { skip: this.skip, poise: 20, kind: 'spell' }); shake = Math.max(shake, 3); tone(1320, 0.3, 0.05, 'triangle', 0.5); for (let i = 0; i < 10; i++) particles.push({ x: this.tx, y: this.fy - 2, vx: rand(-80, 80), vy: -rand(30, 120), g: 300, life: 0.5, kind: i % 2 ? 'mote' : 'frost' }); }
+        if (k2 >= 1) { this.hit = true; this.hitT = this.t; if (go) sigStrike(rect(this.tx - 10, this.fy - 24, this.tx + 10, this.fy + 1), D.light * 0.3, { skip, poise: 14, kind: 'spell' }); shake = Math.max(shake, 2); tone(1320, 0.3, 0.05, 'triangle', 0.5); for (let i = 0; i < 10; i++) particles.push({ x: this.tx, y: this.fy - 2, vx: rand(-80, 80), vy: -rand(30, 120), g: 300, life: 0.5, kind: i % 2 ? 'mote' : 'frost' }); }
       },
       draw() {
         if (this.t < this.at) return;
@@ -9112,12 +9292,12 @@ function sig9Stars(n) {   // star shards fall on what stands before you
       } });
   }
 }
-function sig9Laser(p, wide) {   // a neon laser line drawn through the world
-  let x1 = p.x; const dir = P.face;
-  for (let k = 0; k < 200; k += 4) { if (solidAtPx(p.x + dir * k, p.y)) break; x1 = p.x + dir * k; }
+function sig9Laser(p, wide, go) {   // a neon line drawn through the air -- cut off at the end of reach
+  const dir = P.face, L = sigLimit(); let x1 = p.x;
+  for (let k = 0; Math.abs(p.x + dir * k - P.x) <= L; k += 4) { if (solidAtPx(p.x + dir * k, p.y)) break; x1 = p.x + dir * k; }
   const hw = wide ? 5 : 3;
-  wStrike(rect(Math.min(p.x, x1), p.y - hw - 2, Math.max(p.x, x1), p.y + hw + 2), D.light * (wide ? 0.75 : 0.65), { poise: 20, kind: 'spell', dir });
-  tone(2200, 0.15, 0.05, 'square', 0.4); tone(440, 0.25, 0.05, 'sawtooth', 2); flashScreen = Math.max(flashScreen, 0.06);
+  if (go) sigStrike(rect(Math.min(p.x, x1), p.y - hw - 2, Math.max(p.x, x1), p.y + hw + 2), D.light * 0.2, { poise: 12, kind: 'spell', dir });
+  tone(2200, 0.15, 0.05, 'square', 0.4); tone(440, 0.25, 0.05, 'sawtooth', 2); flashScreen = Math.max(flashScreen, 0.05);
   wfx({ life: 0.3, x0: p.x, x1, y: p.y, hw, draw() {
     const a = 1 - this.t / this.life, jit = Math.floor(this.t * 60) % 3 - 1, lo = Math.min(this.x0, this.x1), w = Math.abs(this.x1 - this.x0);
     g.save(); g.globalAlpha = a;
@@ -9125,27 +9305,28 @@ function sig9Laser(p, wide) {   // a neon laser line drawn through the world
     g.fillStyle = '#78fff8'; g.fillRect(Math.round(lo), Math.round(this.y - 1), Math.round(w), 2);
     g.fillStyle = '#ffffff'; g.fillRect(Math.round(lo), Math.round(this.y), Math.round(w), 1);
     for (let i = 0; i < 4; i++) { g.fillStyle = i % 2 ? '#ff46c8' : '#78fff8'; g.fillRect(Math.round(lo + rand(0, w)), Math.round(this.y + rand(-8, 8)), Math.round(rand(4, 14)), 1); }   // glitch slivers
+    g.globalAlpha = a * 0.8; g.fillStyle = '#ffffff'; g.fillRect(Math.round(dir > 0 ? lo + w : lo) - 1, Math.round(this.y - 3), 2, 6);   // the line's burning end
     g.restore(); addLight(lo + w / 2, this.y, w / 2 + 20, '120,255,250', 0.7 * a);
   } });
 }
-function sig9Glitch(t, info) {   // the wound glitches: a corrupted copy of the blow lands a moment later
+function sig9Glitch(t, info) {   // the wound glitches: always seen; once per foe every 2.5 s a small corrupted echo lands
   if (t.prop || (t._glitchT || 0) > time) return;
   t._glitchT = time + 0.2;
+  const lands = sigTargetCd(t, 'glitch', SIG_ICD);
   wfx({ life: 0.4, done: false, update() {
-    if (this.t >= 0.22 && !this.done) { this.done = true; if (t.alive !== false) t.hit({ dmg: info.dmg * 0.35, poise: 6, dir: info.dir, kind: 'spell', x: info.x, y: info.y, quiet: true }); tone(1200 + rand(0, 800), 0.06, 0.04, 'square', 0.3); }
+    if (this.t >= 0.22 && !this.done) { this.done = true; if (lands && t.alive !== false) t.hit({ dmg: info.dmg * 0.08, poise: 4, dir: info.dir, kind: 'spell', x: info.x, y: info.y, quiet: true, sig: true }); tone(1200 + rand(0, 800), 0.06, 0.04, 'square', 0.3); }
   }, draw() {
     const hb = t.hurtbox && t.hurtbox(); if (!hb) return;
     for (let i = 0; i < 3; i++) { g.fillStyle = (Math.floor(this.t * 40) + i) % 2 ? 'rgba(120,255,250,0.8)' : 'rgba(255,70,200,0.8)'; g.fillRect(Math.round(hb.x0 + rand(-6, 6)), Math.round(rand(hb.y0, hb.y1)), Math.round(hb.x1 - hb.x0), 1); }
   } });
 }
-function sig9Pyre(x, y, t, force) {   // a pyre of pale flame where the foe stood
-  if (!force && t && (t._pyreT || 0) > time) return;
-  if (t) t._pyreT = time + 1.0;
+function sig9Pyre(x, y, go) {   // a pyre of pale flame where the foe stood: three small licks of fire when it counts
   const fy = wFloorBelow(x, y - 6); if (fy === null || solidAtPx(x, fy - 8)) return;
-  while (sig9Pyres.length && (sig9Pyres[0].dead || sig9Pyres.length >= 5)) { const o = sig9Pyres.shift(); o.life = Math.min(o.life, o.t + 0.2); }
-  const e = wfx({ life: 1.6, x, fy, tick: 0.1,
+  while (sig9Pyres.length && (sig9Pyres[0].dead || sig9Pyres.length >= 4)) { const o = sig9Pyres.shift(); o.life = Math.min(o.life, o.t + 0.2); }
+  const ox = P.x, L = sigLimit();
+  const e = wfx({ life: 1.3, x, fy, tick: 0.1, n: 0,
     update(dt) {
-      if ((this.tick -= dt) <= 0) { this.tick = 0.35; wStrike(rect(this.x - 9, this.fy - 30, this.x + 9, this.fy + 1), D.light * 0.12, { quiet: true, kind: 'spell', fire: true }); }
+      if (go && this.n < 3 && (this.tick -= dt) <= 0) { this.tick = 0.35; this.n++; sigStrike(rect(this.x - 9, this.fy - 30, this.x + 9, this.fy + 1), D.light * 0.08, { quiet: true, kind: 'spell', fire: true, ox, L }); }
       if (Math.random() < 0.3) particles.push({ x: this.x + rand(-5, 5), y: this.fy - rand(4, 26), vx: 0, vy: -rand(20, 50), life: 0.4, kind: 'mote' });
     },
     draw() { const a = Math.min(1, this.t / 0.12, (this.life - this.t) / 0.3); if (!wfxDraw('pyre', this.t, this.x, this.fy + 1, 1, { loop: true, alpha: a })) { g.fillStyle = `rgba(255,244,210,${0.6 * a})`; g.fillRect(this.x - 4, this.fy - 22, 8, 22); } addLight(this.x, this.fy - 14, 36, '255,244,210', 0.7 * a); } });
@@ -9154,15 +9335,14 @@ function sig9Pyre(x, y, t, force) {   // a pyre of pale flame where the foe stoo
 }
 // ---- v8 signature helpers
 function sigInkGlyph(t, info) {
-  if (t.prop || (t._glyphT || 0) > time) return;
-  t._glyphT = time + 0.6;
+  if (t.prop || !sigTargetCd(t, 'glyph', SIG_ICD)) return;
   const ox = info.x - t.x, oy = info.y - t.y;
   wfx({ life: 1.05, fired: false, x: info.x, y: info.y,
     update() {
       if (!this.fired) { this.x = t.x + ox; this.y = t.y + oy; }
       if (this.t >= 0.62 && !this.fired) {
         this.fired = true;
-        wStrike(rect(this.x - 14, this.y - 14, this.x + 14, this.y + 14), D.light * 0.45 * (1 + (D.spell - 1) * 0.6), { poise: 14, big: false });
+        if (t.alive !== false) t.hit({ dmg: D.light * 0.14 * (1 + (D.spell - 1) * 0.5), poise: 8, dir: t.x > P.x ? 1 : -1, kind: 'spell', x: this.x, y: this.y, sig: true });
         sfx.bolt(); noise(0.2, 700, 1, 0.2, 'lowpass');
         for (let i = 0; i < 10; i++) particles.push({ x: this.x, y: this.y, vx: rand(-80, 80), vy: rand(-90, 30), g: 200, life: rand(0.3, 0.6), kind: 'ink' });
       }
@@ -9172,15 +9352,17 @@ function sigInkGlyph(t, info) {
       else { wfxDraw('inkburst', this.t - 0.62, this.x, this.y, 1, { center: true }); addLight(this.x, this.y, 40, '170,120,240', 0.8); }
     } });
 }
-function sigInkBlots() {
+function sigInkBlots(go) {   // the spin flings ink both ways; it splashes out within reach
+  const L = sigLimit(), ox = P.x, skip = new Set();
   for (const d of [-1, 1]) for (let k = 0; k < 2; k++) {
-    const b = wfx({ life: 1.4, x: P.x + d * 10, y: P.y - 20, vx: d * rand(90, 210), vy: -rand(110, 220), skip: new Set(), splat: -1,
+    wfx({ life: 1.4, x: P.x + d * 10, y: P.y - 20, vx: d * rand(70, 130), vy: -rand(110, 200), splat: -1,
       update(dt) {
         if (this.splat >= 0) return this.t - this.splat < 0.4;
         this.vy += 520 * dt; this.x += this.vx * dt; this.y += this.vy * dt;
+        if (Math.abs(this.x - ox) > L) { this.splat = this.t; return; }
         if (Math.random() < 0.5) particles.push({ x: this.x, y: this.y, vx: 0, vy: 0, life: 0.25, kind: 'ink' });
-        const hit = wStrike(rect(this.x - 5, this.y - 5, this.x + 5, this.y + 5), D.light * 0.4, { skip: this.skip, poise: 10, dir: d });
-        if (hit.length || solidAtPx(this.x, this.y)) { this.splat = this.t; sfx.hit(); wStrike(rect(this.x - 12, this.y - 12, this.x + 12, this.y + 8), D.light * 0.15, { skip: this.skip, quiet: true }); }
+        const hit = go ? sigStrike(rect(this.x - 5, this.y - 5, this.x + 5, this.y + 5), D.light * 0.12, { skip, poise: 6, dir: d, ox, L }) : [];
+        if (hit.length || solidAtPx(this.x, this.y)) { this.splat = this.t; sfx.hit(); }
       },
       draw() {
         if (this.splat >= 0) wfxDraw('inkburst', (this.t - this.splat) * 1.4, this.x, this.y, 1, { center: true, alpha: 0.85 });
@@ -9189,33 +9371,35 @@ function sigInkBlots() {
       } });
   }
 }
-function sigLavaCrack(charged) {
-  const segs = [];
+function sigLavaCrack(hot) {   // seams of magma along the blow; only a fully charged heavy makes them burn and erupt
+  const segs = [], L = sigLimit();
   for (let k = 0; k < 6; k++) {
-    const x = P.x + P.face * (18 + k * 12), fy = wFloorBelow(x, P.y - 4);
+    const x = P.x + P.face * (18 + k * 12); if (Math.abs(x - P.x) > L - 6) break;
+    const fy = wFloorBelow(x, P.y - 4);
     if (fy === null || Math.abs(fy - P.y) > 20) break;
     segs.push({ x, fy });
   }
   if (!segs.length) return;
-  sfx.fire(); shake = Math.max(shake, 5);
-  wfx({ life: 3.6, segs, face: P.face, tick: 0, charged,
+  sfx.fire(); shake = Math.max(shake, hot ? 5 : 3);
+  const life = hot ? 1.8 : 0.9, eskip = new Set();
+  wfx({ life, segs, face: P.face, tick: 0.2,
     update(dt) {
-      if ((this.tick -= dt) <= 0) {   // the seams keep burning whatever stands in them
-        this.tick = 0.4; const skip = new Set();
-        for (const s2 of this.segs) wStrike(rect(s2.x - 7, s2.fy - 18, s2.x + 7, s2.fy + 1), D.heavy * 0.18, { skip, fire: true, quiet: true, burn: [2, D.light * 0.2] });
+      if (hot && (this.tick -= dt) <= 0) {   // the seams burn whatever stands in them
+        this.tick = 0.45; const skip = new Set();
+        for (const s2 of this.segs) wStrike(rect(s2.x - 7, s2.fy - 18, s2.x + 7, s2.fy + 1), D.heavy * 0.04, { skip, fire: true, quiet: true });
       }
-      if (this.charged) this.segs.forEach((s2, i) => {   // a fully charged blow: the seams erupt one after another
+      if (hot) this.segs.forEach((s2, i) => {   // the eruption: one burst of magma per foe
         const at = 0.12 + i * 0.07;
         if (!s2.erupted && this.t >= at) {
-          s2.erupted = this.t; shake = Math.max(shake, 6); if (i % 2 === 0) sfx.boom();
-          wStrike(rect(s2.x - 9, s2.fy - 44, s2.x + 9, s2.fy + 1), D.heavy * 1.0, { poise: 50, big: true, fire: true, kind: 'heavy', burn: [3, D.light * 0.3] });
+          s2.erupted = this.t; shake = Math.max(shake, 5); if (i % 2 === 0) sfx.boom();
+          wStrike(rect(s2.x - 9, s2.fy - 44, s2.x + 9, s2.fy + 1), D.heavy * 0.22, { skip: eskip, poise: 30, big: true, fire: true, kind: 'heavy' });
           for (let q = 0; q < 10; q++) particles.push({ x: s2.x + rand(-5, 5), y: s2.fy - 4, vx: rand(-40, 40), vy: -rand(120, 260), g: 420, life: rand(0.5, 1.0), kind: 'fire' });
         }
       });
-      if (Math.random() < 0.4) { const s2 = this.segs[irand(0, this.segs.length - 1)]; particles.push({ x: s2.x + rand(-6, 6), y: s2.fy - 1, vx: 0, vy: -rand(20, 50), life: 0.5, kind: 'ember' }); }
+      if (Math.random() < (hot ? 0.4 : 0.2)) { const s2 = this.segs[irand(0, this.segs.length - 1)]; particles.push({ x: s2.x + rand(-6, 6), y: s2.fy - 1, vx: 0, vy: -rand(20, 50), life: 0.5, kind: 'ember' }); }
     },
     draw() {
-      const fade = Math.min(1, (this.life - this.t) / 0.6);
+      const fade = Math.min(1, (this.life - this.t) / 0.5) * (hot ? 1 : 0.7);
       for (const s2 of this.segs) {
         if (!wfxDraw('lava', this.t + s2.x * 0.013, s2.x, s2.fy + 2, this.face, { loop: true, alpha: fade })) { g.fillStyle = `rgba(255,120,40,${fade})`; g.fillRect(s2.x - 6, s2.fy - 1, 12, 2); }
         addLight(s2.x, s2.fy - 4, 26, '255,130,50', 0.7 * fade);
@@ -9223,48 +9407,37 @@ function sigLavaCrack(charged) {
       }
     } });
 }
-function sigFrontTarget(x, y, range, dirFace = P.face) {
-  let best = null, bd = 1e9;
-  for (const t of targets()) {
-    if (t.prop) continue; const hb = t.hurtbox(); if (!hb) continue;
-    const cx = (hb.x0 + hb.x1) / 2, dx = (cx - x) * dirFace;
-    if (dx < -10 || dx > range || Math.abs((hb.y0 + hb.y1) / 2 - y) > 60) continue;
-    if (dx < bd) { bd = dx; best = t; }
-  }
-  return best;
-}
-function sigChain(p) {
-  const hops = [], seen = new Set(); let from = p, t = sigFrontTarget(p.x, p.y, 110);
+function sigChain(p, go) {   // lightning arcs into the foe before you (and on to lesser foes within reach)
+  const L = sigLimit(), hops = [], seen = new Set(); let from = p, t = sigFrontTarget(P.x, p.y, sigReach() + 8);
   while (t && hops.length < 3) {
-    seen.add(t); const hb = t.hurtbox(), c = { x: (hb.x0 + hb.x1) / 2, y: (hb.y0 + hb.y1) / 2 };
+    seen.add(t); const c = hbMid(t);
     hops.push({ t, from, to: c }); from = c;
-    let nb = null, nd = 90;
-    for (const q of targets()) { if (q.prop || seen.has(q)) continue; const h2 = q.hurtbox(); if (!h2) continue; const d = Math.hypot((h2.x0 + h2.x1) / 2 - c.x, (h2.y0 + h2.y1) / 2 - c.y); if (d < nd) { nd = d; nb = q; } }
+    let nb = null, nd = 60;
+    for (const q of targets()) { if (!sigSmallFoe(q) || seen.has(q)) continue; const h2 = q.hurtbox(); if (!h2) continue; const cx = (h2.x0 + h2.x1) / 2; if (Math.abs(cx - P.x) > L) continue; const d = Math.hypot(cx - c.x, (h2.y0 + h2.y1) / 2 - c.y); if (d < nd) { nd = d; nb = q; } }
     t = nb;
   }
-  if (!hops.length) { wZap(p.x, p.y, p.x + P.face * 40, p.y + rand(-8, 8), 0.12); noise(0.1, 3500, 2, 0.1, 'highpass'); return; }
+  if (!hops.length) { wZap(p.x, p.y, p.x + P.face * 26, p.y + rand(-8, 8), 0.12); noise(0.1, 3500, 2, 0.1, 'highpass'); return; }
   wfx({ life: 0.1 + hops.length * 0.08, i: 0,
     update() {
       while (this.i < hops.length && this.t >= this.i * 0.08) {
         const h = hops[this.i++]; wZap(h.from.x, h.from.y, h.to.x, h.to.y, 0.2);
-        if (h.t.alive !== false) h.t.hit({ dmg: D.light * 0.8 * (this.i === 1 ? 1 : 0.75), poise: 15, dir: P.face, kind: 'spell', x: h.to.x, y: h.to.y, big: this.i === 1 });
+        if (go && h.t.alive !== false) h.t.hit({ dmg: D.light * (this.i === 1 ? 0.3 : 0.15), poise: 10, dir: P.face, kind: 'spell', x: h.to.x, y: h.to.y, big: this.i === 1, sig: true });
         noise(0.12, 3000, 2, 0.16, 'highpass'); tone(1800, 0.08, 0.04, 'square', 0.5);
       }
     } });
 }
-function sigSkyBolt() {
-  const t = sigFrontTarget(P.x, P.y - 16, 150);
-  let x = P.x + P.face * 70;
-  if (t) { const hb = t.hurtbox(); x = (hb.x0 + hb.x1) / 2; }
+function sigSkyBolt(go) {   // a bolt falls on the foe before you (or on the end of your reach)
+  const L = sigLimit(), t = sigFrontTarget(P.x, P.y - 16, L - 10);
+  let x = P.x + P.face * Math.min(56, L - 10);
+  if (t) x = clamp(hbMid(t).x, P.x - L + 10, P.x + L - 10);
   const fy = wFloorBelow(x, P.y - 8) ?? P.y;
   sfx.charge();
   wfx({ life: 0.85, x, fy, struck: false,
     update() {
       if (!this.struck && this.t >= 0.3) {
-        this.struck = true; flashScreen = Math.max(flashScreen, 0.25); shake = Math.max(shake, 7);
+        this.struck = true; flashScreen = Math.max(flashScreen, 0.18); shake = Math.max(shake, 6);
         noise(0.7, 900, 0.7, 0.6, 'lowpass', 0.4); noise(0.25, 5000, 2, 0.3, 'highpass'); tone(60, 0.5, 0.3, 'sawtooth', 0.5);
-        const hit = wStrike(rect(this.x - 18, this.fy - 90, this.x + 18, this.fy + 2), D.heavy * 0.9, { poise: 60, big: true, kind: 'heavy' });
-        if (hit.length) sigChain({ x: this.x, y: this.fy - 20 });
+        if (go) sigStrike(rect(this.x - 14, this.fy - 90, this.x + 14, this.fy + 2), D.heavy * 0.35, { poise: 30, big: true, kind: 'heavy' });
         for (let i = 0; i < 16; i++) particles.push({ x: this.x + rand(-6, 6), y: this.fy - 2, vx: rand(-120, 120), vy: -rand(40, 160), g: 400, life: rand(0.3, 0.6), kind: 'spark' });
       }
     },
@@ -9279,24 +9452,24 @@ function sigSkyBolt() {
       }
     } });
 }
-const sigSmallFoe = t => !t.prop && !t.boss && !(t.cfg && t.cfg.elite);
-function sigGust(p) {
-  tone(300, 0.2, 0.03, 'sine', 1.8); noise(0.2, 1500, 0.7, 0.12, 'bandpass', 0.5);
-  wfx({ life: 0.34, x: p.x, y: p.y, face: P.face, skip: new Set(),
+function sigGust(p, go) {   // a puff of wind off every blow; a finisher's gust buffets what it meets
+  tone(300, 0.2, go ? 0.03 : 0.015, 'sine', 1.8); noise(0.2, 1500, 0.7, go ? 0.12 : 0.05, 'bandpass', 0.5);
+  const L = sigLimit(), ox = P.x, skip = new Set(), life = go ? 0.3 : 0.14;
+  wfx({ life, x: p.x, y: p.y, face: P.face,
     update(dt) {
       this.x += this.face * 260 * dt;
-      if (solidAtPx(this.x + this.face * 6, this.y)) return false;
-      for (const t of wStrike(rect(this.x - 10, this.y - 12, this.x + 10, this.y + 12), D.light * 0.35, { skip: this.skip, poise: 10, dir: this.face })) if (sigSmallFoe(t) && t.vx !== undefined) t.vx += this.face * 140;
+      if (Math.abs(this.x - ox) > L || solidAtPx(this.x + this.face * 6, this.y)) return false;
+      if (go) for (const t of sigStrike(rect(this.x - 10, this.y - 12, this.x + 10, this.y + 12), D.light * 0.2, { skip, poise: 8, dir: this.face, ox, L })) if (sigSmallFoe(t) && t.vx !== undefined) t.vx += this.face * 120;
     },
-    draw() { if (!wfxDraw('gust', this.t, this.x, this.y, this.face, { center: true, alpha: 1 - this.t / this.life })) { g.fillStyle = 'rgba(210,250,240,0.5)'; g.fillRect(this.x - 6, this.y - 1, 12, 2); } } });
+    draw() { if (!wfxDraw('gust', this.t, this.x, this.y, this.face, { center: true, alpha: (go ? 1 : 0.6) * (1 - this.t / this.life) })) { g.fillStyle = 'rgba(210,250,240,0.5)'; g.fillRect(this.x - 6, this.y - 1, 12, 2); } } });
 }
-function sigWhirlwind() {
-  const x0 = P.x + P.face * 22, fy = wFloorBelow(x0, P.y - 8) ?? P.y;
-  noise(1.2, 700, 0.6, 0.3, 'bandpass', 1.6); tone(180, 0.8, 0.05, 'sine', 1.6);
-  wfx({ life: 2.4, x: x0, fy, face: P.face, tick: 0,
+function sigWhirlwind(go) {   // the spin looses a short whirlwind; it carries lesser foes, never great ones
+  const L = sigLimit(), ox = P.x, x0 = P.x + P.face * 22, fy = wFloorBelow(x0, P.y - 8) ?? P.y;
+  noise(1.0, 700, 0.6, 0.3, 'bandpass', 1.6); tone(180, 0.7, 0.05, 'sine', 1.6);
+  wfx({ life: 1.3, x: x0, fy, face: P.face, tick: 0, n: 0,
     update(dt) {
-      if (!solidAtPx(this.x + this.face * 12, this.fy - 8)) this.x += this.face * 70 * dt;
-      if ((this.tick -= dt) <= 0) { this.tick = 0.4; wStrike(rect(this.x - 14, this.fy - 44, this.x + 14, this.fy), D.light * 0.2, { poise: 8, dir: this.face, quiet: this.t > 0.05 }); }
+      if (Math.abs(this.x - ox) < L - 14 && !solidAtPx(this.x + this.face * 12, this.fy - 8)) this.x += this.face * 70 * dt;
+      if (go && this.n < 3 && (this.tick -= dt) <= 0) { this.tick = 0.4; this.n++; sigStrike(rect(this.x - 14, this.fy - 44, this.x + 14, this.fy), D.light * 0.1, { poise: 6, dir: this.face, quiet: this.n > 1, ox, L }); }
       for (const t of targets()) {   // small foes are caught and carried along
         if (!sigSmallFoe(t) || !t.hurtbox()) continue;
         if (Math.abs(t.x - this.x) < 24 && Math.abs(t.y - this.fy) < 34) { t.x += (this.x - t.x) * Math.min(1, dt * 6); if (t.vx !== undefined) t.vx = this.face * 70; }
@@ -9311,14 +9484,15 @@ function sigWhirlwind() {
 }
 // First Ember: the swing's golden afterimage replays a heartbeat later
 function sigEmberEcho(A) {
-  const snap = { f: P.anim.frame, x: P.x, y: P.y, face: P.face };
-  wfx({ life: 0.55, draw() {
+  const snap = { f: P.anim.frame, x: P.x, y: P.y, face: P.face }, big = sigBig(A);
+  wfx({ life: big ? 0.7 : 0.55, draw() {
     if (this.t < 0.16) return;
-    const a = 0.55 * (1 - (this.t - 0.16) / 0.39);
+    const a = (big ? 0.7 : 0.55) * (1 - (this.t - 0.16) / (this.life - 0.16));
     drawSprite(sheet('player'), snap.f, snap.x, snap.y, snap.face, { flash: 1, flashColor: '#ffb050', alpha: a });
     const ws = sheet('wpn_first_ember'); if (ws.ok) drawSprite(ws, snap.f, snap.x, snap.y, snap.face, { flash: 1, flashColor: '#fff0c0', alpha: a });
     addLight(snap.x + snap.face * 14, snap.y - 18, 40, '255,180,90', a);
   } });
+  if (big) { const r = sigRect(A); sigArc(sigPoint(r), '#ffb050', sigRot(A), { r: 24, life: 0.4, light: '255,180,90', alpha: 0.7 }); }
 }
 // Twinborne: a stoked blade smoulders between blows
 HOOKS.update.push(() => {
@@ -9553,8 +9727,8 @@ function grantItem(id, x, y) {
   else if (id === 'slot') SAVE.spellSlots++;
   else if (id === 'charmslot') SAVE.charmSlots++;
   else if (id === 'emberstone' || id === 'tear') SAVE.inv[id] = (SAVE.inv[id] || 0) + 1;
-  else if (it.weapon) { if (SAVE.weapons[it.weapon] === undefined) SAVE.weapons[it.weapon] = 0; const art = WEAPONS[it.weapon].art; if (!SAVE.arts.includes(art)) SAVE.arts.push(art); }
-  else if (it.art) { if (!SAVE.arts.includes(it.art)) SAVE.arts.push(it.art); }
+  else if (it.weapon) { if (SAVE.weapons[it.weapon] === undefined) SAVE.weapons[it.weapon] = 0; }   // its art is part of it (60_wbal.js)
+  else if (it.cache) { for (const [k, n] of Object.entries(it.cache)) { if (k === 'cinders') gainCinders(n, x ?? P.x, y ?? P.y - 20); else SAVE.inv[k] = (SAVE.inv[k] || 0) + n; } }   // old art chests / "Ash of X"
   else if (it.spell) { if (!SAVE.spellsOwned.includes(it.spell)) SAVE.spellsOwned.push(it.spell); autoEquipSpell(it.spell); }
   else if (it.charm) { if (!SAVE.charms.includes(id)) SAVE.charms.push(id); if (SAVE.charmsEq.length < SAVE.charmSlots) { SAVE.charmsEq.push(id); refreshDerived(); } }
   else SAVE.items[id] = 1;
@@ -11888,7 +12062,7 @@ function cycle(list, cur, d, allowNone) {
 function changeEquip(row, d) {   // quick cycle (←→ on a slot); the picker grid lives in 29_ui2.js
   let nx;
   if (row.k === 'weapon') nx = cycle(Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined), SAVE.weapon, d);
-  else if (row.k === 'art') nx = cycle(Object.keys(ARTS).filter(id => SAVE.arts.includes(id)), SAVE.art, d);
+  else if (row.k === 'art') { sfx.deny(); toast('The art is bound to the weapon', 1.6); return; }   // read-only: arts are locked to weapons (60_wbal.js)
   else {
     const key = row.k === 'spell' ? 'spellsEq' : 'charmsEq', others = SAVE[key].filter((s, j) => j !== row.i);
     const pool = row.k === 'spell' ? knownSpells() : Object.keys(CHARMS).filter(c => SAVE.charms.includes(c));
@@ -11902,7 +12076,6 @@ function invList() {
   for (const [id, n] of Object.entries(SAVE.inv)) if (n > 0) out.push({ id, extra: '×' + n });
   for (const id of SAVE.charms) out.push({ id });
   for (const id of SAVE.spellsOwned) out.push({ id: 'sp:' + id });
-  for (const id of SAVE.arts) out.push({ id: 'art:' + id });
   for (const id of Object.keys(SAVE.items)) if (SAVE.items[id] && ITEMS[id]) out.push({ id });
   if (SAVE.flaskPot) out.push({ id: 'herb', extra: `flasks +${SAVE.flaskPot * 10}%` });
   return out;
@@ -12312,8 +12485,8 @@ function continueGame() {
 let wantArmory = false;
 try { wantArmory = location.hash === '#armory'; } catch (e) {}
 function giveArmory() {
-  for (const id of Object.keys(WEAPONS)) { if (SAVE.weapons[id] === undefined) SAVE.weapons[id] = 0; const a = WEAPONS[id].art; if (!SAVE.arts.includes(a)) SAVE.arts.push(a); }
-  for (const id of Object.keys(ARTS)) if (!SAVE.arts.includes(id)) SAVE.arts.push(id);
+  for (const id of Object.keys(WEAPONS)) if (SAVE.weapons[id] === undefined) SAVE.weapons[id] = 0;   // each carries its own art (60_wbal.js)
+  if (typeof wbLockArt === 'function') wbLockArt();
   for (const id of Object.keys(SPELL_DEFS)) if (!SAVE.spellsOwned.includes(id)) SAVE.spellsOwned.push(id);
   for (const id of Object.keys(CHARMS)) if (!SAVE.charms.includes(id)) SAVE.charms.push(id);
   SAVE.spellSlots = Math.max(SAVE.spellSlots, 4); SAVE.charmSlots = Math.max(SAVE.charmSlots, 4);
@@ -13225,40 +13398,40 @@ HOOKS.update.push(() => {
 // 17 weapons (classes in WEAPON_CLASS, movesets in 04_player.js, boss signatures in 04b_sigs.js),
 // status buildup on foes (frost, burn) and the small effect system the weapon signatures use (WFX).
 registerGear({ weapons: {
-  frostbrand: { name: 'Frostbrand', base: 31, sc: { str: 'D', dex: 'C', fth: '-' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.0, frost: 20, art: 'moonwave',
+  frostbrand: { name: 'Frostbrand', base: 35, sc: { str: 'D', dex: 'C', fth: '-' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.0, frost: 20, art: 'moonwave',
     desc: 'A knight’s sword left in the aqueduct’s ice until the ice forgot it was steel. Every cut leaves frost behind; enough of it, and the cold bursts.' },
-  pagecutter: { name: 'Pagecutter', base: 20, sc: { str: '-', dex: 'A', fth: 'E' }, speed: 1.45, reach: 0.7, stam: 0.6, poise: 0.55, bleed: 22, crit: 1.3, art: 'bloodstep',
+  pagecutter: { name: 'Pagecutter', base: 21, sc: { str: '-', dex: 'A', fth: 'E' }, speed: 1.45, reach: 0.7, stam: 0.6, poise: 0.55, bleed: 15, crit: 1.3, art: 'ink_mark',
     desc: 'A scribe’s paper-knife, its point forever wet with violet ink. Made to open letters, not throats — it does not seem to mind. Backstabs and ripostes cut 30% deeper.' },
-  colossus_hammer: { name: 'Colossus Greathammer', base: 55, sc: { str: 'S', dex: '-', fth: 'E' }, speed: 0.7, reach: 1.1, stam: 1.55, poise: 2.3, fire: 0.3, armor: true, art: 'magma_quake', boss: true,
-    desc: 'A knuckle of the Molten Colossus, still cracked with living magma. Heavy blows split the ground into burning seams; a fully charged blow makes them erupt.' },
-  glacier_maul: { name: 'Glacier Maul', base: 50, sc: { str: 'A', dex: '-', fth: '-' }, speed: 0.72, reach: 1.05, stam: 1.5, poise: 2.1, frost: 34, armor: true, art: 'stormleap',
+  colossus_hammer: { name: 'Colossus Greathammer', base: 47, sc: { str: 'S', dex: '-', fth: 'E' }, speed: 0.7, reach: 1.1, stam: 1.55, poise: 2.3, fire: 0.25, armor: true, art: 'magma_quake', boss: true,
+    desc: 'A knuckle of the Molten Colossus, still cracked with living magma. Heavy blows split the ground into glowing seams; only a fully charged blow makes them burn and erupt.' },
+  glacier_maul: { name: 'Glacier Maul', base: 56, sc: { str: 'A', dex: '-', fth: '-' }, speed: 0.72, reach: 1.05, stam: 1.5, poise: 2.1, frost: 30, armor: true, art: 'stormleap',
     desc: 'The Ice Golem Warden’s fist, broken off at the wrist. Nothing it strikes stays warm for long.' },
-  bell_hammer: { name: 'Bell-Ringer’s Hammer', base: 49, sc: { str: 'A', dex: 'E', fth: 'D' }, speed: 0.74, reach: 1.05, stam: 1.45, poise: 2.5, armor: true, art: 'tolling_blow',
+  bell_hammer: { name: 'Bell-Ringer’s Hammer', base: 55, sc: { str: 'A', dex: 'E', fth: 'D' }, speed: 0.74, reach: 1.05, stam: 1.45, poise: 2.5, armor: true, art: 'tolling_blow',
     desc: 'A cracked tower bell beaten onto a haft. It rang the hours for a city no one remembers; now it rings skulls. Unmatched at breaking a stance.' },
   forge_cleaver: { name: 'Forge Cleaver', base: 47, sc: { str: 'A', dex: 'D', fth: '-' }, speed: 0.76, reach: 1.2, stam: 1.45, poise: 1.9, fire: 0.2, armor: true, art: 'cinderblade',
     desc: 'Used in the Deep to part slag from ore, and then workers from their chains. Its edge has never once cooled.' },
-  stormfang: { name: 'Stormfang', base: 35, sc: { str: 'D', dex: 'B', fth: 'D' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 0.95, art: 'thunder_lunge', boss: true,
+  stormfang: { name: 'Stormfang', base: 30, sc: { str: 'D', dex: 'B', fth: 'D' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 0.95, art: 'thunder_lunge', boss: true,
     desc: 'A fang of Cindervane, the Stormbound Drake, hafted in blued steel. Finishing thrusts loose chained lightning; heavy blows call the storm down from the sky.' },
-  stormvein: { name: 'Stormvein', base: 30, sc: { str: 'E', dex: 'A', fth: 'E' }, speed: 1.15, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 12, art: 'moonwave',
+  stormvein: { name: 'Stormvein', base: 31, sc: { str: 'E', dex: 'A', fth: 'E' }, speed: 1.15, reach: 1.2, stam: 0.9, poise: 0.9, bleed: 12, art: 'bloodstep',
     desc: 'Forged on the Spire’s summit during a storm that lasted a year. The lightning never quite left the steel.' },
-  quarterstaff: { name: 'Pilgrim’s Quarterstaff', base: 28, sc: { str: 'D', dex: 'C', fth: '-' }, speed: 1.2, reach: 1.25, stam: 0.9, poise: 1.0, art: 'whirlwind',
-    desc: 'Ash wood shod in iron at both ends. Fast and patient: it strikes with either end. Its heavy is a full spin that strikes both sides, paid for with most of your breath.' },
-  windstaff: { name: 'Oswin’s Windstaff', base: 32, sc: { str: 'D', dex: 'C', fth: 'C' }, speed: 1.2, reach: 1.25, stam: 0.9, poise: 1.0, art: 'gale_vault', boss: true,
+  quarterstaff: { name: 'Pilgrim’s Quarterstaff', base: 50, sc: { str: 'D', dex: 'C', fth: '-' }, speed: 1.2, reach: 1.25, stam: 0.8, poise: 1.0, art: 'whirlwind',
+    desc: 'Ash wood shod in iron at both ends. Fast and patient: it strikes with either end. Its heavy is a full spin that strikes both sides, paid for with half your breath.' },
+  windstaff: { name: 'Oswin’s Windstaff', base: 45, sc: { str: 'D', dex: 'C', fth: 'C' }, speed: 1.2, reach: 1.25, stam: 0.8, poise: 1.0, art: 'gale_vault', boss: true,
     desc: 'The Ashen Pilgrim walked the world with this crook and never once lost the wind at his back. Its blows send gusts ahead; its spin looses a travelling whirlwind.' },
-  inkquill: { name: 'Unwritten Quill', base: 30, sc: { str: 'E', dex: 'D', fth: 'A' }, speed: 1.15, reach: 1.25, stam: 0.9, poise: 1.0, holy: 0.15, art: 'ink_mark', boss: true,
+  inkquill: { name: 'Unwritten Quill', base: 44, sc: { str: 'E', dex: 'D', fth: 'A' }, speed: 1.15, reach: 1.25, stam: 0.8, poise: 1.0, holy: 0.15, art: 'ink_mark', boss: true,
     desc: 'The nib that wrote the Unwritten. Every wound it opens is signed with a glyph that bursts a moment later; its spin flings the ink wide. Spells cast by its bearer burn 15% brighter.' },
-  lantern_staff: { name: 'Librarian’s Lantern Staff', base: 29, sc: { str: 'D', dex: 'D', fth: 'B' }, speed: 1.15, reach: 1.25, stam: 0.9, poise: 1.0, holy: 0.1, art: 'cinderblade',
+  lantern_staff: { name: 'Librarian’s Lantern Staff', base: 46, sc: { str: 'D', dex: 'D', fth: 'B' }, speed: 1.15, reach: 1.25, stam: 0.8, poise: 1.2, holy: 0.1, art: 'cinderblade',
     desc: 'The Head Librarian walked the stacks by this light for three hundred years. The lantern still burns; the oil is not oil.' },
-  knight_shield: { name: 'Knight’s Sword and Shield', base: 28, sc: { str: 'C', dex: 'D', fth: '-' }, speed: 1.05, reach: 0.95, stam: 0.95, poise: 1.1, guard: 1.0, art: 'aegis',
+  knight_shield: { name: 'Knight’s Sword and Shield', base: 36, sc: { str: 'C', dex: 'D', fth: '-' }, speed: 1.05, reach: 0.95, stam: 0.95, poise: 1.1, guard: 1.0, art: 'aegis',
     desc: 'The oldest answer to fear: a blade in one hand, a wall in the other. Hold parry to raise the shield; tap it to turn a blow aside. Strike just after a block to counter.' },
-  twinborne: { name: 'Twinborne', base: 34, sc: { str: 'C', dex: 'C', fth: 'D' }, speed: 1.05, reach: 1.0, stam: 1.0, poise: 1.2, guard: 0.9, frost: 16, art: 'frost_aegis', boss: true,
+  twinborne: { name: 'Twinborne', base: 31, sc: { str: 'C', dex: 'C', fth: 'D' }, speed: 1.05, reach: 1.0, stam: 1.0, poise: 1.2, guard: 0.9, frost: 16, art: 'frost_aegis', boss: true,
     desc: 'The Frostbound Twins shared one oath and two hands: her shield of ice, his blade of fire. Blocking chills the attacker and stokes the blade — the next blow burns.' },
-  overseer_bulwark: { name: 'Overseer’s Bulwark', base: 33, sc: { str: 'B', dex: '-', fth: '-' }, speed: 0.95, reach: 0.95, stam: 1.1, poise: 1.5, guard: 0.75, fire: 0.15, art: 'shield_charge',
+  overseer_bulwark: { name: 'Overseer’s Bulwark', base: 43, sc: { str: 'B', dex: '-', fth: '-' }, speed: 0.95, reach: 0.95, stam: 1.1, poise: 1.5, guard: 0.75, fire: 0.15, art: 'shield_charge',
     desc: 'A furnace door riveted to a gauntlet, and a falchion to drive the slaves. It turns aside blows that would break a lesser guard.' },
   twinfangs: { name: 'Twinfangs', base: 26, sc: { str: 'D', dex: 'A', fth: '-' }, speed: 1.3, reach: 0.9, stam: 0.8, poise: 0.7, bleed: 14, art: 'twin_tempest',
     desc: 'The Hollow Champion fought a hundred duels in the ramparts’ pit and never once used one blade where two would do.' },
-  first_ember: { name: 'The First Ember', base: 38, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.2, fire: 0.2, art: 'echo', boss: true,
-    desc: 'Your own shadow carried this out of the dark. It takes the shape of whatever weapon you last trusted, and every blow it lands strikes twice: once now, and once as an echo.' },
+  first_ember: { name: 'The First Ember', base: 29, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.05, stam: 1.0, poise: 1.2, fire: 0.2, art: 'echo', boss: true,
+    desc: 'Your own shadow carried this out of the dark. It takes the shape of whatever weapon you last trusted, and every blow it lands leaves a golden echo of itself.' },
 } });
 if (typeof SHOPS !== 'undefined' && SHOPS.ashwright && !SHOPS.ashwright.some(e => e.item === 'w:quarterstaff'))
   SHOPS.ashwright.push({ item: 'w:quarterstaff', price: 2600, stock: 1 });
@@ -14314,55 +14487,55 @@ const GEAR2 = (() => {
 // Tiers: Thornveil early · Barrows / Crimson mid · Necropolis mid-late · Dunes / Starfall late · NEO / Venn endgame.
 registerGear({ weapons: {
   // ---- Thornveil Wood
-  antler_scythe: { name: 'Antler of the Warden', base: 36, sc: { str: 'C', dex: 'C', fth: 'D' }, speed: 0.95, reach: 1.3, stam: 1.2, poise: 1.3, art: 'harvest_moon', boss: true,
+  antler_scythe: { name: 'Antler of the Warden', base: 37, sc: { str: 'C', dex: 'C', fth: 'D' }, speed: 0.95, reach: 1.3, stam: 1.2, poise: 1.3, art: 'harvest_moon', boss: true,
     desc: 'The Warden grew this blade from its own crown and gave it only when the wood had no more need of it. Its sweeps wake the thorns under the soil.' },
-  briar_scythe: { name: 'Briar Scythe', base: 32, sc: { str: 'C', dex: 'D', fth: '-' }, speed: 0.95, reach: 1.25, stam: 1.15, poise: 1.2, bleed: 16, art: 'reap',
+  briar_scythe: { name: 'Briar Scythe', base: 43, sc: { str: 'C', dex: 'D', fth: '-' }, speed: 0.95, reach: 1.25, stam: 1.15, poise: 1.2, bleed: 16, art: 'reap',
     desc: 'A reaper’s scythe the bramble took back. Every sweep drags the harvest a little closer.' },
-  thornwood_staff: { name: 'Thornwood Staff', base: 27, sc: { str: 'D', dex: 'C', fth: 'D' }, speed: 1.2, reach: 1.25, stam: 0.9, poise: 1.0, bleed: 10, art: 'whirlwind',
+  thornwood_staff: { name: 'Thornwood Staff', base: 45, sc: { str: 'D', dex: 'C', fth: 'D' }, speed: 1.2, reach: 1.25, stam: 0.8, poise: 1.0, bleed: 10, art: 'whirlwind',
     desc: 'Cut green from Thornveil and never allowed to die. It still buds in spring, and still bites.' },
   // ---- The Drowned Barrows
-  choir_harpoon: { name: 'Harpoon of the Drowned Choir', base: 36, sc: { str: 'D', dex: 'B', fth: 'D' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 1.0, art: 'tidal_surge', boss: true,
+  choir_harpoon: { name: 'Harpoon of the Drowned Choir', base: 38, sc: { str: 'D', dex: 'B', fth: 'D' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 1.0, art: 'tidal_surge', boss: true,
     desc: 'Bone of the leviathan that sang the barrows under. Its finishing thrusts loose lances of black water that drag their catch home.' },
-  tidecleaver: { name: 'Tidecleaver', base: 50, sc: { str: 'A', dex: '-', fth: '-' }, speed: 0.75, reach: 1.25, stam: 1.45, poise: 1.9, armor: true, art: 'stormleap',
+  tidecleaver: { name: 'Tidecleaver', base: 64, sc: { str: 'A', dex: '-', fth: '-' }, speed: 0.75, reach: 1.25, stam: 1.45, poise: 1.9, armor: true, art: 'tidal_surge',
     desc: 'A drowned headsman’s cleaver, crusted with barnacle and coral. The sea did not blunt it; the sea never blunts anything.' },
-  barnacle_fang: { name: 'Barnacle Fang', base: 23, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.4, reach: 0.72, stam: 0.65, poise: 0.6, bleed: 24, art: 'bloodstep',
+  barnacle_fang: { name: 'Barnacle Fang', base: 21, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.4, reach: 0.72, stam: 0.65, poise: 0.6, bleed: 16, art: 'bloodstep',
     desc: 'The Ferryman’s knife, a fang of shell. He took his fare in blood; so will you.' },
   // ---- The Crimson Manor
   sanguine_rapier: { name: 'Sanguine Rapier', base: 32, sc: { str: 'E', dex: 'A', fth: 'D' }, speed: 1.15, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 18, art: 'blood_frenzy', boss: true,
-    desc: 'The Countess never drew it for anything but a duel. Finishing thrusts loose needles of blood, and every critical blow drinks deep.' },
-  carving_knife: { name: 'Carving Knife', base: 24, sc: { str: 'D', dex: 'A', fth: '-' }, speed: 1.4, reach: 0.74, stam: 0.65, poise: 0.65, bleed: 20, crit: 1.2, art: 'bloodstep',
+    desc: 'The Countess never drew it for anything but a duel. Finishing thrusts loose needles of blood, and a critical blow drinks a little.' },
+  carving_knife: { name: 'Carving Knife', base: 21, sc: { str: 'D', dex: 'A', fth: '-' }, speed: 1.4, reach: 0.74, stam: 0.65, poise: 0.65, bleed: 15, crit: 1.2, art: 'backstep_slash',
     desc: 'The Butler carved for the Countess’s table for two hundred years. Backstabs and ripostes cut 20% deeper.' },
   crimson_scythe: { name: 'Crimson Scythe', base: 37, sc: { str: 'C', dex: 'C', fth: '-' }, speed: 0.95, reach: 1.3, stam: 1.2, poise: 1.25, bleed: 20, art: 'reap',
     desc: 'A dancing blade of the Crimson court, black-lacquered and ringed in gold. Its guests were reaped between courses.' },
   // ---- Necropolis of Vael
   vael_greatsword: { name: 'Greatsword of King Vael', base: 56, sc: { str: 'A', dex: 'D', fth: 'D' }, speed: 0.74, reach: 1.3, stam: 1.5, poise: 2.0, armor: true, art: 'moonwave', boss: true,
     desc: 'Fused from the bones of the king’s first court. Its blows leave ghost-fire in the wound; its heavies call spectral chains up from the grave.' },
-  headsman_chain: { name: 'Headsman’s Chain', base: 32, sc: { str: 'B', dex: 'D', fth: '-' }, speed: 1.1, reach: 1.6, stam: 0.9, poise: 0.9, art: 'chain_drag',
+  headsman_chain: { name: 'Headsman’s Chain', base: 35, sc: { str: 'B', dex: 'D', fth: '-' }, speed: 1.1, reach: 1.6, stam: 0.9, poise: 0.9, art: 'chain_drag',
     desc: 'The executioners of Vael hooked the condemned and drew them to the block. The chain still knows the way.' },
-  gravechain: { name: 'Gravechain', base: 30, sc: { str: 'D', dex: 'B', fth: '-' }, speed: 1.15, reach: 1.6, stam: 0.85, poise: 0.8, bleed: 10, art: 'lash',
+  gravechain: { name: 'Gravechain', base: 35, sc: { str: 'D', dex: 'B', fth: '-' }, speed: 1.15, reach: 1.6, stam: 0.85, poise: 0.8, bleed: 10, art: 'lash',
     desc: 'Rusted links and a knot of old bone. It cracks hardest at its very tip, like a mourner’s last word.' },
   // ---- The Sunscorched Dunes
-  pharaoh_khopesh: { name: 'Khopesh of the Veiled Pharaoh', base: 35, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, fire: 0.15, art: 'solar_flare', boss: true,
+  pharaoh_khopesh: { name: 'Khopesh of the Veiled Pharaoh', base: 26, sc: { str: 'C', dex: 'C', fth: 'C' }, speed: 1.0, reach: 1.1, stam: 1.05, poise: 1.2, fire: 0.15, art: 'solar_flare', boss: true,
     desc: 'The sun-king’s sickle-sword. Its finishers hurl a spinning disc of sunlight that returns to the hand; its heavies raise the sand.' },
-  sun_sceptre: { name: 'Sun Sceptre', base: 34, sc: { str: 'D', dex: 'D', fth: 'A' }, speed: 1.15, reach: 1.25, stam: 0.9, poise: 1.0, holy: 0.2, art: 'cinderblade',
+  sun_sceptre: { name: 'Sun Sceptre', base: 46, sc: { str: 'D', dex: 'D', fth: 'A' }, speed: 1.15, reach: 1.25, stam: 0.8, poise: 1.0, holy: 0.2, art: 'solar_flare',
     desc: 'Gold ringed in lapis, crowned with the sun. The priests who carried it are dust; the sun is not. Spells cast by its bearer burn 20% brighter.' },
-  scarab_spear: { name: 'Scarab Spear', base: 37, sc: { str: 'C', dex: 'B', fth: '-' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 1.0, art: 'warcry',
+  scarab_spear: { name: 'Scarab Spear', base: 34, sc: { str: 'C', dex: 'B', fth: '-' }, speed: 1.05, reach: 1.45, stam: 0.95, poise: 1.0, art: 'warcry',
     desc: 'The Scarab Knights forged their blades from the shells of their sacred beetles, and their oaths from the sun’s path.' },
   // ---- The Starfall Crater
-  starblade: { name: 'Starblade', base: 42, sc: { str: 'E', dex: 'A', fth: 'D' }, speed: 1.15, reach: 1.15, stam: 0.9, poise: 1.0, art: 'starfall', boss: true,
+  starblade: { name: 'Starblade', base: 32, sc: { str: 'E', dex: 'A', fth: 'D' }, speed: 1.15, reach: 1.15, stam: 0.9, poise: 1.0, art: 'starfall', boss: true,
     desc: 'Astrel fell with this blade in her hand and it never stopped falling. Its finishers call shards of the sky down on your foes.' },
   meteor_maul: { name: 'Meteor Maul', base: 60, sc: { str: 'S', dex: '-', fth: 'E' }, speed: 0.7, reach: 1.1, stam: 1.55, poise: 2.3, armor: true, art: 'stormleap',
     desc: 'A fist of fallen star on an iron haft. It lands the way it arrived: all at once.' },
-  orrery_whip: { name: 'Orrery Lash', base: 36, sc: { str: 'D', dex: 'B', fth: 'D' }, speed: 1.15, reach: 1.6, stam: 0.85, poise: 0.85, art: 'lash',
+  orrery_whip: { name: 'Orrery Lash', base: 35, sc: { str: 'D', dex: 'B', fth: 'D' }, speed: 1.15, reach: 1.6, stam: 0.85, poise: 0.85, art: 'lash',
     desc: 'The Orrery Sentinel measured the heavens with this chain of brass and star-glass. It measures other things now.' },
   // ---- NEO-HALLOW
-  saint_lance: { name: 'SAINT-0 Lance', base: 44, sc: { str: 'D', dex: 'B', fth: 'C' }, speed: 1.05, reach: 1.5, stam: 0.95, poise: 1.0, art: 'thunder_lunge', boss: true,
+  saint_lance: { name: 'SAINT-0 Lance', base: 27, sc: { str: 'D', dex: 'B', fth: 'C' }, speed: 1.05, reach: 1.5, stam: 0.95, poise: 1.0, art: 'overclock', boss: true,
     desc: 'ERR: RELIC NOT FOUND. A lance of hard light from a city that should not exist. Its finishers draw neon lines through the world; its wounds glitch and strike again.' },
-  plasma_katana: { name: 'Plasma Katana', base: 40, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.2, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 10, art: 'overclock',
+  plasma_katana: { name: 'Plasma Katana', base: 36, sc: { str: 'E', dex: 'A', fth: '-' }, speed: 1.2, reach: 1.1, stam: 0.9, poise: 0.9, bleed: 10, art: 'overclock',
     desc: 'A blade of magenta light from NEO-HALLOW. It hums a song no one in Cinderhollow has heard.' },
   // ---- Sister Venn
-  last_kindling: { name: 'The Last Kindling', base: 43, sc: { str: 'C', dex: 'C', fth: 'B' }, speed: 1.0, reach: 1.35, stam: 1.2, poise: 1.35, fire: 0.2, holy: 0.1, art: 'pale_pyre', boss: true,
-    desc: 'Venn’s scythe of root and pale flame. She kept the last ember alive for you; now it is yours to tend. Its blows leave pyres of white fire where foes stood.' },
+  last_kindling: { name: 'The Last Kindling', base: 29, sc: { str: 'C', dex: 'C', fth: 'B' }, speed: 1.0, reach: 1.35, stam: 1.2, poise: 1.35, fire: 0.2, holy: 0.1, art: 'pale_pyre', boss: true,
+    desc: 'Venn’s scythe of root and pale flame. She kept the last ember alive for you; now it is yours to tend. Its blows flare with white fire; its finishers raise a pyre where the foe stood.' },
 } });
 
 // ------------------------------------------------------------------ Expansion 2 gear (agent G): spells, weapon arts, charms
@@ -22270,7 +22443,8 @@ function wClassName(id) {
 }
 function gearEntry(kind, id) {
   if (kind === 'weapon') { const w = WEAPONS[id]; return w && { kind, id, name: w.name, icon: 'w_' + id, desc: w.desc || '', lv: SAVE.weapons[id] || 0, eq: SAVE.weapon === id }; }
-  if (kind === 'art') { const r = ARTS[id]; return r && { kind, id, name: r.name, icon: 'a_' + id, desc: r.desc || '', fp: r.fp, eq: SAVE.art === id }; }
+  if (kind === 'art') { const r = ARTS[id]; if (!r) return null; const ws = Object.keys(WEAPONS).filter(w => wbArtOf(w) === id), own = ws.filter(w => SAVE.weapons[w] !== undefined);
+    return { kind, id, name: r.name, icon: 'a_' + id, desc: r.desc || '', fp: r.fp, eq: SAVE.art === id, bound: (own.length ? own : ws).map(w => WEAPONS[w].name) }; }
   if (kind === 'spell') { const s = SPELLS[id]; if (!s) return null; const slot = SAVE.spellsEq.indexOf(id); return { kind, id, name: s.name, icon: s.icon || 's_' + id, desc: s.desc || (SPELL_DEFS[id] && SPELL_DEFS[id].desc) || '', fp: spellCost(id), slot, eq: slot >= 0 }; }
   if (kind === 'charm') { const c = CHARMS[id]; if (!c) return null; const slot = SAVE.charmsEq.indexOf(id); return { kind, id, name: c.name, icon: id, desc: c.desc || '', slot, eq: slot >= 0 }; }
   const d = ITEMS[id]; return d && { kind, id, name: d.name, icon: d.icon, desc: d.desc || '' };
@@ -22291,7 +22465,7 @@ function materialEntries() {
 }
 const INV_CATS = [
   { k: 'weapon', name: 'Weapons', icon: 'w_longsword', ids: () => Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined), total: () => Object.keys(WEAPONS).length },
-  { k: 'art', name: 'Weapon Arts', icon: 'a_crescent', ids: () => Object.keys(ARTS).filter(id => SAVE.arts.includes(id)), total: () => Object.keys(ARTS).length },
+  { k: 'art', name: 'Weapon Arts', icon: 'a_crescent', ids: () => [...new Set(Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined).map(wbArtOf))], total: () => new Set(Object.keys(WEAPONS).map(wbArtOf)).size },   // each bound to its weapon (60_wbal.js)
   { k: 'spell', name: 'Spells', icon: 'ash_bolt', ids: () => knownSpells(), total: () => Object.keys(SPELLS).length },
   { k: 'charm', name: 'Charms', icon: 'c_crimson', ids: () => Object.keys(CHARMS).filter(id => SAVE.charms.includes(id)), total: () => Object.keys(CHARMS).length },
   { k: 'key', name: 'Key Items', icon: 'i_bell', ids: keyItemIds },
@@ -22357,9 +22531,10 @@ function drawDetail(e, px, py, pw, ph, cmp) {
       if (c && c !== n) text(n > c ? '▲' : '▼', X + 27, y + 9.4, 4.6, (lab === 'Weight' ? n < c : n > c) ? UIC.up : UIC.down, 'left');
     });
     y += 16;
-    const art = ARTS[w.art];
-    if (art) { icon('a_' + w.art, x - 1, y - 1, 10); text(art.name, x + 12, y + 6.5, 5.8, UIC.body, 'left', { weight: 500 }); text(`${art.fp} FP`, R, y + 6.5, 5.2, UIC.fp, 'right', { weight: 600 }); text('ART', x + 12 + textW(art.name, 5.8, 500) + 4, y + 6.3, 4.4, UIC.faint, 'left', { spacing: 1 }); }
+    const aid = wbArtOf(e.id), art = ARTS[aid];   // the weapon's own art: bound to it, shown read-only
+    if (art) { const cd = cdBase('art', aid), fpS = `${art.fp} FP · ${cd % 1 ? cd.toFixed(1) : cd}s`; icon('a_' + aid, x - 1, y - 1, 10); text(art.name, x + 12, y + 6.5, 5.8, UIC.body, 'left', { weight: 500 }); text(fpS, R, y + 6.5, 5.2, UIC.fp, 'right', { weight: 600 }); text('ART', x + 12 + textW(art.name, 5.8, 500) + 4, y + 6.3, 4.4, UIC.faint, 'left', { spacing: 1 }); }
     y += 13;
+    if (w.sigInfo) { uiDiamond(x + 1.5, y + 2.6, 1.1, '#f0c890'); for (const l of wrap(w.sigInfo, pw - 24, 5.2)) { text(l, x + 5, y + 4.5, 5.2, '#f0c890', 'left', { weight: 500 }); y += 6.8; } y += 3; }   // the signature, in a line (WEAPONS[id].sigInfo)
     let tx = x; const tags = weaponTags(w);
     for (const [s, c] of tags) {
       const tw = textW(s, 4.8, 600) + 6; if (tx + tw > R + 0.5) { tx = x; y += 9.5; }
@@ -22372,11 +22547,13 @@ function drawDetail(e, px, py, pw, ph, cmp) {
     text(String(e.fp), x, y + 15, 9.5, UIC.fp, 'left');
     if (cmp && cmp.kind === e.kind && cmp.id !== e.id) uiDelta(x + textW(String(e.fp), 9.5) + 3, y + 14.5, e.fp - cmp.fp, true);
     { const cd = cdBase(e.kind, e.id); text('COOLDOWN', x + 36, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 }); text((cd % 1 ? cd.toFixed(1) : String(cd)) + 's', x + 36, y + 15, 9.5, UIC.muted, 'left'); }
-    text('USE', x + 74, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 });
-    let kx = x + 74; for (const [k, l] of e.kind === 'art' ? [['O', 'use'], ['hold O', 'charge']] : [['U', 'cast'], ['Q', 'switch']]) {
+    const ux = x + (e.kind === 'art' ? 84 : 74);   // (the art's cooldown label is wider than its column)
+    text('USE', ux, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 });
+    let kx = ux; for (const [k, l] of e.kind === 'art' ? [['O', 'use'], ['hold O', 'charge']] : [['U', 'cast'], ['Q', 'switch']]) {
       kx += uiKey(k, kx, y + 14.5, { size: 5 }) + 2; text(l, kx, y + 14.5, 4.8, UIC.faint, 'left', { weight: 400 }); kx += textW(l, 4.8, 400) + 6;
     }
     y += 24;
+    if (e.kind === 'art' && e.bound && e.bound.length) { const bs = 'Bound to ' + e.bound.join(', '); text(bs, x, y + 2, uiFit(bs, pw - 18, 5, 3.8, 500), UIC.muted, 'left', { weight: 500 }); y += 9; }
   } else if (e.kind === 'mat' && e.big) {
     text('HELD', x, y + 4, 4.6, UIC.faint, 'left', { spacing: 1 }); text(e.big, x, y + 15, 9, UIC.text, 'left'); y += 24;
   }
@@ -22388,7 +22565,7 @@ function drawDetail(e, px, py, pw, ph, cmp) {
 function slotEntry(r) {
   if (!r) return null;
   if (r.k === 'weapon') return gearEntry('weapon', SAVE.weapon);
-  if (r.k === 'art') return SAVE.art ? gearEntry('art', SAVE.art) : { empty: true, title: 'Weapon Art', sub: 'Empty', desc: 'Choose an art for O.' };
+  if (r.k === 'art') return gearEntry('art', wbArtOf(SAVE.weapon));   // read-only: the weapon's own art
   if (r.k === 'spell') { const s = SAVE.spellsEq[r.i]; if (s) return gearEntry('spell', s); const n = knownSpells().length; return { empty: true, title: `Spell slot ${r.i + 1}`, sub: 'Empty', desc: `You know ${n} spell${n === 1 ? '' : 's'}. Press ${kl('Enter')} to choose one. Learn more on the skill tree, from the Hollow Scribe, or from great foes.` }; }
   const c = SAVE.charmsEq[r.i]; if (c) return gearEntry('charm', c);
   return { empty: true, title: `Charm slot ${r.i + 1}`, sub: 'Empty', desc: `You carry ${SAVE.charms.length} charm${SAVE.charms.length === 1 ? '' : 's'}. Press ${kl('Enter')} to wear one.` };
@@ -22396,17 +22573,18 @@ function slotEntry(r) {
 function slotKind(r) { return r.k === 'weapon' ? 'weapon' : r.k; }
 function pickIds(r) {
   if (r.k === 'weapon') return Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined);
-  if (r.k === 'art') return Object.keys(ARTS).filter(id => SAVE.arts.includes(id));
+  if (r.k === 'art') return [];   // arts are bound to weapons: nothing to pick
   if (r.k === 'spell') return [null, ...knownSpells()];
   return [null, ...Object.keys(CHARMS).filter(id => SAVE.charms.includes(id))];
 }
 function openPicker(M, r) {
+  if (r.k === 'art') { sfx.deny(); toast('The art is bound to the weapon', 1.6); return; }
   const list = pickIds(r), cur = r.k === 'weapon' ? SAVE.weapon : r.k === 'art' ? SAVE.art : r.k === 'spell' ? SAVE.spellsEq[r.i] || null : SAVE.charmsEq[r.i] || null;
   M.pick = { row: r, list, sel: Math.max(0, list.indexOf(cur)), off: 0 }; sfx.menu();
 }
 function applyEquip(r, id) {
-  if (r.k === 'weapon') { if (!id) return; SAVE.weapon = id; const a = WEAPONS[id].art; if (SAVE.arts.includes(a) && !SAVE.artPinned) SAVE.art = a; }
-  else if (r.k === 'art') { if (!id) return; SAVE.art = id; SAVE.artPinned = true; }
+  if (r.k === 'weapon') { if (!id) return; SAVE.weapon = id; wbOnEquip(id); }   // its art comes with it
+  else if (r.k === 'art') return;
   else {
     const key = r.k === 'spell' ? 'spellsEq' : 'charmsEq', eq = [...SAVE[key]], j = id ? eq.indexOf(id) : -1, cur = eq[r.i] || null;
     if (!id) eq[r.i] = null;
@@ -22469,7 +22647,8 @@ function renderSlots(M, rows) {
     const nm = e.empty ? '— empty —' : e.name + (r.k === 'weapon' && e.lv ? ` +${e.lv}` : '');
     text(nm, 34, Y + 8.6, uiFit(nm, 104, 6.2, 4.8, sel ? 600 : 500), e.empty ? UIC.faint : sel ? UIC.hi : UIC.text, 'left', { weight: sel ? 600 : 500 });
     if (!e.empty && (r.k === 'spell' || r.k === 'art')) text(`${e.fp}`, 156, Y + 8.4, 5, UIC.fp, 'right', { weight: 600, alpha: sel ? 0 : 0.8 });
-    if (sel) { const k = uiPulse(6); text('◂', 143.5 - k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); text('▸', 155.5 + k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); }
+    if (sel && r.k === 'art') text('BOUND', 156, Y + 8.4, 4.4, UIC.faint, 'right', { spacing: 1 });
+    else if (sel) { const k = uiPulse(6); text('◂', 143.5 - k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); text('▸', 155.5 + k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); }
   }
   vctx.restore();
   uiScroll(161, top, view, M.slotOff, view, y);
@@ -22517,7 +22696,8 @@ function invInput(M, a) {
   }
   if (conf) {   // OK equips straight from the bag: weapons and arts replace, spells and charms fill a free slot (or come off)
     const e = L[M.isel]; if (!e) return;
-    if (e.kind === 'weapon' || e.kind === 'art') { if (e.eq) { sfx.deny(); return; } applyEquip({ k: e.kind }, e.id); toast(`${e.name} equipped`, 1.6); }
+    if (e.kind === 'art') { sfx.deny(); toast('The art is bound to its weapon', 1.6); }
+    else if (e.kind === 'weapon') { if (e.eq) { sfx.deny(); return; } applyEquip({ k: e.kind }, e.id); toast(`${e.name} equipped`, 1.6); }
     else if (e.kind === 'spell' || e.kind === 'charm') {
       const key = e.kind === 'spell' ? 'spellsEq' : 'charmsEq', slots = e.kind === 'spell' ? SAVE.spellSlots : SAVE.charmSlots;
       if (e.eq) { applyEquip({ k: e.kind, i: e.slot }, null); toast(`${e.name} removed`, 1.6); }
@@ -22552,13 +22732,13 @@ function renderInvTab(M) {
   uiScroll(161, 74, INV_ROWS * 21 - 3, M.ioff, INV_ROWS, rows);
   panel(170, 30, 202, 172, 0.8);
   const e = M.bar ? null : L[M.isel];
-  if (e) drawDetail(e, 170, 30, 202, 172, e.kind === 'weapon' ? gearEntry('weapon', SAVE.weapon) : e.kind === 'art' && SAVE.art ? gearEntry('art', SAVE.art) : null);
+  if (e) drawDetail(e, 170, 30, 202, 172, e.kind === 'weapon' ? gearEntry('weapon', SAVE.weapon) : null);   // arts are bound: nothing to compare against
   else {   // category focused: a short summary of the category
     icon(C.icon, 250, 70, 40, 0.9);
     text(C.name, 271, 128, 8, UIC.gold, 'center');
     text(L.length ? `${L.length} held · ↓ to browse` : 'You carry none yet.', 271, 140, 5.4, UIC.muted, 'center', { weight: 400 });
   }
-  const act = e && (e.kind === 'weapon' || e.kind === 'art') ? (e.eq ? '' : 'equip') : e && (e.kind === 'spell' || e.kind === 'charm') ? (e.eq ? 'remove' : 'equip') : '';
+  const act = e && e.kind === 'weapon' ? (e.eq ? '' : 'equip') : e && (e.kind === 'spell' || e.kind === 'charm') ? (e.eq ? 'remove' : 'equip') : '';
   uiFooter(M.bar ? [['←→', 'category'], ['↓', 'browse'], ...tabHint(), ['Esc', 'close']]
     : [['↑↓←→', 'browse'], ...(act ? [['Enter', act]] : []), ...tabHint(), ['Esc', 'close']]);
 }
@@ -23118,7 +23298,7 @@ function tvUpdateBrambles(dt) {
     }
   }
   // pogo off brambles with a downward strike (like spikes)
-  if (P.state && P.anim.tag === 'attack_down' && !P.pogoed && P.anim.i >= 1 && P.anim.i <= 3) {
+  const DA = ATK[P.state]; if (DA && DA.down && !P.pogoed && P.anim.i >= DA.active[0] && P.anim.i <= DA.active[1]) {
     for (const dx of [-6, 0, 6]) { const t = tileAt(Math.floor((P.x + dx) / TILE), Math.floor((P.y + 10) / TILE)); if (t === TV_T_BRAMBLE) { pogo(); airRefund(); tvSfx.rustle(); break; } }
   }
   // foes that stumble into brambles get torn too (the hounds are made of them)
@@ -24407,7 +24587,7 @@ function dbSwimUpdate(dt) {
       return;
     }
   }
-  if (peek('attack') && P.st > 0) { take('attack'); if (ax) P.face = ax; startAttack(held.has('up') ? 'attack_up' : held.has('down') && hasTB && pHas('attack_down') ? 'attack_down' : 'air_attack'); return; }
+  if (peek('attack') && P.st > 0) { take('attack'); if (ax) P.face = ax; startAttack(held.has('up') ? aerTag('up') : held.has('down') && hasTB && pHas('attack_down') ? aerTag('down') : aerTag('air')); return; }
   if (peek('roll') && P.st > 0) { take('roll'); P.airDash = true; doRoll(ax); if (hasTB && ay) P.vy = ay * 60; return; }
   if (peek('cast')) { take('cast'); startCast(); return; }
   if (peek('hook')) { take('hook'); if (tryHook()) return; }
@@ -33847,6 +34027,8 @@ const GFX_ROWS = [
   { k: 'scan', label: 'Scanlines', opts: ['Off', 'Soft', 'CRT'], shader: true, desc: 'Soft: faint lines between pixel rows. CRT: a curved old monitor with a phosphor mask.' },
   { k: 'grain', label: 'Film grain', opts: ['Off', 'On'], shader: true, desc: 'A fine moving grain over the picture.' },
   { k: 'ca', label: 'Chromatic aberration', opts: ['Off', 'On'], shader: true, desc: 'Red and blue split slightly toward the edges of the screen.' },
+  { k: 'shakeLvl', label: 'Screen shake', opts: ['Off', 'Low', 'Full'], desc: 'How hard the view jolts on heavy blows, finishers and landings. Same as Settings › Screen shake.' },
+  { k: 'wtrail', label: 'Weapon trail', opts: ['Off', 'On'], desc: 'A faint streak of light follows the blade tip during a cut, in the weapon’s own colour.' },
 ];
 function gfxPresetIdx() { return GFX_PRESETS.findIndex(([, v]) => GFX_KEYS.every(k => (SETTINGS[k] || 0) === v[k])); }
 function gfxSubInput(M, a) {
@@ -33871,7 +34053,7 @@ function renderGfxSub(M) {
   uiBackdrop(0.12);
   vctx.fillStyle = 'rgba(6,4,10,0.86)'; vctx.fillRect(ox, oy, 214 * scale, H * scale);   // the right side stays clear: a live preview
   uiTitle('GRAPHICS', 17, 9);
-  const px = 12, pw = 196, top = 26, rh = 13, on = !!SETTINGS.shaders, bad = GFX.ok === false;
+  const px = 12, pw = 196, top = 24, rh = GFX_ROWS.length > 12 ? 10.5 : 13, on = !!SETTINGS.shaders, bad = GFX.ok === false;
   panel(px, top, pw, 10 + GFX_ROWS.length * rh);
   GFX_ROWS.forEach((R, i) => {
     const y = top + 15 + i * rh, sel = i === S.sel, dim = (R.shader && !on);
@@ -41387,8 +41569,534 @@ for (const [k, [h]] of Object.entries(BOSS_CURVE)) if (BOSS_INFO[k] && !BOSS_INF
 // multi-body bosses (twins, coven, executioners, sentinels) give each body its own HP: they ask for the multiplier here
 function bossHpMul(kind) { return (BOSS_CURVE[kind] || [1])[0]; }
 
+// ------------------------------------------------------------------ weapon-feel pass (agent WB): arts locked to weapons, art tuning,
+// signature info. docs/WEAPON_FEEL_CONTRACT.md B1/B4, numbers in docs/weapon_balance.md (bench: tools/shots/wb/).
+// Each weapon has exactly one art, its own (WEAPONS[id].art; the First Ember's is its Echo), and it can't be changed:
+// SAVE.art is forced to it on load, on every weapon swap and on NG+ (checked every frame -- cheap). SAVE.arts,
+// SAVE.artPinned and the "Ash of X" items are obsolete: old saves keep the fields, nothing reads them.
+function wbArtOf(id) { const w = WEAPONS[id || (SAVE && SAVE.weapon)]; return w && ARTS[w.art] ? w.art : 'crescent'; }
+const WB_CLS_LABEL = { sword: 'straight sword', dagger: 'dagger', great: 'greatsword', spear: 'spear', katana: 'katana', staff: 'staff',
+  shield: 'sword and shield', twin: 'twinblades', scythe: 'scythe', whip: 'whip', mirror: 'mirror blade' };
+function wbClassLabel(cls) { return WB_CLS_LABEL[cls] || 'weapon'; }
+function wbLockArt() {
+  if (typeof SAVE === 'undefined' || !SAVE || !SAVE.weapon) return;
+  const a = wbArtOf(SAVE.weapon);
+  if (SAVE.art !== a) SAVE.art = a;
+  if (SAVE.artPinned) delete SAVE.artPinned;   // the old "keep my art across swaps" pin
+  const c = WEAPON_CLASS[SAVE.weapon];
+  if (c && c !== 'mirror') { SAVE.x3 = SAVE.x3 || {}; SAVE.x3.wbLastW = SAVE.weapon; }   // the weapon the First Ember remembers
+}
+// called by the equipment screens when a weapon is put in hand
+function wbOnEquip(id) {
+  wbLockArt();
+  if (WEAPON_CLASS[id] === 'mirror') {
+    toast(`The First Ember takes the shape of your ${wbClassLabel(wcls())}`, 3.2);
+    wbSeedEcho();
+  }
+}
+// the First Ember's Echo repeats the last art performed; fresh from a load, that is the art of the weapon it remembers
+function wbSeedEcho() {
+  if (typeof GEAR2 === 'undefined' || !GEAR2.S || GEAR2.S.lastArt) return;
+  const w = SAVE.x3 && SAVE.x3.wbLastW; if (w && WEAPONS[w] && wbArtOf(w) !== 'echo') GEAR2.S.lastArt = wbArtOf(w);
+}
+HOOKS.update.push(() => { wbLockArt(); if (SAVE && SAVE.weapon === 'first_ember') wbSeedEcho(); });
+HOOKS.enter.push(() => wbLockArt());
+HOOKS.rest.push(() => wbLockArt());
+
+// ---- art tuning (B4): the art is part of the weapon now, so none may be a trap or a crutch.
+// fp / cd from tools/shots/wb/art_bench.js (damage per use in light hits) and bench_real.js's art column; see weapon_balance.md.
+const WB_ART_TUNE = {
+  crescent: { fp: 10, cd: 4 }, bloodstep: { fp: 8, cd: 4 }, stormleap: { fp: 14, cd: 5 }, warcry: { fp: 8, cd: 13 }, moonwave: { fp: 12, cd: 5 },
+  cinderblade: { fp: 12 }, whirlwind: { fp: 26, cd: 11 }, gale_vault: { fp: 22, cd: 8 }, ink_mark: { fp: 12, cd: 6.5 },
+  aegis: { fp: 10, cd: 7 }, frost_aegis: { fp: 12, cd: 7 }, shield_charge: { fp: 16, cd: 6 }, magma_quake: { fp: 30, cd: 15 },
+  thunder_lunge: { fp: 14, cd: 5 }, tolling_blow: { fp: 24, cd: 9 }, twin_tempest: { fp: 24, cd: 8.5 }, echo: { fp: 16, cd: 8 },
+  backstep_slash: { fp: 10, cd: 3.7 }, reap: { fp: 12, cd: 4.5 }, harvest_moon: { fp: 16, cd: 5.5 }, lash: { fp: 20, cd: 9 },
+  chain_drag: { fp: 16, cd: 6 }, blood_frenzy: { fp: 14, cd: 12 }, tidal_surge: { fp: 14, cd: 6 }, solar_flare: { fp: 18, cd: 6.5 },
+  starfall: { fp: 26, cd: 9 }, overclock: { fp: 10, cd: 6 }, pale_pyre: { fp: 22, cd: 9.5 },
+};
+for (const [id, t] of Object.entries(WB_ART_TUNE)) if (ARTS[id]) Object.assign(ARTS[id], t);
+// Aegis / Frost Aegis: a perfect guard for a moment, not a second of invulnerability every few seconds
+const WB_GUARD_MAX = { tap: 0.7, charged: 1.0 };
+for (const id of ['aegis', 'frost_aegis']) {
+  const I = ART_IMPL[id]; if (!I || I._wb) continue;
+  const up = I.update; I._wb = true;
+  I.update = function (dt, grav) { up.call(this, dt, grav); const s = P.g2; if (s && s.rel && s.dur) s.dur = Math.min(s.dur, s.ch ? WB_GUARD_MAX.charged : WB_GUARD_MAX.tap); };
+}
+
+// Sustain: a weapon may heal at most one flask's worth in a whole boss fight -- the arts that drink (Blood Frenzy, Pale Pyre,
+// Reap) included, now that they come with the weapon. Their heals all go through 16_gear3.js's heal() (window.__gear3.S.heal);
+// what an art heals past the budget during a boss fight is taken back the same frame.
+const WB_HEAL_ARTS = new Set(['blood_frenzy', 'pale_pyre', 'reap']);
+const WB_SUS = { used: 0, boss: null, last: 0 };
+function wbFlaskHp() { return Math.round((D.maxHp * 0.42 + 20) * (typeof flaskMul === 'function' ? flaskMul() : 1)); }
+HOOKS.update.push(() => {
+  const G3 = typeof window !== 'undefined' && window.__gear3; if (!G3 || !P || !D) return;
+  if (P.state === 'art') P.wbArtT = time;
+  const h = G3.S.heal || 0, d = h - WB_SUS.last; WB_SUS.last = h;
+  if (!boss || !boss.active) { WB_SUS.used = 0; WB_SUS.boss = null; return; }
+  if (boss !== WB_SUS.boss) { WB_SUS.boss = boss; WB_SUS.used = 0; }
+  if (d <= 0 || !WB_HEAL_ARTS.has(SAVE.art) || !(P.state === 'art' || G3.S.frenzyT > 0 || time - (P.wbArtT || -9) < 4)) return;
+  const take = Math.min(d, Math.max(0, wbFlaskHp() - WB_SUS.used)); WB_SUS.used += take;
+  if (d > take) P.hp = Math.max(1, P.hp - (d - take));
+});
+
+// ---- the old "Ash of X" items: a chest, shop or save that still holds one gives a tempering cache instead
+ITEMS.ash_cache = { name: 'Tempering Cache', icon: 'i_emberstone', sheet: 'ui_icons2', cache: { emberstone: 1, cinders: 300 },
+  desc: 'A scholar’s pouch: an emberstone wrapped in 300 cinders. Weapon arts are bound to their weapons now; this is what the ash was worth.' };
+for (const id of Object.keys(ARTS)) ITEMS['art:' + id] = { ...ITEMS.ash_cache, legacyArt: id };
+for (const list of Object.values(SHOPS)) for (const e of list) if (/^art:/.test(e.item)) e.item = 'ash_cache';
+
+// ---- signature info for the gear panel (04b_sigs.js `info`); the First Ember's is live (it names the class it mirrors)
+for (const id of Object.keys(SIGS)) if (WEAPONS[id]) Object.defineProperty(WEAPONS[id], 'sigInfo', { get() { return SIGS[id].info; }, configurable: true });
+
+// debug handle for tools/shots/wb/*
+if (typeof window !== 'undefined' && window.__game) window.__game.wb = { sus: WB_SUS, artOf: wbArtOf, lock: wbLockArt, onEquip: wbOnEquip, tune: WB_ART_TUNE, sigLimit: () => sigLimit(), sigReach: () => sigReach() };
+
+// ------------------------------------------------------------------ WC: hit feel (engine-side impact polish, shared by every weapon)
+// Pure feel: nothing here changes damage, reach or timing windows. Hitstop freezes both sides equally.
+// Everything hooks in from this file: wrappers around playerStrike / pogo / hurtPlayer / updatePlayer / updateCamera /
+// drawSprite, plus HOOKS.update / strike / render. Sounds live in 62_wsfx.js (WSFX). Keyed on ATK fields, never tag names.
+//   hitstop by weapon weight · directional camera kick (scaled by Settings › Screen shake) · impact sparks by material and
+//   element · a thin tip ribbon tinted by the weapon's glow · landing dust, thud and squash after air/down attacks
+const FEEL = { off: false, hs: true, kx: 0, ky: 0, ax: 0, ay: 0, clock: 0, sq: 0, sparks: [], flashes: [], puffs: [], trail: [], sid: 0, tipPrev: null,
+  inPlayer: false, strikeA: null, strikeN: 0, strikeBoss: false, swingHit: 0, airAtk: null, wasGround: true, lastSwing: null };
+if (SETTINGS.wtrail === undefined) SETTINGS.wtrail = 1;   // Graphics › Weapon trail (row: see NEEDS in the WC report)
+// Settings › Graphics › Screen shake mirror: an index view (0 Off / 1 Low / 2 Full) of the existing SETTINGS.shake (0 / 0.5 / 1).
+// Not enumerable, so it never lands in the saved settings JSON; lets a GFX_ROWS entry drive the same value.
+if (!Object.getOwnPropertyDescriptor(SETTINGS, 'shakeLvl')) Object.defineProperty(SETTINGS, 'shakeLvl', { enumerable: false, configurable: true,
+  get() { return Math.round(clamp(SETTINGS.shake ?? 1, 0, 1) * 2); }, set(v) { SETTINGS.shake = clamp(v, 0, 2) / 2; } });
+// WC's own random stream: feel effects never draw from Math.random, so the fight itself (damage rolls, AI) plays out identically with feel on or off
+let feelSeed = 0x9e3779b9;
+function frand(a, b) { feelSeed = (feelSeed * 1664525 + 1013904223) >>> 0; return a + (b - a) * (feelSeed / 4294967296); }
+const feelShake = () => clamp(SETTINGS.shake ?? 1, 0, 1);
+
+// ---- weight: 0 (dagger) .. 1 (hammer); the class sets the band, the weapon's own speed nudges it
+const FEEL_CLS_W = { dagger: 0.08, whip: 0.14, twin: 0.14, katana: 0.36, spear: 0.4, staff: 0.36, sword: 0.46, shield: 0.5, scythe: 0.6, great: 0.9 };
+function feelCls(A) { const c = A && A.cls && A.cls !== 'tech' ? A.cls : wcls(); return c === 'mirror' ? 'sword' : c; }
+function feelWeight(A) {
+  const Wd = WEAPONS[SAVE.weapon] || {};
+  return clamp((FEEL_CLS_W[feelCls(A)] ?? 0.46) + clamp((1 - (Wd.speed || 1)) * 0.5, -0.12, 0.12), 0, 1);
+}
+function feelFinisher(A) { return A.kind === 'heavy' || A.counter || (typeof isFinisher === 'function' && isFinisher(P.state)) || (A.cls === 'tech'); }
+
+// ---- element / glow of the equipped weapon: sparks, lights, the tip ribbon
+const FEEL_EL = {
+  fire: { pk: 'fire', pk2: 'ember', light: '255,140,60', glow: '#ffb070' },
+  frost: { pk: 'frost', pk2: 'spark', light: '160,210,255', glow: '#bfe4ff' },
+  holy: { pk: 'mote', pk2: 'gold', light: '255,240,200', glow: '#fff0c8' },
+  rot: { pk: 'spore', pk2: 'ember', light: '150,210,90', glow: '#b8e890' },
+  steel: { pk: 'spark', pk2: 'spark', light: '255,236,200', glow: '#dfe8f5' },
+};
+function feelElement(fire) {
+  const sg = SIGS[SAVE.weapon]; if (sg && sg.glow) return { pk: sg.pk || 'spark', pk2: sg.pk2 || sg.pk || 'spark', light: sg.light || '255,220,160', glow: sg.glow, sig: true };
+  const Wd = WEAPONS[SAVE.weapon] || {};
+  if (fire || Wd.fire) return FEEL_EL.fire;
+  if (Wd.frost) return FEEL_EL.frost;
+  if (Wd.holy) return FEEL_EL.holy;
+  if (Wd.rot) return FEEL_EL.rot;
+  return FEEL_EL.steel;
+}
+
+// ---- what did we hit: metal rings and throws sparks, stone puffs dust, flesh bleeds, spirits scatter ink / frost
+const FEEL_MAT_RX = [
+  ['frost', /^hf_|ice_warden|vael|frost|rime/],
+  ['stone', /golem|gargoyle|colossus|scarab|barnacle|magma_crawler|vessel|statue|stone|astrel/],
+  ['metal', /knight|soldier|warden|sentinel|sentry|drone|cyborg|turret|kalden|champion|executioner|enforcer|overseer|bellringer|ringer|orrery|saint0|butler|pharaoh|foreman|twins|oswin/],
+  ['ink', /wisp|wraith|grimoire|ink_|librarian|unwritten|coven|ferryman|choir|scarecrow|nv_hound|ghost|shade/],
+];
+const FEEL_MAT_CACHE = {};
+function feelMat(t) {
+  if (!t || t === 'brk') return 'stone';
+  if (t.feelMat) return t.feelMat;
+  if (t.prop) return 'stone';
+  const id = t.boss ? (t.kind || (typeof boss !== 'undefined' && boss && boss.kind) || '') : (t.type || '');
+  if (id in FEEL_MAT_CACHE) return FEEL_MAT_CACHE[id];
+  let m = 'flesh';
+  for (const [k, rx] of FEEL_MAT_RX) if (rx.test(id)) { m = k; break; }
+  if (m === 'flesh' && t.cfg && t.cfg.guard) m = 'metal';
+  return (FEEL_MAT_CACHE[id] = m);
+}
+
+// ---- short-lived streak sparks + flash lights (own pool, drawn as additive lines into the glow layer)
+function feelSpark(x, y, vx, vy, col, life = 0.22, g = 420, len = 0.028) {
+  if (FEEL.sparks.length > 90) FEEL.sparks.shift();
+  FEEL.sparks.push({ x, y, vx, vy, col, life, max: life, g, len });
+}
+// soft dust / ink puffs that swell and fade (drawn lit, not glowing)
+function feelPuff(x, y, vx, vy, r0, r1, col, a = 0.4, life = 0.4) { if (FEEL.puffs.length > 40) FEEL.puffs.shift(); FEEL.puffs.push({ x, y, vx, vy, r0, r1, col, a, life, max: life }); }
+function feelFlash(x, y, r, col, k = 1, life = 0.09) { if (FEEL.flashes.length > 12) FEEL.flashes.shift(); FEEL.flashes.push({ x, y, r, col, k, life, max: life }); }
+function feelKick(dx, dy) {
+  FEEL.kx = clamp(FEEL.kx + dx, -5, 5); FEEL.ky = clamp(FEEL.ky + dy, -5, 5);
+}
+// direction of the swing: side swings kick along the facing, up/down attacks and slams kick vertically
+function feelDir(A) { return A.down || A.slam ? [0, 1] : A.up ? [0, -1] : [P.face, 0]; }
+
+// ---- impact: sparks by material, a tint by element, a light, a kick on heavies/finishers (per swing, not per target)
+function feelImpact(t, x, y, A, heavy, fire) {
+  const mat = feelMat(t), el = feelElement(fire), w = feelWeight(A);
+  const dir = (t && t.x !== undefined ? Math.sign(t.x - P.x) : P.face) || P.face, big = heavy || (A && feelFinisher(A));
+  const n = Math.round(3 + w * 3 + (big ? 2 : 0));
+  if (mat === 'metal') {
+    for (let i = 0; i < n + 2; i++) { const a = frand(-1.25, 0.35), s = frand(120, 260); feelSpark(x, y, dir * Math.cos(a) * s, Math.sin(a) * s, i % 3 ? '255,236,190' : '255,255,245', frand(0.12, 0.26)); }
+    feelFlash(x, y, 30 + w * 14, '255,230,170', 1.1);
+  } else if (mat === 'stone') {
+    for (let i = 0; i < n; i++) particles.push({ x: x + frand(-3, 3), y: y + frand(-3, 3), vx: dir * frand(10, 70), vy: -frand(10, 60), g: 120, life: frand(0.35, 0.6), kind: 'dust' });
+    for (let i = 0; i < 2 + (big ? 1 : 0); i++) feelPuff(x + frand(-3, 3), y + frand(-3, 3), dir * frand(10, 40), -frand(5, 20), 2, frand(6, 9), '150,140,125', 0.38, frand(0.35, 0.5));
+    for (let i = 0; i < 2 + (big ? 2 : 0); i++) particles.push({ x, y, vx: dir * frand(30, 110), vy: -frand(40, 120), g: 460, life: frand(0.4, 0.7), kind: 'rock' });
+    feelFlash(x, y, 22, '220,200,170', 0.6);
+  } else if (mat === 'frost') {
+    for (let i = 0; i < n; i++) { const a = frand(-1.4, 0.6), s = frand(70, 170); feelSpark(x, y, dir * Math.cos(a) * s, Math.sin(a) * s, '190,230,255', frand(0.14, 0.28), 300, 0.02); }
+    for (let i = 0; i < 3; i++) particles.push({ x, y, vx: dir * frand(10, 60), vy: -frand(10, 50), g: 60, life: frand(0.4, 0.7), kind: 'frost' });
+    feelFlash(x, y, 28, '170,215,255', 0.9);
+  } else if (mat === 'ink') {
+    for (let i = 0; i < n; i++) particles.push({ x: x + frand(-4, 4), y: y + frand(-4, 4), vx: dir * frand(10, 60), vy: -frand(0, 40), life: frand(0.35, 0.65), kind: 'ink' });
+    feelPuff(x, y, dir * 20, -8, 2, 8, '60,30,95', 0.45, 0.35);
+    feelFlash(x, y, 24, '170,120,240', 0.7);
+  } else {   // flesh: a few dark drops that fall, never a fountain
+    for (let i = 0; i < Math.min(6, n); i++) particles.push({ x: x + frand(-2, 2), y: y + frand(-2, 2), vx: dir * frand(20, 90), vy: -frand(20, 80), g: 420, life: frand(0.3, 0.55), kind: 'blood' });
+  }
+  // element / signature tint: a small burst in the weapon's own colour, and its light
+  if (el !== FEEL_EL.steel) {
+    for (let i = 0; i < 3 + (big ? 3 : 0); i++) particles.push({ x: x + frand(-4, 4), y: y + frand(-6, 6), vx: dir * frand(10, 70), vy: -frand(10, 60), g: 90, life: frand(0.25, 0.5), kind: frand(0, 1) < 0.7 ? el.pk : el.pk2 });
+    feelFlash(x, y, 34 + (big ? 10 : 0), el.light, 1);
+  }
+  if (typeof WSFX !== 'undefined') WSFX.mat(mat, w);
+}
+
+// ---- hitstop by weight: tiny for daggers/whips/twins, medium for swords/katanas/spears/staves, heavy for hammers.
+// Finishers, heavies and charged heavies get more; bosses slightly less; never above 0.12 s.
+function feelHitstop(A) {
+  const w = feelWeight(A);
+  let h = 0.03 + w * 0.045;
+  if (A.down) h = Math.max(h, 0.045);
+  if (feelFinisher(A)) h += 0.015;
+  if (A.kind === 'heavy') h += 0.02;
+  if (A.kind === 'heavy' && P.charged) h += 0.025;
+  if (FEEL.strikeBoss) h *= 0.8;
+  return clamp(h, 0.02, 0.12);
+}
+
+// ---- wrappers
+{
+  // the player's own update: lets the sound wrappers tell the player's swing from a foe's in the same frame
+  const _up = updatePlayer;
+  updatePlayer = function (dt) { FEEL.inPlayer = true; try { return _up(dt); } finally { FEEL.inPlayer = false; } };
+  // melee strikes: weight-based hitstop replaces the flat 0.05 / 0.09 set by the target (special beats above 0.1 s are kept)
+  const _ps = playerStrike;
+  playerStrike = function (A) {
+    if (FEEL.off) return _ps.apply(this, arguments);
+    const h0 = hitstop; FEEL.strikeA = A; FEEL.strikeN = 0; FEEL.strikeBoss = false;
+    try { _ps.apply(this, arguments); } finally { FEEL.strikeA = null; }
+    if (FEEL.hs && FEEL.strikeN > 0 && hitstop > h0 && hitstop <= 0.1001) hitstop = Math.max(h0, feelHitstop(A));
+  };
+  // pogo: a short vertical kick, a stretch as you spring, sparks under your feet
+  const _pogo = pogo;
+  pogo = function () {
+    _pogo.apply(this, arguments);
+    if (FEEL.off) return;
+    feelKick(0, 2.6); FEEL.sq = -0.8;
+    for (let i = 0; i < 6; i++) { const a = frand(0.3, Math.PI - 0.3); feelSpark(P.x, P.y + 8, Math.cos(a) * 150, Math.sin(a) * 90, '255,236,190', frand(0.1, 0.2), 300); }
+    feelFlash(P.x, P.y + 8, 26, '255,230,170', 0.8);
+    if (typeof WSFX !== 'undefined') WSFX.pogo();
+  };
+  // taking a blow: the view jolts away from it (shake itself is unchanged)
+  const _hurt = hurtPlayer;
+  hurtPlayer = function (dmg, dir) {
+    const r = _hurt.apply(this, arguments);
+    if (r === true && !FEEL.off) feelKick((dir || 0) * 2.2, -0.6);
+    return r;
+  };
+  // camera: apply the kick on top of the normal follow; remove it before the follow so the lerp never sees it
+  const _cam = updateCamera;
+  updateCamera = function (dt, snap) {
+    cam.x -= FEEL.ax; cam.y -= FEEL.ay; FEEL.ax = FEEL.ay = 0;
+    _cam.apply(this, arguments);
+    if (snap) { FEEL.kx = FEEL.ky = 0; return; }
+    if (FEEL.off || state !== 'play') return;
+    const s = feelShake(); FEEL.ax = FEEL.kx * s; FEEL.ay = FEEL.ky * s;
+    cam.x += FEEL.ax; cam.y += FEEL.ay;
+  };
+  // landing squash: scale the player + weapon overlay about the feet for a few frames
+  const _ds = drawSprite;
+  drawSprite = function (sh, frame, x, y, face, opt) {
+    if (FEEL.sq === 0 || x !== P.x || y !== P.y || !sh || !(sh.name === 'player' || sh.name.startsWith('wpn_'))) return _ds(sh, frame, x, y, face, opt);
+    const k = FEEL.sq, X = Math.round(x), Y = Math.round(y);
+    g.save(); g.translate(X, Y); g.scale(1 + 0.12 * k, 1 - 0.13 * k); g.translate(-X, -Y);
+    try { return _ds(sh, frame, x, y, face, opt); } finally { g.restore(); }
+  };
+}
+
+// ---- the swing itself (called by WSFX's swing wrapper at the exact frame the engine plays its whoosh)
+function feelOnSwing(A) {
+  FEEL.lastSwing = A; FEEL.swingHit = 0;
+  const heavy = A.kind === 'heavy', fin = feelFinisher(A), w = feelWeight(A);
+  if (heavy || fin || (A.slam)) {
+    const [dx, dy] = feelDir(A), amt = (heavy ? 1.4 : 0.9) + w * 1.0 + (heavy && P.charged ? 1.2 : 0);
+    feelKick(dx * amt, dy * amt);
+  }
+  if (heavy && P.charged) {   // charged release: a flare at the blade
+    const sg = feelElement(false);
+    feelFlash(P.x + P.face * 18, P.y - 18, 56, sg.light, 1.3, 0.16);
+    for (let i = 0; i < 8; i++) { const a = frand(-0.9, 0.9); feelSpark(P.x + P.face * 14, P.y - 18, P.face * Math.cos(a) * frand(120, 220), Math.sin(a) * 140, i % 2 ? '255,245,220' : sg.light, frand(0.12, 0.24), 120); }
+  }
+}
+
+// ---- the tip ribbon: where is the weapon's tip in this frame? (farthest solid pixel of the overlay from the shoulder; cached)
+const FEEL_TIP = {};
+let feelTipCv = null, feelTipCx = null;
+// mode: 'a' any pixel · 'f' in front of the body · 'u' above the shoulder · 'd' below it. During the cut the blade is where
+// the hitbox is, so this keeps a scabbard, a shield rim or a trailing chain from being taken for the tip.
+function feelTip(ws, fi, mode = 'a') {
+  const k = ws.name + ':' + fi + mode;
+  if (k in FEEL_TIP) return FEEL_TIP[k];
+  const img = ws.img, f = ws.frames[fi];
+  if (!f) return (FEEL_TIP[k] = null);
+  if (!img || !img.complete || !img.naturalWidth) return null;   // not decoded yet: try again next frame
+  try {
+    if (!feelTipCv) { feelTipCv = document.createElement('canvas'); feelTipCx = feelTipCv.getContext('2d', { willReadFrequently: true }); }
+    if (feelTipCv.width < f.w || feelTipCv.height < f.h) { feelTipCv.width = Math.max(feelTipCv.width, f.w); feelTipCv.height = Math.max(feelTipCv.height, f.h); }
+    feelTipCx.clearRect(0, 0, f.w, f.h); feelTipCx.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
+    const d = feelTipCx.getImageData(0, 0, f.w, f.h).data, cx = ws.ax, cy = ws.ay - 18;
+    let best = 0, bx = 0, by = 0;
+    for (let y = 0; y < f.h; y++) for (let x = 0; x < f.w; x++) {
+      if (d[(y * f.w + x) * 4 + 3] < 200) continue;   // solid blade only: baked smears are translucent and never count
+      if (mode === 'f' ? (x - cx) * ws.native < -2 : mode === 'u' ? y > cy : mode === 'd' ? y < cy - 4 : false) continue;
+      const q = (x - cx) * (x - cx) + (y - cy) * (y - cy); if (q > best) { best = q; bx = x; by = y; }
+    }
+    return (FEEL_TIP[k] = best < 14 * 14 ? null : { dx: bx + 0.5 - ws.ax, dy: by + 0.5 - ws.ay });
+  } catch (e) { return (FEEL_TIP[k] = null); }
+}
+function feelWsheet() { const ws = sheet('wpn_' + (SAVE.weapon || 'longsword')); return ws.ok ? ws : sheet('wpn_longsword'); }
+function feelTrailTick() {
+  const A = ATK[P.state];
+  if (!A || !SETTINGS.wtrail || P.anim.i < A.active[0] - 1 || P.anim.i > A.active[1]) { FEEL.tipPrev = null; return; }
+  const mode = P.anim.i < A.active[0] || A.spin || A.staffSpin ? 'a' : A.up ? 'u' : A.down ? 'd' : 'f';
+  const ws = feelWsheet(), tp = feelTip(ws, P.anim.frame, mode); if (!tp) return;
+  const x = ws.native === P.face ? P.x + tp.dx : P.x - tp.dx, y = P.y + tp.dy, prev = FEEL.tipPrev;
+  let same = prev && prev.hs === P.hitSet;   // startAttack() makes a new hitSet: a repeated tag is still a new swing
+  if (same && prev.f === P.anim.frame) return;
+  const col = feelElement(P.fireT > 0).glow, px = P.x - P.face * 2, py = P.y - 18;
+  const a0 = same ? Math.atan2(prev.y - py, prev.x - px) : 0, a1 = Math.atan2(y - py, x - px);
+  let da = a1 - a0; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+  // only the cut itself: no ribbon for a wind-up behind the back or a pose change that jumps more than ~110 degrees
+  if (same && (Math.abs(da) > 1.9 || ((prev.x - P.x) * P.face < -6 && P.anim.i <= A.active[0]))) same = false;
+  if (!same) FEEL.sid++;
+  if (same) {   // sweep an arc about the shoulder between the two tips, not a straight chord
+    const r0 = Math.hypot(prev.x - px, prev.y - py), r1 = Math.hypot(x - px, y - py);
+    const n = Math.max(1, Math.min(6, Math.ceil(Math.abs(da) / 0.28)));
+    for (let i = 1; i <= n; i++) {
+      const k = i / n, a = a0 + da * k, r = r0 + (r1 - r0) * k;
+      FEEL.trail.push({ x: i === n ? x : px + Math.cos(a) * r, y: i === n ? y : py + Math.sin(a) * r, t: FEEL.clock - (1 - k) * 0.03, sid: FEEL.sid, col, act: P.anim.i >= A.active[0] });
+    }
+  } else FEEL.trail.push({ x, y, t: FEEL.clock, sid: FEEL.sid, col, act: false });
+  if (FEEL.trail.length > 64) FEEL.trail.splice(0, FEEL.trail.length - 64);
+  FEEL.tipPrev = { x, y, hs: P.hitSet, f: P.anim.frame };
+}
+const FEEL_TRAIL_LIFE = 0.12;
+const feelRGB = {};
+function feelHexRGB(h) {
+  if (feelRGB[h]) return feelRGB[h];
+  if (h[0] !== '#') return (feelRGB[h] = h);
+  const s = h.length === 4 ? h.slice(1).split('').map(q => q + q).join('') : h.slice(1, 7);
+  return (feelRGB[h] = [0, 2, 4].map(i => parseInt(s.slice(i, i + 2), 16)).join(','));
+}
+function feelDrawTrail() {
+  const T = FEEL.trail; if (T.length < 2) return;
+  g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+  for (let i = 1; i < T.length; i++) {
+    const a = T[i - 1], b = T[i]; if (a.sid !== b.sid || !b.act) continue;
+    const age = FEEL.clock - b.t, k = 1 - age / FEEL_TRAIL_LIFE; if (k <= 0) continue;
+    const rgb = feelHexRGB(b.col);
+    g.strokeStyle = `rgba(${rgb},${0.16 * k})`; g.lineWidth = 3; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke();
+    g.strokeStyle = `rgba(255,255,255,${0.42 * k * k})`; g.lineWidth = 1; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke();
+  }
+  g.restore();
+}
+function feelDrawSparks() {
+  if (!FEEL.sparks.length) return;
+  g.save(); g.globalCompositeOperation = 'lighter'; g.lineWidth = 1;
+  for (const s of FEEL.sparks) {
+    const k = s.life / s.max;
+    g.strokeStyle = `rgba(${s.col},${Math.min(1, 0.35 + k)})`;
+    g.beginPath(); g.moveTo(Math.round(s.x) + 0.5, Math.round(s.y) + 0.5); g.lineTo(Math.round(s.x - s.vx * s.len * (0.4 + k)) + 0.5, Math.round(s.y - s.vy * s.len * (0.4 + k)) + 0.5); g.stroke();
+  }
+  g.restore();
+}
+
+const feelDrawFx = () => { feelDrawTrail(); feelDrawSparks(); };
+// ---- per frame
+HOOKS.update.push(dt => {
+  if (FEEL.off || !P) return;
+  FEEL.clock += dt;
+  // kick: snaps out, eases home (~0.15 s); squash eases back to 1
+  const dk = Math.pow(0.0006, dt); FEEL.kx *= dk; FEEL.ky *= dk; if (Math.abs(FEEL.kx) < 0.05) FEEL.kx = 0; if (Math.abs(FEEL.ky) < 0.05) FEEL.ky = 0;
+  if (FEEL.sq) { FEEL.sq = FEEL.sq > 0 ? Math.max(0, FEEL.sq - dt / 0.14) : Math.min(0, FEEL.sq + dt / 0.16); }
+  for (const s of FEEL.sparks) { s.life -= dt; s.vy += s.g * dt; s.vx *= Math.pow(0.08, dt); s.x += s.vx * dt; s.y += s.vy * dt; }
+  if (FEEL.sparks.length) FEEL.sparks = FEEL.sparks.filter(s => s.life > 0);
+  for (const f of FEEL.puffs) { f.life -= dt; f.x += f.vx * dt; f.y += f.vy * dt; f.vx *= Math.pow(0.05, dt); }
+  if (FEEL.puffs.length) FEEL.puffs = FEEL.puffs.filter(f => f.life > 0);
+  for (const f of FEEL.flashes) f.life -= dt;
+  if (FEEL.flashes.length) FEEL.flashes = FEEL.flashes.filter(f => f.life > 0);
+  if (FEEL.trail.length && FEEL.clock - FEEL.trail[FEEL.trail.length - 1].t > FEEL_TRAIL_LIFE) FEEL.trail.length = 0;
+  feelTrailTick();
+  // airborne attacks arm the landing (plunge and the spear dive have their own impacts)
+  const A = ATK[P.state];
+  if (A && !P.ground) FEEL.airAtk = { down: !!A.down, w: feelWeight(A) };
+  if (P.ground && !FEEL.wasGround && FEEL.airAtk && P.state !== 'dead') {
+    const L = FEEL.airAtk, k = L.down ? 1 : 0.7;
+    FEEL.sq = Math.max(FEEL.sq, k * (0.7 + L.w * 0.3));
+    for (let i = 0; i < 8; i++) { const s = i % 2 ? 1 : -1; particles.push({ x: P.x + s * frand(2, 8), y: P.y - 1, vx: s * frand(30, 80), vy: -frand(4, 22), g: 60, life: frand(0.35, 0.6), kind: 'dust' }); }
+    for (let i = 0; i < 4; i++) { const s = i % 2 ? 1 : -1; feelPuff(P.x + s * frand(3, 6), P.y - 3, s * frand(25, 55) * (i < 2 ? 1 : 0.5), -frand(2, 8), 2, frand(5, 8) * (L.down ? 1.2 : 1), '140,130,115', 0.26, frand(0.3, 0.45)); }
+    if (L.down) feelKick(0, 1.6);
+    if (typeof WSFX !== 'undefined') WSFX.land(L.down, L.w);
+  }
+  if (P.ground) FEEL.airAtk = null;
+  FEEL.wasGround = P.ground;
+});
+// every melee hit that lands (strikes, plunge, spear dive): sparks, light, a kick on the first hit of a heavy swing
+HOOKS.strike.push((t, info, A) => {
+  if (FEEL.off || !A) return;
+  if (FEEL.strikeA) { FEEL.strikeN++; if (t && t.boss) FEEL.strikeBoss = true; }
+  feelImpact(t, info.x, info.y, A, !!info.heavy, P.fireT > 0);
+  if (FEEL.swingHit++ === 0 && FEEL.strikeA && (A.kind === 'heavy' || feelFinisher(A))) {
+    const [dx, dy] = feelDir(A), amt = (0.9 + feelWeight(A) * 1.4) * (t && t.boss ? 0.8 : 1);
+    feelKick(dx * amt, dy * amt);
+  }
+});
+HOOKS.render.push(() => {
+  if (FEEL.off || !P) return;
+  for (const f of FEEL.puffs) {
+    const k = 1 - f.life / f.max, r = f.r0 + (f.r1 - f.r0) * Math.sqrt(k);
+    g.fillStyle = `rgba(${f.col},${f.a * (1 - k)})`; g.beginPath(); g.arc(Math.round(f.x), Math.round(f.y), r, 0, 6.2832); g.fill();
+  }
+  if (FEEL.trail.length > 1 || FEEL.sparks.length) drawGlow(feelDrawFx);
+  for (const f of FEEL.flashes) addLight(f.x, f.y, f.r, f.col, f.k * (f.life / f.max));
+});
+HOOKS.enter.push(() => { FEEL.sparks = []; FEEL.puffs = []; FEEL.flashes = []; FEEL.trail = []; FEEL.tipPrev = null; FEEL.kx = FEEL.ky = 0; FEEL.sq = 0; FEEL.airAtk = null; FEEL.wasGround = true; });
+if (typeof window !== 'undefined' && window.__game) window.__game.feel = { FEEL, feelTip, feelMat, feelWeight, feelHitstop, ev: s => eval(s) };   // headless tests (tools/shots/wc)
+
+// ------------------------------------------------------------------ WC: weapon sounds (synthesised; same loudness as the stock sfx)
+// A whoosh per class pitched by the weapon's weight, impacts that get heavier with the class, a crack at the whip's tip,
+// a ring for the shield, a charged-heavy release, a landing thud. Built from tone() and a noise() twin that adds a start
+// delay and an output node; everything WC plays goes through one soft clipper into `master`, so stacked layers can't clip.
+// The stock sfx.swing / heavySwing / hit / bigHit / parry / block are wrapped: they only change when it's the player's
+// own weapon making the sound (checked against the attack state, not tag names); everything else plays exactly as before.
+const WSFX = { ac: null, master: null, bus: null, nb: null, matT: 0 };
+function wsBus() {
+  const ac = audio(); if (!ac || muted) return null;
+  if (WSFX.ac !== ac || WSFX.master !== master || !WSFX.bus) {
+    // a soft clipper, not a compressor: exactly linear below 0.7 (so levels match the stock sfx), then rounds off toward 0.98
+    const c = ac.createWaveShaper(), n = 2048, cv = new Float32Array(n);
+    for (let i = 0; i < n; i++) { const x = i / (n - 1) * 2 - 1, a = Math.abs(x); cv[i] = Math.sign(x) * (a <= 0.7 ? a : 0.7 + 0.28 * Math.tanh((a - 0.7) / 0.28)); }
+    c.curve = cv; c.oversample = 'none';
+    c.connect(master); Object.assign(WSFX, { ac, master, bus: c, nb: null });
+  }
+  return WSFX.bus;
+}
+// noise(), plus `delay` and routing into the WC bus; one shared 1 s white-noise buffer instead of a fresh one per sound
+function wsNoise(dur, freq, q, vol, type = 'bandpass', slide = 0, delay = 0) {
+  const bus = wsBus(); if (!bus) return;
+  const ac = WSFX.ac, t0 = ac.currentTime + delay;
+  if (!WSFX.nb) { const n = ac.sampleRate, b = ac.createBuffer(1, n, n), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = frand(-1, 1); WSFX.nb = b; }
+  const src = ac.createBufferSource(); src.buffer = WSFX.nb;
+  const f = ac.createBiquadFilter(); f.type = type; f.frequency.setValueAtTime(freq, t0); f.Q.value = q;
+  if (slide) f.frequency.exponentialRampToValueAtTime(Math.max(40, freq * slide), t0 + dur);
+  const gn = ac.createGain(); gn.gain.setValueAtTime(0.0001, ac.currentTime); gn.gain.setValueAtTime(vol, t0); gn.gain.linearRampToValueAtTime(0.0001, t0 + dur);   // same linear fade as noise()
+  src.connect(f).connect(gn).connect(bus); src.start(t0, frand(0, 0.5)); src.stop(t0 + dur + 0.02);
+}
+function wsTone(freq, dur, vol, type = 'sine', slide = 1, delay = 0) { const bus = wsBus(); if (bus) tone(freq, dur, vol, type, slide, delay, bus); }
+
+// ---- per-class whoosh: f = band centre, q, d = length, v = level (the stock swing is 2000 Hz / 0.12 s / 0.22)
+const WS_CLS = {
+  dagger: { f: 3300, q: 1.1, d: 0.075, v: 0.2, sl: 0.5 },
+  sword: { f: 2000, q: 0.8, d: 0.12, v: 0.22, sl: 0.4 },
+  katana: { f: 2700, q: 1.8, d: 0.11, v: 0.21, sl: 0.35, shing: true },
+  spear: { f: 1400, q: 1.4, d: 0.11, v: 0.21, sl: 1.9 },   // rising: a thrust, not a cut
+  staff: { f: 760, q: 1.0, d: 0.17, v: 0.24, sl: 0.6 },
+  shield: { f: 1800, q: 0.8, d: 0.12, v: 0.22, sl: 0.4 },
+  twin: { f: 2900, q: 1.0, d: 0.07, v: 0.17, sl: 0.5, dbl: 0.05 },
+  scythe: { f: 1150, q: 0.9, d: 0.21, v: 0.24, sl: 0.33 },
+  whip: { f: 1300, q: 1.0, d: 0.1, v: 0.16, sl: 2.2, crack: true },
+  great: { f: 640, q: 0.7, d: 0.26, v: 0.3, sl: 0.3, sub: true },
+};
+function wsPitch() { const Wd = WEAPONS[SAVE.weapon] || {}; return Math.pow(clamp(Wd.speed || 1, 0.7, 1.45), 0.5); }
+WSFX.swing = function (A) {
+  const cls = feelCls(A), C = WS_CLS[cls] || WS_CLS.sword, pm = wsPitch(), heavy = A.kind === 'heavy', fin = feelFinisher(A);
+  let f = C.f * pm, d = C.d / Math.sqrt(pm), v = C.v;
+  if (heavy) { f *= 0.72; d *= 1.6; v = Math.min(0.35, v * 1.35); }   // the stock heavy swing peaks at 0.35
+  else if (fin) { d *= 1.2; v = Math.min(0.32, v * 1.15); }
+  wsNoise(d, f, C.q, v, 'bandpass', C.sl);
+  if (C.dbl) wsNoise(d, f * 1.12, C.q, v * 0.85, 'bandpass', C.sl, C.dbl);   // twin blades: two cuts, a hair apart
+  if (C.shing) wsTone(1900 * pm, 0.1, 0.018, 'sine', 0.55);                   // the katana's thin steel whistle
+  if (C.sub) wsTone(70 * pm, d * 0.9, 0.07, 'sine', 0.6);                      // a hammer moves air you can feel
+  if (C.crack) WSFX.crack(0.08, d * 0.55);                                     // the lash snaps at full extension even on a whiff
+  if (heavy && P.charged) {   // charged release: a rising flare over the swing
+    wsTone(240 * pm, 0.24, 0.05, 'triangle', 3.2);
+    wsTone(480 * pm, 0.2, 0.025, 'sine', 2.4, 0.02);
+    wsNoise(0.3, 2600, 0.8, 0.16, 'bandpass', 0.35);
+  }
+};
+WSFX.crack = function (vol = 0.4, delay = 0) {   // whip tip: a hard, dry broadband snap
+  wsNoise(0.035, 4200, 0.7, vol, 'highpass', 0, delay);
+  wsNoise(0.07, 1300, 1.2, vol * 0.3, 'bandpass', 0.5, delay + 0.005);
+  wsTone(2100, 0.03, vol * 0.12, 'square', 0.45, delay);
+};
+WSFX.ring = function (k = 1) {   // shield: a short bell-metal ring
+  wsTone(1240, 0.34, 0.035 * k, 'triangle', 0.985);
+  wsTone(1860, 0.24, 0.02 * k, 'sine', 0.99);
+  wsTone(3100, 0.12, 0.01 * k, 'sine');
+};
+// impacts: the stock hit is lowpass noise 600 Hz / 0.45 + a 120 Hz square; heavier weapons go lower and longer, lighter ones snappier
+WSFX.impact = function (A, big) {
+  const w = feelWeight(A), cls = feelCls(A);
+  if (!big) {
+    wsNoise(0.07 + w * 0.07, 820 - w * 360, 1, 0.4 + w * 0.08, 'lowpass');
+    wsTone(165 - w * 70, 0.08 + w * 0.07, 0.17 + w * 0.05, 'square', 0.5);
+  } else {
+    wsNoise(0.14 + w * 0.1, 540 - w * 200, 1, 0.52 + w * 0.03, 'lowpass');
+    wsTone(104 - w * 36, 0.18 + w * 0.1, 0.26 + w * 0.02, 'square', 0.42);
+    if (w > 0.7) wsTone(50, 0.26, 0.07, 'sine', 0.7);   // hammers: a sub thump under the crunch
+  }
+  if (cls === 'shield') WSFX.ring(big ? 1 : 0.7);
+};
+WSFX.mat = function (mat, w) {   // a thin material layer under the impact (rate-limited: a sweep through a crowd isn't a cymbal)
+  if (FEEL.clock - WSFX.matT < 0.05) return; WSFX.matT = FEEL.clock;
+  if (mat === 'metal') { wsTone(2300 + frand(-160, 160), 0.1, 0.03, 'triangle', 0.93); wsTone(3450 + frand(-120, 120), 0.07, 0.014, 'sine'); }
+  else if (mat === 'stone') wsNoise(0.1, 340, 0.7, 0.12 + w * 0.04, 'lowpass', 0.6);
+  else if (mat === 'frost') { wsTone(2900, 0.09, 0.018, 'sine', 1.25); wsNoise(0.06, 5200, 1, 0.08, 'highpass'); }
+  else if (mat === 'ink') wsNoise(0.14, 1500, 2, 0.07, 'bandpass', 0.45);
+};
+WSFX.pogo = function () { wsTone(320, 0.09, 0.035, 'triangle', 1.8); };
+WSFX.land = function (down, w) {   // after an air/down attack: a soft body thud (the stock land noise still plays on hard falls)
+  wsTone(96 - w * 20, 0.13, 0.035 + w * 0.02 + (down ? 0.01 : 0), 'sine', 0.55);
+  wsNoise(0.09, 230, 0.7, 0.08 + (down ? 0.03 : 0), 'lowpass', 0.7);
+};
+
+// ---- wrappers on the stock sounds
+{
+  const S = { swing: sfx.swing, heavySwing: sfx.heavySwing, hit: sfx.hit, bigHit: sfx.bigHit, parry: sfx.parry, block: sfx.block };
+  // the player's swing is the one played from inside updatePlayer, on the first active frame of an ATK state
+  const playerSwing = () => {
+    if (FEEL.off || !FEEL.inPlayer || !P) return null;
+    const A = ATK[P.state]; return A && P.anim.changed && P.anim.i === A.active[0] ? A : null;
+  };
+  sfx.swing = function () { const A = playerSwing(); if (!A) return S.swing.apply(this, arguments); feelOnSwing(A); WSFX.swing(A); };
+  sfx.heavySwing = function () { const A = playerSwing(); if (!A) return S.heavySwing.apply(this, arguments); feelOnSwing(A); WSFX.swing(A); };
+  // impacts while the player's strike is resolving (the target's hit() plays them) use the weapon's own impact
+  sfx.hit = function () { if (FEEL.off || !FEEL.strikeA) return S.hit.apply(this, arguments); WSFX.impact(FEEL.strikeA, false); };
+  sfx.bigHit = function () { if (FEEL.off || !FEEL.strikeA) return S.bigHit.apply(this, arguments); WSFX.impact(FEEL.strikeA, true); };
+  // the whip's tip crack used the parry clang; it gets a real crack
+  sfx.parry = function () { if (FEEL.off || !FEEL.strikeA || !FEEL.strikeA.crack) return S.parry.apply(this, arguments); WSFX.crack(0.3); };
+  // a blow stopped on the shield rings the shield
+  sfx.block = function () {
+    S.block.apply(this, arguments);
+    if (!FEEL.off && P && !FEEL.strikeA && wcls() === 'shield' && ['guard', 'block', 'parry'].includes(P.state)) WSFX.ring(0.9);
+  };
+}
+if (typeof window !== 'undefined' && window.__game && window.__game.feel) window.__game.feel.WSFX = WSFX;
+
 };</script>
-<script>(() => { const SZ = {"assets0.json": 8993238, "assets1.json": 8965296, "assets2.json": 8256441}, got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };
+<script>(() => { const SZ = {"assets0.json": 8993238, "assets1.json": 9003178, "assets2.json": 8895459, "assets3.json": 1034973}, got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };
 const get = async u => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); tot[u] = SZ[u] || 5e6; got[u] = 0; if (!r.body || !r.body.getReader) { const j = await r.json(); got[u] = tot[u]; upd(); return j; } const rd = r.body.getReader(), parts = []; for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got[u] += value.length; if (got[u] > tot[u]) tot[u] = got[u]; upd(); } return JSON.parse(new TextDecoder().decode(await new Blob(parts).arrayBuffer())); };
-window.__getAll = () => Promise.all(["assets0.json", "assets1.json", "assets2.json"].map(get)); })();
+window.__getAll = () => Promise.all(["assets0.json", "assets1.json", "assets2.json", "assets3.json"].map(get)); })();
 window.__getAll().then(parts => { ASSETS = Object.assign({}, ...parts); window.__startGame(); }).catch(e => { document.body.insertAdjacentHTML('beforeend', '<p style="color:#e6c77a;font:16px serif;text-align:center">Could not load the game assets: ' + e.message + '</p>'); });</script>

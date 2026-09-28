@@ -244,7 +244,7 @@ function dbSwimUpdate(dt) {
       return;
     }
   }
-  if (peek('attack') && P.st > 0) { take('attack'); if (ax) P.face = ax; startAttack(held.has('up') ? 'attack_up' : held.has('down') && hasTB && pHas('attack_down') ? 'attack_down' : 'air_attack'); return; }
+  if (peek('attack') && P.st > 0) { take('attack'); if (ax) P.face = ax; startAttack(held.has('up') ? aerTag('up') : held.has('down') && hasTB && pHas('attack_down') ? aerTag('down') : aerTag('air')); return; }
   if (peek('roll') && P.st > 0) { take('roll'); P.airDash = true; doRoll(ax); if (hasTB && ay) P.vy = ay * 60; return; }
   if (peek('cast')) { take('cast'); startCast(); return; }
   if (peek('hook')) { take('hook'); if (tryHook()) return; }

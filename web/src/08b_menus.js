@@ -22,7 +22,7 @@ function cycle(list, cur, d, allowNone) {
 function changeEquip(row, d) {   // quick cycle (←→ on a slot); the picker grid lives in 29_ui2.js
   let nx;
   if (row.k === 'weapon') nx = cycle(Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined), SAVE.weapon, d);
-  else if (row.k === 'art') nx = cycle(Object.keys(ARTS).filter(id => SAVE.arts.includes(id)), SAVE.art, d);
+  else if (row.k === 'art') { sfx.deny(); toast('The art is bound to the weapon', 1.6); return; }   // read-only: arts are locked to weapons (60_wbal.js)
   else {
     const key = row.k === 'spell' ? 'spellsEq' : 'charmsEq', others = SAVE[key].filter((s, j) => j !== row.i);
     const pool = row.k === 'spell' ? knownSpells() : Object.keys(CHARMS).filter(c => SAVE.charms.includes(c));
@@ -36,7 +36,6 @@ function invList() {
   for (const [id, n] of Object.entries(SAVE.inv)) if (n > 0) out.push({ id, extra: '×' + n });
   for (const id of SAVE.charms) out.push({ id });
   for (const id of SAVE.spellsOwned) out.push({ id: 'sp:' + id });
-  for (const id of SAVE.arts) out.push({ id: 'art:' + id });
   for (const id of Object.keys(SAVE.items)) if (SAVE.items[id] && ITEMS[id]) out.push({ id });
   if (SAVE.flaskPot) out.push({ id: 'herb', extra: `flasks +${SAVE.flaskPot * 10}%` });
   return out;

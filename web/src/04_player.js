@@ -8,7 +8,7 @@ const ATK = {
   heavy: { active: [4, 5], mult: 1.0, poise: 45, reach: [-2, 42], ys: [-42, 0], cost: 28, fx: 'heavy', fxAt: [18, -17], lunge: 70, speed: 1, kind: 'heavy' },
   attack_up: { active: [2, 3], mult: 1.0, poise: 12, reach: [-18, 18], ys: [-60, -16], cost: 12, fx: 'slash_up', fxAt: [0, -26], lunge: 0, speed: 1.15, kind: 'light', up: true },
   attack_down: { active: [1, 3], mult: 1.0, poise: 12, reach: [-8, 8], ys: [-8, 22], cost: 10, fx: null, lunge: 0, speed: 1.1, kind: 'light', down: true },
-  air_attack: { active: [1, 2], mult: 1.0, poise: 12, reach: [-2, 36], ys: [-36, -4], cost: 12, fx: 'slash_air', fxAt: [18, -18], lunge: 0, speed: 1.15, kind: 'light' },
+  air_attack: { active: [2, 3], mult: 1.0, poise: 12, reach: [-2, 36], ys: [-36, -4], cost: 12, fx: 'slash_air', fxAt: [18, -18], lunge: 0, speed: 1.15, kind: 'light', air: true },
 };
 // ---- per-weapon movesets: class animations authored in gen_player.py, hitboxes from assets/player_meta.json
 const WEAPON_CLASS = { longsword: 'sword', oathbrand: 'sword', kalden: 'sword', dagger: 'dagger', greatsword: 'great', maul: 'great', spear: 'spear', katana: 'katana',
@@ -22,24 +22,28 @@ const WEAPON_CLASS = { longsword: 'sword', oathbrand: 'sword', kalden: 'sword', 
   headsman_chain: 'whip', gravechain: 'whip', orrery_whip: 'whip', thornwood_staff: 'staff', sun_sceptre: 'staff',
   choir_harpoon: 'spear', scarab_spear: 'spear', saint_lance: 'spear', tidecleaver: 'great', vael_greatsword: 'great', meteor_maul: 'great',
   barnacle_fang: 'dagger', carving_knife: 'dagger', sanguine_rapier: 'sword', pharaoh_khopesh: 'sword', starblade: 'katana', plasma_katana: 'katana' };
+// up / air / down: each class's own directional attacks (v10); the sword's are the v3 attack_up / air_attack / attack_down
 const MOVESETS = {
-  sword: { combo: ['attack1', 'attack2', 'attack3'], extra: 'attack4', heavy: 'heavy' },
-  dagger: { combo: ['dg_1', 'dg_2', 'dg_3', 'dg_4'], extra: 'dg_2', heavy: 'dg_heavy' },
-  great: { combo: ['gs_1', 'gs_2', 'gs_3'], extra: 'gs_1', heavy: 'gs_heavy' },
-  spear: { combo: ['sp_1', 'sp_2', 'sp_3'], extra: 'sp_1', heavy: 'sp_heavy' },
-  katana: { combo: ['kt_1', 'kt_2', 'kt_3'], extra: 'kt_1', heavy: 'kt_heavy' },
-  staff: { combo: ['st_1', 'st_2', 'st_3', 'st_4'], extra: 'st_2', heavy: 'st_heavy' },
-  shield: { combo: ['sh_1', 'sh_2', 'sh_3'], extra: 'sh_1', heavy: 'sh_heavy' },
-  twin: { combo: ['tw_1', 'tw_2', 'tw_3', 'tw_4', 'tw_5'], extra: 'tw_2', heavy: 'tw_heavy' },
-  scythe: { combo: ['sc_1', 'sc_2', 'sc_3'], extra: 'sc_2', heavy: 'sc_heavy' },
-  whip: { combo: ['wh_1', 'wh_2', 'wh_3'], extra: 'wh_2', heavy: 'wh_heavy' },
+  sword: { combo: ['attack1', 'attack2', 'attack3'], extra: 'attack4', heavy: 'heavy', up: 'attack_up', air: 'air_attack', down: 'attack_down' },
+  dagger: { combo: ['dg_1', 'dg_2', 'dg_3', 'dg_4'], extra: 'dg_2', heavy: 'dg_heavy', up: 'dg_up', air: 'dg_air', down: 'dg_down' },
+  great: { combo: ['gs_1', 'gs_2', 'gs_3'], extra: 'gs_1', heavy: 'gs_heavy', up: 'gs_up', air: 'gs_air', down: 'gs_down' },
+  spear: { combo: ['sp_1', 'sp_2', 'sp_3'], extra: 'sp_1', heavy: 'sp_heavy', up: 'sp_up', air: 'sp_air', down: 'sp_down' },
+  katana: { combo: ['kt_1', 'kt_2', 'kt_3'], extra: 'kt_1', heavy: 'kt_heavy', up: 'kt_up', air: 'kt_air', down: 'kt_down' },
+  staff: { combo: ['st_1', 'st_2', 'st_3', 'st_4'], extra: 'st_2', heavy: 'st_heavy', up: 'st_up', air: 'st_air', down: 'st_down' },
+  shield: { combo: ['sh_1', 'sh_2', 'sh_3'], extra: 'sh_1', heavy: 'sh_heavy', up: 'sh_up', air: 'sh_air', down: 'sh_down' },
+  twin: { combo: ['tw_1', 'tw_2', 'tw_3', 'tw_4', 'tw_5'], extra: 'tw_2', heavy: 'tw_heavy', up: 'tw_up', air: 'tw_air', down: 'tw_down' },
+  scythe: { combo: ['sc_1', 'sc_2', 'sc_3'], extra: 'sc_2', heavy: 'sc_heavy', up: 'sc_up', air: 'sc_air', down: 'sc_down' },
+  whip: { combo: ['wh_1', 'wh_2', 'wh_3'], extra: 'wh_2', heavy: 'wh_heavy', up: 'wh_up', air: 'wh_air', down: 'wh_down' },
 };
+const SWORD_AER = { up: 'attack_up', air: 'air_attack', down: 'attack_down' };
+// the air attack of these classes circles the body: it hits both sides, a little softer on each
+const AIR_SPIN = { staff: true, scythe: true, whip: true };
 const CLASS_TUNING = {   // per-class feel: damage mults along the combo, poise, stamina, lunge, fx
   dagger: { mult: [0.8, 0.8, 0.85, 1.25], poise: 7, cost: 7, lunge: 45, fx: ['slash', 'slash2', 'slash', 'slash3'], heavy: { mult: 1.3, poise: 25, cost: 16, lunge: 160, fx: 'slash3' } },
   great: { mult: [1.0, 1.05, 1.4], poise: 32, cost: 22, lunge: 40, fx: ['heavy', 'slash_up', 'slash3'], heavy: { mult: 1.25, poise: 70, cost: 34, lunge: 30, fx: 'heavy', slam: true } },
   spear: { mult: [0.95, 1.0, 1.3], poise: 14, cost: 13, lunge: 80, fx: ['slash_air', 'slash_air', 'slash3'], heavy: { mult: 1.15, poise: 45, cost: 26, lunge: 230, fx: 'slash_air' } },
   katana: { mult: [1.0, 1.0, 1.35], poise: 12, cost: 12, lunge: 60, fx: ['slash2', 'slash', 'slash3'], heavy: { mult: 1.35, poise: 45, cost: 26, lunge: 200, fx: 'slash3' } },
-  // v8: staff hits ~75-80% of the spear's, faster; its heavy is an instant 360-degree spin paid with 80% of max stamina
+  // v8: staff hits ~75-80% of the spear's, faster; its heavy is an instant 360-degree spin paid with 45% of max stamina
   staff: { mult: [0.74, 0.76, 0.8, 1.02], poise: 12, cost: 11, lunge: 60, fx: ['slash_air', null, 'slash', 'heavy'],
            heavy: { mult: 1.2, poise: 95, cost: 0, lunge: 20, fx: null, staffSpin: true, noCharge: true, spin: true } },
   shield: { mult: [0.92, 0.96, 1.3], poise: 12, cost: 10, lunge: 50, fx: ['slash', 'slash2', 'slash_air'],
@@ -81,6 +85,15 @@ const PLUNGE_A = { active: [0, 0], mult: 1, poise: 70, reach: [-26, 40], ys: [-3
                        cost: Hh.cost, fx: Hh.fx, fxAt: m.fxAt || [18, -17], lunge: Hh.lunge, speed: 1, kind: 'heavy', cls, slam: Hh.slam, big: true,
                        staffSpin: Hh.staffSpin, noCharge: Hh.noCharge, spin: Hh.spin, bash: Hh.bash, reap: Hh.reap, pull: Hh.pull, chain: Hh.chain, crack: Hh.crack };
     if (cls === 'whip') ATK[set.heavy].reach[1] += 10;
+    // v10 directional attacks: mult relative to the combo opener (up x1.0, air x1.0 (spins x0.8), down x0.9); boxes from the meta
+    for (const d of ['up', 'air', 'down']) {
+      const tag = set[d], am = PM[tag]; if (!tag || !am || !am.hit) continue;
+      const spin = d === 'air' && !!AIR_SPIN[cls];
+      const A = ATK[tag] = { active: am.active, mult: T.mult[0] * (d === 'down' ? 0.9 : 1) * (spin ? 0.8 : 1), poise: T.poise, reach: [am.hit[0], am.hit[2]], ys: [am.hit[1], am.hit[3]],
+                             cost: T.cost, fx: null, fxAt: am.fxAt || [18, -17], lunge: d === 'air' ? T.lunge : 0, speed: 1, kind: 'light', cls, big: cls === 'great',
+                             up: d === 'up', air: d === 'air', down: d === 'down', spin, pull: !!T.pull, crack: !!T.crack, hang: cls === 'great' && d === 'air' };
+      if (cls === 'whip') { if (spin) { A.reach[0] -= 8; A.reach[1] += 8; } else if (d === 'up') A.ys[0] -= 8; else A.ys[1] += 4; }   // the crack reaches past the drawn lash
+    }
   }
   for (const [tag, T] of Object.entries(TECH_ATK)) {
     const m = PM[tag] || {};
@@ -102,6 +115,8 @@ function moveset() {
   if (cls !== 'sword' && !(pHas(set.combo[0]) && ATK[set.combo[0]])) return MOVESETS.sword;
   return set;
 }
+// the class's up / air / down attack (d), or the sword's if this sheet / meta predates it
+function aerTag(d) { const t = moveset()[d]; return t && ATK[t] && pHas(t) ? t : SWORD_AER[d]; }
 const MAXV = 122, JUMP_V = 272, GRAV_UP = 640, GRAV_DN = 860, FALL_MAX = 430;
 let P = null, D = null;
 
@@ -152,10 +167,10 @@ function startAttack(name) {
   const tag = A.anim || name;
   setP(name, pHas(tag) ? tag : 'attack1', false, A.speed * (A.kind === 'light' ? D.castSpeed : 1) * (A.cls ? 1 : D.W.speed));
 }
-function staffSpinCost() { return D.maxSt * 0.8 * (charmOn('c_brand') ? 0.8 : 1); }
+function staffSpinCost() { return D.maxSt * 0.45 * (charmOn('c_brand') ? 0.8 : 1); }
 function startHeavy() {
   const A = ATK[moveset().heavy];
-  if (A && A.staffSpin && P.st < staffSpinCost() - 0.5) { sfx.deny(); P.denyT = 0.5; toast('The spin needs 80% of your stamina', 1.4); return false; }
+  if (A && A.staffSpin && P.st < staffSpinCost() - 0.5) { sfx.deny(); P.denyT = 0.5; toast('The spin needs 45% of your stamina', 1.4); return false; }
   startAttack(moveset().heavy); return true;
 }
 // guard counter: attack right after a clean parry / block. Katana: +40% and quicker.
@@ -235,10 +250,10 @@ function updatePlayer(dt) {
     else if (peek('heavy') && P.st > 0 && !P.ground && P.state !== 'wall' && pHas('plunge') && smashReady()) { take('heavy'); if (ax) P.face = ax; smashStart(); startPlunge(); }
     else if (peek('attack') && P.st > 0) {
       take('attack'); if (ax) P.face = ax;
-      if (held.has('up')) startAttack('attack_up');
-      else if (!P.ground && held.has('down')) startAttack('attack_down');
+      if (held.has('up')) startAttack(aerTag('up'));
+      else if (!P.ground && held.has('down')) startAttack(aerTag('down'));
       else if (!P.ground && P.vy < -30 && wcls() === 'spear' && pHas('sp_jump')) startSpDive();
-      else if (!P.ground) startAttack('air_attack');
+      else if (!P.ground) startAttack(aerTag('air'));
       else { P.combo = 1; startAttack(moveset().combo[0]); P.comboStep = 0; }
     }
     else if (peek('parry') && P.ground && P.st > 0) { take('parry'); startParry(); }
@@ -318,7 +333,8 @@ function updatePlayer(dt) {
         if (A.slam) { shake = 7; sfx.boom(); spawnFx('shockwave', P.x + P.face * 22, P.y, 1); spawnFx('ground_crack', P.x + P.face * 22, P.y, 1); for (let i = 0; i < 14; i++) particles.push({ x: P.x + P.face * 22 + rand(-16, 16), y: P.y - 2, vx: rand(-80, 80), vy: -rand(30, 110), g: 320, life: 0.6, kind: 'dust' }); }
       }
       if (P.ground) { P.vx *= Math.pow(0.0008, dt); grav(); }
-      else if (P.state === 'attack_down') { P.vx = approach(P.vx, ax * MAXV * 0.6, 500 * dt); grav(); }
+      else if (A.hang && an.i < A.active[0]) { P.vx *= Math.pow(0.02, dt); P.vy = Math.min(Math.max(P.vy, 0) + GRAV_DN * 0.2 * dt, 50); }   // the great air cleave: the rise stops, you hang for the heave
+      else if (A.down) { P.vx = approach(P.vx, ax * MAXV * 0.6, 500 * dt); grav(); }
       else { P.vx = approach(P.vx, ax * MAXV * 0.8, 500 * dt); grav(); }
       if (an.i >= A.active[0] && an.i <= A.active[1]) { playerStrike(A); const sg = SIGS[SAVE.weapon]; if (sg) sigTrail(A, sg); }
       if (an.i > A.active[1]) {   // recovery: chain combo or roll-cancel
@@ -329,7 +345,7 @@ function updatePlayer(dt) {
         if (peek('roll') && P.st > 0) { take('roll'); doRoll(ax); break; }
         if (!P.ground && peek('jump') && P.airJumps > 0) { take('jump'); P.airJumps--; doJump(JUMP_V * 0.9, true); break; }
       }
-      if (an.done || (!P.ground && !['air_attack', 'attack_down', 'attack_up'].includes(P.state) && P.vy > 60)) {
+      if (an.done || (!P.ground && !(A.air || A.down || A.up) && P.vy > 60)) {
         P.combo = 0; setP(P.ground ? 'idle' : 'air', P.ground ? 'idle' : 'jump_fall', P.ground);
       }
       break;
@@ -388,7 +404,7 @@ function updatePlayer(dt) {
     P.dj = false;
     if (preState === 'slam') traversalAfterMove('slam');
     else if (P.state === 'air' || P.state === 'wall' || P.state === 'glide') setP('land', pHas('land') ? 'land' : 'idle', false);
-    if (P.state === 'air_attack' || P.state === 'attack_down') { P.combo = 0; setP('land', 'land', false); }
+    if (ATK[P.state] && (ATK[P.state].air || ATK[P.state].down)) { P.combo = 0; setP('land', 'land', false); }
     if (preState === 'plunge' && P.state === 'plunge' && P.anim.tag !== 'plunge_land') plungeImpact(false);
     if (preState === 'spdive' && P.state === 'spdive') { setP('land', 'land', false); shake = Math.max(shake, 3); sfx.land(); spawnFx('dust', P.x + P.face * 10, P.y, P.face); }
   }
@@ -732,7 +748,9 @@ function playerStrike(A) {
   if (P.twinBuff && P.hitSet.size && [...P.hitSet].some(x => x !== 'brk')) P.twinBuff = false;
   // pogo off spikes + break walls/urns
   if (A.down && !P.pogoed) {
-    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE) { pogo(); airRefund(); break; } }
+    // (brambles too, for every class's down attack -- 30_thornveil.js only knows the sword's attack_down tag)
+    const bram = typeof TV_T_BRAMBLE !== 'undefined' ? TV_T_BRAMBLE : -1;
+    for (let x = r.x0; x <= r.x1; x += 6) { const t = tileAt(Math.floor(x / TILE), Math.floor(r.y1 / TILE)); if (t === T_SPIKE || t === bram) { pogo(); airRefund(); break; } }
   }
   hitBreakables(r);
 }

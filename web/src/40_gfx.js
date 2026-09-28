@@ -142,6 +142,8 @@ const GFX_ROWS = [
   { k: 'scan', label: 'Scanlines', opts: ['Off', 'Soft', 'CRT'], shader: true, desc: 'Soft: faint lines between pixel rows. CRT: a curved old monitor with a phosphor mask.' },
   { k: 'grain', label: 'Film grain', opts: ['Off', 'On'], shader: true, desc: 'A fine moving grain over the picture.' },
   { k: 'ca', label: 'Chromatic aberration', opts: ['Off', 'On'], shader: true, desc: 'Red and blue split slightly toward the edges of the screen.' },
+  { k: 'shakeLvl', label: 'Screen shake', opts: ['Off', 'Low', 'Full'], desc: 'How hard the view jolts on heavy blows, finishers and landings. Same as Settings › Screen shake.' },
+  { k: 'wtrail', label: 'Weapon trail', opts: ['Off', 'On'], desc: 'A faint streak of light follows the blade tip during a cut, in the weapon’s own colour.' },
 ];
 function gfxPresetIdx() { return GFX_PRESETS.findIndex(([, v]) => GFX_KEYS.every(k => (SETTINGS[k] || 0) === v[k])); }
 function gfxSubInput(M, a) {
@@ -166,7 +168,7 @@ function renderGfxSub(M) {
   uiBackdrop(0.12);
   vctx.fillStyle = 'rgba(6,4,10,0.86)'; vctx.fillRect(ox, oy, 214 * scale, H * scale);   // the right side stays clear: a live preview
   uiTitle('GRAPHICS', 17, 9);
-  const px = 12, pw = 196, top = 26, rh = 13, on = !!SETTINGS.shaders, bad = GFX.ok === false;
+  const px = 12, pw = 196, top = 24, rh = GFX_ROWS.length > 12 ? 10.5 : 13, on = !!SETTINGS.shaders, bad = GFX.ok === false;
   panel(px, top, pw, 10 + GFX_ROWS.length * rh);
   GFX_ROWS.forEach((R, i) => {
     const y = top + 15 + i * rh, sel = i === S.sel, dim = (R.shader && !on);

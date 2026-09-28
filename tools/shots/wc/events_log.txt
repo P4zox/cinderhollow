@@ -1,0 +1,8 @@
+[
+ "hitstop range 0.024..0.120 (max at longsword gs_heavy charged) cap ok: true",
+ "player swings recognised (1 each): sword:1 dagger:1 great:1 spear:1 katana:1 staff:1 shield:1 twin:1 scythe:1 whip:1 mirror:1",
+ "charged heavy: charged=true swingA=heavy kick=0.00,4.42 (slam: vertical) flashes=2 hitstop=0.120",
+ "pogo: true kickY=2.30 stretch=-0.70 vy=-245",
+ "camera offset for a 4px kick: Off=0.00 Low=1.77 Full=3.53",
+ "shakeLvl=2 in JSON: false wtrail=1"
+]

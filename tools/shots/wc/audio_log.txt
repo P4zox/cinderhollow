@@ -1,0 +1,16 @@
+[
+ "stock  swing {\"pk\":0.124,\"rms\":0.029} heavy {\"pk\":0.178,\"rms\":0.035} hit {\"pk\":0.251,\"rms\":0.071} bigHit {\"pk\":0.336,\"rms\":0.095} parry {\"pk\":0.505,\"rms\":0.113} land {\"pk\":0.032,\"rms\":0.009}",
+ "sword   swing {\"pk\":0.129,\"rms\":0.029} heavy {\"pk\":0.161,\"rms\":0.035} charged {\"pk\":0.207,\"rms\":0.04} hit {\"pk\":0.26,\"rms\":0.066} big {\"pk\":0.328,\"rms\":0.091}",
+ "dagger  swing {\"pk\":0.129,\"rms\":0.03} heavy {\"pk\":0.17,\"rms\":0.037} charged {\"pk\":0.231,\"rms\":0.039} hit {\"pk\":0.215,\"rms\":0.058} big {\"pk\":0.292,\"rms\":0.085}",
+ "great   swing {\"pk\":0.146,\"rms\":0.029} heavy {\"pk\":0.155,\"rms\":0.029} charged {\"pk\":0.235,\"rms\":0.04} hit {\"pk\":0.254,\"rms\":0.069} big {\"pk\":0.336,\"rms\":0.094}",
+ "spear   swing {\"pk\":0.086,\"rms\":0.021} heavy {\"pk\":0.113,\"rms\":0.025} charged {\"pk\":0.178,\"rms\":0.034} hit {\"pk\":0.253,\"rms\":0.067} big {\"pk\":0.315,\"rms\":0.09}",
+ "katana  swing {\"pk\":0.107,\"rms\":0.023} heavy {\"pk\":0.129,\"rms\":0.027} charged {\"pk\":0.184,\"rms\":0.035} hit {\"pk\":0.223,\"rms\":0.059} big {\"pk\":0.299,\"rms\":0.088}",
+ "staff   swing {\"pk\":0.091,\"rms\":0.02} heavy {\"pk\":0.114,\"rms\":0.024} charged {\"pk\":0.179,\"rms\":0.035} hit {\"pk\":0.229,\"rms\":0.062} big {\"pk\":0.288,\"rms\":0.083}",
+ "shield  swing {\"pk\":0.123,\"rms\":0.028} heavy {\"pk\":0.152,\"rms\":0.033} charged {\"pk\":0.235,\"rms\":0.041} hit {\"pk\":0.25,\"rms\":0.063} big {\"pk\":0.329,\"rms\":0.088}",
+ "twin    swing {\"pk\":0.112,\"rms\":0.025} heavy {\"pk\":0.147,\"rms\":0.033} charged {\"pk\":0.197,\"rms\":0.038} hit {\"pk\":0.225,\"rms\":0.059} big {\"pk\":0.304,\"rms\":0.087}",
+ "scythe  swing {\"pk\":0.111,\"rms\":0.023} heavy {\"pk\":0.135,\"rms\":0.027} charged {\"pk\":0.202,\"rms\":0.038} hit {\"pk\":0.247,\"rms\":0.067} big {\"pk\":0.311,\"rms\":0.088}",
+ "whip    swing {\"pk\":0.106,\"rms\":0.024} heavy {\"pk\":0.099,\"rms\":0.024} charged {\"pk\":0.172,\"rms\":0.034} hit {\"pk\":0.245,\"rms\":0.063} big {\"pk\":0.294,\"rms\":0.084}",
+ "extras {\"crack\":{\"pk\":0.574,\"rms\":0.153},\"ring\":{\"pk\":0.048,\"rms\":0.012},\"land\":{\"pk\":0.06,\"rms\":0.021},\"metal\":{\"pk\":0.039,\"rms\":0.009},\"stone\":{\"pk\":0.035,\"rms\":0.009},\"pogo\":{\"pk\":0.033,\"rms\":0.009}}",
+ "worst peak ratio vs stock (per sound type): 1.18",
+ "stack WC {\"pk\":0.794,\"rms\":0.2}   stack stock {\"pk\":0.675,\"rms\":0.189}   clip: no"
+]

@@ -680,7 +680,7 @@ const ROOMS = [
     "############YYYYYY##############################",
     "################################################",
   ] },
-  { ...{"id": "A7", "name": "The Unbound Folio", "biome": "archives", "gx": 324, "gy": -130, "w": 24, "h": 14, "indoor": true, "secret": true, "items": ["emberstone", "emberstone"], "chests": ["art:backstep_slash"], "spawns": [{"t": "ar2_lore", "x": 14, "y": 12}]}, map: [
+  { ...{"id": "A7", "name": "The Unbound Folio", "biome": "archives", "gx": 324, "gy": -130, "w": 24, "h": 14, "indoor": true, "secret": true, "items": ["emberstone", "emberstone"], "chests": ["ash_cache"], "spawns": [{"t": "ar2_lore", "x": 14, "y": 12}]}, map: [
     "########################",
     "#.x.l....R.....l....####",
     "#...................####",

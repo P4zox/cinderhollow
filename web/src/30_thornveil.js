@@ -231,7 +231,7 @@ function tvUpdateBrambles(dt) {
     }
   }
   // pogo off brambles with a downward strike (like spikes)
-  if (P.state && P.anim.tag === 'attack_down' && !P.pogoed && P.anim.i >= 1 && P.anim.i <= 3) {
+  const DA = ATK[P.state]; if (DA && DA.down && !P.pogoed && P.anim.i >= DA.active[0] && P.anim.i <= DA.active[1]) {
     for (const dx of [-6, 0, 6]) { const t = tileAt(Math.floor((P.x + dx) / TILE), Math.floor((P.y + 10) / TILE)); if (t === TV_T_BRAMBLE) { pogo(); airRefund(); tvSfx.rustle(); break; } }
   }
   // foes that stumble into brambles get torn too (the hounds are made of them)

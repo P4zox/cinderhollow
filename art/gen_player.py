@@ -988,37 +988,37 @@ def roll():
     return out
 
 def attack1():  # diagonal downward cut
-    return seq([(dict(hand=(29, 17), ang=-120, flow=0.3), 50),
-                (dict(dx=1, hand=(32, 18), ang=-80, flow=0.4), 40),
-                (dict(dx=2, hand=(37, 22), ang=-10, footF=(FF[0] + 1, 39), flow=0.6), 40),
-                (dict(dx=2, hand=(37, 28), ang=40, footF=(FF[0] + 1, 39), flow=0.7), 60),
-                (dict(dx=2, hand=(35, 31), ang=70, footF=(FF[0] + 1, 39), flow=0.5), 70),
-                (dict(dx=1, hand=(35, 28), ang=-20, flow=0.3), 90)])
+    return mseq([(dict(dx=-1, hand=(29, 17), ang=-125, footB=(OX + 7, 39), flow=0.3), 50),
+                 (dict(dx=1, hand=(32, 18), ang=-80, flow=0.5, flutter=1), 40),
+                 (dict(dx=2, hand=(37, 22), ang=-10, footF=(FF[0] + 1, 39), flow=0.8, flutter=2, fx=[sw(w=0.45)]), 40),
+                 (dict(dx=2, hand=(37, 28), ang=40, footF=(FF[0] + 1, 39), flow=0.8, flutter=3, fx=[sw(w=0.4)]), 60),
+                 (dict(dx=2, dy=1, hand=(35, 31), ang=70, footF=(FF[0] + 1, 39), flow=0.5, flutter=4), 70),
+                 (dict(dx=1, hand=(35, 29), ang=10, flow=0.3), 90)])
 
 def attack2():  # rising reverse cut
-    return seq([(dict(dx=1, dy=1, hand=(33, 32), ang=110, flow=0.4), 50),
-                (dict(dx=1, dy=1, hand=(35, 32), ang=60, flow=0.5), 40),
-                (dict(dx=2, hand=(38, 27), ang=-10, footF=(FF[0] + 1, 39), flow=0.7), 40),
-                (dict(dx=2, hand=(36, 20), ang=-70, footF=(FF[0] + 1, 39), flow=0.8), 60),
-                (dict(dx=1, hand=(34, 18), ang=-100, flow=0.5), 70),
-                (dict(dx=1, hand=(35, 25), ang=-45, flow=0.3), 90)])
+    return mseq([(dict(dx=1, dy=1, hand=(32, 32), ang=125, footB=(OX + 7, 39), flow=0.4), 50),
+                 (dict(dx=1, dy=1, hand=(35, 32), ang=60, flow=0.5, flutter=1, fx=[sw(w=0.3)]), 40),
+                 (dict(dx=2, hand=(38, 27), ang=-10, footF=(FF[0] + 1, 39), flow=0.8, flutter=2, fx=[sw(w=0.45)]), 40),
+                 (dict(dx=2, dy=-1, hand=(36, 20), ang=-70, footB=(OX + 9, 38), footF=(FF[0] + 1, 39), flow=0.9, flutter=3, fx=[sw(w=0.4)]), 60),
+                 (dict(dx=1, hand=(34, 18), ang=-100, flow=0.5, flutter=4), 70),
+                 (dict(dx=1, hand=(35, 25), ang=-60, flow=0.3), 90)])
 
 def attack3():  # lunging thrust finisher
-    return seq([(dict(dx=-1, hand=(29, 26), ang=-5, footB=(OX + 6, 39), flow=0.3), 90),
-                (dict(dx=-2, dy=1, hand=(27, 27), ang=0, footB=(OX + 5, 39), flow=0.2), 70),
-                (dict(dx=3, dy=1, hand=(41, 27), ang=0, footB=(OX + 9, 39), footF=(OX + 24, 39), flow=1.3, flutter=2), 50),
-                (dict(dx=3, dy=1, hand=(42, 27), ang=2, footB=(OX + 9, 39), footF=(OX + 24, 39), flow=1.1, flutter=3), 80),
+    return mseq([(dict(dx=-1, hand=(29, 26), ang=-5, footB=(OX + 6, 39), flow=0.3), 90),
+                (dict(dx=-2, dy=1, head_dx=-1, hand=(27, 27), ang=0, footB=(OX + 5, 39), flow=0.2, fx=[("glint", "tip")]), 70),
+                (dict(dx=3, dy=1, hand=(41, 27), ang=0, footB=(OX + 9, 39), footF=(OX + 24, 39), flow=1.3, flutter=2, fx=[("streak", 18)]), 50),
+                (dict(dx=3, dy=1, hand=(42, 27), ang=2, footB=(OX + 9, 39), footF=(OX + 24, 39), flow=1.1, flutter=3, fx=[("streak", 8)]), 80),
                 (dict(dx=2, hand=(38, 27), ang=-10, footF=(OX + 22, 39), flow=0.7), 100),
                 (dict(dx=1, hand=(36, 27), ang=-35, flow=0.4), 120),
                 (dict(hand=(35, 27), ang=-48, flow=0.3), 110)])
 
 def heavy():
-    return seq([(dict(hand=(29, 17), ang=-100, flow=0.3), 110),
-                (dict(dx=-1, hand=(27, 12), ang=-145, flow=0.3), 130),
-                (dict(dx=-1, dy=1, hand=(27, 11), ang=-160, flow=0.2, flutter=1), 220),
-                (dict(dx=1, hand=(34, 15), ang=-60, flow=0.6), 50),
-                (dict(dx=2, dy=1, hand=(38, 25), ang=20, footF=(FF[0] + 2, 39), flow=1.0), 50),
-                (dict(dx=2, dy=2, hand=(37, 31), ang=58, footF=(FF[0] + 2, 39), flow=0.8), 110),
+    return mseq([(dict(hand=(29, 17), ang=-100, flow=0.3), 110),
+                (dict(dx=-1, hand=(27, 12), ang=-145, footB=(OX + 7, 39), flow=0.3), 130),
+                (dict(dx=-1, dy=1, head_dx=-1, hand=(27, 11), ang=-162, footB=(OX + 6, 39), flow=0.2, flutter=1, fx=[("glint", "tip")]), 220),
+                (dict(dx=1, hand=(34, 15), ang=-60, flow=0.6, flutter=2, fx=[sw(w=0.35)]), 50),
+                (dict(dx=2, dy=1, hand=(38, 25), ang=20, footF=(FF[0] + 2, 39), flow=1.0, flutter=3, fx=[sw(w=0.5)]), 50),
+                (dict(dx=2, dy=2, head_dy=1, hand=(37, 31), ang=58, footF=(FF[0] + 2, 39), flow=0.8, flutter=4, fx=[sw(w=0.4), ("dust", 47, 3)]), 110),
                 (dict(dx=2, dy=1, hand=(36, 30), ang=50, footF=(FF[0] + 2, 39), flow=0.5), 150),
                 (dict(dx=1, hand=(35, 27), ang=-25, flow=0.3), 160)])
 
@@ -1057,29 +1057,30 @@ TUCK = dict(footB=(OX + 9, 33), footF=(OX + 18, 33), air=True)  # knees pulled u
 # (air=True: long weapons must also fit above the frame bottom -- there is no floor to bite)
 
 def attack_up():  # rising overhead cut: low-front -> straight up -> trailing back
-    return seq([(dict(dy=2, hand=(34, 32), ang=35, footB=(OX + 7, 39), footF=(OX + 20, 39), flow=0.3), 70),
-                (dict(dy=1, hand=(36, 26), ang=-35, flow=0.5), 40),
-                (dict(dy=-1, hand=(36, 16), ang=-68, slen=15, footB=(OX + 9, 38), flow=0.9, flutter=1), 40),
-                (dict(dy=-1, hand=(35, 12), ang=-100, slen=14, footB=(OX + 9, 38), flow=0.8, flutter=2), 60),
-                (dict(hand=(28, 16), ang=-140, slen=16, flow=0.5, flutter=3), 80),
-                (dict(hand=(34, 25), ang=-60, flow=0.3), 100)])
+    return mseq([(dict(dy=2, hand=(33, 32), ang=45, footB=(OX + 7, 39), footF=(OX + 20, 39), flow=0.3), 70),
+                 (dict(dy=1, hand=(36, 26), ang=-35, flow=0.5, fx=[sw(w=0.22)]), 40),
+                 (dict(dy=-1, hand=(36, 16), ang=-68, slen=15, footB=(OX + 9, 38), flow=0.9, flutter=1, fx=[sw(w=0.4)]), 40),
+                 (dict(dy=-1, hand=(35, 12), ang=-100, slen=14, footB=(OX + 9, 38), flow=0.8, flutter=2, fx=[sw(w=0.35)]), 60),
+                 (dict(hand=(29, 15), ang=-135, slen=16, flow=0.5, flutter=3), 80),
+                 (dict(hand=(34, 25), ang=-60, flow=0.3), 100)])
 
 def attack_down():  # airborne plunge: sword reversed, tip below the feet
     base = dict(dy=-4, head_dy=1, **TUCK)
-    return seq([(dict(dy=-5, head_dy=0, hand=(31, 19), ang=90, slen=12, flow=0.9, flutter=0,
-                      footB=(OX + 9, 34), footF=(OX + 17, 34)), 60),
-                (dict(hand=(33, 27), ang=90, slen=14, flow=1.3, flutter=1), 50),
-                (dict(dy=-3, hand=(33, 27), ang=90, slen=14, flow=1.5, flutter=3), 50),
-                (dict(hand=(33, 27), ang=89, slen=14, flow=1.3, flutter=5), 60),
-                (dict(dy=-3, head_dy=0, hand=(34, 24), ang=40, flow=0.7, flutter=4, **AIR), 90)], base)
+    fr = mseq([(dict(dy=-5, head_dy=0, hand=(31, 19), ang=90, slen=12, flow=0.9, flutter=0,
+                     footB=(OX + 9, 34), footF=(OX + 17, 34)), 60),
+               (dict(hand=(33, 27), ang=90, slen=14, flow=1.3, flutter=1, fx=[("streak", 10)] + DIVE(9)), 50),
+               (dict(dy=-3, hand=(33, 27), ang=90, slen=14, flow=1.5, flutter=3, fx=DIVE(7, 1)), 50),
+               (dict(hand=(33, 27), ang=89, slen=14, flow=1.3, flutter=5), 60),
+               (dict(dy=-3, head_dy=0, hand=(34, 24), ang=20, flow=0.7, flutter=4, **AIR), 90)], base)
+    return cape_dive(fr, [1, 2, 3])
 
-def air_attack():  # horizontal cut in the air, legs tucked
+def air_attack():  # horizontal cut in the air, legs tucked (active 2-3, as the engine)
     base = dict(dy=-3, **TUCK)
-    return seq([(dict(hand=(28, 19), ang=-150, flow=0.4), 60),
-                (dict(hand=(33, 20), ang=-55, flow=0.7, flutter=1), 40),
-                (dict(dx=1, hand=(40, 25), ang=-2, flow=1.1, flutter=2), 50),
-                (dict(dx=1, hand=(38, 29), ang=38, flow=1.0, flutter=3), 70),
-                (dict(hand=(35, 27), ang=-20, flow=0.6, flutter=4, **AIR), 90)], base)
+    return mseq([(dict(head_dx=-1, hand=(28, 19), ang=-150, flow=0.4), 45),
+                 (dict(hand=(33, 19), ang=-65, flow=0.7, flutter=1), 25),
+                 (dict(dx=1, hand=(40, 25), ang=-2, flow=1.1, flutter=2, fx=[sw(w=0.45)]), 50),
+                 (dict(dx=1, hand=(38, 29), ang=38, flow=1.0, flutter=3, fx=[sw(w=0.4)]), 70),
+                 (dict(hand=(35, 26), ang=-20, flow=0.6, flutter=4, **AIR), 120)], base)   # 310 ms in all, as before
 
 def cast():  # off hand thrusts forward, gold sorcery flares at the palm (bolt spawns on frame 4)
     sw = dict(hand=(31, 31), ang=150)
@@ -1101,9 +1102,9 @@ def parry():  # quick flick of the blade upright across the body; frames 1-2 def
                 (dict(hand=(35, 27), ang=-50, flow=0.2), 90)])
 
 def riposte():  # coil, lunging impale, twist, rip free
-    return seq([(dict(dx=-2, dy=1, hand=(27, 25), ang=-8, footB=(OX + 5, 39), flow=0.3), 90),
+    return mseq([(dict(dx=-2, dy=1, hand=(27, 25), ang=-8, footB=(OX + 5, 39), flow=0.3), 90),
                 (dict(dx=-3, dy=2, head_dx=-1, hand=(25, 26), ang=-4, footB=(OX + 4, 39), flow=0.2), 160),
-                (dict(dx=3, dy=1, hand=(41, 26), ang=0, slen=17, footB=(OX + 8, 39), footF=(OX + 25, 39), flow=1.4, flutter=2), 40),
+                (dict(dx=3, dy=1, hand=(41, 26), ang=0, slen=17, footB=(OX + 8, 39), footF=(OX + 25, 39), flow=1.4, flutter=2, fx=[("streak", 16)]), 40),
                 (dict(dx=4, dy=2, hand=(42, 27), ang=3, slen=13, footB=(OX + 9, 39), footF=(OX + 26, 39), flow=1.2, flutter=3), 90),
                 (dict(dx=4, dy=3, head_dy=1, hand=(41, 29), ang=-12, slen=11, footB=(OX + 9, 39), footF=(OX + 26, 39), flow=0.9, flutter=4), 140),
                 (dict(dx=3, dy=1, hand=(41, 21), ang=-35, footB=(OX + 8, 39), footF=(OX + 25, 39), flow=1.0, flutter=5), 60),
@@ -1432,6 +1433,18 @@ def art_fx(g, k, f, tones, tip, d):
                     g[y][x] = pal[1]
                 elif (x + y) % 2 == 0 or d < wt * 0.8:
                     g[y][x] = pal[2]
+    elif k == "vspeed":     # ("vspeed", (x, y), n, length[, palette]): v10 dive lines streaming UP from y (behind a plunge)
+        x0, y0 = f[1]
+        pal = f[4] if len(f) > 4 else (c0, c1, c2)
+        for j in range(f[2]):
+            xx = x0 + j * 3 - (j % 2) - (f[2] - 1) * 1.5
+            ln = f[3] * (1.0 - 0.2 * ((j * 5) % 3))
+            ys = y0 - (j * 5) % 4
+            for i in range(int(ln)):
+                q = i / max(1, ln)
+                if q > 0.6 and i % 2:
+                    continue
+                put(g, xx, ys - i, pal[0] if q < 0.2 else (pal[1] if q < 0.55 else pal[2]))
     elif k == "embers":     # ("embers", (x, y), spread, seed): scattered cinders
         cx, cy = f[1]
         sp, seed = f[2], f[3]
@@ -1454,11 +1467,60 @@ def mirror_grid(g):
 
 OFF_FIST = ((0, 0), (1, 0), (0, 1), (1, 1), (0, -1), (1, -1))   # draw_offarm's gauntlet
 
+_SETTLE = False   # v10 polish: while set (see settled()), mseq splits the last frame to ease the weapon back toward idle
+
+
+def _lerp2(a, b, t):
+    return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+
+
+def _settle_frames(frames, base):
+    """Split the recovery's last frame (same total time): hold it a little, then a pose halfway back to idle
+    (hand (35, 27), blade at -50), so the swing doesn't pop when the idle loop takes over."""
+    p, ms = frames[-1]
+    q = {**dict(footB=FB, footF=FF), **base, **p}
+    if "hand" not in q or q.get("air") or "planted" in q or ms < 60:
+        return frames
+    ang = q["ang"]
+    tgt = _unwrap(-50, ang)
+    hx, hy = q["hand"]
+    if math.hypot(hx - 35, hy - 27) <= 3 and abs(tgt - ang) <= 25 and abs(q.get("dx", 0)) <= 1 and abs(q.get("dy", 0)) <= 1:
+        return frames
+    t = 0.55
+    mid = {k: v for k, v in p.items() if k not in ("fx", "mirror", "behind", "sheath", "shield", "lash", "offsw", "aura", "heat")}
+    mid.update(hand=_lerp2(q["hand"], (35, 27), t), ang=ang + (tgt - ang) * t,
+               dx=int(round(q.get("dx", 0) * (1 - t))), dy=int(round(q.get("dy", 0) * (1 - t))), head_dx=0, head_dy=0,
+               footB=_lerp2(q["footB"], FB, t), footF=_lerp2(q["footF"], FF, t), flow=0.3, flutter=q.get("flutter", 0) + 1)
+    if "slen" in q:
+        mid["slen"] = q["slen"] + (18 - q["slen"]) * t
+    if "off" in q:
+        mid["off"] = _lerp2(q["off"], (31, 26), t)
+    if q.get("offw") is not None:
+        ow = q["offw"]
+        mid["offw"] = (_lerp2(ow[0], (25, 30), t), ow[1] + (_unwrap(152, ow[1]) - ow[1]) * t)
+    keep = max(30, int(round(ms * 0.5 / 5)) * 5)
+    return frames[:-1] + [(p, keep), (mid, ms - keep)]
+
+
+def settled(fn):
+    def run():
+        global _SETTLE
+        _SETTLE = True
+        try:
+            return fn()
+        finally:
+            _SETTLE = False
+    run.__name__ = fn.__name__
+    return run
+
+
 def mseq(frames, base=None, grip=None, art=False):
     """Like seq, plus: two=True (off hand on the grip `grip` px behind the main hand),
     fx=[...] (swing FX, coords in pose space: +dx/+dy), mirror=True (spin frame),
     behind=True (weapon hidden behind the body)."""
     base = base or {}
+    if _SETTLE and not art and len(frames) >= 3:
+        frames = _settle_frames(frames, base)
     out = []
     prev, prevw = ((35, 27), -50), None
     prevoff = None
@@ -1491,7 +1553,7 @@ def mseq(frames, base=None, grip=None, art=False):
                     if "a0" not in opt:
                         a0 = _unwrap(a0, q["ang"])
                     fxl.append(("sweep", h0, a0, opt, prevw))
-                elif f[0] in ("flare", "rings", "speed", "wave", "embers", "ring"):
+                elif f[0] in ("flare", "rings", "speed", "wave", "embers", "ring", "vspeed"):
                     pt = f[1] if f[1] == "tip" else (f[1][0] + bx, f[1][1] + by)
                     fxl.append((f[0], pt) + tuple(f[2:]))
                 elif f[0] == "flash":
@@ -4114,10 +4176,10 @@ def sc_heavy():  # reaping sweep: wind the blade far back, then a huge arc over 
                  (dict(dx=3, dy=1, hand=(38, 21), ang=-22, footF=(FF[0] + 3, 39), flow=1.3, flutter=4, fx=[sw(w=0.6)]), 50),
                  (dict(dx=4, dy=2, hand=(40, 25), ang=30, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.4, flutter=5,
                        fx=[sw(w=0.6)]), 55),
-                 (dict(dx=4, dy=3, hand=(38, 28), ang=72, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.0, flutter=6,
-                       fx=[sw(w=0.4)]), 60),
-                 (dict(dx=3, dy=3, head_dy=1, hand=(36, 30), ang=100, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=0.5,
-                       flutter=7), 200),
+                 (dict(dx=4, dy=3, hand=(38, 27), ang=26, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.0, flutter=6,
+                       fx=[("dust", 57, 4)]), 60),
+                 (dict(dx=3, dy=4, head_dy=1, hand=(37, 28), ang=27, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=0.5,
+                       flutter=7, fx=[("dust", 56, 2)]), 200),
                  (dict(dx=1, dy=1, hand=(34, 27), ang=-20, flow=0.3), 150)], grip=GRIP_SCYTHE)
 
 
@@ -4409,14 +4471,364 @@ def tread():  # treading water at the surface: upright, legs kicking below, the 
 V9_SWIM = [("swim", swim), ("tread", tread)]
 
 
+# ================================================================ v10 (weapon feel): every class's own up / air / down attacks
+# Appended after the v9 swim frames. Tags <prefix>_up / _air / _down; the engine picks them through moveset() (MOVESETS[cls].up/
+# air/down) and falls back to the sword's attack_up / air_attack / attack_down. Down attacks all pogo (engine: ATK flag `down`).
+AIRB = dict(dy=-3, **TUCK)          # airborne base: body lifted, knees pulled up
+LEGS_BACK = dict(footB=(OX + 6, 31), footF=(OX + 10, 33), bendB=-1, bendF=-1)   # diving: legs swept back behind
+
+
+def DIVE(ln, k=0, x0=20, x1=41, y=24):
+    """Wind lines streaming up either side of a plunging body (pose space; never across the knight)."""
+    return [("vspeed", (x0 - k, y + k), 2, ln), ("vspeed", (x1 + k, y - 2 + k), 2, ln - 2)]
+
+
+def cape_dive(frames, idx, dy=-4, x=OX + 9):
+    """Plunging frames: the cape is torn upward behind the shoulders (as slam_dive)."""
+    for n, i in enumerate(idx):
+        frames[i][0]["Cape"] = draw_streamer((x, OY + 12 + dy), 250 + 5 * (n % 2), 14, 5, 9, 0.8 + n * 1.7, amp=1.1, k=0.7)
+    return frames
+
+
+def cape_trail(frames, idx, dy=-3, ang=176):
+    """Fast airborne frames: the cape streams flat behind."""
+    for n, i in enumerate(idx):
+        frames[i][0]["Cape"] = draw_streamer((OX + 9, OY + 11 + dy), ang - 3 * n, 20, 5, 8, 0.6 + n * 1.9, amp=1.0, k=0.65)
+    return frames
+
+
+# ---------------------------------------------------------------- dagger: flip-stab, quick jab, reverse-grip dive
+def dg_up():  # dip, then spring onto the toes and jab straight up
+    return mseq([(dict(dy=2, hand=(31, 28), ang=-40, off=(33, 26), footB=(OX + 7, 39), flow=0.3), 50),
+                 (dict(dy=1, hand=(33, 22), ang=-78, off=(30, 26), flow=0.5, flutter=1, fx=[sw(w=0.4)]), 35),
+                 (dict(dy=-1, hand=(33, 13), ang=-88, off=(26, 24), footB=(OX + 9, 37), flow=0.9, flutter=2, fx=[("streak", 12)]), 50),
+                 (dict(dy=-1, hand=(33, 12), ang=-86, off=(26, 24), footB=(OX + 9, 37), flow=0.8, flutter=3, fx=[("streak", 6)]), 60),
+                 (dict(hand=(34, 19), ang=-70, off=(29, 25), flow=0.5, flutter=4), 70),
+                 (dict(hand=(35, 26), ang=-45, off=(31, 26), flow=0.3), 80)])
+
+
+def dg_air():  # tuck, a forward flip with the blade leading the turn, and a stab out of it
+    fr = mseq([(dict(dy=-3, head_dy=1, hand=(30, 20), ang=-150, off=(32, 25), flow=0.8, **TUCK), 45)])
+    cy = 25.0
+    w = Wpn((38.5, 30.5), 35, 18, fitb=True)
+    w.fx = (("ring", (31.5, cy), 12.0, -150, 40, dict(sq=1.0, w=3.2)),)
+    fr.append(({"Cape": cape_swirl(250, 31.5, cy), "Torso": roll_ball(95, cy=cy), "Sword": w}, 50))
+    fr += mseq([(dict(dy=-2, hand=(41, 29), ang=28, off=(22, 22), footB=(OX + 6, 33), footF=(OX + 14, 35), air=True,
+                      flow=1.4, flutter=2, fx=[("streak", 14)]), 45),
+                (dict(dy=-2, hand=(41, 29), ang=30, off=(23, 23), footB=(OX + 6, 34), footF=(OX + 14, 36), air=True,
+                      flow=1.1, flutter=3, fx=[("streak", 6)]), 60),
+                (dict(dy=-3, hand=(35, 26), ang=-30, off=(31, 26), flow=0.6, flutter=4, **AIR), 90)])
+    return cape_trail(fr, [2, 3])
+
+
+def dg_down():  # reverse grip: the fist rises in front, then both hands drive the blade down under the feet
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    fr = mseq([(dict(dy=-5, head_dy=0, hand=(37, 18), ang=95, off=(33, 19), flow=0.9, footB=(OX + 9, 34), footF=(OX + 17, 34)), 50),
+               (dict(hand=(34, 29), ang=90, off=(33, 27), flow=1.3, flutter=1, fx=[("streak", 10)] + DIVE(9)), 45),
+               (dict(dy=-3, hand=(34, 29), ang=90, off=(33, 27), flow=1.5, flutter=3, fx=DIVE(7, 1)), 55),
+               (dict(hand=(34, 29), ang=91, off=(33, 27), flow=1.3, flutter=5), 60),
+               (dict(dy=-3, head_dy=0, hand=(35, 25), ang=-20, off=(31, 26), flow=0.7, flutter=4, **AIR), 90)], base)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- great: an overhead cleave that hangs, a great rising arc, a plunge
+def gs_up():  # sink with the blade trailing low behind, then one great arc from the floor to the sky
+    return mseq([(dict(dx=-1, dy=3, hand=(31, 31), ang=150, footB=(OX + 6, 39), flow=0.3), 100),
+                 (dict(dx=-1, dy=4, head_dy=1, hand=(30, 31), ang=160, footB=(OX + 6, 39), footF=(FF[0] + 1, 39), flow=0.2, flutter=1,
+                       fx=[("glint", "tip")]), 120),
+                 (dict(dx=1, dy=1, hand=(37, 26), ang=-20, footF=(FF[0] + 2, 39), flow=0.9, flutter=2,
+                       fx=[("arc", (30, 24), 140, -20, dict(sq=0.9, w=0.6))]), 45),
+                 (dict(dx=1, dy=-2, hand=(34, 13), ang=-92, slen=16, footB=(OX + 9, 37), flow=1.2, flutter=3, fx=[sw(w=0.55)]), 55),
+                 (dict(dy=-1, hand=(29, 13), ang=-135, flow=0.8, flutter=4, fx=[sw(w=0.35)]), 110),
+                 (dict(dy=1, hand=(31, 19), ang=-120, flow=0.4, flutter=5), 120),
+                 (dict(dy=1, hand=(33, 25), ang=-70, flow=0.3), 110)], grip=GRIP_GREAT)
+
+
+def gs_air():  # heave it overhead and hang there a beat (the engine stalls the rise), then cleave down in front
+    return mseq([(dict(hand=(30, 17), ang=-120, flow=0.8), 70),
+                 (dict(head_dx=-1, hand=(28, 14), ang=-165, flow=1.0, flutter=1, fx=[("glint", "tip")]), 110),
+                 (dict(hand=(32, 13), ang=-100, flow=0.6, flutter=2, fx=[sw(w=0.35)]), 45),
+                 (dict(dx=1, hand=(38, 21), ang=-15, slen=16, flow=0.9, flutter=3, fx=[sw(w=0.55)]), 50),
+                 (dict(dx=2, hand=(38, 28), ang=45, flow=1.1, flutter=4, fx=[sw(w=0.5)], **AIR), 70),
+                 (dict(dx=1, hand=(36, 29), ang=60, flow=0.7, flutter=5, **AIR), 110),
+                 (dict(hand=(34, 26), ang=20, flow=0.4, **AIR), 100)], dict(dy=-4, **TUCK), grip=GRIP_GREAT)
+
+
+def gs_down():  # lift the blade point-down before you, then drive it under the feet with both hands
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    fr = mseq([(dict(dy=-6, head_dy=0, hand=(36, 17), ang=80, slen=13, flow=0.9, footB=(OX + 9, 34), footF=(OX + 17, 34)), 90),
+               (dict(hand=(34, 27), ang=90, slen=16, flow=1.3, flutter=1, fx=[("streak", 12)] + DIVE(10)), 50),
+               (dict(dy=-3, hand=(34, 27), ang=90, slen=16, flow=1.5, flutter=3, fx=DIVE(8, 1)), 60),
+               (dict(hand=(34, 27), ang=90, slen=16, flow=1.3, flutter=5), 70),
+               (dict(dy=-3, head_dy=0, hand=(35, 25), ang=30, flow=0.7, flutter=4, **AIR), 120)], base, grip=GRIP_GREAT)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- spear: skyward thrust, a flat air thrust, tip-first dive
+def sp_up():  # coil low with the spear raised, then drive it straight at the sky with both hands
+    return mseq([(dict(dx=-1, dy=3, hand=(30, 29), ang=-70, footB=(OX + 6, 39), flow=0.3), 80),
+                 (dict(dy=-1, hand=(33, 14), ang=-88, footB=(OX + 9, 37), flow=0.9, flutter=1, fx=[("streak", 18)]), 45),
+                 (dict(dy=-2, hand=(33, 13), ang=-89, footB=(OX + 9, 36), footF=(FF[0], 38), flow=1.0, flutter=2, fx=[("streak", 8)]), 60),
+                 (dict(hand=(33, 18), ang=-86, flow=0.6, flutter=3), 90),
+                 (dict(hand=(34, 24), ang=-62, flow=0.4, flutter=4), 70),
+                 (dict(hand=(35, 27), ang=-48, flow=0.3), 60)], grip=GRIP_SPEAR)
+
+
+def sp_air():  # draw the spear back along the body, then a flat thrust at full stretch
+    stretch = dict(dx=2, hand=(40, 24), footB=(OX + 5, 34), footF=(OX + 13, 36))
+    fr = mseq([(dict(dx=-2, hand=(27, 23), ang=-4, flow=0.6), 70),
+               (dict(ang=0, flow=1.4, flutter=1, fx=[("streak", 22)], **stretch), 45),
+               (dict(ang=0, flow=1.2, flutter=2, fx=[("streak", 10)], **stretch), 60),
+               (dict(hand=(34, 24), ang=-4, flow=0.7, flutter=3), 90),
+               (dict(hand=(34, 26), ang=-20, flow=0.4, **AIR), 80)], AIRB, grip=GRIP_SPEAR)
+    return cape_trail(fr, [1, 2])
+
+
+def sp_down():  # turn the spear tip-down before you and ride it down
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    fr = mseq([(dict(dy=-6, head_dy=0, hand=(35, 16), ang=86, flow=0.9, footB=(OX + 9, 34), footF=(OX + 17, 34)), 60),
+               (dict(hand=(34, 26), ang=90, flow=1.3, flutter=1, fx=[("streak", 14)] + DIVE(10), **LEGS_BACK), 45),
+               (dict(dy=-3, hand=(34, 26), ang=90, flow=1.5, flutter=3, fx=DIVE(8, 1), **LEGS_BACK), 55),
+               (dict(hand=(34, 26), ang=90, flow=1.3, flutter=5, **LEGS_BACK), 60),
+               (dict(dy=-3, head_dy=0, hand=(34, 25), ang=-10, flow=0.7, flutter=4, **AIR), 90)], base, grip=GRIP_SPEAR)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- katana: rising crescent, iaido air draw, one-handed stab down
+def kt_up():  # from low at the hip, a rising crescent that ends pointing at the sky
+    return mseq([(dict(dx=-1, dy=2, hand=(31, 31), ang=140, footB=(OX + 6, 39), flow=0.3), 70),
+                 (dict(dy=1, hand=(35, 30), ang=100, flow=0.5, flutter=1), 35),
+                 (dict(dx=1, dy=-1, hand=(38, 20), ang=-40, footB=(OX + 9, 37), flow=1.0, flutter=2,
+                       fx=[("arc", (30, 22), 110, -40, dict(sq=1.0, w=0.4))]), 45),
+                 (dict(dx=1, dy=-2, hand=(33, 12), ang=-100, footB=(OX + 9, 36), flow=1.1, flutter=3, fx=[sw(w=0.4)]), 55),
+                 (dict(hand=(30, 14), ang=-130, flow=0.6, flutter=4), 90),
+                 (dict(hand=(35, 26), ang=-45, flow=0.3), 90)], grip=GRIP_KATANA)
+
+
+def kt_air():  # iaido in the air: sheathed at the hip, then one flash of a draw-cut
+    fr = mseq([(dict(hand=(30, 28), ang=168, off=(32, 27), sheath=True, flow=0.7), 80),
+               (dict(dx=1, hand=(33, 26), ang=-172, off=(31, 27), flow=0.6, flutter=1), 30),
+               (dict(dx=3, hand=(40, 24), ang=-4, off=(24, 25), flow=1.4, flutter=2,
+                     fx=[("flash", 21, 6, 62), ("arc", (31, 26), 172, -4, dict(sq=0.35, w=0.3))]), 45),
+               (dict(dx=3, hand=(40, 20), ang=-36, off=(24, 25), flow=1.2, flutter=3, fx=[("flash", 21, 16, 52), sw(w=0.35)]), 55),
+               (dict(dx=2, hand=(38, 17), ang=-50, off=(25, 25), flow=0.8, flutter=4), 100),
+               (dict(hand=(35, 26), ang=-40, off=(30, 26), flow=0.4, **AIR), 90)], AIRB)
+    return cape_trail(fr, [2, 3])
+
+
+def kt_down():  # one arm driven straight down, the blade a needle under the feet; the free arm flung up behind
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    fr = mseq([(dict(dy=-6, head_dy=0, hand=(36, 17), ang=82, slen=14, off=(30, 22), flow=0.9, footB=(OX + 9, 34),
+                     footF=(OX + 17, 34)), 50),
+               (dict(hand=(33, 31), ang=90, slen=16, off=(19, 14), flow=1.3, flutter=1, fx=[("streak", 12)] + DIVE(9)), 40),
+               (dict(dy=-3, hand=(33, 31), ang=90, slen=16, off=(19, 15), flow=1.5, flutter=3, fx=[("glint", "tip")] + DIVE(7, 1)), 55),
+               (dict(hand=(33, 31), ang=90, slen=16, off=(20, 16), flow=1.3, flutter=5), 60),
+               (dict(dy=-3, head_dy=0, hand=(35, 26), ang=-40, off=(30, 26), flow=0.7, flutter=4, **AIR), 90)], base)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- staff: an overhead twirl, an air wheel, a pole-vault stomp
+def st_up():  # hoist the staff overhead and spin it flat, like a rotor: both ends cut the air above you
+    RG = dict(sq=0.32, w=2.6)
+    ring = lambda a: ("ring", (32.5, 12), 15.5, a - 260, a, RG)
+    top = dict(dy=-1, hand=(32, 12), footB=(OX + 8, 38))
+    return mseq([(dict(dy=1, hand=(31, 19), ang=-150, flow=0.3), 55),
+                 (dict(ang=-4, flow=0.8, flutter=1, fx=[ring(0)], **top), 40),
+                 (dict(ang=-2, slen=8, flow=1.0, flutter=2, fx=[ring(90)], **top), 40),
+                 (dict(ang=-176, flow=1.0, flutter=3, fx=[ring(180)], **top), 40),
+                 (dict(ang=-178, slen=8, flow=0.9, flutter=4, fx=[ring(270)], **top), 45),
+                 (dict(hand=(33, 19), ang=-100, flow=0.5, flutter=5), 80),
+                 (dict(hand=(33, 26), ang=-40, flow=0.3), 80)], grip=GRIP_STAFF)
+
+
+def st_air():  # an air wheel: the staff turns a full circle before you, the far end cutting behind
+    P0 = (34, 22)
+    wheel = lambda a0, a1: [("ring", (P0[0] + 1, P0[1]), 15.5, a0, a1, dict(sq=1.0, w=3.4))]
+    return mseq([(dict(hand=(31, 22), ang=-150, flow=0.6), 45),
+                 (dict(dx=1, hand=P0, ang=-70, flow=0.9, flutter=1, fx=wheel(-150, -70)), 40),
+                 (dict(dx=1, hand=P0, ang=10, flow=1.1, flutter=2, fx=wheel(-70, 10)), 40),
+                 (dict(dx=1, hand=P0, ang=90, flow=1.2, flutter=3, fx=wheel(10, 90)), 40),
+                 (dict(dx=1, hand=P0, ang=170, flow=1.1, flutter=4, fx=wheel(90, 170)), 45),
+                 (dict(hand=(33, 25), ang=-20, flow=0.5, **AIR), 90)], AIRB, grip=GRIP_STAFF)
+
+
+def st_down():  # plant the staff under you like a vaulting pole and stomp down along it, feet together
+    base = dict(dy=-4, **TUCK)
+    stomp = dict(footB=(OX + 12, 36), footF=(OX + 16, 37))
+    fr = mseq([(dict(dy=-6, hand=(34, 17), ang=80, slen=20, flow=0.9, footB=(OX + 9, 34), footF=(OX + 17, 34)), 55),
+               (dict(dy=-5, hand=(33, 21), ang=90, slen=22, flow=1.3, flutter=1, fx=[("streak", 10)] + DIVE(9), **stomp), 45),
+               (dict(dy=-4, hand=(33, 21), ang=90, slen=22, flow=1.5, flutter=3, fx=DIVE(7, 1), **stomp), 55),
+               (dict(dy=-4, hand=(33, 21), ang=90, slen=22, flow=1.3, flutter=5, **stomp), 60),
+               (dict(dy=-3, hand=(33, 25), ang=-20, flow=0.7, flutter=4, **AIR), 90)], base, grip=GRIP_STAFF)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- sword & shield: a shielded undercut, an upward bash, shield-surf
+def sh_up():  # shield punched up over the head, tilted forward; the blade thrusts up behind its rim
+    tilt = dict(rot=65, sx=0.5, oy=-1, layer="over")
+    return mseq([(dict(dy=2, hand=(31, 27), ang=-70, off=(34, 24), footB=(OX + 7, 39), flow=0.3, shield=HIP), 55),
+                 (dict(dy=-1, hand=(31, 15), ang=-84, off=(34, 11), footB=(OX + 9, 37), flow=0.9, flutter=1, shield=tilt, behind=True,
+                       fx=[("flare", (38, 1), 4), ("streak", 8)]), 45),
+                 (dict(dy=-1, hand=(31, 14), ang=-86, off=(34, 11), footB=(OX + 9, 37), flow=0.8, flutter=2, shield=tilt, behind=True), 60),
+                 (dict(hand=(33, 20), ang=-70, off=(34, 19), flow=0.5, flutter=3, shield=dict(rot=35, sx=0.55)), 80),
+                 (dict(hand=(34, 27), ang=-35, off=(32, 25), flow=0.3), 80)])
+
+
+def sh_air():  # shield raised before the face, the blade sweeps low beneath its rim
+    guard = dict(off=(36, 19), shield=dict(sx=0.62))
+    return mseq([(dict(hand=(28, 28), ang=170, off=(33, 22), flow=0.6, shield=HIP), 50),
+                 (dict(hand=(32, 29), ang=150, flow=0.8, flutter=1, fx=[sw(w=0.35)], **guard), 35),
+                 (dict(dx=1, hand=(40, 27), ang=5, flow=1.2, flutter=2, fx=[sw(w=0.5)], **guard), 45),
+                 (dict(dx=1, hand=(39, 23), ang=-35, flow=1.0, flutter=3, fx=[sw(w=0.45)], **guard), 60),
+                 (dict(hand=(35, 26), ang=-25, off=(32, 25), flow=0.5, **AIR), 90)], AIRB)
+
+
+def sh_down():  # flip the shield under your feet and ride it down like a sled
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    surf = dict(hand=(33, 17), ang=-130, off=(22, 21), footB=(OX + 10, 34), footF=(OX + 18, 34),
+                shield=dict(abs=(31.5, 40.5), rot=90, sx=0.45, layer="front"))
+    fr = mseq([(dict(dy=-5, hand=(33, 18), ang=-110, off=(32, 28), flow=0.8, shield=dict(rot=55, sx=0.5)), 55),
+               (dict(flow=1.3, flutter=1, fx=DIVE(9, 0, 18, 44), **surf), 45),
+               (dict(dy=-3, flow=1.5, flutter=3, fx=DIVE(7, 1, 18, 44), **surf), 55),
+               (dict(flow=1.3, flutter=5, **surf), 60),
+               (dict(dy=-3, head_dy=0, hand=(35, 26), ang=-30, off=(32, 25), flow=0.7, flutter=4, **AIR), 90)], base)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- twin blades: scissor up-cut, an X in the air, a crossed drill
+def tw_up():  # both blades low, then scissored up past each other over the head
+    return mseq([(dict(dy=2, hand=(33, 30), ang=50, offw=((31, 30), 70), footB=(OX + 7, 39), flow=0.3), 50),
+                 (dict(dy=1, hand=(37, 24), ang=-30, offw=((35, 26), -10, 18, True), offsw=0.4, flow=0.8, flutter=1, fx=[sw(w=0.45)]), 35),
+                 (dict(dy=-1, hand=(35, 14), ang=-65, offw=((32, 15), -115, 18, True), offsw=0.45, footB=(OX + 9, 37), flow=1.1, flutter=2,
+                       fx=[sw(w=0.5)]), 45),
+                 (dict(dy=-1, hand=(34, 13), ang=-75, offw=((32, 14), -105, 18, True), footB=(OX + 9, 37), flow=0.9, flutter=3), 60),
+                 (dict(hand=(34, 22), ang=-60, offw=((31, 24), -30), flow=0.5), 80),
+                 (dict(hand=(35, 27), ang=-25, offw=((30, 27), 150), flow=0.3), 80)])
+
+
+def tw_air():  # both blades cocked over the shoulder, then brought through at once: an X opens in front
+    fr = mseq([(dict(hand=(30, 17), ang=-130, offw=((29, 18), -110), flow=0.6), 50),
+               (dict(hand=(31, 15), ang=-150, offw=((29, 16), -160), flow=0.8, flutter=1), 35),
+               (dict(dx=2, hand=(40, 24), ang=15, offw=((38, 20), -25, 18, True), offsw=0.5, flow=1.3, flutter=2, fx=[sw(w=0.5)]), 45),
+               (dict(dx=2, hand=(38, 29), ang=55, offw=((39, 19), -50, 18, True), offsw=0.45, flow=1.1, flutter=3, fx=[sw(w=0.45)]), 55),
+               (dict(hand=(35, 26), ang=-20, offw=((31, 27), 150), flow=0.5, **AIR), 90)], AIRB)
+    return cape_trail(fr, [2, 3])
+
+
+def tw_down():  # blades crossed point-down under the feet, twisting like a drill as you fall
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    drill = lambda a: [("ring", (33.5, 38), 5.5, a - 220, a, dict(sq=0.4, w=2.0))]
+    fr = mseq([(dict(dy=-5, hand=(34, 18), ang=-100, offw=((32, 18), -80), flow=0.8, footB=(OX + 9, 34), footF=(OX + 17, 34)), 50),
+               (dict(hand=(32, 28), ang=100, slen=15, offw=((35, 28), 80, 15, True), flow=1.3, flutter=1, fx=drill(0) + DIVE(9)), 40),
+               (dict(dy=-3, hand=(32, 28), ang=82, slen=15, offw=((35, 28), 98, 15, True), flow=1.5, flutter=3, fx=drill(180) + DIVE(7, 1)), 45),
+               (dict(hand=(32, 28), ang=100, slen=15, offw=((35, 28), 80, 15, True), flow=1.3, flutter=5, fx=drill(360)), 50),
+               (dict(dy=-3, head_dy=0, hand=(35, 26), ang=-20, offw=((31, 27), 150), flow=0.7, flutter=4, **AIR), 90)], base)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- scythe: an arcing hook, a spinning reap, a blade-down plunge
+def sc_up():  # from low behind, the blade hooks up over the top
+    return mseq([(dict(dx=-1, dy=2, hand=(31, 30), ang=150, footB=(OX + 6, 39), flow=0.3), 70),
+                 (dict(dy=1, hand=(36, 27), ang=30, flow=0.7, flutter=1, fx=[sw(w=0.4)]), 40),
+                 (dict(dx=1, dy=-1, hand=(36, 17), ang=-70, footB=(OX + 9, 37), flow=1.1, flutter=2, fx=[sw(w=0.55)]), 45),
+                 (dict(dy=-1, hand=(32, 13), ang=-115, footB=(OX + 9, 37), flow=0.9, flutter=3, fx=[sw(w=0.45)]), 55),
+                 (dict(hand=(30, 15), ang=-140, flow=0.5, flutter=4), 90),
+                 (dict(hand=(34, 26), ang=-40, flow=0.3), 90)], grip=GRIP_SCYTHE)
+
+
+def sc_air():  # a tucked, tilted spin: the blade reaps a full circle round the body
+    RG = dict(sq=0.42, w=12.0)
+    return mseq([(dict(dx=-1, hand=(29, 24), ang=176, flow=0.6), 55),
+                 (dict(dx=1, hand=(34, 24), ang=2, flow=1.3, flutter=1, fx=[("ring", (29, 25), 25, 180, 0, RG)]), 45),
+                 (dict(dx=1, hand=(34, 24), ang=2, flow=1.5, flutter=2, mirror=True, behind=True,
+                       fx=[("ring", (29, 25), 25, 180, 0, RG)]), 45),
+                 (dict(dx=1, hand=(35, 24), ang=8, flow=1.3, flutter=3, fx=[("ring", (29, 25), 25, 170, 8, RG)]), 50),
+                 (dict(hand=(34, 25), ang=-15, flow=0.6, **AIR), 100)], AIRB, grip=GRIP_SCYTHE)
+
+
+def sc_down():  # heave the scythe overhead, then swing its head down under you, the blade hooked beneath the feet
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    fr = mseq([(dict(dy=-6, head_dy=0, hand=(33, 16), ang=-100, flow=0.8, footB=(OX + 9, 34), footF=(OX + 17, 34)), 60),
+               (dict(hand=(36, 26), ang=70, flow=1.3, flutter=1, fx=[sw(w=0.5)] + DIVE(9)), 45),
+               (dict(dy=-3, hand=(36, 27), ang=76, flow=1.5, flutter=3, fx=DIVE(7, 1)), 55),
+               (dict(hand=(36, 27), ang=76, flow=1.3, flutter=5), 60),
+               (dict(dy=-3, head_dy=0, hand=(34, 26), ang=-30, flow=0.7, flutter=4, **AIR), 90)], base, grip=GRIP_SCYTHE)
+    return cape_dive(fr, [1, 2, 3])
+
+
+# ---------------------------------------------------------------- whip: a vertical crack, a circling lash, a straight-down crack
+def wh_up():  # the lash trails low, then the arm snaps up and the tip cracks straight overhead
+    return mseq([(dict(dy=2, hand=(32, 29), ang=70, flow=0.3, lash=[(34, 33), (36, 37), (40, 38.5), (46, 38.5)]), 60),
+                 (dict(hand=(35, 20), ang=-60, flow=0.7, flutter=1, lash=[(37, 25), (37, 31), (35, 36), (32, 38.5)]), 40),
+                 (dict(dy=-1, hand=(34, 14), ang=-88, footB=(OX + 9, 37), flow=1.0, flutter=2, lash=[(34, 6), (35, 2), (35.5, 0.5)],
+                       fx=[("flare", (35, 1), 5)]), 45),
+                 (dict(dy=-1, hand=(34, 14), ang=-84, footB=(OX + 9, 37), flow=0.9, flutter=3, lash=[(36, 5), (41, 2), (47, 3), (52, 7)]), 55),
+                 (dict(hand=(35, 22), ang=-40, flow=0.5, flutter=4, lash=[(40, 18), (45, 21), (49, 27), (51, 34)]), 90),
+                 (dict(hand=(35, 27), ang=-50, flow=0.3), 90)])
+
+
+def wh_air():  # the lash is swung in a full circle round the body, cracking in front and behind
+    return mseq([(dict(hand=(30, 18), ang=-120, flow=0.6, lash=[(26, 12), (20, 12), (15, 15), (12, 20)]), 55),
+                 (dict(hand=(35, 17), ang=-60, flow=0.9, flutter=1, lash=[(39, 10), (46, 8), (52, 11), (55, 17)]), 40),
+                 (dict(dx=1, hand=(38, 24), ang=10, flow=1.2, flutter=2, lash=[(45, 27), (50, 32), (49, 38), (43, 41)],
+                       fx=[("flare", (50, 33), 4)]), 45),
+                 (dict(hand=(32, 27), ang=140, flow=1.3, flutter=3, lash=[(26, 32), (19, 35), (12, 33), (7, 27)],
+                       fx=[("flare", (8, 27), 4)]), 45),
+                 (dict(hand=(30, 20), ang=-130, flow=1.1, flutter=4, lash=[(24, 13), (17, 10), (11, 11), (7, 16)]), 50),
+                 (dict(hand=(35, 26), ang=-40, flow=0.5, **AIR), 90)], AIRB)
+
+
+def wh_down():  # whirl it overhead, then crack it straight down beneath the feet
+    base = dict(dy=-4, head_dy=1, **TUCK)
+    fr = mseq([(dict(dy=-5, hand=(31, 15), ang=-100, flow=0.8, lash=[(30, 8), (34, 4), (39, 5), (42, 9)],
+                     footB=(OX + 9, 34), footF=(OX + 17, 34)), 55),
+               (dict(hand=(35, 22), ang=40, flow=1.2, flutter=1, lash=[(40, 24), (43, 29), (42, 35), (40, 40)]), 40),
+               (dict(hand=(34, 26), ang=88, flow=1.4, flutter=2, lash=[(34.5, 33), (35, 38), (35, 42.5)],
+                     fx=[("flare", (35, 42), 5)] + DIVE(8)), 45),
+               (dict(hand=(34, 26), ang=88, flow=1.3, flutter=3, lash=[(35, 33), (36, 37), (37, 42.5)]), 55),
+               (dict(dy=-3, head_dy=0, hand=(35, 26), ang=-40, flow=0.7, flutter=4, **AIR), 90)], base)
+    return cape_dive(fr, [2, 3])
+
+
+V10_MOVES = [("dg_up", dg_up), ("dg_air", dg_air), ("dg_down", dg_down),
+             ("gs_up", gs_up), ("gs_air", gs_air), ("gs_down", gs_down),
+             ("sp_up", sp_up), ("sp_air", sp_air), ("sp_down", sp_down),
+             ("kt_up", kt_up), ("kt_air", kt_air), ("kt_down", kt_down),
+             ("st_up", st_up), ("st_air", st_air), ("st_down", st_down),
+             ("sh_up", sh_up), ("sh_air", sh_air), ("sh_down", sh_down),
+             ("tw_up", tw_up), ("tw_air", tw_air), ("tw_down", tw_down),
+             ("sc_up", sc_up), ("sc_air", sc_air), ("sc_down", sc_down),
+             ("wh_up", wh_up), ("wh_air", wh_air), ("wh_down", wh_down)]
+ACTIVE.update({"dg_up": (2, 3), "dg_air": (2, 3), "dg_down": (1, 3),
+               "gs_up": (2, 3), "gs_air": (3, 4), "gs_down": (1, 3),
+               "sp_up": (1, 2), "sp_air": (1, 2), "sp_down": (1, 3),
+               "kt_up": (2, 3), "kt_air": (2, 3), "kt_down": (1, 3),
+               "st_up": (1, 4), "st_air": (2, 4), "st_down": (1, 3),
+               "sh_up": (1, 2), "sh_air": (2, 3), "sh_down": (1, 3),
+               "tw_up": (2, 3), "tw_air": (2, 3), "tw_down": (1, 3),
+               "sc_up": (2, 3), "sc_air": (1, 3), "sc_down": (1, 3),
+               "wh_up": (2, 3), "wh_air": (1, 4), "wh_down": (2, 3)})
+HIT_EXTRAS |= {"sh_up", "sh_air", "sh_down", "tw_up", "tw_air", "tw_down"}
+V10_UP = {t for t, _ in V10_MOVES if t.endswith("_up")}
+V10_DOWN = {t for t, _ in V10_MOVES if t.endswith("_down")}
+V10_AIR = {t for t, _ in V10_MOVES if t.endswith("_air")}
+HIT_X0.update({"kt_air": -2, "sh_air": -2, "tw_air": -2, "sp_air": -2, "dg_air": -2, "gs_air": -4})   # iaido flash / trailing smears
+
+
 ANIMS = [("idle", idle), ("run", run), ("jump_up", jump_up), ("jump_fall", jump_fall), ("land", land),
          ("roll", roll), ("attack1", attack1), ("attack2", attack2), ("attack3", attack3), ("heavy", heavy),
          ("hurt", hurt), ("heal", heal), ("death", death),
          # v3 additions (appended; the frames above keep their indices)
          ("attack_up", attack_up), ("attack_down", attack_down), ("air_attack", air_attack), ("cast", cast),
          ("parry", parry), ("riposte", riposte), ("wall_slide", wall_slide), ("double_jump", double_jump),
-         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM   # v4 movesets after frame 124, v5 arts after 252,
+         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES   # v4 movesets after frame 124, v5 arts after 252,
                                                             # v7 traversal after 308, v8 classes/techniques after 329
+
+# v10 polish: these tags ease back toward the idle pose at the end (last frame split; active frames and total time unchanged)
+SETTLE_TAGS = ({"attack1", "attack2", "attack3", "heavy", "attack_up", "riposte", "counter", "backstep", "plunge_land", "sh_counter"}
+               | {n for n, _ in MOVES + V9_MOVES} | {n for n, _ in V8_MOVES if n.split("_")[0] in ("st", "tw")}
+               | {"sh_1", "sh_2", "sh_3", "sh_heavy"} | {n for n, _ in V10_MOVES if n.endswith("_up")})
+ANIMS = [(n, settled(f) if n in SETTLE_TAGS else f) for n, f in ANIMS]
 
 BODY_LAYERS = [l for l in LAYERS if l != "Sword"]
 PREVIEW_TAGS = ["idle", "attack1", "heavy", "attack_up"]
@@ -4507,6 +4919,18 @@ def write_meta(raw, tags):
     """assets/player_meta.json: per-move active window, damage box (feet-relative, facing right)
     measured from the class weapon's blade + smear on the active frames, and a slash-fx point."""
     import json
+    moves = meta_for(raw, tags)
+    meta = {"native": 1, "anchor": [28, 40], "facing": "right",
+            "classes": {"dagger": ["dagger"], "great": ["greatsword", "maul"], "spear": ["spear"], "katana": ["katana"],
+                        "sword": ["longsword", "oathbrand", "kalden"], "staff": ["quarterstaff"],
+                        "shield": ["knight_shield"], "twin": ["twinfangs"], "scythe": ["briar_scythe"], "whip": ["gravechain"]},
+            "moves": moves}
+    with open(os.path.join(asebuild.ASSETS, "player_meta.json"), "w") as fh:
+        json.dump(meta, fh, indent=1)
+    return meta
+
+
+def meta_for(raw, tags):
     AX, AY = 28, 40
     moves = {}
     for t, a, b in tags:
@@ -4539,20 +4963,28 @@ def write_meta(raw, tags):
                 xs += [bb[0], bb[2]]
                 ys += [bb[1], bb[3]]
         hit = [min(xs) - AX, min(ys) - AY, max(xs) - AX, min(max(ys), AY) - AY]
+        if t in V10_DOWN:   # plunges: the blade's own column (no smear / wind lines), reaching under the feet like the sword's
+            bx0, bx1, by0 = 99, -99, 99
+            for i in range(a + i0, a + i1 + 1):
+                w = raw[i][0].get("Sword")
+                sv = (w.fx, w.offfx)
+                w.fx, w.offfx = (), ()
+                bb = w.render(kinds[0], dust=False, extras=t in HIT_EXTRAS).getbbox()
+                w.fx, w.offfx = sv
+                if bb:
+                    bx0, bx1, by0 = min(bx0, bb[0]), max(bx1, bb[2]), min(by0, bb[1])
+            big = 3 if t == "gs_down" else 0
+            x0, x1 = min(-6, max(-12, bx0 - AX - big)), max(10, min(16, bx1 - AX + big))   # never narrower than the sword's
+            hit = [x0, max(-16, by0 - AY), x1, 22 + big]
+        elif t in V10_UP:   # long weapons are shortened to fit under the frame top: the real reach goes higher
+            hit = [max(-20, hit[0]), hit[1] - 14, hit[2], hit[3]]
         if t in HIT_X0:
             hit[0] = max(hit[0], HIT_X0[t])
         if t in HIT_OVERRIDE:
             hit = list(HIT_OVERRIDE[t])
         fxat = [round(sum(p[0] for p in pts) / len(pts)) - AX, round(sum(p[1] for p in pts) / len(pts)) - AY]
         moves[t] = {"active": [i0, i1], "hit": hit, "fxAt": list(FXAT_OVERRIDE.get(t, fxat))}
-    meta = {"native": 1, "anchor": [AX, AY], "facing": "right",
-            "classes": {"dagger": ["dagger"], "great": ["greatsword", "maul"], "spear": ["spear"], "katana": ["katana"],
-                        "sword": ["longsword", "oathbrand", "kalden"], "staff": ["quarterstaff"],
-                        "shield": ["knight_shield"], "twin": ["twinfangs"], "scythe": ["briar_scythe"], "whip": ["gravechain"]},
-            "moves": moves}
-    with open(os.path.join(asebuild.ASSETS, "player_meta.json"), "w") as fh:
-        json.dump(meta, fh, indent=1)
-    return meta
+    return moves
 
 import random
 
