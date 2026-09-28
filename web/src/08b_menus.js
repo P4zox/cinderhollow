@@ -99,6 +99,8 @@ function renderPauseMenu() {
     panel(92, 30, 200, 16 + SETTING_ROWS.length * rh);
     SETTING_ROWS.forEach((R, i) => {
       const y = 44 + i * rh, sel = i === M.sel;
+      uiHit(97, y - rh + 4, 190, rh - 1, () => { M.sel = i; }, () => { M.sel = i; uiAct(SETTING_ACTIONS.includes(R.k) ? 'confirm' : 'right'); });
+      if (!SETTING_ACTIONS.includes(R.k)) { uiHit(236, y - rh + 4, 22, rh - 1, () => { M.sel = i; }, () => { M.sel = i; uiAct('left'); }); uiHit(259, y - rh + 4, 26, rh - 1, () => { M.sel = i; }, () => { M.sel = i; uiAct('right'); }); }
       if (sel) uiSel(97, y - rh + 4, 190, rh - 1);
       text(R.label, 104, y, 6.8, sel ? '#f5e3b0' : ['guide', 'keys', 'cheats'].includes(R.k) ? UIC.gold : '#d8cdb4', 'left', { weight: sel || R.k === 'guide' ? 600 : 400 });
       if (['guide', 'keys', 'cheats'].includes(R.k)) { text('▸', 280 + (sel ? uiPulse(6) : 0), y, 6.8, UIC.gold, 'right'); uiFade(104, 280, y + rh / 2 - 2.5, UI_RGB.accent, 0.35); }
@@ -185,6 +187,7 @@ function renderShop() {
   icon('cinder', 180, 30, 10); text(String(SAVE.cinders), 212, 38, 7, '#e8dcc0', 'right');
   L.forEach((e, i) => {
     const d = ITEMS[e.item], y = 56 + i * 15, sel = i === M.sel, afford = SAVE.cinders >= e.price;
+    uiHit(24, y - 10, 192, 14, () => { M.sel = i; });
     if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 10) * scale, 192 * scale, 14 * scale); }
     icon(d.icon, 28, y - 10, 12);
     text(d.name, 44, y - 1, 6.6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
@@ -219,6 +222,7 @@ function renderForge() {
   text(`Emberstones ${SAVE.inv.emberstone || 0}     Cinders ${SAVE.cinders}`, 354, 38, 6.2, '#e8dcc0', 'right');
   L.forEach((id, i) => {
     const w = WEAPONS[id], lv = SAVE.weapons[id], y = 58 + i * 16, sel = i === M.sel;
+    uiHit(24, y - 11, 336, 15, () => { M.sel = i; });
     if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 11) * scale, 336 * scale, 15 * scale); }
     icon('w_' + id, 28, y - 11, 12);
     text(`${w.name}${lv ? ' +' + lv : ''}`, 44, y - 1, 6.6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });

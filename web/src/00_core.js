@@ -272,6 +272,7 @@ view.addEventListener('mousedown', e => {
   const hadFocus = document.hasFocus();
   grabFocus();
   if (!hadFocus) return;
+  if (typeof uiEatsClick === 'function' && uiEatsClick()) return;   // 63_mouse.js: menu clicks select, they don't swing
   press(e.button === 2 ? 'heavy' : 'attack');
 });
 view.addEventListener('pointerdown', grabFocus);

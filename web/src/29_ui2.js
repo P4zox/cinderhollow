@@ -92,9 +92,13 @@ function uiHead(label, x, y, w, extra) {   // small section heading with a fadin
   uiFade(x + tw, x + w - (extra ? textW(extra, 4.7, 500) + 4 : 0), y - 1.7, UI_RGB.accent, 0.5);
 }
 function uiFooter(items, y = 211) {   // [[key, label], ...] centred key hints; keys are relabelled for touch screens
-  const parts = items.filter(([k]) => kl(k) !== '').map(([k, l]) => { const K = kl(k), kw = Math.max(7.8, textW(K, 4.8, 600) + 5); return { K, l, kw, w: kw + 2.5 + textW(l, 5, 400) }; });
+  const parts = items.filter(([k]) => kl(k) !== '').map(([k, l]) => { const K = kl(k), kw = Math.max(7.8, textW(K, 4.8, 600) + 5); return { k, K, l, kw, w: kw + 2.5 + textW(l, 5, 400) }; });
   const gap = 8, total = parts.reduce((s, p) => s + p.w, 0) + gap * (parts.length - 1); let x = W / 2 - total / 2;
-  for (const p of parts) { uiKey(p.K, x, y, { size: 4.8 }); text(p.l, x + p.kw + 2.5, y, 5, UIC.faint, 'left', { weight: 400 }); x += p.w + gap; }
+  for (const p of parts) {
+    uiKey(p.K, x, y, { size: 4.8 }); text(p.l, x + p.kw + 2.5, y, 5, UIC.faint, 'left', { weight: 400 });
+    const act = UI_KEY_ACT[p.k]; if (act) uiHit(x - 1, y - 7, p.w + 2, 10, null, () => uiAct(act));   // 63_mouse.js
+    x += p.w + gap;
+  }
 }
 const tabHint = () => (kl('Q') ? [['Q', ''], ['Tab', 'tabs']] : [['Tab', 'tabs']]);
 function uiFit(str, maxW, size, min = 4.5, weight = 600) { let s = size; while (s > min && textW(str, s, weight) > maxW) s -= 0.25; return s; }
@@ -108,12 +112,14 @@ function uiTabs(cur) {
   const n = TABS.length, pitch = 80, x0 = W / 2 - pitch * (n - 1) / 2;
   TABS.forEach((t, i) => {
     const x = x0 + i * pitch, sel = i === cur;
+    uiHit(x - 36, 9, 72, 16, null, () => { const M = menu; if (M && M.screen === 'pause' && M.tab !== i) { M.tab = i; M.sel = 0; M.pick = null; sfx.menu(); } });
     text(t.toUpperCase(), x, 18, 6.6, sel ? UIC.hi : UIC.faint, 'center', { spacing: 1.6, weight: sel ? 600 : 500 });
     if (sel) { uiDiamond(x, 22.5, 1.3, UIC.gold); uiFade(x - 3, x - 34, 22.2, UI_RGB.gold, 0.9); uiFade(x + 3, x + 34, 22.2, UI_RGB.gold, 0.9); }
     if (i < n - 1) uiDiamond(x + pitch / 2, 16, 0.9, '#5a4a30');
   });
   if (kl('Q')) { uiKey(kl('Q'), x0 - 44, 18.5, { size: 4.8, align: 'center' }); text('◂', x0 - 36, 18.3, 5, UIC.faint, 'center', { shadow: false }); }
-  const xr = x0 + (n - 1) * pitch + 44; uiKey(kl('Tab'), xr, 18.5, { size: 4.8, align: 'center' }); text('▸', xr - (textW(kl('Tab'), 4.8) + 5) / 2 - 4, 18.3, 5, UIC.faint, 'center', { shadow: false });
+  if (kl('Q')) uiHit(x0 - 54, 10, 22, 12, null, () => uiAct('spell'));
+  const xr = x0 + (n - 1) * pitch + 44; uiHit(xr - 14, 10, 28, 12, null, () => uiAct('map')); uiKey(kl('Tab'), xr, 18.5, { size: 4.8, align: 'center' }); text('▸', xr - (textW(kl('Tab'), 4.8) + 5) / 2 - 4, 18.3, 5, UIC.faint, 'center', { shadow: false });
 }
 
 // ---- gear entries (one shape for weapons, arts, spells, charms, key items and materials)
@@ -323,6 +329,10 @@ function renderSlots(M, rows) {
     const Y = top + L.y - M.slotOff; if (Y < top - 14 || Y > bottom) continue;
     if (L.head) { uiHead(L.head, 18, Y + 6.5, 140, L.extra); continue; }
     const r = L.r, sel = L.i === M.sel, e = slotEntry(r);
+    if (Y >= top - 1 && Y + 12 <= bottom + 1) {
+      uiHit(15, Y - 0.5, 146, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; openPicker(M, r); });
+      if (r.k !== 'art') { uiHit(137, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, -1); }); uiHit(150, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, 1); }); }
+    }
     if (sel) uiSel(15, Y - 0.5, 146, 13);
     uiCell(19, Y + 0.5, 11, { eq: false });
     if (!e.empty) icon(e.icon, 20, Y + 1.5, 9);
@@ -347,6 +357,7 @@ function renderPicker(K) {
     const id = K.list[i], cx = 18 + (i % PICK_COLS) * 20, cy = 49 + (Math.floor(i / PICK_COLS) - K.off) * 21, sel = i === K.sel;
     const e = id ? gearEntry(kind, id) : null, here = id && (kind === 'weapon' ? SAVE.weapon === id : kind === 'art' ? SAVE.art === id : kind === 'spell' ? SAVE.spellsEq[r.i] === id : SAVE.charmsEq[r.i] === id);
     uiCell(cx, cy, 18, { sel, eq: here });
+    uiHit(cx, cy, 18, 18, () => { K.sel = i; });
     if (!id) { text('✕', cx + 9, cy + 12, 7, UIC.faint, 'center', { shadow: false }); continue; }
     icon(e.icon, cx + 2, cy + 2, 14, e.slot >= 0 && !here ? 0.55 : 1);
     if (kind === 'weapon' && e.lv) uiBadge('+' + e.lv, cx + 18, cy + 18);
@@ -395,6 +406,7 @@ function renderInvTab(M) {
   INV_CATS.forEach((c, i) => {
     const x = 18 + i * (140.4 / INV_CATS.length), y = 35, sel = i === M.cat;
     uiCell(x, y, 19, { sel: sel && M.bar });
+    uiHit(x, y, 19, 19, null, () => { if (M.cat !== i) { M.cat = i; M.isel = 0; M.ioff = 0; } M.bar = true; sfx.menu(); });
     icon(c.icon, x + 2.5, y + 2.5, 14, sel ? 1 : 0.42);
     if (sel && !M.bar) { uiHair(x + 1, y + 21, 17, UIC.gold); }
   });
@@ -407,6 +419,7 @@ function renderInvTab(M) {
   for (let i = M.ioff * INV_COLS; i < Math.min(L.length, (M.ioff + INV_ROWS) * INV_COLS); i++) {
     const e = L[i], cx = 18 + (i % INV_COLS) * 20, cy = 74 + (Math.floor(i / INV_COLS) - M.ioff) * 21;
     uiCell(cx, cy, 18, { sel: i === M.isel && !M.bar, eq: e.eq });
+    uiHit(cx, cy, 18, 18, () => { M.isel = i; M.bar = false; });
     icon(e.icon, cx + 2, cy + 2, 14);
     if (e.kind === 'weapon' && e.lv) uiBadge('+' + e.lv, cx + 18, cy + 18);
     else if (e.count && e.kind === 'mat') uiBadge(e.count, cx + 18, cy + 18, UIC.text);
@@ -443,7 +456,7 @@ const GUIDE_PAGES = [
   { name: 'Weapons', rows: () => [
     [['J'], 'Dagger backstab', 'Daggers: slip behind a foe that faces away and attack to open it up.'],
     [['Space', 'then', 'J'], 'Spear jump thrust', 'Spears: attack while still rising from a jump to dive in point first.'],
-    [['K'], 'Staff spin', 'Staves: the heavy is an instant spin striking both sides; costs 80% stamina.'],
+    [['K'], 'Staff spin', 'Staves: the heavy is an instant spin striking both sides; costs 45% stamina.'],
     [['I', 'then', 'J'], 'Katana counter', 'Katanas: guard counters strike 40% harder and come out faster.'],
     [['K', 'hold'], 'Unflinching heavies', 'Great weapons can’t be interrupted mid-heavy by weaker blows.'],
     [[], 'Boss weapons', 'Weapons taken from great foes carry signature effects; read them in Equipment.'],
@@ -478,6 +491,7 @@ function renderGuide(M) {
   const pw = 72, x0 = W / 2 - pw * (GUIDE_PAGES.length - 1) / 2;
   GUIDE_PAGES.forEach((p, i) => {
     const x = x0 + i * pw, sel = i === Gd.page;
+    uiHit(x - 34, 22, 68, 13, null, () => { if (Gd.page !== i) { Gd.page = i; Gd.off = 0; sfx.menu(); } });
     text(p.name.toUpperCase(), x, 30, 5.6, sel ? UIC.hi : UIC.faint, 'center', { spacing: 1.2, weight: sel ? 600 : 500 });
     if (sel) { uiDiamond(x, 33.6, 1.1, UIC.gold); uiFade(x - 3, x - 26, 33.4, UI_RGB.gold, 0.9); uiFade(x + 3, x + 26, 33.4, UI_RGB.gold, 0.9); }
   });
@@ -651,6 +665,7 @@ function renderTravel(M) {
   for (const L of lines) {
     const y = top + L.y - M.loff; if (y < top - 13 || y > bot) continue;
     if (L.g) {
+      if (y >= top - 1 && y + 10 <= bot + 1) uiHit(10, y, 120, 11, null, () => { if (L.g !== grp) { M.id = L.g.ids[0]; M.free = false; sfx.menu(); } });
       const on = L.g === grp, an = (AREAS[L.g.biome] ? AREAS[L.g.biome].name : L.g.biome).replace(/^The /, '').toUpperCase();
       if (on) { const k = M.free ? 0 : uiPulse(5); text('◂', 14 - k * 0.7, y + 7.6, 5.4, UIC.gold, 'center', { alpha: M.free ? 0.35 : 1 }); text('▸', 126 + k * 0.7, y + 7.6, 5.4, UIC.gold, 'center', { alpha: M.free ? 0.35 : 1 }); }
       else uiDiamond(15, y + 5.6, 1.2, '#5a4a30');
@@ -660,6 +675,7 @@ function renderTravel(M) {
       continue;
     }
     const id = L.id, d = ROOM_BY[id], s = id === M.id, b = shrineBoss(id), here = id === room.id;
+    if (y >= top - 1 && y + 11 <= bot + 1) uiHit(12, y, 116, 11.5, () => { if (M.id !== id) { M.id = id; M.free = false; } });
     if (s) uiSel(12, y, 116, 11.5, !M.free);
     icon('shrine', 17, y + 1.2, 9, s ? 1 : 0.75);
     const nm = d.shrine || d.name; text(nm, 29, y + 8.2, uiFit(nm, (b ? 76 : 90) - (here ? 12 : 0), 5.8, 4.4, s ? 600 : 500), s ? UIC.hi : UIC.body, 'left', { weight: s ? 600 : 500 });
@@ -705,6 +721,7 @@ function renderTravel(M) {
       vctx.strokeStyle = '#ffd070'; vctx.lineWidth = Math.max(1, scale * 0.6); vctx.stroke();
     }
     icon('shrine', x - 4.5, y - 7, 9, selS ? 1 : inR ? 0.85 : 0.4);
+    if (x > ib.x && x < ib.x + ib.w && y > ib.y && y < ib.y + ib.h) uiHit(x - 6, y - 8, 12, 11, null, () => { if (M.id === id) uiAct('confirm'); else { M.id = id; sfx.menu(); } });   // click a shrine: pick it, click again: travel
   }
   const px = X(room.def.gx + P.x / TILE), py = Y(room.def.gy + P.y / TILE);
   vctx.fillStyle = Math.sin(time * 8) > 0 ? '#ff5050' : '#ffd0a0'; vctx.fillRect(ox + (px - 1.5) * scale, oy + (py - 3) * scale, 3 * scale, 3 * scale);

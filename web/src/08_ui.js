@@ -233,6 +233,7 @@ function renderMenu() {
     box(16, 42, 106, 134);
     SHRINE_OPTS.forEach((o, i) => {
       const y = 62 + i * 19, sel = i === M.sel;
+      uiHit(21, y - 11, 96, 15, () => { M.sel = i; });
       if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.2)'; vctx.fillRect(ox + 21 * scale, oy + (y - 11) * scale, 96 * scale, 15 * scale); vctx.fillStyle = '#b08a3a'; vctx.fillRect(ox + 21 * scale, oy + (y - 11) * scale, Math.max(1, scale * 0.6), 15 * scale); }
       text(o, 69, y, 7.5, sel ? '#f5e3b0' : '#b8ab90', 'center', { weight: sel ? 600 : 400 });
     });
@@ -267,11 +268,15 @@ function renderMenu() {
     text(`Cost ${cost}   ·   Next +1: ${levelCost(lvl)}`, 34, 74, 6.5, cost + levelCost(lvl) <= SAVE.cinders ? '#e6c77a' : '#a08070', 'left', { weight: 400 });
     STATS.forEach((s, i) => {
       const y = 94 + i * 12, sel = i === M.sel, up = M.alloc[s.k] > SAVE.stats[s.k];
+      uiHit(30, y - 9, 150, 12, () => { M.sel = i; }, () => { M.sel = i; });
+      uiHit(144, y - 9, 16, 12, () => { M.sel = i; }, () => { M.sel = i; uiAct('left'); });
+      uiHit(161, y - 9, 18, 12, () => { M.sel = i; }, () => { M.sel = i; uiAct('right'); });
       if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.18)'; vctx.fillRect(ox + 30 * scale, oy + (y - 9) * scale, 150 * scale, 12 * scale); }
       text(s.name, 36, y, 7, sel ? '#f5e3b0' : '#c9bda2', 'left', { weight: sel ? 600 : 500 });
       text((sel ? '◂ ' : '') + M.alloc[s.k] + (sel ? ' ▸' : ''), 172, y, 7, up ? '#7fd08a' : '#e8dcc0', 'right');
     });
     const cy = 94 + STATS.length * 12, cs = M.sel === STATS.length;
+    uiHit(30, cy - 9, 150, 12, () => { M.sel = STATS.length; });
     if (cs) { vctx.fillStyle = 'rgba(176,138,58,0.25)'; vctx.fillRect(ox + 30 * scale, oy + (cy - 9) * scale, 150 * scale, 12 * scale); }
     text('Confirm', 105, cy, 7.5, cs ? '#f5e3b0' : '#b8ab90', 'center');
     const rows = [['HP', d0.maxHp, d.maxHp], ['FP', d0.maxFp, d.maxFp], ['Stamina', d0.maxSt, d.maxSt], ['Light attack', Math.round(d0.light), Math.round(d.light)],
@@ -291,6 +296,8 @@ function renderMenu() {
     icon('flask_red', 130, 92, 20); text(String(r), 140, 128, 10, '#e8dcc0', 'center');
     icon('flask_blue', 234, 92, 20); text(String(SAVE.flaskBlue), 244, 128, 10, '#e8dcc0', 'center');
     text('◂  ▸', W / 2, 108, 9, '#b8ab90', 'center');
+    uiHit(168, 97, 22, 15, null, () => uiAct('left')); uiHit(194, 97, 22, 15, null, () => uiAct('right'));
+    uiHit(124, 88, 32, 44, null, () => uiAct('right')); uiHit(228, 88, 32, 44, null, () => uiAct('left'));   // click a flask to add one of it
     text('Crimson restores HP · Azure restores FP', W / 2, 146, 6, '#b8ab90', 'center', { weight: 400 });
   } else if (M.screen === 'travel') {
     renderTravel(M);

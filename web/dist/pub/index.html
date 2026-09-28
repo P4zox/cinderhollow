@@ -342,6 +342,7 @@ view.addEventListener('mousedown', e => {
   const hadFocus = document.hasFocus();
   grabFocus();
   if (!hadFocus) return;
+  if (typeof uiEatsClick === 'function' && uiEatsClick()) return;   // 63_mouse.js: menu clicks select, they don't swing
   press(e.button === 2 ? 'heavy' : 'attack');
 });
 view.addEventListener('pointerdown', grabFocus);
@@ -11660,6 +11661,7 @@ function renderMenu() {
     box(16, 42, 106, 134);
     SHRINE_OPTS.forEach((o, i) => {
       const y = 62 + i * 19, sel = i === M.sel;
+      uiHit(21, y - 11, 96, 15, () => { M.sel = i; });
       if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.2)'; vctx.fillRect(ox + 21 * scale, oy + (y - 11) * scale, 96 * scale, 15 * scale); vctx.fillStyle = '#b08a3a'; vctx.fillRect(ox + 21 * scale, oy + (y - 11) * scale, Math.max(1, scale * 0.6), 15 * scale); }
       text(o, 69, y, 7.5, sel ? '#f5e3b0' : '#b8ab90', 'center', { weight: sel ? 600 : 400 });
     });
@@ -11694,11 +11696,15 @@ function renderMenu() {
     text(`Cost ${cost}   ·   Next +1: ${levelCost(lvl)}`, 34, 74, 6.5, cost + levelCost(lvl) <= SAVE.cinders ? '#e6c77a' : '#a08070', 'left', { weight: 400 });
     STATS.forEach((s, i) => {
       const y = 94 + i * 12, sel = i === M.sel, up = M.alloc[s.k] > SAVE.stats[s.k];
+      uiHit(30, y - 9, 150, 12, () => { M.sel = i; }, () => { M.sel = i; });
+      uiHit(144, y - 9, 16, 12, () => { M.sel = i; }, () => { M.sel = i; uiAct('left'); });
+      uiHit(161, y - 9, 18, 12, () => { M.sel = i; }, () => { M.sel = i; uiAct('right'); });
       if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.18)'; vctx.fillRect(ox + 30 * scale, oy + (y - 9) * scale, 150 * scale, 12 * scale); }
       text(s.name, 36, y, 7, sel ? '#f5e3b0' : '#c9bda2', 'left', { weight: sel ? 600 : 500 });
       text((sel ? '◂ ' : '') + M.alloc[s.k] + (sel ? ' ▸' : ''), 172, y, 7, up ? '#7fd08a' : '#e8dcc0', 'right');
     });
     const cy = 94 + STATS.length * 12, cs = M.sel === STATS.length;
+    uiHit(30, cy - 9, 150, 12, () => { M.sel = STATS.length; });
     if (cs) { vctx.fillStyle = 'rgba(176,138,58,0.25)'; vctx.fillRect(ox + 30 * scale, oy + (cy - 9) * scale, 150 * scale, 12 * scale); }
     text('Confirm', 105, cy, 7.5, cs ? '#f5e3b0' : '#b8ab90', 'center');
     const rows = [['HP', d0.maxHp, d.maxHp], ['FP', d0.maxFp, d.maxFp], ['Stamina', d0.maxSt, d.maxSt], ['Light attack', Math.round(d0.light), Math.round(d.light)],
@@ -11718,6 +11724,8 @@ function renderMenu() {
     icon('flask_red', 130, 92, 20); text(String(r), 140, 128, 10, '#e8dcc0', 'center');
     icon('flask_blue', 234, 92, 20); text(String(SAVE.flaskBlue), 244, 128, 10, '#e8dcc0', 'center');
     text('◂  ▸', W / 2, 108, 9, '#b8ab90', 'center');
+    uiHit(168, 97, 22, 15, null, () => uiAct('left')); uiHit(194, 97, 22, 15, null, () => uiAct('right'));
+    uiHit(124, 88, 32, 44, null, () => uiAct('right')); uiHit(228, 88, 32, 44, null, () => uiAct('left'));   // click a flask to add one of it
     text('Crimson restores HP · Azure restores FP', W / 2, 146, 6, '#b8ab90', 'center', { weight: 400 });
   } else if (M.screen === 'travel') {
     renderTravel(M);
@@ -12139,6 +12147,8 @@ function renderPauseMenu() {
     panel(92, 30, 200, 16 + SETTING_ROWS.length * rh);
     SETTING_ROWS.forEach((R, i) => {
       const y = 44 + i * rh, sel = i === M.sel;
+      uiHit(97, y - rh + 4, 190, rh - 1, () => { M.sel = i; }, () => { M.sel = i; uiAct(SETTING_ACTIONS.includes(R.k) ? 'confirm' : 'right'); });
+      if (!SETTING_ACTIONS.includes(R.k)) { uiHit(236, y - rh + 4, 22, rh - 1, () => { M.sel = i; }, () => { M.sel = i; uiAct('left'); }); uiHit(259, y - rh + 4, 26, rh - 1, () => { M.sel = i; }, () => { M.sel = i; uiAct('right'); }); }
       if (sel) uiSel(97, y - rh + 4, 190, rh - 1);
       text(R.label, 104, y, 6.8, sel ? '#f5e3b0' : ['guide', 'keys', 'cheats'].includes(R.k) ? UIC.gold : '#d8cdb4', 'left', { weight: sel || R.k === 'guide' ? 600 : 400 });
       if (['guide', 'keys', 'cheats'].includes(R.k)) { text('▸', 280 + (sel ? uiPulse(6) : 0), y, 6.8, UIC.gold, 'right'); uiFade(104, 280, y + rh / 2 - 2.5, UI_RGB.accent, 0.35); }
@@ -12225,6 +12235,7 @@ function renderShop() {
   icon('cinder', 180, 30, 10); text(String(SAVE.cinders), 212, 38, 7, '#e8dcc0', 'right');
   L.forEach((e, i) => {
     const d = ITEMS[e.item], y = 56 + i * 15, sel = i === M.sel, afford = SAVE.cinders >= e.price;
+    uiHit(24, y - 10, 192, 14, () => { M.sel = i; });
     if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 10) * scale, 192 * scale, 14 * scale); }
     icon(d.icon, 28, y - 10, 12);
     text(d.name, 44, y - 1, 6.6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
@@ -12259,6 +12270,7 @@ function renderForge() {
   text(`Emberstones ${SAVE.inv.emberstone || 0}     Cinders ${SAVE.cinders}`, 354, 38, 6.2, '#e8dcc0', 'right');
   L.forEach((id, i) => {
     const w = WEAPONS[id], lv = SAVE.weapons[id], y = 58 + i * 16, sel = i === M.sel;
+    uiHit(24, y - 11, 336, 15, () => { M.sel = i; });
     if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 11) * scale, 336 * scale, 15 * scale); }
     icon('w_' + id, 28, y - 11, 12);
     text(`${w.name}${lv ? ' +' + lv : ''}`, 44, y - 1, 6.6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
@@ -22410,9 +22422,13 @@ function uiHead(label, x, y, w, extra) {   // small section heading with a fadin
   uiFade(x + tw, x + w - (extra ? textW(extra, 4.7, 500) + 4 : 0), y - 1.7, UI_RGB.accent, 0.5);
 }
 function uiFooter(items, y = 211) {   // [[key, label], ...] centred key hints; keys are relabelled for touch screens
-  const parts = items.filter(([k]) => kl(k) !== '').map(([k, l]) => { const K = kl(k), kw = Math.max(7.8, textW(K, 4.8, 600) + 5); return { K, l, kw, w: kw + 2.5 + textW(l, 5, 400) }; });
+  const parts = items.filter(([k]) => kl(k) !== '').map(([k, l]) => { const K = kl(k), kw = Math.max(7.8, textW(K, 4.8, 600) + 5); return { k, K, l, kw, w: kw + 2.5 + textW(l, 5, 400) }; });
   const gap = 8, total = parts.reduce((s, p) => s + p.w, 0) + gap * (parts.length - 1); let x = W / 2 - total / 2;
-  for (const p of parts) { uiKey(p.K, x, y, { size: 4.8 }); text(p.l, x + p.kw + 2.5, y, 5, UIC.faint, 'left', { weight: 400 }); x += p.w + gap; }
+  for (const p of parts) {
+    uiKey(p.K, x, y, { size: 4.8 }); text(p.l, x + p.kw + 2.5, y, 5, UIC.faint, 'left', { weight: 400 });
+    const act = UI_KEY_ACT[p.k]; if (act) uiHit(x - 1, y - 7, p.w + 2, 10, null, () => uiAct(act));   // 63_mouse.js
+    x += p.w + gap;
+  }
 }
 const tabHint = () => (kl('Q') ? [['Q', ''], ['Tab', 'tabs']] : [['Tab', 'tabs']]);
 function uiFit(str, maxW, size, min = 4.5, weight = 600) { let s = size; while (s > min && textW(str, s, weight) > maxW) s -= 0.25; return s; }
@@ -22426,12 +22442,14 @@ function uiTabs(cur) {
   const n = TABS.length, pitch = 80, x0 = W / 2 - pitch * (n - 1) / 2;
   TABS.forEach((t, i) => {
     const x = x0 + i * pitch, sel = i === cur;
+    uiHit(x - 36, 9, 72, 16, null, () => { const M = menu; if (M && M.screen === 'pause' && M.tab !== i) { M.tab = i; M.sel = 0; M.pick = null; sfx.menu(); } });
     text(t.toUpperCase(), x, 18, 6.6, sel ? UIC.hi : UIC.faint, 'center', { spacing: 1.6, weight: sel ? 600 : 500 });
     if (sel) { uiDiamond(x, 22.5, 1.3, UIC.gold); uiFade(x - 3, x - 34, 22.2, UI_RGB.gold, 0.9); uiFade(x + 3, x + 34, 22.2, UI_RGB.gold, 0.9); }
     if (i < n - 1) uiDiamond(x + pitch / 2, 16, 0.9, '#5a4a30');
   });
   if (kl('Q')) { uiKey(kl('Q'), x0 - 44, 18.5, { size: 4.8, align: 'center' }); text('◂', x0 - 36, 18.3, 5, UIC.faint, 'center', { shadow: false }); }
-  const xr = x0 + (n - 1) * pitch + 44; uiKey(kl('Tab'), xr, 18.5, { size: 4.8, align: 'center' }); text('▸', xr - (textW(kl('Tab'), 4.8) + 5) / 2 - 4, 18.3, 5, UIC.faint, 'center', { shadow: false });
+  if (kl('Q')) uiHit(x0 - 54, 10, 22, 12, null, () => uiAct('spell'));
+  const xr = x0 + (n - 1) * pitch + 44; uiHit(xr - 14, 10, 28, 12, null, () => uiAct('map')); uiKey(kl('Tab'), xr, 18.5, { size: 4.8, align: 'center' }); text('▸', xr - (textW(kl('Tab'), 4.8) + 5) / 2 - 4, 18.3, 5, UIC.faint, 'center', { shadow: false });
 }
 
 // ---- gear entries (one shape for weapons, arts, spells, charms, key items and materials)
@@ -22641,6 +22659,10 @@ function renderSlots(M, rows) {
     const Y = top + L.y - M.slotOff; if (Y < top - 14 || Y > bottom) continue;
     if (L.head) { uiHead(L.head, 18, Y + 6.5, 140, L.extra); continue; }
     const r = L.r, sel = L.i === M.sel, e = slotEntry(r);
+    if (Y >= top - 1 && Y + 12 <= bottom + 1) {
+      uiHit(15, Y - 0.5, 146, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; openPicker(M, r); });
+      if (r.k !== 'art') { uiHit(137, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, -1); }); uiHit(150, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, 1); }); }
+    }
     if (sel) uiSel(15, Y - 0.5, 146, 13);
     uiCell(19, Y + 0.5, 11, { eq: false });
     if (!e.empty) icon(e.icon, 20, Y + 1.5, 9);
@@ -22665,6 +22687,7 @@ function renderPicker(K) {
     const id = K.list[i], cx = 18 + (i % PICK_COLS) * 20, cy = 49 + (Math.floor(i / PICK_COLS) - K.off) * 21, sel = i === K.sel;
     const e = id ? gearEntry(kind, id) : null, here = id && (kind === 'weapon' ? SAVE.weapon === id : kind === 'art' ? SAVE.art === id : kind === 'spell' ? SAVE.spellsEq[r.i] === id : SAVE.charmsEq[r.i] === id);
     uiCell(cx, cy, 18, { sel, eq: here });
+    uiHit(cx, cy, 18, 18, () => { K.sel = i; });
     if (!id) { text('✕', cx + 9, cy + 12, 7, UIC.faint, 'center', { shadow: false }); continue; }
     icon(e.icon, cx + 2, cy + 2, 14, e.slot >= 0 && !here ? 0.55 : 1);
     if (kind === 'weapon' && e.lv) uiBadge('+' + e.lv, cx + 18, cy + 18);
@@ -22713,6 +22736,7 @@ function renderInvTab(M) {
   INV_CATS.forEach((c, i) => {
     const x = 18 + i * (140.4 / INV_CATS.length), y = 35, sel = i === M.cat;
     uiCell(x, y, 19, { sel: sel && M.bar });
+    uiHit(x, y, 19, 19, null, () => { if (M.cat !== i) { M.cat = i; M.isel = 0; M.ioff = 0; } M.bar = true; sfx.menu(); });
     icon(c.icon, x + 2.5, y + 2.5, 14, sel ? 1 : 0.42);
     if (sel && !M.bar) { uiHair(x + 1, y + 21, 17, UIC.gold); }
   });
@@ -22725,6 +22749,7 @@ function renderInvTab(M) {
   for (let i = M.ioff * INV_COLS; i < Math.min(L.length, (M.ioff + INV_ROWS) * INV_COLS); i++) {
     const e = L[i], cx = 18 + (i % INV_COLS) * 20, cy = 74 + (Math.floor(i / INV_COLS) - M.ioff) * 21;
     uiCell(cx, cy, 18, { sel: i === M.isel && !M.bar, eq: e.eq });
+    uiHit(cx, cy, 18, 18, () => { M.isel = i; M.bar = false; });
     icon(e.icon, cx + 2, cy + 2, 14);
     if (e.kind === 'weapon' && e.lv) uiBadge('+' + e.lv, cx + 18, cy + 18);
     else if (e.count && e.kind === 'mat') uiBadge(e.count, cx + 18, cy + 18, UIC.text);
@@ -22761,7 +22786,7 @@ const GUIDE_PAGES = [
   { name: 'Weapons', rows: () => [
     [['J'], 'Dagger backstab', 'Daggers: slip behind a foe that faces away and attack to open it up.'],
     [['Space', 'then', 'J'], 'Spear jump thrust', 'Spears: attack while still rising from a jump to dive in point first.'],
-    [['K'], 'Staff spin', 'Staves: the heavy is an instant spin striking both sides; costs 80% stamina.'],
+    [['K'], 'Staff spin', 'Staves: the heavy is an instant spin striking both sides; costs 45% stamina.'],
     [['I', 'then', 'J'], 'Katana counter', 'Katanas: guard counters strike 40% harder and come out faster.'],
     [['K', 'hold'], 'Unflinching heavies', 'Great weapons can’t be interrupted mid-heavy by weaker blows.'],
     [[], 'Boss weapons', 'Weapons taken from great foes carry signature effects; read them in Equipment.'],
@@ -22796,6 +22821,7 @@ function renderGuide(M) {
   const pw = 72, x0 = W / 2 - pw * (GUIDE_PAGES.length - 1) / 2;
   GUIDE_PAGES.forEach((p, i) => {
     const x = x0 + i * pw, sel = i === Gd.page;
+    uiHit(x - 34, 22, 68, 13, null, () => { if (Gd.page !== i) { Gd.page = i; Gd.off = 0; sfx.menu(); } });
     text(p.name.toUpperCase(), x, 30, 5.6, sel ? UIC.hi : UIC.faint, 'center', { spacing: 1.2, weight: sel ? 600 : 500 });
     if (sel) { uiDiamond(x, 33.6, 1.1, UIC.gold); uiFade(x - 3, x - 26, 33.4, UI_RGB.gold, 0.9); uiFade(x + 3, x + 26, 33.4, UI_RGB.gold, 0.9); }
   });
@@ -22969,6 +22995,7 @@ function renderTravel(M) {
   for (const L of lines) {
     const y = top + L.y - M.loff; if (y < top - 13 || y > bot) continue;
     if (L.g) {
+      if (y >= top - 1 && y + 10 <= bot + 1) uiHit(10, y, 120, 11, null, () => { if (L.g !== grp) { M.id = L.g.ids[0]; M.free = false; sfx.menu(); } });
       const on = L.g === grp, an = (AREAS[L.g.biome] ? AREAS[L.g.biome].name : L.g.biome).replace(/^The /, '').toUpperCase();
       if (on) { const k = M.free ? 0 : uiPulse(5); text('◂', 14 - k * 0.7, y + 7.6, 5.4, UIC.gold, 'center', { alpha: M.free ? 0.35 : 1 }); text('▸', 126 + k * 0.7, y + 7.6, 5.4, UIC.gold, 'center', { alpha: M.free ? 0.35 : 1 }); }
       else uiDiamond(15, y + 5.6, 1.2, '#5a4a30');
@@ -22978,6 +23005,7 @@ function renderTravel(M) {
       continue;
     }
     const id = L.id, d = ROOM_BY[id], s = id === M.id, b = shrineBoss(id), here = id === room.id;
+    if (y >= top - 1 && y + 11 <= bot + 1) uiHit(12, y, 116, 11.5, () => { if (M.id !== id) { M.id = id; M.free = false; } });
     if (s) uiSel(12, y, 116, 11.5, !M.free);
     icon('shrine', 17, y + 1.2, 9, s ? 1 : 0.75);
     const nm = d.shrine || d.name; text(nm, 29, y + 8.2, uiFit(nm, (b ? 76 : 90) - (here ? 12 : 0), 5.8, 4.4, s ? 600 : 500), s ? UIC.hi : UIC.body, 'left', { weight: s ? 600 : 500 });
@@ -23023,6 +23051,7 @@ function renderTravel(M) {
       vctx.strokeStyle = '#ffd070'; vctx.lineWidth = Math.max(1, scale * 0.6); vctx.stroke();
     }
     icon('shrine', x - 4.5, y - 7, 9, selS ? 1 : inR ? 0.85 : 0.4);
+    if (x > ib.x && x < ib.x + ib.w && y > ib.y && y < ib.y + ib.h) uiHit(x - 6, y - 8, 12, 11, null, () => { if (M.id === id) uiAct('confirm'); else { M.id = id; sfx.menu(); } });   // click a shrine: pick it, click again: travel
   }
   const px = X(room.def.gx + P.x / TILE), py = Y(room.def.gy + P.y / TILE);
   vctx.fillStyle = Math.sin(time * 8) > 0 ? '#ff5050' : '#ffd0a0'; vctx.fillRect(ox + (px - 1.5) * scale, oy + (py - 3) * scale, 3 * scale, 3 * scale);
@@ -33659,6 +33688,7 @@ function renderSettingsSub(M) {
     panel(72, 38, 240, 18 + CHEAT_ROWS.length * 17);
     CHEAT_ROWS.forEach((R, i) => {
       const y = 54 + i * 17, sel = i === S.sel;
+      uiHit(77, y - 11, 230, 15, () => { S.sel = i; });
       if (sel) uiSel(77, y - 11, 230, 15);
       text(R.label, 86, y, 6.8, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
       if (R.toggle) { const on = !!SETTINGS[R.k]; text((sel ? '◂ ' : '') + (on ? 'On' : 'Off') + (sel ? ' ▸' : ''), 300, y, 6.8, on ? '#ffd070' : '#8a7f6a', 'right', { weight: 600 }); }
@@ -33681,6 +33711,10 @@ function renderSettingsSub(M) {
   for (let r = 0; r < vis && S.off + r < n; r++) {
     const i = S.off + r, [act, label] = rows[i], y = top + 24 + r * rh, sel = i === S.sel;
     if (sel) uiSel(px + 4, y - 10, pw - 8, rh - 1);
+    if (!S.capture) {
+      uiHit(px + 4, y - 10, pw - 8, rh - 1, () => { S.sel = i; }, () => { S.sel = i; if (act === '__reset') uiAct('confirm'); });
+      if (act !== '__reset') for (let c = 0; c < 2; c++) uiHit(px + (c ? 262 : 196) - 16, y - 9, 32, 12, () => { S.sel = i; S.col = c; }, () => { S.sel = i; S.col = c; uiAct('confirm'); });
+    }
     if (act === '__reset') { text(label, px + pw / 2, y, 6.4, sel ? '#f5e3b0' : UIC.gold, 'center', { weight: 600 }); continue; }
     text(label, px + 12, y, 6.2, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     const codes = BINDINGS[act] || [];
@@ -33859,6 +33893,7 @@ function renderPadSub(M) {
   for (let r = 0; r < vis && S.off + r < n; r++) {
     const i = S.off + r, [act, label] = rows[i], y = top + 24 + r * rh, sel = i === S.sel;
     if (sel) uiSel(px + 4, y - 10, pw - 8, rh - 1);
+    if (!S.capture) uiHit(px + 4, y - 10, pw - 8, rh - 1, () => { S.sel = i; });
     if (act === '__reset') { text(label, px + pw / 2, y, 6.4, sel ? '#f5e3b0' : UIC.gold, 'center', { weight: 600 }); continue; }
     text(label, px + 12, y, 6.2, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     let lbl, lit;
@@ -34057,6 +34092,8 @@ function renderGfxSub(M) {
   panel(px, top, pw, 10 + GFX_ROWS.length * rh);
   GFX_ROWS.forEach((R, i) => {
     const y = top + 15 + i * rh, sel = i === S.sel, dim = (R.shader && !on);
+    uiHit(px + 4, y - 9, pw - 8, rh - 1, () => { S.sel = i; }, () => { S.sel = i; uiAct('right'); });
+    uiHit(px + pw - 76, y - 9, 34, rh - 1, () => { S.sel = i; }, () => { S.sel = i; uiAct('left'); });
     if (sel) uiSel(px + 4, y - 9, pw - 8, rh - 1);
     text(R.label, px + 12, y, 6.2, sel ? '#f5e3b0' : dim ? '#7f745f' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     let val;
@@ -42094,6 +42131,65 @@ WSFX.land = function (down, w) {   // after an air/down attack: a soft body thud
   };
 }
 if (typeof window !== 'undefined' && window.__game && window.__game.feel) window.__game.feel.WSFX = WSFX;
+
+// ------------------------------------------------------------------ mouse & touch in menus (shrine, Esc menu and every screen they open)
+// Menu renderers register clickable boxes each frame: uiHit(x, y, w, h, hover, click), in low-res UI coords (W×H).
+//   hover(): the pointer moved onto the box (usually: select that row)
+//   click(): left click / tap; when omitted: hover() and then the confirm action, exactly like Enter
+// Right-click = back, the wheel = ↑/↓. Everything goes through the same actions as the keyboard (uiAct), so menus
+// behave identically whichever device drives them. The skill tree has its own pointer code (58_skilltree_ui.js).
+const UIM = { hits: [], shown: [], x: -1, y: -1, moved: false, overKey: null, wheel: 0, eatT: 0, cursor: false };
+function uiHit(x, y, w, h, hover, click) { UIM.hits.push({ x, y, w, h, hover, click }); }
+function uiAct(a) { press(a); release(a); }
+function uiMouseOn() { return state === 'menu' && !!menu && !(typeof stActive === 'function' && stActive()); }
+function uiEatsClick() { return uiMouseOn() || performance.now() < UIM.eatT; }   // 00_core: menu clicks never become attacks
+function uiPt(e) { const r = view.getBoundingClientRect(), k = view.width / (r.width || 1); return { x: ((e.clientX - r.left) * k - ox) / scale, y: ((e.clientY - r.top) * k - oy) / scale }; }
+function uiHitAt(p) {
+  for (let i = UIM.shown.length - 1; i >= 0; i--) { const h = UIM.shown[i]; if (p.x >= h.x && p.x <= h.x + h.w && p.y >= h.y && p.y <= h.y + h.h) return h; }
+  return null;
+}
+function uiSetCursor(on) { if (on === UIM.cursor) return; UIM.cursor = on; try { view.style.cursor = on ? 'pointer' : ''; } catch (e) {} }
+
+const _uimRenderMenu = renderMenu;
+renderMenu = function () {
+  UIM.hits = [];
+  _uimRenderMenu();
+  UIM.shown = UIM.hits;
+  if (!uiMouseOn()) return;
+  const h = UIM.x >= 0 ? uiHitAt(UIM) : null;
+  if (UIM.moved) {
+    UIM.moved = false;
+    const key = h ? `${Math.round(h.x)},${Math.round(h.y)},${Math.round(h.w)}` : null;
+    if (key !== UIM.overKey) { UIM.overKey = key; if (h && h.hover) h.hover(); }
+  }
+  uiSetCursor(!!h);
+};
+HOOKS.update.push(() => { if (!uiMouseOn()) { if (UIM.cursor && !(typeof stActive === 'function' && stActive())) uiSetCursor(false); UIM.overKey = null; } });
+
+addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
+  const p = uiPt(e);
+  if (Math.abs(p.x - UIM.x) + Math.abs(p.y - UIM.y) > 0.3) { UIM.x = p.x; UIM.y = p.y; UIM.moved = true; }
+});
+view.addEventListener('pointerdown', e => {
+  if (!uiMouseOn()) return;
+  const p = uiPt(e); UIM.x = p.x; UIM.y = p.y; UIM.eatT = performance.now() + 300;
+  if (e.button === 2) { e.preventDefault(); uiAct('back'); return; }
+  if (e.button !== 0) return;
+  const h = uiHitAt(p); if (!h) return;
+  UIM.overKey = `${Math.round(h.x)},${Math.round(h.y)},${Math.round(h.w)}`;
+  if (h.click) h.click(); else { if (h.hover) h.hover(); uiAct('confirm'); }
+});
+view.addEventListener('wheel', e => {
+  if (!uiMouseOn()) return;
+  e.preventDefault();
+  UIM.wheel += e.deltaY * (e.deltaMode === 1 ? 16 : 1);
+  let n = 0;
+  while (Math.abs(UIM.wheel) >= 40 && n++ < 4) { const d = Math.sign(UIM.wheel); UIM.wheel -= d * 40; uiAct(d < 0 ? 'up' : 'down'); }
+}, { passive: false });
+
+// footer key chips: clicking one does what the key does
+const UI_KEY_ACT = { Esc: 'back', Enter: 'confirm', Tab: 'map', Q: 'spell' };
 
 };</script>
 <script>(() => { const SZ = {"assets0.json": 8993238, "assets1.json": 9003178, "assets2.json": 8895459, "assets3.json": 1034973}, got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };

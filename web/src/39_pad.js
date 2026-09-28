@@ -136,6 +136,7 @@ function renderPadSub(M) {
   for (let r = 0; r < vis && S.off + r < n; r++) {
     const i = S.off + r, [act, label] = rows[i], y = top + 24 + r * rh, sel = i === S.sel;
     if (sel) uiSel(px + 4, y - 10, pw - 8, rh - 1);
+    if (!S.capture) uiHit(px + 4, y - 10, pw - 8, rh - 1, () => { S.sel = i; });
     if (act === '__reset') { text(label, px + pw / 2, y, 6.4, sel ? '#f5e3b0' : UIC.gold, 'center', { weight: 600 }); continue; }
     text(label, px + 12, y, 6.2, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     let lbl, lit;

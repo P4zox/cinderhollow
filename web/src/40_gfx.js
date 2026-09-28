@@ -172,6 +172,8 @@ function renderGfxSub(M) {
   panel(px, top, pw, 10 + GFX_ROWS.length * rh);
   GFX_ROWS.forEach((R, i) => {
     const y = top + 15 + i * rh, sel = i === S.sel, dim = (R.shader && !on);
+    uiHit(px + 4, y - 9, pw - 8, rh - 1, () => { S.sel = i; }, () => { S.sel = i; uiAct('right'); });
+    uiHit(px + pw - 76, y - 9, 34, rh - 1, () => { S.sel = i; }, () => { S.sel = i; uiAct('left'); });
     if (sel) uiSel(px + 4, y - 9, pw - 8, rh - 1);
     text(R.label, px + 12, y, 6.2, sel ? '#f5e3b0' : dim ? '#7f745f' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     let val;

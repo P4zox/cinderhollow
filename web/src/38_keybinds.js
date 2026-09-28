@@ -67,6 +67,7 @@ function renderSettingsSub(M) {
     panel(72, 38, 240, 18 + CHEAT_ROWS.length * 17);
     CHEAT_ROWS.forEach((R, i) => {
       const y = 54 + i * 17, sel = i === S.sel;
+      uiHit(77, y - 11, 230, 15, () => { S.sel = i; });
       if (sel) uiSel(77, y - 11, 230, 15);
       text(R.label, 86, y, 6.8, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
       if (R.toggle) { const on = !!SETTINGS[R.k]; text((sel ? '◂ ' : '') + (on ? 'On' : 'Off') + (sel ? ' ▸' : ''), 300, y, 6.8, on ? '#ffd070' : '#8a7f6a', 'right', { weight: 600 }); }
@@ -89,6 +90,10 @@ function renderSettingsSub(M) {
   for (let r = 0; r < vis && S.off + r < n; r++) {
     const i = S.off + r, [act, label] = rows[i], y = top + 24 + r * rh, sel = i === S.sel;
     if (sel) uiSel(px + 4, y - 10, pw - 8, rh - 1);
+    if (!S.capture) {
+      uiHit(px + 4, y - 10, pw - 8, rh - 1, () => { S.sel = i; }, () => { S.sel = i; if (act === '__reset') uiAct('confirm'); });
+      if (act !== '__reset') for (let c = 0; c < 2; c++) uiHit(px + (c ? 262 : 196) - 16, y - 9, 32, 12, () => { S.sel = i; S.col = c; }, () => { S.sel = i; S.col = c; uiAct('confirm'); });
+    }
     if (act === '__reset') { text(label, px + pw / 2, y, 6.4, sel ? '#f5e3b0' : UIC.gold, 'center', { weight: 600 }); continue; }
     text(label, px + 12, y, 6.2, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     const codes = BINDINGS[act] || [];
