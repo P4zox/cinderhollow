@@ -24,7 +24,9 @@ out.push(`gainCinders(100) easy +${gain(0)} normal +${gain(1)} hard +${gain(2)}`
 // --- Hard: the remnant holds half
 E('SAVE.diff = 2; SAVE.remnant = null; SAVE.cinders = 1000; finishDeath()'); G.step(90);
 out.push('hard death with 1000 -> remnant ' + JSON.stringify(G.SAVE.remnant && G.SAVE.remnant.amount));
-E('SAVE.diff = 1; SAVE.remnant = null; SAVE.cinders = 1000; finishDeath()'); G.step(90); out.push('state ' + G.state + ' cinders now ' + G.SAVE.cinders + ' room ' + G.room.id);
+E('SAVE.diff = 0; SAVE.remnant = null; SAVE.cinders = 1000; finishDeath()'); G.step(2);
+out.push('easy death with 1000 -> kept ' + G.SAVE.cinders + ' remnant ' + JSON.stringify(G.SAVE.remnant && G.SAVE.remnant.amount)); G.step(88);
+E('SAVE.diff = 1; SAVE.remnant = null; SAVE.cinders = 1000; finishDeath()'); G.step(2); out.push('normal death with 1000 -> kept ' + G.SAVE.cinders + ' remnant ' + JSON.stringify(G.SAVE.remnant && G.SAVE.remnant.amount)); G.step(88); out.push('state ' + G.state + ' cinders now ' + G.SAVE.cinders + ' room ' + G.room.id);
 out.push('normal death with 1000 -> remnant ' + JSON.stringify(G.SAVE.remnant && G.SAVE.remnant.amount));
 // --- Settings row cycles the mode
 E('openPauseMenu(); menu.tab = 3; menu.sel = SETTING_ROWS.findIndex(r => r.k === "diff")'); G.step(2);

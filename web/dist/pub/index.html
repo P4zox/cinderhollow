@@ -42223,12 +42223,12 @@ const UI_KEY_ACT = { Esc: 'back', Enter: 'confirm', Tab: 'map', Q: 'spell' };
 // ------------------------------------------------------------------ Difficulty mode (per save: SAVE.diff 0 easy · 1 normal · 2 hard)
 // Chosen when a new journey starts (title screen) and changeable in Settings. It sits on top of the journey curve in
 // 59_difficulty.js and New Game+:
-//   Easy   : bosses 0.65x HP / 0.7x damage, other foes 0.8x HP, everything else hurts 0.75x; foes and urns give half the cinders
+//   Easy   : bosses 0.65x HP / 0.7x damage, other foes 0.8x HP, everything else hurts 0.75x; dying drops only half your cinders
 //   Normal : the game as tuned
 //   Hard   : bosses 1.5x HP and 1.5x damage; the cinders you drop on death come back at half when you recover them
 const DIFFS = [
-  { name: 'Easy', bossHp: 0.65, bossDmg: 0.7, foeHp: 0.8, dmg: 0.75, cinders: 0.5,
-    desc: 'Foes are weaker and hit softer. Foes and urns give half the cinders.' },
+  { name: 'Easy', bossHp: 0.65, bossDmg: 0.7, foeHp: 0.8, dmg: 0.75, cinders: 1, keepHalf: true,
+    desc: 'Foes are weaker and hit softer. When you die, you keep half your cinders.' },
   { name: 'Normal', bossHp: 1, bossDmg: 1, foeHp: 1, dmg: 1, cinders: 1,
     desc: 'The journey as it was meant to be walked.' },
   { name: 'Hard', bossHp: 1.5, bossDmg: 1.5, foeHp: 1, dmg: 1, cinders: 1, halfRemnant: true,
@@ -42260,9 +42260,11 @@ HOOKS.update.push(diffRescale);
   }; }
 // cinders from foes, urns and bosses (recovering your own remnant is not affected)
 { const _gain = gainCinders; gainCinders = function (n, ...rest) { const k = diffCfg().cinders; return _gain.call(this, k < 1 ? Math.max(1, Math.round(n * k)) : n, ...rest); }; }
-// Hard: the remnant left where you fell only holds half of what you carried
+// Easy: you keep half of what you carried · Hard: the remnant left where you fell only holds half of it
 { const _fd = finishDeath; finishDeath = function () {
-    _fd();
+    const keep = diffCfg().keepHalf ? Math.floor(SAVE.cinders * 0.5) : 0;   // Easy: only half is left behind
+    SAVE.cinders -= keep; _fd(); SAVE.cinders += keep;
+    if (keep) { toast(`You kept ${keep} cinders`, 3); saveGame(); }
     if (diffCfg().halfRemnant && SAVE.remnant && !SAVE.remnant.halved) {
       SAVE.remnant.orig = SAVE.remnant.amount; SAVE.remnant.amount = Math.floor(SAVE.remnant.amount * 0.5); SAVE.remnant.halved = 1;
       if (SAVE.remnant.amount <= 0) SAVE.remnant = null;
