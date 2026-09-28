@@ -125,7 +125,7 @@ function renderStatusTab(M) {
     if (i % 2 === 0) uiRect(15, y - 6.2, 134, 8.9, 'rgba(176,138,58,0.04)');
     text(k, 20, y, 5.5, '#9a8f78', 'left', { weight: 500 }); text(String(v), 144, y, 5.9, '#e8dcc0', 'right');
   });
-  text(`Skills ${SAVE.skills.length}/${SKILLS.length} · Weapons ${Object.keys(SAVE.weapons).length}/${Object.keys(WEAPONS).length} · Charms ${SAVE.charms.length}/${Object.keys(CHARMS).length}`, 82, 197, 4.4, '#8a7f6a', 'center', { weight: 400 });
+  text(`Skills ${SAVE.skills.length}/${skillMaxLearnable()} · Weapons ${Object.keys(SAVE.weapons).length}/${Object.keys(WEAPONS).length} · Charms ${SAVE.charms.length}/${Object.keys(CHARMS).length}`, 82, 197, 4.4, '#8a7f6a', 'center', { weight: 400 });
   // ---- completion
   const C = sysCompletion(), px = 158, pw = 214;
   panel(px, 30, pw, 172, 0.85);

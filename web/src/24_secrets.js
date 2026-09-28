@@ -354,7 +354,7 @@ class SentinelPart extends BossBase {
   constructor(pair, x, y, idx) {
     super('sentinels', x, y);
     this.pair = pair; this.idx = idx; this.sh = sheet('gilded_sentinel'); this.anim = new Anim(this.sh, 'idle'); this.state = 'idle';
-    this.hp = this.maxHp = this.displayHp = Math.round(1100 * NGP.hp); this.stanceMax = 300; this.critRange = 50;
+    this.hp = this.maxHp = this.displayHp = Math.round(1100 * NGP.hp * bossHpMul('sentinels')); this.stanceMax = 300; this.critRange = 50;
     this.name = idx ? 'Sentinel of the Dusk Gate' : 'Sentinel of the Dawn Gate';
     this.vx = 0; this.vy = 0; this.w = 16; this.h = 50; this.ground = true; this.cool = 0.8 + idx * 0.9; this.face = -1;
   }

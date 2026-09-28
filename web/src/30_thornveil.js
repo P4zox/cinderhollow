@@ -540,7 +540,7 @@ class TvWitch extends BossBase {
     const C_ = TV_COVEN[idx];
     this.coven = coven; this.idx = idx; this.cfg = C_; this.name = C_.name;
     this.sh = sheet(C_.sheet, { meta: ASSETS.coven_meta }); this.anim = new Anim(this.sh, 'chant', true); this.anim.t = rand(0, 500);
-    this.hp = this.maxHp = this.displayHp = Math.round(500 * NGP.hp); this.stanceMax = 170; this.critRange = 48;
+    this.hp = this.maxHp = this.displayHp = Math.round(500 * NGP.hp * bossHpMul('coven')); this.stanceMax = 170; this.critRange = 48;
     this.state = 'idle'; this.cool = 1.2 + idx * 0.7; this.face = -1; this.vx = 0; this.speedK = 1;
   }
   get L() { return 3 * TILE + 10; }

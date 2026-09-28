@@ -283,7 +283,7 @@ function updatePlayer(dt) {
       break;
     }
     case 'wall': {
-      P.vy = Math.min(P.vy + 600 * dt, 55); P.vx = P.wallDir * 10;
+      P.vy = Math.min(P.vy + 600 * dt, has('way_wall') ? 32 : 55); P.vx = P.wallDir * 10;   // 57: Talon Grip
       if (Math.random() < 0.25) spawnFx('wall_dust', P.x + P.wallDir * 6, P.y - 8, P.face);
       if (!wallAt(P, P.wallDir) || (ax && ax !== P.wallDir) || P.ground) { P.wallDir = 0; setP(P.ground ? 'idle' : 'air', P.ground ? 'idle' : 'jump_fall', P.ground); }
       break;
@@ -640,7 +640,7 @@ function hurtPlayer(dmg, dir, id, opt = {}) {
   }
   if (iframes()) {
     if (has('second_wind') && P.state === 'roll' && !P.sw) {
-      P.sw = true; slowmo = 0.55; P.st = D.maxSt; P.empower = 3;
+      P.sw = true; slowmo = 0.55; P.st = Math.min(D.maxSt, P.st + 30); P.empower = 3;   // 57: 30 stamina, no longer the whole bar (v2 tree)
       spawnFx(fxOr('parry_flash', 'parry_spark'), P.x, P.y - 14, P.face, null, { alpha: 0.6 });
       sfx.glint();
     }
@@ -659,7 +659,7 @@ function hurtPlayer(dmg, dir, id, opt = {}) {
   const attacking = !!ATK[P.state] || P.state === 'art';
   const armored = (has('steadfast') && attacking && dmg < D.maxHp * 0.3) || (D.W.armor && ATK[P.state] && ATK[P.state].kind === 'heavy') || (charmOn('c_horn') && attacking && dmg < D.maxHp * 0.35)
     || (P.cryT > 0 && dmg < D.maxHp * 0.3) || (P.state === 'art' && P.artId === 'stormleap')
-    || (P.state === 'art' && ART_IMPL[P.artId] && ART_IMPL[P.artId].armor);   // agent G's hyper-armoured arts
+    || (P.state === 'art' && ART_IMPL[P.artId] && ART_IMPL[P.artId].armor) || skArmored();   // 57: skill-tree hyper armour   // agent G's hyper-armoured arts
   if (guardBroke) { setP('gbreak', pHas('sh_break') ? 'sh_break' : 'hurt', false); P.vx = dir * 110; P.healPending = 0; P.combo = 0; P.spellFired = true; P.gcT = 0; }
   else if (!armored) { setP('hurt', 'hurt'); P.vx = dir * 130; P.vy = P.ground ? -60 : P.vy; P.healPending = 0; P.combo = 0; P.spellFired = true; }
   return true;
@@ -671,16 +671,14 @@ function killPlayer(dir) {
 }
 
 // ---- dealing damage
-function outgoing(base, mult, kind) {
-  let d = base * mult;
-  if (kind !== 'spell' && has('keen_edge')) d *= 1.12;
-  if (has('last_stand') && P.hp < D.maxHp * 0.3) d *= 1.25;
+function outgoing(base, mult, kind, src) {
+  let d = base * mult * skOutMul(kind, src);   // 57_skills.js: every skill-tree damage bonus (src: the projectile, if any)
   if (P.empower > 0) d *= 1.3;
   if (kind !== 'spell') { if (charmOn('c_crest')) d *= 1.1; if (P.cryT > 0) d *= P.cryBig ? 1.3 : 1.2; if (P.fireT > 0) d *= 1.25; }
   return d * rand(0.93, 1.07);
 }
 function bleedAmt(heavy) {
-  const b = (D.W.bleed || 0) + (has('bloodthirst') ? 22 : 0);
+  const b = (D.W.bleed || 0) + (has('bloodthirst') ? 16 : 0);   // 57: tuned for the v2 tree (root node)
   return b * (heavy ? 1.5 : 1) * (charmOn('c_fang') ? 1.5 : 1);
 }
 // v9: scythes hook foes a little toward you; the whip's chain heavy drags small foes all the way in
@@ -717,11 +715,12 @@ function playerStrike(A) {
     const tipCrack = A.crack && Math.abs((hb.x0 + hb.x1) / 2 - P.x) > Math.abs(front) * 0.62;   // whip: the tip cracks harder
     const dmg = outgoing(base, A.mult, 'melee') * (A.counter ? P.counterMul || 1 : 1) * (P.twinBuff ? 1.25 : 1) * (tipCrack ? 1.2 : 1);
     const hdir = A.spin ? ((hb.x0 + hb.x1) / 2 > P.x ? 1 : -1) : P.face;   // the staff spin strikes both sides
-    const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise: A.poise * W.poise * (P.charged ? 1.8 : 1) * (heavy ? 1 + (SAVE.stats.str - 10) * 0.015 : 1), dir: hdir, kind: heavy ? 'heavy' : 'light', charged: heavy && !!P.charged, bleed: bleedAmt(heavy), fire, rotDot: !!W.rot,
+    const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise: A.poise * W.poise * (P.charged ? 1.8 : 1) * (heavy ? 1 + (SAVE.stats.str - 10) * 0.015 : 1) * skPoiseMul(A), dir: hdir, kind: heavy ? 'heavy' : 'light', charged: heavy && !!P.charged, bleed: bleedAmt(heavy), fire, rotDot: !!W.rot,
             x: clamp(A.spin ? (hb.x0 + hb.x1) / 2 : (r.x0 + r.x1) / 2, hb.x0 + 3, hb.x1 - 3), y: clamp(P.y + (A.ys[0] + A.ys[1]) / 2, hb.y0, hb.y1), melee: true, big: heavy || !!A.big || P.state === 'attack3' || P.state === 'attack4' };
     t.hit(info);
     runHooks('strike', t, { dmg, heavy, x: info.x, y: info.y }, A);
     if (A.bash && t.alive && !t.boss && !t.prop && t.breakStance && !(t.cfg && t.cfg.elite) && t.state !== 'stagger') t.breakStance();   // shield bash: most foes reel
+    if (tipCrack && skillOn('m_whip') && t.alive !== false && !t.boss && t.breakStance && !(t.cfg && t.cfg.elite) && t.state !== 'stagger') t.breakStance();   // 57: Cracking Lash
     if (tipCrack) { sfx.parry(); for (let i = 0; i < 6; i++) particles.push({ x: info.x, y: info.y, vx: P.face * rand(20, 90), vy: -rand(10, 70), g: 200, life: 0.3, kind: 'spark' }); }
     if (A.pull || A.chain) weaponPull(t, A);
     if (A.reap && !t.prop && t.alive === false) reapHeal(t);
@@ -784,7 +783,7 @@ function critHit(t) {
   spawnFx('blood', (hb.x0 + hb.x1) / 2, (hb.y0 + hb.y1) / 2, P.face);
   t.hit({ dmg, poise: 0, dir: P.face, kind: 'crit', x: (hb.x0 + hb.x1) / 2, y: (hb.y0 + hb.y1) / 2, melee: true, big: true, crit: true });
   { const sg = SIGS[SAVE.weapon]; if (sg && sg.crit) sg.crit(t, dmg); }
-  if (has('riposte_mastery')) P.hp = Math.min(D.maxHp, P.hp + Math.round(D.maxHp * 0.1));
+  if (has('riposte_mastery')) P.hp = Math.min(D.maxHp, P.hp + Math.round(D.maxHp * 0.05));   // 57: 5% (v2 tree)
 }
 
 // ---- spells
@@ -852,7 +851,7 @@ function cdFrac(kind, id) { const L = cdLeft(kind, id), B = cdBase(kind, id); re
 // ---- weapon arts (swappable; O key)
 function startArt() {
   const id = SAVE.art; if (!id || !ARTS[id]) { toast('No weapon art equipped'); return; }
-  let cost = ARTS[id].fp;
+  let cost = Math.round(ARTS[id].fp * skArtCostMul());   // 57: Kindling
   const echoFree = charmOn('c_echo') && (P.artCount + 1) % 3 === 0;   // Echo of the First Flame: every third art is free
   if (echoFree) cost = 0;
   if (cdLeft('art', id) > 0) { cdDeny('art'); return; }

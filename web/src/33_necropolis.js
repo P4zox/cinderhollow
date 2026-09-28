@@ -463,7 +463,7 @@ class NvExecutioner {
     Object.assign(this, { B, who, T, kind: 'executioners', boss: true, name: T.name, short: T.short, x, y, floor: y, face: who === 'a' ? 1 : -1,
       state: 'idle', cool: 1, t: 0, stance: 0, stanceMax: 240, flash: 0, dmgShown: 0, dmgT: 0, bleed: 0, critRange: 60, speed: 1,
       enraged: false, hitIds: new Set(), fired: {}, chain: 0, role: who === 'a' ? 'press' : 'flank', nextHitAt: -9, air: null, cds: {} });
-    this.hp = this.maxHp = this.displayHp = Math.round(1000 * NGP.hp);
+    this.hp = this.maxHp = this.displayHp = Math.round(1000 * NGP.hp * bossHpMul('executioners'));
     this.sh = sheet(T.sheet, { meta }); this.anim = new Anim(this.sh, 'idle');
   }
   get alive() { return this.state !== 'dead'; }

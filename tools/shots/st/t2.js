@@ -1,0 +1,21 @@
+await boot(); const o = [];
+const settle = (n = 40) => { for (let i = 0; i < n; i++) G.step(1); };
+const S = G.SAVE, K = G.st.SKILLS;
+S.skills = []; S.shards = 2; G.st.open(0); settle(); await snap('a_early');
+G.st.zoom(1); settle(); await snap('b_early_mid');
+G.st.zoom(1); settle(); await snap('c_early_detail');
+S.shards = 18; S.skills = ['keen_edge','heavy_hand','fourth_strike','measured_cut','charged_arts','quickstep','iron_flask','riposte_mastery','deflect','kindled_mind'];
+G.st.open(0); settle(); await snap('d_mid');
+G.st.input('up'); settle(20); G.st.input('confirm'); settle(10); await snap('e_armed');
+G.st.input('confirm'); settle(12); await snap('f_learned');
+G.st.zoom(1); settle(); await snap('g_mid_detail');
+const late = []; for (const s of K) { if (!['blade','blood','veil','way'].includes(s.br)) continue; if (s.slot === 'f1b' || s.slot === 'f2a' || s.id === 'way_hook') continue; late.push(s.id); }
+S.shards = 70; S.skills = late.concat(['m_sword','kindled_mind','deep_well']);
+G.st.open(0); settle(); await snap('h_late');
+G.st.zoom(-1); settle(); await snap('i_late_overview');
+G.st.page(1); settle(); await snap('j_arsenal');
+G.st.input('right'); settle(5); G.st.input('confirm'); settle(4); G.st.input('confirm'); settle(10); await snap('k_arsenal_learn');
+G.st.page(0); G.st.ST.summary = true; settle(5); await snap('l_summary');
+G.st.input('down'); settle(5); await snap('m_summary_scroll');
+o.push(G.st.pts, S.skills.length, G.st.layout().map(p => p.id + ':' + p.nodes.length).join(','));
+return o;

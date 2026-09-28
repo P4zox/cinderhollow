@@ -105,7 +105,7 @@ function updateProjectiles(dt) {
         if (pr.win && (pr.t < pr.win[0] || pr.t > pr.win[1])) continue;
         pr.hits.add(t);
         const hb2 = t.hurtbox();
-        t.hit({ dmg: outgoing(pr.dmg, 1, pr.kind === 'crescent' || pr.kind === 'moonwave' ? 'melee' : 'spell'), poise: pr.poise || (pr.kind === 'crescent' ? 30 : pr.kind === 'mist' ? 0 : 22), dir: sign(pr.vx), kind: 'spell', x: pr.kind === 'mist' ? (hb2.x0 + hb2.x1) / 2 : pr.x, y: pr.kind === 'mist' ? (hb2.y0 + hb2.y1) / 2 : pr.y, big: !['ashbolt', 'mist', 'shard'].includes(pr.kind), quiet: pr.kind === 'mist' });
+        t.hit({ dmg: outgoing(pr.dmg, 1, pr.kind === 'crescent' || pr.kind === 'moonwave' ? 'melee' : 'spell', pr), poise: pr.poise || (pr.kind === 'crescent' ? 30 : pr.kind === 'mist' ? 0 : 22), dir: sign(pr.vx), kind: 'spell', x: pr.kind === 'mist' ? (hb2.x0 + hb2.x1) / 2 : pr.x, y: pr.kind === 'mist' ? (hb2.y0 + hb2.y1) / 2 : pr.y, big: !['ashbolt', 'mist', 'shard'].includes(pr.kind), quiet: pr.kind === 'mist' });
         if (!pr.pierce) { impact(pr); break; }
       }
       hitBreakablesProjectile(pr);

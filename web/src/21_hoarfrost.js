@@ -566,7 +566,7 @@ class TwinKnight {
     Object.assign(this, { B, who, T, kind: 'twins', boss: true, name: T.name, short: T.short, x, y, floor: y, face: who === 'hael' ? 1 : -1,
       state: 'idle', cool: 1.0, t: 0, stance: 0, stanceMax: T.stance, flash: 0, dmgShown: 0, dmgT: 0, bleed: 0, critRange: 46,
       speed: 1, enraged: false, hitIds: new Set(), fired: {}, chain: 0, role: who === 'hael' ? 'press' : 'flank', nextHitAt: -9, air: null });
-    this.hp = this.maxHp = this.displayHp = Math.round(1700 * NGP.hp);
+    this.hp = this.maxHp = this.displayHp = Math.round(1700 * NGP.hp * bossHpMul('twins'));
     this.sheets = [sheet('twins_' + who, { meta }), sheet('twins_' + who + '_p2', { meta })];
     this.sh = this.sheets[0]; this.anim = new Anim(this.sh, 'idle');
   }

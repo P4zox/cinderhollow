@@ -169,7 +169,7 @@ function closeMenu() {
   menu = null; state = 'play'; clearBuffer();
   if (P.state === 'rest') setP('rise', pHas('rise') ? 'rise' : 'idle', false);
 }
-function skillPoints() { return (levelOf(SAVE.stats) - 1) + SAVE.shards - SAVE.skills.reduce((a, id) => a + SKILLS.find(s => s.id === id).cost, 0); }
+function skillPoints() { return skillBudget() - skillSpent(); }   // 57_skills.js: floor((level - 1) / 2) + Memory Shards - spent
 function menuInput(a) {
   if (!menu) return;
   if (menu.screen === 'pause') return pauseInput(a);
@@ -188,9 +188,7 @@ function menuInput(a) {
       else if (o === 'Flasks') menu = { screen: 'flasks', prev: M };
       else if (o === 'Travel') menu = travelOpen(M);
       else if (o === 'Rebirth') {
-        if (!SAVE.skills.length) { toast('You have learned nothing to unlearn'); sfx.deny(); }
-        else if (!(SAVE.inv.tear > 0)) { toast('Rebirth needs a Pale Tear'); sfx.deny(); }
-        else { SAVE.inv.tear--; SAVE.skills = []; SAVE.spellsEq = SAVE.spellsEq.filter(s => SAVE.spellsOwned.includes(s)); if (!SAVE.spellsEq.includes(SAVE.spell)) SAVE.spell = SAVE.spellsEq[0] || null; refreshDerived(); refillFlasks(); sfx.levelup(); flashScreen = 0.4; toast(`Reborn · ${skillPoints()} skill points to spend anew`); saveGame(); }
+        skillRespec('tear');   // 57_skills.js (the Ashwright also offers one free respec per journey)
       }
       else closeMenu();
     }
@@ -211,20 +209,6 @@ function menuInput(a) {
       }
       menu = M.prev;
     } else if (back) menu = M.prev;
-  } else if (M.screen === 'tree') {
-    if (a === 'left') { M.br = (M.br + 2) % 3; sfx.menu(); } else if (a === 'right') { M.br = (M.br + 1) % 3; sfx.menu(); }
-    else if (a === 'up') { M.t = (M.t + 4) % 5; sfx.menu(); } else if (a === 'down') { M.t = (M.t + 1) % 5; sfx.menu(); }
-    else if (back) menu = M.prev;
-    else if (conf) {
-      const s = SKILLS.find(k => k.br === M.br && k.t === M.t);
-      const prereq = s.t === 0 || SAVE.skills.includes(SKILLS.find(k => k.br === s.br && k.t === s.t - 1).id);
-      if (SAVE.skills.includes(s.id)) { if (SPELLS[s.id]) { autoEquipSpell(s.id); SAVE.spell = SAVE.spellsEq.includes(s.id) ? s.id : SAVE.spell; toast(SAVE.spellsEq.includes(s.id) ? `${s.name} equipped` : 'Spell slots full — change them in the menu'); sfx.menu(); } return; }
-      if (!prereq || skillPoints() < s.cost) { sfx.deny(); return; }
-      SAVE.skills.push(s.id); sfx.levelup(); refreshDerived();
-      if (s.id === 'iron_flask') P.flasksR++;
-      if (SPELLS[s.id]) autoEquipSpell(s.id);
-      M.flash = 1; saveGame();
-    }
   } else if (M.screen === 'flasks') {
     const n = flaskMax();
     if (a === 'left' && SAVE.flaskBlue < n) { SAVE.flaskBlue++; sfx.menu(); }
@@ -300,40 +284,10 @@ function renderMenu() {
     });
     if (M.sel < STATS.length) text(STATS[M.sel].desc, 214, 172, 6, '#c9bda2', 'left', { weight: 400 });
     text('↑↓ stat · ←→ adjust · confirm to commit · Esc back', 34, 188, 5.5, '#8a7f6a', 'left', { weight: 400 });
-  } else if (M.screen === 'tree') {
-    box(14, 14, 356, 188);
-    text('SKILL TREE', 28, 30, 9, '#e6c77a', 'left', { spacing: 1.5 });
-    const pts = skillPoints();
-    text(`${pts} point${pts === 1 ? '' : 's'} available`, 356, 30, 7, pts ? '#ffd070' : '#b8ab90', 'right');
-    BRANCHES.forEach((b, bi) => {
-      const x = 40 + bi * 60;
-      text(b, x + 12, 46, 7, M.br === bi ? '#f5e3b0' : '#b8ab90', 'center');
-      for (let t = 0; t < 5; t++) {
-        const s = SKILLS.find(k => k.br === bi && k.t === t), y = 52 + t * 28, got = SAVE.skills.includes(s.id);
-        const prereq = t === 0 || SAVE.skills.includes(SKILLS.find(k => k.br === bi && k.t === t - 1).id);
-        if (t > 0) { vctx.fillStyle = got ? '#b08a3a' : '#3a3228'; vctx.fillRect(ox + (x + 11.5) * scale, oy + (y - 4) * scale, Math.max(1, scale), 4 * scale); }
-        nodeFrame(x, y, got ? 1 : prereq ? 0.85 : 0.4);
-        icon(s.id, x + 4, y + 4, 16, got ? 1 : prereq ? 0.55 : 0.2);
-        if (M.br === bi && M.t === t) {
-          vctx.strokeStyle = `rgba(255,220,140,${0.6 + 0.4 * Math.sin(time * 6)})`; vctx.lineWidth = Math.max(1, scale * 0.7);
-          vctx.strokeRect(ox + (x - 2) * scale, oy + (y - 2) * scale, 28 * scale, 28 * scale);
-        }
-        if (!got) text(String(s.cost), x + 26, y + 23, 5.5, prereq && pts >= s.cost ? '#ffd070' : '#6a6050', 'left');
-      }
-    });
-    const s = SKILLS.find(k => k.br === M.br && k.t === M.t), got = SAVE.skills.includes(s.id);
-    const prereq = s.t === 0 || SAVE.skills.includes(SKILLS.find(k => k.br === s.br && k.t === s.t - 1).id);
-    box(226, 44, 136, 146, 0.6);
-    text(s.name, 234, 60, 8.5, '#e6c77a');
-    text(got ? 'Learned' : `Cost ${s.cost}`, 234, 72, 6.5, got ? '#7fd08a' : '#e8dcc0', 'left', { weight: 500 });
-    wrap(s.desc, 120, 6.5).forEach((l, i) => text(l, 234, 88 + i * 9, 6.5, '#d8cdb4', 'left', { weight: 400 }));
-    const hint = got ? (SPELLS[s.id] ? (SAVE.spellsEq.includes(s.id) ? 'Equipped' : 'Confirm to equip') : '') : !prereq ? 'Requires the skill above' : pts < s.cost ? 'Not enough points' : 'Confirm to learn';
-    text(hint, 234, 180, 6.5, '#b8ab90', 'left', { weight: 400 });
-    text('Points: 1 per level gained, plus Memory Shards', 28, 196, 5.5, '#8a7f6a', 'left', { weight: 400 });
   } else if (M.screen === 'flasks') {
     box(92, 60, 200, 96);
     text('FLASK ALLOTMENT', W / 2, 78, 8, '#e6c77a', 'center', { spacing: 1 });
-    const n = flaskMax(), r = n - SAVE.flaskBlue;
+    const n = flaskMax(), r = Math.max(0, n - SAVE.flaskBlue - (has('crimson_pact') ? 1 : 0));   // 57: Crimson Pact
     icon('flask_red', 130, 92, 20); text(String(r), 140, 128, 10, '#e8dcc0', 'center');
     icon('flask_blue', 234, 92, 20); text(String(SAVE.flaskBlue), 244, 128, 10, '#e8dcc0', 'center');
     text('◂  ▸', W / 2, 108, 9, '#b8ab90', 'center');
@@ -648,8 +602,11 @@ function renderEnding() {
     venn: ['THE EMBER UNBOUND', 'You carry the last flame of the Hallow.', 'Every other light has gone out.'] }[E] || ['THE ASH IS STILL', 'The Pale Sovereign falls, and the Root dims to embers.', 'The Sunken Hallow is yours to wander.'];
   text(T[0], W / 2, 60, 16, '#e6c77a', 'center', { alpha: a, spacing: 3 });
   const lines = [T[1], T[2], '',
-    `Level ${levelOf(SAVE.stats)}   ·   Deaths ${SAVE.deaths}   ·   ${fmtTime(SAVE.playTime)}`, `Skills learned ${SAVE.skills.length} / ${SKILLS.length}   ·   Secrets ${['C2s', 'K3s', 'H1', 'E1', 'A7'].filter(r => SAVE.visited[r]).length} / 5`,
+    `Level ${levelOf(SAVE.stats)}   ·   Deaths ${SAVE.deaths}   ·   ${fmtTime(SAVE.playTime)}`, `Skills learned ${SAVE.skills.length} / ${skillMaxLearnable()}   ·   Secrets ${['C2s', 'K3s', 'H1', 'E1', 'A7'].filter(r => SAVE.visited[r]).length} / 5`,
     'To begin a new journey, sit upon the Pale Throne.', 'Thank you for playing Cinderhollow.'];
   lines.forEach((l, i) => text(l, W / 2, 86 + i * 12, 7, '#d8cdb4', 'center', { alpha: a, weight: 400 }));
   if (stateT > 2.5) text('Press Enter to keep exploring', W / 2, 190, 6.5, '#b8ab90', 'center', { alpha: clamp(stateT - 2.5, 0, 1) });
 }
+
+// fork partners exclude each other, so the most you can hold at once is fewer than the node count
+function skillMaxLearnable() { return SKILLS.length - SKILLS.filter(k => k.excl && k.excl.length).length / 2; }

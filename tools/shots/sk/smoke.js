@@ -1,0 +1,15 @@
+await boot();
+const E = G.sk.ev, out = {};
+out.spells = E('[SAVE.spellsOwned, SAVE.spellsEq, SAVE.spell, SAVE.skillv, SAVE.freeRespec]');
+G.give({ stats: { vig: 30, mnd: 20, end: 25, str: 25, dex: 25, fth: 20 }, shards: 60 });
+out.pts = G.sk.skillPoints();
+const tryL = id => G.sk.learnSkill(id);
+out.l1 = tryL('fourth_strike'); out.l2 = tryL('keen_edge'); out.l3 = tryL('fourth_strike'); out.l4 = tryL('measured_cut'); out.l5 = tryL('flowing_form');
+out.l6 = tryL('way_hook');
+out.sum = G.sk.skillBuildSummary();
+for (const s of G.sk.SKILLS) G.sk.learnSkill(s.id);
+out.all = G.SAVE.skills.length + ' pts ' + G.sk.skillPoints();
+G.tp('R2', 10, 10);
+for (let i = 0; i < 20; i++) G.step(10, ['right'], i % 2 ? ['attack'] : ['roll']);
+out.stats = G.sk.SKILLS.filter(s => s.stat).map(s => { try { return s.id + ':' + JSON.stringify(s.stat()); } catch (e) { return s.id + ' ERR ' + e; } }).filter(x => /ERR|null|NaN|undefined/.test(x));
+return out;

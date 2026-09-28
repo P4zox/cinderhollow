@@ -48,7 +48,7 @@ function tryHook() {
   let best = null, bd = 1e9;
   for (const h of room.hooks) {
     const dx = h.x - P.x, dy = h.y - (P.y - 20), d = Math.hypot(dx, dy);
-    if (d > HOOK_RANGE || dy > 30) continue;
+    if (d > HOOK_RANGE * (has('way_hook') ? 1.35 : 1) || dy > 30) continue;   // 57: Long Root
     const score = d - (Math.sign(dx) === P.face ? 40 : 0);
     if (score < bd && lineOfSight(P.x, P.y - 22, h.x, h.y + 6)) { bd = score; best = h; }
   }
@@ -105,7 +105,7 @@ function drawHookLine() {
 function canGlide() { return SAVE.items.gale && P.state === 'air' && held.has('jump') && P.vy > 20 && !P.dj; }
 function updateGlide(dt) {
   const ax = inputX();
-  P.vx = approach(P.vx, ax * (charmOn('c_feather') ? 150 : 135), 520 * dt);
+  P.vx = approach(P.vx, ax * (charmOn('c_feather') ? 150 : 135) * (has('way_glide') ? 1.25 : 1), 520 * dt);   // 57: Tailwind
   if (ax) P.face = ax;
   const up = inUpdraft(P);
   const fe = charmOn('c_feather');   // Stormcrow Feather: longer, floatier glides
