@@ -8,7 +8,8 @@
 // hazards and tiers run as at home) while the chamber still draws, lights and sounds like the white chamber.
 const TRAINING = { on: false };
 const TRN = { real: null, killed: null, settings: null, timers: new Set(), blocked: [], base: {}, ohk: false, hitbox: false, freeze: false, ts: 1,
-  count: 1, last: null, id: 0, tab: 0, step: 1, arena: 'home' };
+  count: 1, last: null, id: 0, tab: 0, step: 1, arena: 'home', stay: true };
+const TRN_COUNTS = [1, 3, 5, 10, 20], TRN_FOE_CAP = 80;   // summoned foes alive at once, at most
 const TRN_ROOMS = ['TR1', 'TR2'];
 for (const id of TRN_ROOMS) if (ROOM_BY[id]) TRN.base[id] = ROOM_BY[id];
 const trnRoom = R => !!(R && TRN.base[R.id]);                     // a training chamber (masked or not)
@@ -412,13 +413,20 @@ function trnFloorY(x) {   // the floor under x (px), from the player's height do
   for (let ty = Math.max(1, Math.floor((P.y - 1) / TILE)); ty < room.h; ty++) if (isSolidT(tileAt(tx, ty)) || tileAt(tx, ty) === T_PLAT) return ty * TILE;
   return 19 * TILE;
 }
+const trnFoesAlive = () => enemies.filter(e => e.trn && e.alive !== false).length;
 function trnSpawnEnemy(type, n = TRN.count) {
   if (TRN_ENEMY_NOTE[type]) { sfx.deny(); toast(TRN_ENEMY_NOTE[type], 3); return 0; }
-  menu = null; state = 'play'; clearBuffer();
+  n = Math.min(n, TRN_FOE_CAP - trnFoesAlive());
+  if (n <= 0) { sfx.deny(); toast(`The chamber holds ${TRN_FOE_CAP} foes at most. Clear some first.`, 2.6); return 0; }
+  const fromPanel = state === 'menu';
+  if (!(TRN.stay && fromPanel)) { menu = null; state = 'play'; } clearBuffer();
   let made = 0;
   for (let i = 0; i < n; i++) {
-    let x = P.x + P.face * (80 + i * 26);
-    if (x < 3 * TILE || x > room.pw - 3 * TILE) x = P.x - P.face * (80 + i * 26);
+    // alternate sides, stepping outward; once a side is full, anywhere in the chamber that is not on top of you
+    const side = (i % 2 ? -1 : 1) * P.face, step = Math.floor(i / 2);
+    let x = P.x + side * (80 + step * 26);
+    if (x < 3 * TILE || x > room.pw - 3 * TILE) x = P.x - side * (80 + step * 26);
+    if (x < 3 * TILE || x > room.pw - 3 * TILE) { x = rand(3 * TILE, room.pw - 3 * TILE); if (Math.abs(x - P.x) < 56) x += (x < P.x ? -1 : 1) * 64; }
     x = clamp(x, 2 * TILE, room.pw - 2 * TILE);
     for (let k = 0; k < 8 && isSolidT(tileAt(Math.floor(x / TILE), Math.floor((P.y - 8) / TILE))); k++) x += (x < P.x ? 1 : -1) * TILE;
     const key = 'trn:' + (++TRN.id);
@@ -427,8 +435,10 @@ function trnSpawnEnemy(type, n = TRN.count) {
     spawnFx(fxOr('parry_spark', 'hit'), e.x, e.y - 12, 1);
   }
   sfx.glint();
+  if (fromPanel && TRN.stay) toast(`Summoned ×${made}  ·  ${trnFoesAlive()} foes in the chamber`, 1.8);
   return made;
 }
+function trnClearFoes() { enemies = enemies.filter(e => !e.trn || e.dummy); toast('Foes cleared', 1.4); }
 function trnClear() {
   boss = null; hazards = []; projectiles = projectiles.filter(p => p.owner === 'player');
   enemies = enemies.filter(e => e.dummy && !e.trn); darkT = 0; victoryBanner = null; bossBanner = null;
@@ -515,10 +525,14 @@ function trnRows(M) {
     for (const id of SAVE.skills) { const s = SKILL_BY[id]; if (s) R.push({ label: s.name, info: true, val: () => s.cost + ' pt', desc: s.desc || '' }); }
   } else if (M.tab === 4) {
     head('Summon');
-    R.push({ label: 'Count', val: () => '×' + TRN.count, lr: d => { const o = [1, 3, 5]; TRN.count = o[(o.indexOf(TRN.count) + (d > 0 ? 1 : 2)) % 3]; }, conf: () => { const o = [1, 3, 5]; TRN.count = o[(o.indexOf(TRN.count) + 1) % 3]; }, desc: 'How many foes each summon brings (bosses always come alone).' });
+    const cyc = d => { const o = TRN_COUNTS, i = Math.max(0, o.indexOf(TRN.count)); TRN.count = o[(i + d + o.length) % o.length]; };
+    R.push({ label: 'Count', val: () => '×' + TRN.count, lr: d => cyc(d > 0 ? 1 : -1), conf: () => cyc(1), desc: `How many foes each summon brings: ×1 up to ×20 (at most ${TRN_FOE_CAP} alive at once). Bosses always come alone.` });
+    R.push(trnToggleRow('Keep panel open', () => TRN.stay, v => { TRN.stay = v; }, 'On: summoning a foe keeps this panel open, so you can call in several kinds in a row. Close the panel to fight. Bosses always close it.'));
+    R.push({ label: 'Foes in the chamber', info: true, val: () => String(trnFoesAlive()), desc: 'Summon a boss first, then call foes in beside it: summoning a boss re-builds the arena and sends the foes away.' });
     R.push({ label: 'Boss arena', val: () => TRN.arena === 'home' ? 'Home layout' : 'Flat chamber', lr: () => { TRN.arena = TRN.arena === 'home' ? 'flat' : 'home'; }, conf: () => { TRN.arena = TRN.arena === 'home' ? 'flat' : 'home'; },
       desc: 'Home layout: the boss\'s own arena shape, walls and floors (as the white chamber). Flat chamber: the wide open arena; a few bosses built around their arena always use their layout.' });
     R.push(trnToggleRow('Freeze AI', () => TRN.freeze, v => { TRN.freeze = v; }, 'Foes and bosses stand still: study hitboxes, test combos, measure damage.'));
+    R.push({ label: 'Clear foes', act: true, conf: trnClearFoes, desc: 'Remove every summoned foe; a boss stays.' });
     R.push({ label: 'Clear all', act: true, conf: () => { trnClear(); trnClose(); }, desc: 'Remove every summoned foe and boss.' });
     if (TRN.last) R.push({ label: `Summon again: ${BOSS_INFO[TRN.last] ? BOSS_INFO[TRN.last].name : TRN.last}`, act: true, conf: () => trnSummonBoss(TRN.last), desc: 'The last boss, fresh.' });
     R.push({ label: 'Training dummy', enemy: 'trn_dummy', val: () => 'dummy', conf: () => trnSpawnEnemy('trn_dummy'), desc: 'Another dummy beside you: damage numbers and DPS, never dies.' });
@@ -532,7 +546,7 @@ function trnRows(M) {
     for (const E of trnEnemies()) {
       if (E.region !== reg) { reg = E.region; head('Foes · ' + reg); }
       R.push({ label: E.name, enemy: E.type, dis: !!TRN_ENEMY_NOTE[E.type], val: () => TRN_ENEMY_NOTE[E.type] ? 'n/a' : E.elite ? '★ elite' : E.fly ? 'flying' : '', conf: () => trnSpawnEnemy(E.type),
-        desc: TRN_ENEMY_NOTE[E.type] || `HP ${ENEMY[E.type].hp}${E.elite ? '  ·  elite' : ''}${E.fly ? '  ·  flying' : ''}. Summons ×${TRN.count} beside you.` });
+        desc: TRN_ENEMY_NOTE[E.type] || `HP ${ENEMY[E.type].hp}${E.elite ? '  ·  elite' : ''}${E.fly ? '  ·  flying' : ''}. Summons ×${TRN.count} around you.` });
     }
   } else {
     head('Rules');
