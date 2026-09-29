@@ -86,13 +86,33 @@ for _n, _e in bundle.items():
     if not _n.endswith("_meta") and "png" in _e: regrid(_n, _e)
 src_dir = os.path.join(HERE, "src")
 game = "\n".join(open(os.path.join(src_dir, f)).read() for f in sorted(os.listdir(src_dir)) if f.endswith(".js"))
+# RELEASE=1 (published builds): drop every debug handle (window.__game, __db, __sys ...) once the game has started and
+# minify, so nothing of the running game is reachable from the browser console. Test builds keep the handles.
+RELEASE = bool(os.environ.get("RELEASE"))
+if RELEASE:
+    game += ("\n;(() => { try { for (const k of Object.getOwnPropertyNames(window)) if (k.startsWith('__') && k !== '__loadProgress' && k !== '__loadDone')"
+             " { try { delete window[k]; } catch (e) {} try { if (window[k] !== undefined) window[k] = undefined; } catch (e) {} } } catch (e) {} })();\n")
+
+
+def minify(src):
+    if not RELEASE:
+        return src
+    import subprocess, tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as t:
+        t.write(src); tp = t.name
+    r = subprocess.run(["npx", "--yes", "terser@5.31.6", tp, "--mangle", "--ecma", "2020", "--comments", "false"],
+                       capture_output=True, text=True, cwd=tempfile.gettempdir())
+    os.unlink(tp)
+    if r.returncode != 0 or not r.stdout.strip():
+        raise SystemExit("minify failed: " + r.stderr[:2000])
+    return r.stdout
 shell = open(os.path.join(HERE, "shell.html")).read()
 os.makedirs(os.path.join(HERE, "dist"), exist_ok=True)
 out = os.environ.get("BUILD_OUT") or os.path.join(HERE, "dist", "index.html")   # agents: BUILD_OUT=web/dist/<name>.html
 with open(out, "w") as fh:
     fh.write(shell)
     fh.write("\n<script>const ASSETS = " + json.dumps(bundle, separators=(",", ":")) + ";</script>\n")
-    fh.write("<script>\n(() => {\n" + game + "\n})();\n</script>\n")
+    fh.write("<script>\n" + minify("(() => {\n" + game + "\n})();") + "\n</script>\n")
 print("wrote", out, f"{os.path.getsize(out) / 1024:.0f} KB;", len(bundle), "assets")
 
 # publish build (SPLIT=1): page + asset chunks fetched at startup, so the page stays under the artifact's 16 MB file limit
@@ -109,7 +129,7 @@ if os.environ.get("SPLIT"):
     for i, c in enumerate(chunks):
         fn = f"assets{i}.json"; names.append(fn)
         open(os.path.join(pub, fn), "w").write(json.dumps(c, separators=(",", ":")))
-    loader = ("<script>let ASSETS = null;</script>\n<script>window.__startGame = () => {\n" + game + "\n};</script>\n"
+    loader = ("<script>let ASSETS = null;</script>\n<script>" + minify("window.__startGame = () => {\n" + game + "\n};") + "</script>\n"
               "<script>(() => { const SZ = " + json.dumps({fn: os.path.getsize(os.path.join(pub, fn)) for fn in names}) + ", got = {}, tot = {}; const upd = () => { const g = Object.values(got).reduce((a, b) => a + b, 0), t = Object.values(tot).reduce((a, b) => a + b, 0) || 1; window.__loadProgress && window.__loadProgress(0.9 * g / t, 'Kindling the ashes… ' + Math.round(100 * g / t) + '%'); };\n"
               "const get = async u => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); tot[u] = SZ[u] || 5e6; got[u] = 0;"
               " if (!r.body || !r.body.getReader) { const j = await r.json(); got[u] = tot[u]; upd(); return j; }"
