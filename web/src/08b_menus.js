@@ -44,7 +44,7 @@ const SETTING_ROWS = [
   { k: 'guide', label: 'Controls & techniques' }, { k: 'keys', label: 'Key bindings' }, { k: 'pad', label: 'Controller' }, { k: 'gfx', label: 'Graphics & shaders' },
   { k: 'music', label: 'Music volume', step: 0.1 }, { k: 'sfx', label: 'Effects volume', step: 0.1 },
   { k: 'diff', label: 'Difficulty' }, { k: 'shake', label: 'Screen shake', step: 0.5 }, { k: 'numbers', label: 'Damage numbers', toggle: true },
-  { k: 'cheats', label: 'Cheats (test)' }, { k: 'quit', label: 'Save & quit to title' },
+  { k: 'cheats', label: 'Cheats (test)' }, { k: 'adapt', label: 'Bosses match my strength', toggle: true }, { k: 'quit', label: 'Save & quit to title' },
 ];
 
 const SETTING_ACTIONS = ['guide', 'keys', 'pad', 'gfx', 'cheats', 'quit'];
