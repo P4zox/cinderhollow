@@ -750,11 +750,16 @@ class Colossus extends BossBase {
     }
     this.chip(info);
     if ((part.name === 'knee_n' || part.name === 'knee_f') && !this.exposed && this.state !== 'shed' && this.state !== 'rising') {
-      const amt = info.kind === 'heavy' ? (info.charged ? 24 : 15) : info.kind === 'spell' ? 4 : 8;
-      this.topple += amt * (info.big && info.kind !== 'heavy' ? 1.3 : 1); this.toppleIdle = 0;
+      // leg damage follows the weight of the blow (its poise): a dagger jab ~2, a sword cut ~4, heavies 8-11, a charged great weapon ~19
+      const amt = info.kind === 'spell' ? 2.5 : clamp(4 * Math.sqrt(Math.max(1, info.poise || 12) / 12), 1.5, 22);
+      this.topple += amt; this.toppleIdle = 0;
       spawnFx('hit', info.x, info.y, info.dir, null, { tint: '#ff8a30' });
-      if (this.topple >= COL_TOPPLE) this.doTopple();
+      if (this.topple >= this.toppleMax()) this.doTopple();
     }
+  }
+  toppleMax() {   // grows with every fall (x2 at most) and with the boss's HP scaling (difficulty, strength-matching)
+    const adapt = typeof adaptCur !== 'undefined' && adaptCur.kind === 'colossus' ? adaptCur.hp : 1, diff = typeof diffCfg === 'function' ? diffCfg().bossHp : 1;
+    return COL_TOPPLE * Math.min(2, 1 + 0.3 * this.topples) * Math.sqrt(adapt * diff);
   }
   doTopple() {
     this.topple = 0; this.topples++; this.air = null; this.breathing = null; this.critDone = false; this.chain = 0;
@@ -1045,7 +1050,7 @@ class Colossus extends BossBase {
       const h = this.pt(f.heart), ex = this.exposed;
       addLight(h.x, h.y, ex ? 90 + Math.sin(time * 8) * 8 : p2 ? 70 : 40, '255,190,90', 1);
       if (Math.random() < (p2 ? 0.8 : 0.35)) particles.push({ x: this.x + rand(-60, 60), y: this.y - rand(20, 150), vx: rand(-6, 6), vy: -rand(20, 50), life: rand(0.6, 1.4), kind: Math.random() < 0.6 ? 'ember' : 'fire' });
-      if (this.topple > 30 && !ex) for (const n of ['knee_n', 'knee_f']) { const r = this.partRect(n); if (r) addLight((r.x0 + r.x1) / 2, r.y0 + 10, 26 + this.topple * 0.3, '255,140,50', this.topple / 110); }
+      if (this.topple > 30 && !ex) for (const n of ['knee_n', 'knee_f']) { const r = this.partRect(n); if (r) addLight((r.x0 + r.x1) / 2, r.y0 + 10, 26 + this.topple * 0.3, '255,140,50', this.topple / (this.toppleMax() * 1.1)); }
     }
   }
   draw() {
@@ -1064,7 +1069,7 @@ class Colossus extends BossBase {
     }
     // topple meter drawn on the legs: glowing cracks that spread as the legs are battered
     if (f && this.alive && this.topple > 0 && !this.exposed) for (const n of ['knee_n', 'knee_f']) {
-      const r = this.mrect(f.parts[n]), k = this.topple / COL_TOPPLE, cx = (r.x0 + r.x1) / 2, cy = (r.y0 + r.y1) / 2;
+      const r = this.mrect(f.parts[n]), k = this.topple / this.toppleMax(), cx = (r.x0 + r.x1) / 2, cy = (r.y0 + r.y1) / 2;
       const segs = Math.ceil(k * 9);
       for (let s = 0; s < segs; s++) {
         const a = hash2(s, n.length) * 6.28, L = 4 + hash2(s, 7) * 10 * k, x0 = cx + (hash2(s, 3) - 0.5) * 10, y0 = cy + (hash2(s, 5) - 0.5) * 14;
@@ -1089,7 +1094,7 @@ class Colossus extends BossBase {
 HOOKS.hud.push(() => {   // the topple meter / core window under the Colossus's health bar
   if (!boss || boss.kind !== 'colossus' || !boss.active || !boss.alive) return;
   if (boss.exposed) { const k = boss.state === 'toppled' ? clamp(boss.t / (boss.phase === 2 ? 4.4 : 5.4), 0, 1) : 0; bar(156, 208, 90, 1.5, k, 0, '#ffe08a'); text('CORE EXPOSED', 250, 210, 4.8, '#ffe08a', 'left', { weight: 700 }); return; }
-  bar(156, 208, 90, 1.5, boss.topple / COL_TOPPLE, 0, boss.topple > 70 ? '#ffb040' : '#c0561c');
+  bar(156, 208, 90, 1.5, boss.topple / boss.toppleMax(), 0, boss.topple > boss.toppleMax() * 0.7 ? '#ffb040' : '#c0561c');
   text('topple — strike its legs', 250, 210, 4.5, '#d8a060', 'left', { weight: 500 });
 });
 BOSS_SPAWN.colossus = (cx, fy) => new Colossus(cx, fy);
