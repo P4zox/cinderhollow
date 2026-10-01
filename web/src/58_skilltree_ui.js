@@ -750,7 +750,7 @@ function stDetail(pg) {
   if (st === 'learned') { const dor = s.cls && s.cls !== cls; stTxt = dor ? 'Learned · dormant' : 'Learned'; stCol = dor ? UIC.dim : UIC.up; }
   else if (st === 'sealed') { stTxt = 'Sealed by your choice'; stCol = '#e07a70'; }
   else if (st === 'locked') { stTxt = `Locked · ${s.cost} pt${s.cost === 1 ? '' : 's'}`; stCol = UIC.faint; }
-  else { stTxt = `${s.cost} point${s.cost === 1 ? '' : 's'}`; stCol = pts >= s.cost ? '#ffd070' : UIC.muted; }
+  else { stTxt = `${s.cost} point${s.cost === 1 ? '' : 's'}` + (s._base !== undefined && s.cost > s._base ? ` (base ${s._base}, +${s.cost - s._base} for skills known)` : ''); stCol = pts >= s.cost ? '#ffd070' : UIC.muted; }
   text(stTxt, x + 28, y + (nl.length > 1 ? 24.5 : 21), 5, stCol, 'left', { weight: 500 });
   y += 30;
   uiFade(x, x + w, y - 2, UI_RGB.accent, 0.55);

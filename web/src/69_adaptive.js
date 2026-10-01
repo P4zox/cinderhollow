@@ -1,6 +1,6 @@
 // ------------------------------------------------------------------ Bosses rise to meet you (SETTINGS.adapt, on by default)
 // The journey curve (59_difficulty.js) assumes a typical build at each boss: level 5 + 6 per stage, the weapon at
-// +min(5, stage/2), about 65% of the skill tree by the end. When a boss appears it measures YOUR build against that:
+// +min(5, stage/2), about half of the skill tree by the end. When a boss appears it measures YOUR build against that:
 //   * your damage (weapon attack or spell power, whichever is higher, plus the skill tree's share) -> its HP
 //   * your max HP -> its damage
 // Stronger than expected (past a 10% grace) and it scales up in proportion, capped at x2.5 HP and x1.8 damage. It
@@ -18,13 +18,13 @@ function adaptExpected(stage) {   // the typical build at this stage, with your 
   for (let i = 0, n = L - levelOf(BASE_STATS); i < n; i++) st[order[i % order.length]]++;
   const w = SAVE.weapon, keep = SAVE.weapons[w];
   SAVE.weapons[w] = U; const d = derive(st, new Set()); SAVE.weapons[w] = keep;
-  return { light: d.light, spell: d.spell, hp: d.maxHp, skill: 0.65 * Math.min(1, stage / 13) };
+  return { light: d.light, spell: d.spell, hp: d.maxHp, skill: 0.52 * Math.min(1, stage / 13) };   // share of the tree a typical run has learned
 }
 function adaptFor(kind) {   // -> { hp, dmg } multipliers for this boss against the current build
   if (!SETTINGS.adapt || !D || !SAVE) return { hp: 1, dmg: 1 };
   const stage = BOSS_STAGE[kind]; if (stage === undefined) return { hp: 1, dmg: 1 };
-  if (!SKILL_TOTAL) SKILL_TOTAL = SKILLS.reduce((a, s) => a + (s.cost || 0), 0) || 1;
-  const X = adaptExpected(stage), frac = Math.min(1, skillSpent(SAVE.skills) / SKILL_TOTAL);
+  if (!SKILL_TOTAL) SKILL_TOTAL = skillMaxLearnable() || 1;
+  const X = adaptExpected(stage), frac = Math.min(1, SAVE.skills.length / SKILL_TOTAL);
   const power = Math.max(D.light / X.light, D.spell / X.spell) * (1 + ADAPT_SKILL * frac) / (1 + ADAPT_SKILL * X.skill);
   const tough = D.maxHp / X.hp;
   return { hp: clamp(power / ADAPT_GRACE, 1, ADAPT_HP_MAX), dmg: clamp(Math.pow(tough / ADAPT_GRACE, 0.85), 1, ADAPT_DMG_MAX) };
