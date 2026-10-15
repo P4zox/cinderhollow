@@ -16,6 +16,7 @@ tables here with it.
   - A12. Balance comparison
   - A13. Move lists (every weapon's full command list, as in the game)
 - **Part B: Build plan**
+- **Part C: v15 new weapons (plan)** — Switch Axe, Close-range Bow, Martial Arts, Scythe, Warbell: traits and combo tables
 
 ---
 ## v14 weapon pass: what changed
@@ -1236,3 +1237,209 @@ dash · Staff vault + momentum · Whip tip crack + grapple.
 2. Build the **Longsword end to end** (moves, mastery, select screen, save migration) as the template and play it.
 3. Build the other 8 types in two parallel batches.
 4. Content + progression, then balance and the full test pass; publish.
+
+---
+# Part C — v15: five new weapon types (design plan)
+
+**Status: plan (2026-10-16), being built overnight on branch `overnight-v15`.** These tables are the starting spec for
+the five moveset agents; the shipped numbers will be re-tuned by the balance pass and this part updated to match the
+code, like A2–A10. Same notation as A1: dmg in multiples of the weapon's attack (a Longsword light = 1.0), poise per
+move, stamina, wind / total in ms, **Rank** = Weapon Mastery rank (I = from the start). Targets: each weapon's main
+loop sits at 2.4–2.8 dmg/s like the nine (the Switch Axe's axe mode may burst to ~3.5 while its gauge lasts, which is
+hard to earn); every new route is an alternative, not a strictly better loop.
+
+| Type | Id / prefix | Weapon | Difficulty | Core idea | I does |
+|---|---|---|---|---|---|
+| Switch Axe | `saxe` / sx_ | (named by the platform agent) | ★★★★★ | Blade mode earns the Switch Gauge the hard way; at full, morph into a chainsaw axe for massive damage until it runs dry | Morph (only at full gauge) / Full Release |
+| Close-range Bow | `bow` / bw_ | | ★★★ | A Monster-Hunter bow fought up close: charge levels that climb through a chain, a point-blank sweet spot | Limb deflect (a parry) |
+| Martial Arts | `fist` / ft_ | | ★★★★ | Two styles — **Swift** (quick, light) and **Iron** (slow, heavy) — and combos that cross between them | Switch style (also mid-combo) |
+| Scythe | `scythe` / sc_ | | ★★★ | Wide reaping arcs front and back, souls harvested from hits feed the Reap | Hook step (behind the foe) |
+| Warbell | `bell` / wb_ | | ★★★ | A war-bell that rings a note with each blow; note sequences become tolls (buffs) | Perform the stored tolls |
+
+## C1. Switch Axe — the grinder (★★★★★)
+**Trait: the Switch Gauge (0–100), deliberately hard to fill.** Only Blade mode fills it:
+- +6 per blade hit that lands; +10 instead when the press came on the beat (the last 150 ms of the previous move);
+- a whiffed swing −10; taking a hit −25; after 2 s without attacking it bleeds 4/s;
+- **Hone** (hold K in Blade mode) grinds the edge on the ground for +12/s, rooted and open — the risky manual charge.
+At 100 the edge glows and the gauge locks full: **I = Morph** into the chainsaw **Axe**. In Axe mode the gauge drains
+6/s plus 4 per chainsaw hit; at 0 the axe vents and folds back to the blade with a 0.6 s stagger ("vented"). I in Axe
+mode = Full Release (≥ 40 gauge) or a morph back to the blade (< 40).
+
+**Blade mode** (fast-ish sword, the gauge builder)
+
+| Input | Move | Rank | Dmg | Poise | Stam | Wind/Total | Notes |
+|---|---|---|---|---|---|---|---|
+| J | Rising edge | I | 0.9 | 10 | 10 | 140/360 | |
+| J J | Falling edge | I | 0.95 | 10 | 10 | 140/360 | |
+| J J J | Double slash | I | 0.55 ×2 | 16 | 12 | 160/420 | two gauge hits |
+| J J J J | Edge rush | I | 1.3 | 30 | 14 | 220/560 | finisher, +12 gauge on hit |
+| J J (pause) J | Ratchet cut | II | 0.6 ×3 | 24 | 14 | 160/600 | the blade's teeth catch three times |
+| K | Phial thrust | I | 1.3 | 28 | 16 | 240/600 | |
+| K K | Ratchet twist | I | 0.7 ×2 | 30 | 16 | 200/640 | +15 gauge if both land |
+| J K | Hook heave | I | 1.2 | 34 | 14 | 220/620 | lifts light foes |
+| hold K | Hone | I | – | – | 0 | loop | +12 gauge/s, can't move, any hit cancels it (−25) |
+| ↑J | Skyward edge | I | 1.0 | 14 | 12 | 160/400 | |
+| L / L→J | Roll / Lunging edge | I | 1.1 | 14 | 12 | 140/400 | |
+| I (gauge < 100) | — | | | | | | a dry rev: sputter sound, nothing happens |
+| I (gauge 100) | **Morph slash** | I | 2.0 | 60 | 0 | 300/700 | armoured; the blade unfolds into the axe on the hit |
+
+**Axe mode** (slow, heavy, the chainsaw — this is where the damage is)
+
+| Input | Move | Rank | Dmg | Poise | Stam | Wind/Total | Notes |
+|---|---|---|---|---|---|---|---|
+| J | Axe overhead | I | 1.6 | 45 | 16 | 420/920 | |
+| J J | Wild swing | I | 1.8 | 50 | 18 | 400/900 | |
+| J J J | Grinder sweep | I | 0.45 ×5 | 70 | 20 | 360/1100 | the chain teeth chew through |
+| K | Rev thrust | I | 0.5 ×4 | 50 | 16 | 300/900 | |
+| hold K | **Chainsaw grind** | I | 0.35 / 80 ms | 8/hit | 0 | loop | walk 30%; drains 15 gauge/s on top |
+| K → K | Ripping heave | II | 2.6 | 80 | 20 | 420/1000 | launches |
+| I (gauge ≥ 40) | **Full Release** | III | 3.0–6.0 | 120 | 0 | 500/1500 | lunge, bite in, 8 grinding hits, burst; dmg scales with the gauge, empties it |
+| I (gauge < 40) | Morph back | I | 1.4 | 40 | 0 | 260/620 | |
+| L | Heavy sidestep | I | – | – | 18 | 520 | short, slow |
+| air J / air K | Falling cleave / Axe plunge | I | 1.4 / 1.8 | 40 / 90 | 16 | | |
+
+Mastery: II Ratchet cut + Ripping heave; III Full Release; IV **Overdrive** (axe drain −30%); V **Grinding halo**
+(Full Release ends in a ring burst and refunds 30 gauge).
+
+## C2. Close-range Bow — the point-blank hunter (★★★)
+**Trait: charge levels and the sweet spot.** Shots have levels 1–3: holding K draws up a level every 0.4 s, and each
+shot in a chain raises the next one's level (J → J → J = levels 1, 2, 3). Damage peaks in the **sweet spot (24–64 px)**:
+×1.0 there, ×0.7 point-blank (< 16 px), falling to ×0.5 past 120 px — the bow is a close-range weapon, not a sniper.
+A faint glint on the arrowhead shows when the nearest foe is in the sweet spot.
+
+| Input | Move | Rank | Dmg | Poise | Stam | Wind/Total | Notes |
+|---|---|---|---|---|---|---|---|
+| J | Quick shot | I | 0.35 × 1/2/3 arrows (lv1/2/3) | 8/arrow | 9 | 120/340 | each J in the chain +1 level |
+| J J J | Volley chain | I | lv1 → lv3 | | | | |
+| J J J J | Pinning shot | I | 1.3 | 30 | 12 | 200/520 | finisher; staggers small foes |
+| hold K | Draw | I | – | – | 0 | loop | +1 level / 0.4 s, walk 40% |
+| K / release | Power shot | I | 0.9 / 1.4 / 2.0 | 20/35/55 | 14 | 160/520 | pierces at lv3 |
+| K → K (lv3) | Hollow piercer | III | 0.4 ×6 | 70 | 22 | 360/1100 | one arrow drilling through everything in a line |
+| J K | Arrow stab | I | 0.8 | 16 | 10 | 120/380 | melee jab with a nocked arrow |
+| J K → K | Recoil shot | I | 1.2 | 30 | 14 | 140/520 | point-blank shot, hops you back 30 px |
+| ↑J | Arc shot | I | 0.3 ×5 | 40 | 16 | 300/760 | arrows rain 40–90 px ahead |
+| L | Charge step | I | – | – | 12 | 300 | +1 level for the next shot |
+| L→J / L→K | Dash shot / Leaping point-blank | I | 1.0 / 1.5 | 16/36 | 12/16 | | |
+| I | **Limb deflect** | I | – | – | 8 | 260 | 150 ms window: turn the blow with the bow's limb, then auto point-blank counter shot (1.6) |
+| air J / air ↓J / air K | Aerial shot / Talon stomp (pogo) / Hunter's dive | I | 0.9 / 0.9 / 1.5 | | | | |
+
+Mastery: II double charge step (L L); III Hollow piercer; IV Arc shot ×7; V **Point-blank burst** (lv3 shots inside
+20 px explode for +0.6 and hit behind the target).
+
+## C3. Martial Arts — two styles, one body (★★★★, 33 moves)
+**Trait: Swift and Iron styles, and the switch.** I swaps style from neutral (a short stance flourish). **Pressed during
+a combo, I is a Shift strike**: the current move cancels on its hit into the other style's linking blow (+15% damage on
+that blow), so a combo can run Swift → Iron → Swift. Swift is fast, light and evasive; Iron is slow, armoured on its
+wind-ups (hits under 20% max HP don't flinch it), and breaks stance. Hits build **Flow** (5 pips, shared by both
+styles); at 5, hold I spends it on the **Ember palm**.
+
+**Swift style**
+
+| Input | Move | Rank | Dmg | Poise | Stam | Wind/Total |
+|---|---|---|---|---|---|---|
+| J | Jab | I | 0.5 | 4 | 6 | 80/220 |
+| J J | Cross | I | 0.55 | 5 | 6 | 80/220 |
+| J J J | Hook | I | 0.65 | 8 | 7 | 100/260 |
+| J J J J | Knee rush | I | 0.35 ×3 | 20 | 10 | 120/480 |
+| J J (pause) J | Spinning backfist | II | 0.9 | 14 | 8 | 140/400 |
+| K | Snap kick | I | 0.9 | 12 | 9 | 140/380 |
+| K K | Double roundhouse | I | 0.6 ×2 | 20 | 12 | 160/560 |
+| J K | Rising knee | I | 0.8 | 14 | 9 | 120/380 |
+| J J K | Whirlwind kick (both sides) | I | 0.5 ×2 | 18 | 11 | 160/520 |
+| hold K | Hundred fists | II | 0.2 / 60 ms | 2/hit | 14/s | loop |
+| ↑J | Rising uppercut (launch) | I | 0.8 | 16 | 9 | 120/400 |
+| L | Slip step (fast, 0.18 s i-frames) | I | – | – | 8 | 240 |
+| L→J / L→K | Shadow jab / Sliding sweep | I | 0.8 / 0.9 | 10/22 | 8/10 | |
+| L just before a blow → J | Flowing counter | III | 1.4 | 30 | 6 | 80/400 |
+
+**Iron style**
+
+| Input | Move | Rank | Dmg | Poise | Stam | Wind/Total |
+|---|---|---|---|---|---|---|
+| J | Iron palm | I | 1.1 | 30 | 12 | 260/600 |
+| J J | Elbow drive | I | 1.2 | 34 | 12 | 260/600 |
+| J J J | Shoulder charge (finisher, armoured) | I | 1.6 | 60 | 16 | 320/760 |
+| K | Hammer fist | I | 1.5 | 50 | 16 | 340/800 |
+| K K | Mountain stomp (small shockwave) | I | 1.0 + 0.6 | 70 | 18 | 360/900 |
+| hold K | Iron fist (2 levels, armoured) | I | 1.8 / 2.6 | 60/90 | 20 | |
+| J K | Grapple throw (small foes) / palm strike (bosses) | I | 1.6 | 50 | 16 | 240/800 |
+| J J K | Pillar kick (launch) | I | 1.4 | 50 | 16 | 300/760 |
+| ↑J | Heaven's uppercut | I | 1.3 | 40 | 14 | 300/700 |
+| L / L→K | Iron step / Shoulder bash | I | – / 1.2 | – / 50 | 12/14 | |
+
+**Switching and shared**
+
+| Input | Move | Rank | Notes |
+|---|---|---|---|
+| I (neutral) | Change style | I | 300 ms flourish |
+| Swift J J → I | Shift strike: Falling star (Iron heel drop) | I | 1.5, 50 poise; Iron chain continues with J |
+| Iron J → I | Shift strike: Wind cut (Swift flurry 0.3 ×4) | I | Swift chain continues with J |
+| Swift J J J → I → K | Tempest to mountain | III | Swift flurry into an Iron hammer fist, 2.2 total |
+| Iron hold K → I | Iron to wind release | IV | release the charge as a Swift dash-punch through the foe |
+| hold I (5 Flow) | **Ember palm** | V | 3.0 + 120 poise, empties Flow |
+| air J / air J J | Air kick / Triple air kick | I | Swift; Iron air J is a diving elbow |
+| air K / air ↓J | Diving heel / Stomp (pogo) | I | |
+
+Mastery: II Spinning backfist + Hundred fists; III Flowing counter + Tempest to mountain; IV Iron to wind release;
+V Ember palm. Total 33 entries.
+
+## C4. Scythe — the reaper (★★★)
+**Trait: souls and reach behind.** Scythe arcs hit in front **and** behind, and the blade's hooked tip pulls small
+foes toward you instead of knocking them away. A hit landed with the far half of an arc harvests a **soul** (max 3,
+wisps orbiting the blade). **hold K** with souls = **Reap**: a great harvesting arc whose damage climbs with the souls
+spent (1.6 / 2.4 / 3.2). **I = Hook step**: the blade catches behind the foe and you swing round to its back.
+
+| Input | Move | Rank | Dmg | Poise | Stam | Wind/Total | Notes |
+|---|---|---|---|---|---|---|---|
+| J | Low reap | I | 0.9 | 10 | 10 | 160/400 | front + 12 px behind |
+| J J | High reap | I | 0.95 | 12 | 10 | 160/400 | |
+| J J J | Turning harvest (both sides) | I | 0.6 ×2 | 20 | 12 | 200/560 | |
+| J J J J | Harvest moon | I | 1.5 | 40 | 14 | 300/720 | finisher, great overhead arc |
+| J J (pause) J | Pendulum | II | 0.7 ×2 | 24 | 12 | 180/560 | swings out and back |
+| K | Wide crescent (front + back) | I | 1.3 | 30 | 16 | 280/680 | |
+| K K | Twin crescent | I | 0.8 ×2 | 40 | 18 | 260/760 | |
+| hold K (0 souls) | Charged crescent | I | 2.0 | 50 | 20 | | |
+| hold K (souls) | **Reap** | I | 1.6/2.4/3.2 | 50/70/90 | 18 | 320/900 | spends the souls |
+| J K | Hook pull | I | 0.8 | 20 | 12 | 200/560 | drags small foes 30 px in |
+| J J K | Scything spiral | I | 0.45 ×3 | 30 | 14 | 220/700 | |
+| ↑J | Rising harvest (launch) | I | 1.0 | 20 | 12 | 180/460 | |
+| L→J / L→K | Ghost slash / Leg sweep | I | 1.0 / 1.1 | 14/30 | 12/14 | | |
+| I | **Hook step** | I | – | – | 14 | 360 | swing round behind the foe; works on bosses from III |
+| I → J | Backstab reap | II | 1.6 | 40 | 10 | 120/480 | |
+| air J / air J J | Air arc / Crescent dive | I | 0.9 / 1.2 | | | | |
+| air K / air ↓J | Grave plunge / pogo | I | 1.5 / 0.9 | | | | |
+
+Mastery: II Pendulum + Backstab reap; III Hook step behind bosses; IV Reap from 2 souls at full strength;
+V each Reap restores 2% max HP per soul.
+
+## C5. Warbell — the tolling bell (★★★)
+**Trait: notes and tolls.** Every blow rings a note into a 3-note staff (HUD): J blows ring **Ash** (white), K blows
+ring **Ember** (crimson), ↑J rings **Gold**. Sequences form tolls; **I = Perform** plays every toll the staff holds — a
+ringing area blow (1.2, both sides) — and grants their buffs for 30 s. Bell hits are blunt (×1.3 stance damage).
+
+| Toll | Notes | Buff (30 s) |
+|---|---|---|
+| Swiftness | Ash Ash | stamina regen +25% |
+| Iron hymn | Ash Ember | finishers don't flinch (hits < 20% max HP) |
+| Fury | Ember Ember | +8% damage |
+| Mending | Ash Gold Ember | heal 10% max HP over 10 s (once per 60 s) |
+| Echo | Gold Gold | the next 3 hits ring again for 30% |
+
+| Input | Move | Rank | Dmg | Poise | Stam | Wind/Total | Notes |
+|---|---|---|---|---|---|---|---|
+| J | Left swing (Ash) | I | 1.0 | 18 | 12 | 200/500 | |
+| J J | Right swing (Ash) | I | 1.05 | 18 | 12 | 200/500 | |
+| J J J | Overhead clang (Ash) | I | 1.5 | 45 | 16 | 300/760 | finisher |
+| J J (pause) J | Chime spin, both sides (Ash) | II | 0.7 ×2 | 30 | 14 | 220/640 | |
+| K | Forward slam (Ember) | I | 1.4 | 40 | 16 | 280/700 | |
+| K K | Double slam (Ember Ember) | I | 1.0 ×2 | 60 | 20 | 300/900 | |
+| J K | Backswing (Ember) | I | 1.2 | 30 | 14 | 240/620 | |
+| hold K | Wind-up toll (Ember) | I | 2.2 | 70 | 22 | | |
+| ↑J | Peal uppercut (Gold) | I | 1.1 | 25 | 12 | 220/560 | |
+| I | **Perform** | I | 1.2 (ring) | 40 | 14 | 300/900 | needs ≥ 1 note; plays every toll in the staff |
+| I → I | Encore | III | 1.4 | 50 | 10 | 260/800 | re-rings, refreshes the buffs |
+| L→J / L→K | Ringing lunge / Bell drop | I | 1.0 / 1.4 | 20/45 | 12/16 | | |
+| air J / air K / air ↓J | Air swing / Bell plunge (shock) / pogo | I | 1.0 / 1.8 / 0.9 | | | | |
+
+Mastery: II Chime spin + 3-note tolls (Mending); III Encore; IV Perform sends an echo wave (+0.6, 64 px);
+V **Grand toll** — Perform with a full staff stuns small foes and adds 60 stance to bosses.
