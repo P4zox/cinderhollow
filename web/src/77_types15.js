@@ -40,7 +40,7 @@ Object.assign(WTYPE_INFO, {
     desc: 'Two styles, one body: switch between quick Swift strikes and slow Iron blows, even in the middle of a combo.',
     str: 'The most moves of any weapon, the fastest strikes, armoured Iron blows, combos that cross styles.',
     weak: 'The shortest reach, low damage per hit in Swift, and the style dance is a lot to learn.' },
-  scythe: { weapon: 'requiem_scythe', name: 'Scythe', short: 'Scythe', art: 'reap', prefix: 'sc_', first: 'sc_1', alt: 'gs_1', diff: 3, mech: 'Souls and the hook step',
+  scythe: { weapon: 'requiem_scythe', name: 'Scythe', short: 'Scythe', art: 'reap', prefix: 'scy_', first: 'scy_1', alt: 'gs_1', diff: 3, mech: 'Souls and the hook step',
     desc: 'Wide reaping arcs that cut front and back; harvest souls with the far edge and spend them on the Reap.',
     str: 'Hits both sides, pulls small foes in, a hook step behind the foe, a soul-fed burst.',
     weak: 'Slow to recover, weak right up close, and the Reap is only as strong as the souls you gathered.' },
