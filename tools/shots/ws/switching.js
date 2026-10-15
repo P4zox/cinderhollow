@@ -12,6 +12,8 @@ G.step(1, [], ['confirm']); G.step(2);
 ok(!!E('menu.mastery') && !E('menu.pick'), 'Enter opens Weapon Mastery, not a picker');
 G.step(1, [], ['down']); G.step(1, [], ['confirm']); G.step(2);
 ok(G.SAVE.weapon === w0, 'confirming in the mastery screen does not equip');
+ok(!!E('menu.mastery && menu.mastery.list'), 'Enter in the mastery screen opens the move list');
+G.step(1, [], ['back']); G.step(1); ok(!!E('menu.mastery') && !E('menu.mastery.list'), 'Esc closes the move list first');
 G.step(1, [], ['back']); G.step(1);
 ok(E('menu && menu.screen') === 'pause' && !E('menu.mastery'), 'Esc leaves the mastery screen, not the menu');
 G.step(1, [], ['map']); G.step(2); E('menu.cat = 0; menu.bar = false; menu.isel = 1'); G.step(1, [], ['confirm']); G.step(2);

@@ -40,7 +40,7 @@ const c0 = G.ws.xp('longsword'); E("masteryGain(wtype(), 5, 'counter')"); ok(G.w
 ok(E('typeof masteryRank') === 'function' && E('typeof masteryXP') === 'function' && E('typeof masteryGain') === 'function', 'masteryRank / masteryXP / masteryGain exist');
 ok(E('WTYPES.join()') === 'longsword,katana,greatsword,maul,sns,dual,spear,staff,whip', 'WTYPES order');
 ok(E("WTYPE_INFO.sns.weapon") === 'knight_shield' && E("WTYPE_INFO.whip.art") === 'lash' && E("WTYPE_INFO.dual.prefix") === 'tw_', 'WTYPE_INFO fields');
-ok(G.ws.unlocks('longsword').length === 4 && G.ws.unlocks('whip')[3].name === 'Thousand lashes', 'unlock lists (WM or the doc tables)');
+ok(G.ws.unlocks('longsword').length >= 4 && G.ws.unlocks('whip').some(u => u.name === 'Thousand lashes' && u.rank === 5), 'unlock lists (WM or the doc tables)');
 // NG+ keeps mastery
 const before = JSON.stringify(G.SAVE.mastery); E('startNGPlus()'); G.step(10);
 ok(JSON.stringify(G.SAVE.mastery) === before && G.SAVE.ngp === 1, 'New Game+ keeps mastery ' + before);

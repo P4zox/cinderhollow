@@ -100,7 +100,7 @@ function mvStart(id, o = {}) {
   let cost = o.cost !== undefined ? o.cost : (typeof d.stam === 'function' ? d.stam(o) : d.stam || 0);
   if (A.kind === 'heavy' && charmOn('c_brand')) cost *= 0.8;   // Brand of the Forge: heavies cost 20% less
   if (cost) spend(cost);
-  if (P.mvQ2) { buffered.set(P.mvQ2.b === 'J' ? 'attack' : 'heavy', performance.now()); P.mvQ2 = null; }
+  P.mvCarry = P.mvQ2; P.mvQ2 = null;   // presses still waiting from the move before (judged in mvQueue)
   P.hitSet = new Set(); P.mvT = o.t0 || 0; P.mvHitK = -1; P.mvQ = null; P.mvO = o; P.mvMul = o.mul || 1; P.mvGained = false;
   P.mvLunge = d.lungeFn ? d.lungeFn(o) : d.lunge || 0;
   // a plain swing only steps its full distance when you push forward (half standing still); dash moves (own lungeLead) always do
@@ -246,27 +246,33 @@ function mvSwing(A) {
   if (d.slam) { shake = Math.max(shake, 6); sfx.boom(); spawnFx('shockwave', P.x + P.face * 22, P.y, 1); spawnFx('ground_crack', P.x + P.face * 22, P.y, 1); for (let i = 0; i < 12; i++) particles.push({ x: P.x + P.face * 22 + rand(-16, 16), y: P.y - 2, vx: rand(-80, 80), vy: -rand(30, 110), g: 320, life: 0.6, kind: 'dust' }); }
   if (d.on && d.on.swing) d.on.swing(A);
 }
-// latch J / K / I pressed during a move (played at its total). One press is queued (a second waits for the next
-// move and is judged there). On a finisher (or the last step of a chain), a press that would START A NEW chain only
+// latch J / K / I pressed during a move (played at its total). One press is queued (up to two more of the same
+// button wait for the next moves and are judged there). On a finisher (or the last step of a chain), a press that would START A NEW chain only
 // latches in the move's last MV_QFIN ms: mashing through a finisher ends the combo there instead of rolling straight
 // into the next one. Earlier presses are dropped. Presses that continue the chain latch from 30 ms in, as before.
 const MV_QFIN = 120;
 function mvRouted(A, b) {   // does button b continue A's chain (vs falling back to a fresh neutral press)?
   const d = A.mv, r = d.next && d.next[b];
   if (!r) return false;
-  if (typeof r === 'string') return r !== '@' + b;
+  if (typeof r === 'string') return r !== '@J';   // an explicit '@K' (Iai → K → K ...) is a designed chain; '@J' restarts the combo
   if (typeof r === 'object') return true;
   try { const nx = r({ b, t: P.mvT, at: P.clk, peek: true }, A); return !!nx && nx !== '@' + b; } catch (e) { return true; }
 }
 function mvQueue(A) {
   if (P.mvT < 30) return;
-  if (P.mvQ) {   // one more press waits for the next move, which re-judges it with its own rules (so J J J typed fast
-    // still plays three cuts, but nothing carries on past a finisher)
-    if (!P.mvQ2) { if (take('attack')) P.mvQ2 = { b: 'J' }; else if (take('heavy')) P.mvQ2 = { b: 'K' }; }
-    return;
-  }
   const d = A.mv, ender = d.fin || (d.step !== undefined && !(d.next && d.next.J)), late = d.total - P.mvT <= MV_QFIN;
   const want = b => !ender || late || mvRouted(A, b);
+  if (!P.mvQ && P.mvCarry) {   // a press carried over from the move before counts as pressed now
+    const c = P.mvCarry; P.mvCarry = null;
+    if (want(c.b)) { P.mvQ = { b: c.b, t: P.mvT, at: P.clk }; if (c.n > 1) P.mvQ2 = { b: c.b, n: c.n - 1 }; if (d.onQueue) d.onQueue(P.mvQ, A); }
+  }
+  if (P.mvQ) {   // up to two more presses of the same button wait for the next moves (J J J J tapped fast)
+    for (const [a, b] of [['attack', 'J'], ['heavy', 'K']]) {
+      if (!peek(a) || (P.mvQ2 && P.mvQ2.b !== b)) continue;
+      take(a); P.mvQ2 = { b, n: Math.min(2, (P.mvQ2 ? P.mvQ2.n : 0) + 1) }; break;
+    }
+    return;
+  }
   if (peek('attack')) { take('attack'); if (want('J')) P.mvQ = { b: 'J', t: P.mvT, at: P.clk, up: held.has('up') }; }
   else if (peek('heavy')) { take('heavy'); if (want('K')) P.mvQ = { b: 'K', t: P.mvT, at: P.clk }; }
   else if (d.next && d.next.I && take('parry')) P.mvQ = { b: 'I', t: P.mvT, at: P.clk };
@@ -287,7 +293,7 @@ function mvEnd(A, fell) {
   P.mvChain = { id: d.id, t: P.clk };
   P.combo = 0; setP(P.ground ? 'idle' : 'air', P.ground ? 'idle' : 'jump_fall', P.ground);
 }
-function mvInterrupted() { P.mvQ = null; P.mvQ2 = null; P.mvChain = null; const T = mvT(); if (T.interrupted) T.interrupted(); }
+function mvInterrupted() { P.mvQ = null; P.mvQ2 = null; P.mvCarry = null; P.mvChain = null; const T = mvT(); if (T.interrupted) T.interrupted(); }
 
 // ---- hitting
 function mvRect(A) {
@@ -345,7 +351,7 @@ function mvDodge(o, ax) {
   let dir;
   if (o.back) { dir = ax ? ax : -P.face; if (ax === P.face) dir = -P.face; }   // the backhop always goes away from where you face
   else { if (ax) P.face = ax; dir = o.dir || P.face; if (o.hopDir && !ax) dir = -P.face; }
-  P.combo = 0; P.sw = false; P.mvQ = null; P.mvChain = null;
+  P.combo = 0; P.sw = false; P.mvQ = null; P.mvQ2 = null; P.mvCarry = null; P.mvChain = null;
   P.airRoll = !P.ground; if (P.airRoll) P.airDash = false;
   const g = P.dg = { ...o, t: 0, dir, start: P.clk, move: o.move || o.total * 0.72, perfect: false, kind: o.kind || 'roll', ax };
   const tag = P.airRoll && SAVE.items.emberdash && pHas('ember_dash') && !o.keepTag ? 'ember_dash' : (o.tags || ['roll']).find(x => pHas(x)) || 'roll';

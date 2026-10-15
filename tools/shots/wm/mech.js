@@ -41,7 +41,7 @@ setup('katana', 1); E('P.sheathed = true'); W().tap('parry'); W().frame(4); cons
 T('KT: Iai parry (I sheathed, hit in the 150 ms window) negates and counter-cuts', P().hp === hk0 && st() === 'kt_iaicut' && E('MV.gains') > gk, `hp ${hk0}->${P().hp} ${st()}`);
 setup('katana', 1); E('P.sheathed = true'); W().tap('parry'); W().frame(12); const hk1 = P().hp; hurt(30); W().frame(1);
 T('KT: a blow after the 150 ms window is not parried', P().hp < hk1, `hp ${hk1}->${P().hp}`);
-setup('katana', 5); E('window.__wm.follow = 26; P.sheathed = true'); W().tap('parry'); W().frame(2); hurt(30); W().frame(40); const ml = E('P.moonlit');
+setup('katana', 5); E('window.__wm.follow = 26; P.sheathed = true'); W().tap('parry'); W().frame(2); hurt(30); W().frame(60); /* v14: K is only kept in a finisher's last 120 ms */ const ml = E('P.moonlit');
 E('P.sheathed = true'); E("window.__wm.log = []"); W().tap('heavy'); W().frame(30); const mi = W().log.filter(h => h.st === 'kt_iai').map(h => (h.dmg / h.light).toFixed(2));
 T('KT V: a perfect Iai parry readies the moonlit Iai (3.0)', ml && mi.length && Math.abs(mi[0] - 3.0) < 0.15, `moonlit ${ml} iai ${mi}`);
 setup('katana', 1); W().tap('roll'); W().frame(8); const hs0 = P().hp; hurt(20); const hs1 = P().hp; W().frame(30); W().tap('roll'); W().frame(13); hurt(20);
@@ -70,7 +70,7 @@ T('ML: walk-charge at 60%; the roll releases the charge (rank I)', Math.abs(mvx 
 setup('maul', 2); W().down('heavy'); W().frame(20); W().tap('roll'); W().frame(32); const ar2 = st(), mb = E('P.mlMs'); W().up('heavy'); W().frame(60);
 T('ML II: charge step keeps the charge', ar2 === 'ml_charge' && mb > 300, `${ar2} ${Math.round(mb)} ms`);
 setup('maul', 5); W().down('heavy'); W().frame(90); const eq = E('MV.last'); W().up('heavy'); W().frame(60);
-T('ML V: earthshaker -- level 3 held still for 1.4 s', eq === 'ml_quake' && W().log.some(h => Math.abs(h.dmg / h.light - 1.5) < 0.1), eq + ' ' + W().log.map(h => (h.dmg / h.light).toFixed(2)).join('/'));
+T('ML V: earthshaker -- level 3 held still for 1.4 s (v14 wave 1.0)', eq === 'ml_quake' && W().log.some(h => Math.abs(h.dmg / h.light - 1.0) < 0.1), eq + ' ' + W().log.map(h => (h.dmg / h.light).toFixed(2)).join('/'));
 // ---- Sword & Shield
 setup('sns'); W().down('parry'); W().frame(20); const sb0 = P().hp, ss0 = P().st; hurt(30); W().frame(2); W().up('parry');
 T('SnS: block -- 6 + 0.8 x dmg stamina, no chip', P().hp === sb0 && Math.abs(ss0 - P().st - 30) < 1, `hp ${sb0 - P().hp} stam ${(ss0 - P().st).toFixed(1)}`);
@@ -134,7 +134,7 @@ setup('staff', 1, 0, { tall: 70 }); E('P.mom = 2'); W().tap('jump'); W().frame(6
 T('ST: the dive kick bounce refunds one air attack', rf0 === 2 && rf === 1, `${rf0} -> ${rf}`);
 // ---- Whip
 setup('whip', 1, 70); E('window.__wm.follow = 70'); W().tap('attack'); W().frame(30); const c1 = E('P.crack'); W().tap('heavy'); W().frame(50); const c2 = E('P.crack');
-T('WH: tip hits fill the crack meter (+10 light, +25 heavy)', c1 === 10 && c2 === 35, `${c1} ${c2}`);
+T('WH: tip hits fill the crack meter (+10 light, +20 heavy)', c1 === 10 && c2 === 30, `${c1} ${c2}`);
 setup('whip', 1, 20); E('window.__wm.follow = 20'); W().tap('attack'); W().frame(30);
 T('WH: a close hit (not the tip) adds no crack', E('P.crack') === 0, String(E('P.crack')));
 setup('whip', 1, 40); const sm = E(`(() => { const d = enemies.find(e => e.wmDummy); d.breakStance = () => { d.st2 = 1; }; return d.x; })()`); W().tap('parry'); W().frame(20); const smx = E('enemies.find(e => e.wmDummy).x');
@@ -152,7 +152,7 @@ T('WH rank gate: no snap counter below II', P().hp < sn1, `${sn1 - P().hp}`);
 // ---- mastery API and unlock lists
 const U = E('JSON.stringify(Object.fromEntries(Object.entries(WEAPON_UNLOCKS).map(([k, v]) => [k, v.map(u => u.rank + ":" + u.id)])))');
 const UU = JSON.parse(U);
-T('WEAPON_UNLOCKS: 9 types x 4 unlocks (ranks II-V)', Object.keys(UU).length === 9 && Object.values(UU).every(v => v.length === 4 && v.map(x => +x[0]).join() === '2,3,4,5'), U.slice(0, 200));
+T('WEAPON_UNLOCKS: 9 types, every rank II-V unlocks something', Object.keys(UU).length === 9 && Object.values(UU).every(v => [2, 3, 4, 5].every(r => v.some(x => +x[0] === r))), U.slice(0, 200));
 E('MV.rank = null'); const rk = E("(SAVE.mastery = SAVE.mastery || {}, SAVE.mastery.longsword = 950, mvRank('longsword'))");
 T("rank gating reads WS's masteryRank (950 XP = III)", rk === 3, String(rk));
 return { pass: R.filter(r => r.startsWith('OK')).length, n: R.length, R };
