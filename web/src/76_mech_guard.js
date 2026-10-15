@@ -66,6 +66,7 @@ mvRegister('sns', {
   unlocks: [
     { rank: 2, id: 'sh_prush', name: 'Perfect rush', input: 'J J K, each press on the flash', desc: 'Each timed hit is stronger: 0.85, 1.1, 1.8.' },
     { rank: 2, id: 'sh_wheel', name: 'Wheel cut', input: 'J J (pause) J', desc: 'A full turn: the blade cuts in front, the shield edge behind.' },
+    { rank: 2, id: 'sh_aegis', name: 'Aegis plant', input: 'J J J J K', desc: 'The shield planted after the finisher: staggers both sides.' },
     { rank: 3, id: 'sh_slam', name: 'Shield slam', input: 'block → K', desc: 'A 1.6 slam with 110 poise.' },
     { rank: 4, id: 'sh_fallbash', name: 'Falling bash', input: 'air ↓K', desc: 'A 1.6 plunge with 80 poise that also pogos.' },
     { rank: 5, id: 'sh_pguard', name: 'Perfect guard', input: 'block within the last 100 ms', desc: 'Reflects projectiles, takes no stamina, and the next counter deals +50%.' },
@@ -74,9 +75,13 @@ mvRegister('sns', {
     { name: 'Quick slash chain', input: 'J J J J', desc: 'Three fast cuts and a reeling shield-bash finisher.', rank: 1 },
     { name: 'Shield jab', input: 'J K', desc: 'A quick shield punch (28 poise); J carries on into the 3rd cut.', rank: 1 },
     { name: 'Rim upper', input: 'J J J K', desc: 'The shield rim driven up through the foe: launches small foes.', rank: 1 },
+    { name: 'Backhand rim bash', input: 'J K K', desc: 'Jab, then the shield flung out edge-first: two bashes, 78 poise.', rank: 1 },
+    { name: 'Aegis plant', input: 'J J J J K', desc: 'Plant the shield after the finisher: staggers both sides.', rank: 2 },
     { name: 'Wheel cut', input: 'J J (pause) J', desc: 'Wait a beat after the 2nd cut: a full turn, hits both sides.', rank: 2 },
     { name: 'Perfect rush', input: 'J J K on the flash', desc: 'Press each on the light flash: 0.85, 1.1, then a 1.8 bash.', rank: 2 },
     { name: 'Shield bash', input: 'K', desc: 'Drive the shield forward: 60 poise, small foes reel.', rank: 1 },
+    { name: 'Under-rim cut', input: 'K J', desc: 'A low cut after the bash; J J go on to the 3rd cut and finisher.', rank: 1 },
+    { name: 'Shield hammer', input: 'K K', desc: 'The shield raised overhead and its rim hammered down: 120 poise.', rank: 1 },
     { name: 'Charged shield rush', input: 'hold K', desc: 'Dash 70 px behind the shield; light hits do not stop it.', rank: 1 },
     { name: 'Block / parry', input: 'I (hold / tap)', desc: 'Hold to block anything frontal; tap to parry (170 ms).', rank: 1 },
     { name: 'Guard counter', input: 'block or parry → J', desc: 'A heavy thrust over the rim, 1.9.', rank: 1 },
@@ -99,15 +104,26 @@ mvRegister('sns', {
     next: { J: q => (q.up ? 'sh_up' : q.after !== undefined && q.after >= SH_PAUSE && mvHas(2) ? 'sh_wheel' : 'sh_3'),
       K: q => (mvHas(2) && P.shRush && shPerfect(q, ATK.sh_2) ? 'sh_prush' : '@K') } },
   sh_3: { tags: ['sh_3'], dmg: 0.9, poise: 12, stam: 10, wind: 140, total: 340, step: 2, fx: 'slash_air', next: { J: 'sh_4', K: 'sh_rim' } },
-  sh_4: { tags: ['sh_4', 'sh_heavy'], dmg: 1.4, poise: 55, stam: 14, wind: 220, total: 560, step: 3, fin: true, reel: true, lunge: 20, box: [-2, 30, -30, -2] },
+  sh_4: { tags: ['sh_4', 'sh_heavy'], dmg: 1.4, poise: 55, stam: 14, wind: 220, total: 560, step: 3, fin: true, reel: true, lunge: 20, box: [-2, 30, -30, -2],
+    next: { K: () => (mvHas(2) ? 'sh_aegis' : null) } },
+  // ---- v14c II: J J J J K -- the aegis plant: after the finisher, the shield planted rim-down; the ring of it staggers
+  // whatever stands close on either side (a 1.0 hit both ways, 70 poise) -- room to breathe, not more damage
+  sh_aegis: { tags: ['sh_aegis', 'sh_slam', 'sh_heavy'], rank: 2, kind: 'heavy', dmg: 1.0, poise: 70, stam: 14, wind: 200, total: 600, step: 4, fin: true, reel: true, spin: true, slam: true, reach: 30, backReach: 30, ys: [-20, 0], fx: null },
   // ---- v14: J K -- a quick shield jab in place of the 2nd cut (more poise, a little less damage); J goes on to the 3rd cut
-  sh_jab: { tags: ['sh_jab', 'sh_heavy'], dmg: 0.7, poise: 28, stam: 9, wind: 110, total: 330, step: 1, lunge: 10, box: [-2, 30, -30, -4], fx: null, next: { J: 'sh_3' } },
+  sh_jab: { tags: ['sh_jab', 'sh_heavy'], dmg: 0.7, poise: 28, stam: 9, wind: 110, total: 330, step: 1, lunge: 10, box: [-2, 30, -30, -4], fx: null, next: { J: 'sh_3', K: 'sh_jkk' } },
+  // ---- v14c: J K K -- the backhand rim bash: the shield drawn across the chest and flung out edge-first (a bash pair)
+  sh_jkk: { tags: ['sh_jkk', 'sh_heavy'], kind: 'heavy', dmg: 1.2, poise: 50, stam: 15, wind: 200, total: 520, step: 2, fin: true, reel: true, lunge: 16, box: [-2, 30, -30, -2], fx: null },
   // ---- v14: J J J K -- the rim upper: an alternative finisher that launches small foes (jump after it and keep cutting)
   sh_rim: { tags: ['sh_rim', 'sh_heavy'], kind: 'heavy', dmg: 1.2, poise: 50, stam: 14, wind: 200, total: 540, step: 3, fin: true, launch: 220, box: [-2, 30, -46, -2], fx: 'slash_up' },
   // ---- v14 II: J J (pause) J -- the wheel cut: a turn that cuts both sides (for crowds); 2 x 0.65
   sh_wheel: { tags: ['sh_wheel', 'sh_3'], rank: 2, hits: [0.6, 0.7], poise: 30, stam: 12, wind: 160, total: 560, step: 2, fin: true, spin: true, gap: 50, reach: 34, ys: [-30, -2], fx: 'slash' },
   sh_heavy: { tags: ['sh_heavy'], kind: 'heavy', dmg: 1.2, poise: 60, stam: 16, wind: 200, total: 520, reel: true, lunge: 24, box: [-2, 30, -30, -2],
+    next: { J: 'sh_kj', K: 'sh_kk' },   // v14c: K -> J (under-rim cut, back into the chain), K -> K (shield hammer)
     on: { update() { if (P.mvT >= 120 && P.mvT < 170 && held.has('heavy') && !P.mvO.noHold) { mvStart('sh_rush_hold', { cost: 0 }); return 'stop'; } } } },
+  // ---- v14c: K -> J -- the under-rim cut: the bash shoved the foe off the rim, a fast flat cut follows; J J go on (3rd cut, finisher)
+  sh_kj: { tags: ['sh_kj', 'sh_2'], dmg: 0.9, poise: 15, stam: 9, wind: 110, total: 330, step: 1, reach: 36, ys: [-28, -4], fx: 'slash', next: { J: 'sh_3' } },
+  // ---- v14c: K -> K -- the shield hammer: the shield hauled overhead and its rim brought down on the head (a stagger pair)
+  sh_kk: { tags: ['sh_kk', 'sh_slam', 'sh_heavy'], kind: 'heavy', dmg: 1.3, poise: 60, stam: 16, wind: 220, total: 560, fin: true, reel: true, lunge: 8, box: [-2, 30, -34, 0], fx: null },
   sh_rush_hold: { tags: ['sh_rush_hold', 'sh_heavy'], kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9, charge: true,
     on: { update(dt) {
       P.vx *= Math.pow(0.05, dt); P.charge = P.mvT / 1000;
@@ -200,6 +216,19 @@ mvRegister('spear', {
   },
   interrupted() { P.guardKind = null; P.spPower = 0; P.spHoldK = false; },
   render() {
+    // the reach ghost: a sprite frame is 64 px wide with the feet at 28, so a thrust can draw its tip only ~34 px out while
+    // it hits 52-64 px out. On each thrust's hit, two fading pale copies of the spear lance on along the thrust line to
+    // the real reach, so what you see is what connects.
+    { const A = ATK[P.state], d = A && A.mv, R = A && A._r;
+      if (d && d.thrust !== undefined && R && R.real) {
+        const hits = R.hitT || Array.from({ length: d.n }, (_, k) => d.wind + k * (d.gap || 70));
+        let u = null; for (const h of hits) { const q = P.mvT - h; if (q >= -20 && q <= 140) u = q; }
+        const ws = sheet('wpn_' + (SAVE.weapon || 'spear'));
+        if (u !== null && ws.ok) {
+          const f = u < 0 ? 0.45 : clamp(1 - u / 140, 0, 1), L = clamp((A.reach ? A.reach[1] : 60) - 36, 0, 28), a = d.thrust * Math.PI / 180;
+          for (const [k, al] of [[0.5, 0.42], [1, 0.26]]) drawSprite(ws, P.anim.frame, P.x + P.face * Math.cos(a) * L * k, P.y + Math.sin(a) * L * k, P.face, { alpha: al * f, flash: 0.75, flashColor: '#b4c6ea' });
+        }
+      } }
     if (P.state === 'sp_run') { addLight(P.x + P.face * 20, P.y - 16, 22, mvHas(5) ? '170,200,255' : '255,220,170', 0.6); if (Math.random() < 0.6) particles.push({ x: P.x - P.face * rand(0, 10), y: P.y - rand(2, 6), vx: -P.face * 40, vy: -rand(10, 30), life: 0.3, kind: 'dust' }); }
     if (P.state === 'sp_cwind') { const f = clamp(P.mvT / 400, 0, 1); addLight(P.x + P.face * 16, P.y - 18, 12 + 16 * f, '255,220,170', 0.3 + 0.5 * f); }
     // III: the counter-thrust's tip warms while K is still held -- let go before it flashes for the quick one
@@ -208,6 +237,7 @@ mvRegister('spear', {
   unlocks: [
     { rank: 2, id: 'sp_triplehop', name: 'Triple hop', input: 'L L L', desc: 'Chain three hops.' },
     { rank: 2, id: 'sp_wheel', name: 'Wheeling haft', input: 'J J (pause) J', desc: 'The spear spun flat round the waist: hits both sides.' },
+    { rank: 2, id: 'sp_kk', name: 'Sky rake', input: 'K K', desc: 'A second, steeper high thrust that lifts small foes.' },
     { rank: 3, id: 'sp_ccounter', name: 'Charged counter', input: 'block → hold K', desc: 'Keep K held: a 3.0 counter-thrust with 90 poise.' },
     { rank: 3, id: 'sp_rsweep', name: 'Rising sweep', input: 'counter-thrust → J', desc: 'The haft swept up overhead: launches small foes.' },
     { rank: 4, id: 'sp_pguard', name: 'Power guard', input: 'I + K', desc: 'For 1 s: no pushback and no chip from anything; stamina cost ×1.5.' },
@@ -215,9 +245,13 @@ mvRegister('spear', {
   ],
   combos: [
     { name: 'Poke chain', input: 'J J J', desc: 'Three long pokes (1.5x sword reach), the last an overhead sweep.', rank: 1 },
+    { name: 'Twin thrust', input: 'J K', desc: 'A poke at the knee, then the chest; J goes on to the sweep.', rank: 1 },
+    { name: 'Recoil thrust', input: 'J J K', desc: 'Step back while thrusting: hit and keep your distance.', rank: 1 },
     { name: 'Impaling drive', input: 'J J J K', desc: 'Thrust it home, then twist and drive it deeper: 2 hits.', rank: 1 },
     { name: 'Wheeling haft', input: 'J J (pause) J', desc: 'Wait a beat after the 2nd poke: spin the haft, hits both sides.', rank: 2 },
     { name: 'High thrust', input: 'K', desc: 'An upward lunge: for fliers and tall foes.', rank: 1 },
+    { name: 'Falling haft', input: 'K J', desc: 'Raise the spear and chop the haft down in front.', rank: 1 },
+    { name: 'Sky rake', input: 'K K', desc: 'A second, steeper high thrust that lifts small foes.', rank: 2 },
     { name: 'Charge dash', input: 'hold K (moving)', desc: 'Run with the spear levelled; let go of K for the finishing thrust.', rank: 1 },
     { name: 'Heavy guard', input: 'I (hold)', desc: 'Blocks anything frontal; walk slowly behind it. Big hits chip 10%.', rank: 1 },
     { name: 'Guard poke', input: 'I + J', desc: 'A short thrust from the guard; the guard is back after it.', rank: 1 },
@@ -234,20 +268,31 @@ mvRegister('spear', {
     { name: 'Lance plunge', input: 'air K', desc: 'The plunge.', rank: 1 },
   ],
 }, {
-  sp_1: { tags: ['sp_1'], dmg: 1.0, poise: 14, stam: 11, wind: 140, total: 380, step: 0, reach: MV_SR * 1.5, fx: 'slash_air', next: { J: 'sp_2' } },
-  sp_2: { tags: ['sp_2'], dmg: 1.0, poise: 14, stam: 11, wind: 140, total: 380, step: 1, reach: MV_SR * 1.5, fx: 'slash_air',
-    next: { J: q => (q.up ? 'sp_up' : q.after !== undefined && q.after >= SP_PAUSE && mvHas(2) ? 'sp_wheel' : 'sp_3') } },
-  sp_3: { tags: ['sp_3'], dmg: 1.15, poise: 18, stam: 12, wind: 160, total: 420, step: 2, reach: MV_SR * 1.5, fin: true, fx: 'slash3', next: { K: 'sp_drive' } },
+  sp_1: { tags: ['sp_1'], thrust: 0, dmg: 1.0, poise: 14, stam: 11, wind: 140, total: 380, step: 0, reach: MV_SR * 1.5, fx: 'slash_air', next: { J: 'sp_2', K: 'sp_jk' } },
+  // ---- v14c: J K -- the twin thrust: knee, then chest (2 hits); J carries on into the overhead sweep
+  sp_jk: { tags: ['sp_jk', 'sp_1'], thrust: 0, hits: [0.5, 0.6], poise: 28, stam: 13, wind: 150, total: 520, step: 1, reach: MV_SR * 1.5, gap: 130, fx: 'slash_air', next: { J: 'sp_3' } },
+  sp_2: { tags: ['sp_2'], thrust: -20, dmg: 1.0, poise: 14, stam: 11, wind: 140, total: 380, step: 1, reach: MV_SR * 1.5, fx: 'slash_air',
+    next: { J: q => (q.up ? 'sp_up' : q.after !== undefined && q.after >= SP_PAUSE && mvHas(2) ? 'sp_wheel' : 'sp_3'), K: 'sp_jjk' } },
+  // ---- v14c: J J K -- the recoil thrust: the feet step back (18 px) while the arms drive the spear out -- poke and keep the wall
+  sp_jjk: { tags: ['sp_jjk', 'sp_1'], thrust: 0, dmg: 1.1, poise: 25, stam: 12, wind: 160, total: 460, step: 2, fin: true, reach: MV_SR * 1.5, lunge: -18, lungeLead: 140, lungeTail: 60, fx: 'slash_air' },
+  // the overhead sweep: its reach is the drawn arc (~44 px), not the thrusts' 60 (a sweep can't show a reach ghost)
+  sp_3: { tags: ['sp_3'], dmg: 1.15, poise: 18, stam: 12, wind: 160, total: 420, step: 2, reach: 44, fin: true, fx: 'slash3', next: { K: 'sp_drive' } },
   // ---- v14: J J J K -- the impaling drive: thrust, then twist it a hand deeper (2 hits); stagger over damage
-  sp_drive: { tags: ['sp_drive', 'sp_heavy'], kind: 'heavy', hits: [0.75, 0.85], poise: 50, stam: 16, wind: 220, total: 660, step: 3, fin: true, reach: MV_SR * 1.5, lunge: 14, gap: 110, fx: 'slash3' },
+  sp_drive: { tags: ['sp_drive', 'sp_heavy'], thrust: 0, kind: 'heavy', hits: [0.75, 0.85], poise: 50, stam: 16, wind: 220, total: 660, step: 3, fin: true, reach: MV_SR * 1.5, lunge: 14, gap: 110, fx: 'slash3' },
   // ---- v14 II: J J (pause) J -- the wheeling haft: tip in front, butt behind (2 hits); the spear's answer to a crowd
   sp_wheel: { tags: ['sp_wheel', 'sp_3'], rank: 2, hits: [0.55, 0.7], poise: 30, stam: 13, wind: 180, total: 600, step: 2, fin: true, spin: true, gap: 50, reach: 46, ys: [-24, -2], fx: 'slash' },
-  sp_heavy: { tags: ['sp_high', 'sp_heavy'], kind: 'heavy', dmg: 1.4, poise: 35, stam: 18, wind: 260, total: 600, box: [-4, MV_SR * 1.3, -64, -6], fx: 'slash_up' },
+  // the high thrust now has its own upward tag (v14 guard art); the box follows it: up to ~52 px high and 50 out
+  sp_heavy: { tags: ['sp_high', 'sp_heavy'], thrust: -40, kind: 'heavy', dmg: 1.4, poise: 35, stam: 18, wind: 260, total: 600, box: [-4, 50, -52, -6], fx: 'slash_up',
+    next: { J: 'sp_kj', K: () => (mvHas(2) ? 'sp_kk' : null) } },   // v14c: K -> J (falling haft), K -> K (II: sky rake)
+  // ---- v14c: K -> J -- the falling haft: from the high thrust, the spear raised straight up and chopped down in front
+  sp_kj: { tags: ['sp_kj', 'sp_3'], dmg: 1.2, poise: 40, stam: 12, wind: 180, total: 520, fin: true, box: [-4, 46, -40, 0], fx: 'slash3' },
+  // ---- v14c II: K -> K -- the sky rake: a second, steeper high thrust that lifts small foes (the spear's anti-air string)
+  sp_kk: { tags: ['sp_kk', 'sp_high', 'sp_up'], rank: 2, thrust: -58, kind: 'heavy', dmg: 1.3, poise: 40, stam: 15, wind: 200, total: 560, fin: true, launch: 200, lunge: 10, box: [-4, 40, -60, -10], fx: 'slash_up' },
   // the guard stays up through the coil and the recovery, not through the thrust itself (no more blocking 100% of the time
   // while poking at 2.25/s)
-  sp_gpoke: { tags: ['sp_gpoke', 'sp_1'], get guarding() { return P.state !== 'sp_gpoke' || P.mvT < 110 || P.mvT >= 260; }, dmg: 0.8, poise: 12, stam: 10, wind: 140, total: 380, reach: MV_SR * 1.5,
+  sp_gpoke: { tags: ['sp_gpoke', 'sp_1'], thrust: -14, get guarding() { return P.state !== 'sp_gpoke' || P.mvT < 110 || P.mvT >= 260; }, dmg: 0.8, poise: 12, stam: 10, wind: 140, total: 380, reach: MV_SR * 1.5,
     on: { end() { if (held.has('parry') && P.ground) spEnterGuard(); } } },
-  sp_counter: { tags: ['sp_counter', 'sp_heavy'], dmg: 2.0, poise: 60, stam: 14, wind: 160, total: 520, counter: true, fin: true, reach: MV_SR * 1.5, lunge: 24, fx: 'slash3',
+  sp_counter: { tags: ['sp_counter', 'sp_heavy'], thrust: 0, dmg: 2.0, poise: 60, stam: 14, wind: 160, total: 520, counter: true, fin: true, reach: MV_SR * 1.5, lunge: 24, fx: 'slash3',
     next: { J: () => (mvHas(3) ? 'sp_rsweep' : null) },
     on: {
       start() { P.spHoldK = held.has('heavy'); },
@@ -257,7 +302,7 @@ mvRegister('spear', {
         if (!held.has('heavy')) P.spHoldK = false;
         if (mvHas(3) && P.spHoldK && P.mvT < 160 && performance.now() - (P.spKAt ?? 0) >= SP_CC_HOLD) { P.spHoldK = false; mvStart('sp_ccounter', { cost: 0, t0: P.mvT }); sfx.glint(); if (typeof feelFlash === 'function') feelFlash(P.x + P.face * 26, P.y - 16, 30, '255,215,140', 1.0, 0.1); return 'stop'; }
       } } },
-  sp_ccounter: { tags: ['sp_ccounter', 'sp_heavy'], rank: 3, kind: 'heavy', dmg: 3.0, poise: 90, stam: 6, wind: 360, total: 800, counter: true, fin: true, reach: MV_SR * 1.6, lunge: 36, fx: 'slash3',
+  sp_ccounter: { tags: ['sp_ccounter', 'sp_heavy'], thrust: 0, rank: 3, kind: 'heavy', dmg: 3.0, poise: 90, stam: 6, wind: 360, total: 800, counter: true, fin: true, reach: MV_SR * 1.6, lunge: 36, fx: 'slash3',
     next: { J: () => (mvHas(3) ? 'sp_rsweep' : null) } },
   // ---- v14 III: counter-thrust -> J -- the rising sweep: the haft swept up overhead, launching small foes
   sp_rsweep: { tags: ['sp_rsweep', 'sp_up'], rank: 3, dmg: 1.2, poise: 40, stam: 12, wind: 160, total: 500, fin: true, launch: 220, box: [-4, 44, -56, -2], fx: 'slash_up' },
@@ -283,13 +328,13 @@ mvRegister('spear', {
     } },
   // the finishing thrust: 12 stamina; the full 2.2 (V: 3.0) / 70 poise only after a 400 ms run, a quick release is a 1.4
   // (it used to be free and full from a 0 ms run: wind-up -> release looped 2.74/s for ~0 stamina)
-  sp_finish: { tags: ['sp_finish', 'sp_heavy'], kind: 'heavy', dmg: 2.2, poise: 70, stam: 12, wind: 120, total: 480, fin: true, reach: MV_SR * 1.5, lunge: 20, fx: 'slash3',
+  sp_finish: { tags: ['sp_finish', 'sp_heavy'], thrust: 0, kind: 'heavy', dmg: 2.2, poise: 70, stam: 12, wind: 120, total: 480, fin: true, reach: MV_SR * 1.5, lunge: 20, fx: 'slash3',
     dmgFn: () => ((P.spRunMs || 0) >= SP_RUN_FULL ? (mvHas(5) ? 3.0 : 2.2) : (mvHas(5) ? 1.8 : 1.4)), poiseFn: () => ((P.spRunMs || 0) >= SP_RUN_FULL ? 70 : 40) },
-  sp_hpoke: { tags: ['sp_hpoke', 'sp_1'], dmg: 1.0, poise: 14, stam: 10, wind: 120, total: 360, reach: MV_SR * 1.5, fx: 'slash_air', next: { J: 'sp_2' } },
+  sp_hpoke: { tags: ['sp_hpoke', 'sp_1'], thrust: 0, dmg: 1.0, poise: 14, stam: 10, wind: 120, total: 360, reach: MV_SR * 1.5, fx: 'slash_air', next: { J: 'sp_2' } },
   // ---- v14: L -> K -- the hop lunge: off the hop (usually a back hop), a long low lunge back in
-  sp_hoplunge: { tags: ['sp_hoplunge', 'sp_heavy'], kind: 'heavy', dmg: 1.3, poise: 35, stam: 15, wind: 200, total: 540, fin: true, reach: MV_SR * 1.5, lunge: 50, lungeLead: 160, fx: 'slash3' },
+  sp_hoplunge: { tags: ['sp_hoplunge', 'sp_heavy'], thrust: 0, kind: 'heavy', dmg: 1.3, poise: 35, stam: 15, wind: 200, total: 540, fin: true, reach: MV_SR * 1.5, lunge: 50, lungeLead: 160, fx: 'slash3' },
   sp_dive: { tags: ['sp_dive'], air: true, dmg: 1.5, poise: 40, stam: 16, wind: 1, total: 1 },   // the jump thrust dive (04_player startSpDive): table row only
-  sp_air: { tags: ['sp_air'], air: true, dmg: 1.0, poise: 14, stam: 11, wind: 140, total: 360, reach: MV_SR * 1.3 },
+  sp_air: { tags: ['sp_air'], thrust: 0, air: true, dmg: 1.0, poise: 14, stam: 11, wind: 140, total: 360, reach: MV_SR * 1.3 },
   sp_up: { tags: ['sp_up'], up: true, dmg: 1.1, poise: 20, stam: 12, wind: 180, total: 420 },
   sp_down: { tags: ['sp_down'], down: true, dmg: 0.9, poise: 14, stam: 10, wind: 100, total: 300 },
 });

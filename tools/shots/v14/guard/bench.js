@@ -15,6 +15,14 @@ const R = {
   'sns|2|perfect rush J J K': () => { free(); J(); nextLate('sh_1'); J(); nextLate('sh_2'); K(); nextLate('sh_prush'); },
   'sns|1|L -> J (leap)': () => { idle(); L(); W().frame(9); J(); nextLate('sh_leap'); },
   'sns|1|L -> K (shield charge)': () => { idle(); L(); W().frame(9); K(); nextLate('sh_charge'); },
+  'sns|1|K J J J (under-rim cut)': () => { free(); K(); nextLate('sh_heavy'); J(); nextLate('sh_kj'); J(); nextLate('sh_3'); J(); nextLate('sh_4'); },
+  'sns|1|K K (shield hammer)': () => { free(); K(); nextLate('sh_heavy'); K(); nextLate('sh_kk'); },
+  'sns|1|J K K (backhand rim bash)': () => { free(); J(); nextLate('sh_1'); K(); nextLate('sh_jab'); K(); nextLate('sh_jkk'); },
+  'sns|2|J J J J K (aegis plant)': () => { free(); J(); nextLate('sh_1'); J(); nextLate('sh_2'); J(); nextLate('sh_3'); J(); nextLate('sh_4'); K(); nextLate('sh_aegis'); },
+  'spear|1|J K J (twin thrust)': () => { free(); J(); nextLate('sp_1'); K(); nextLate('sp_jk'); J(); nextLate('sp_3'); },
+  'spear|1|J J K (recoil thrust)': () => { free(); J(); nextLate('sp_1'); J(); nextLate('sp_2'); K(); nextLate('sp_jjk'); },
+  'spear|1|K J (falling haft)': () => { free(); K(); nextLate('sp_heavy'); J(); nextLate('sp_kj'); },
+  'spear|2|K K (sky rake)': () => { free(); K(); nextLate('sp_heavy'); K(); nextLate('sp_kk'); },
   'spear|1|J J J': () => { free(); J(); nextLate('sp_1'); J(); nextLate('sp_2'); J(); nextLate('sp_3'); },
   'spear|1|J J J K (drive)': () => { free(); J(); nextLate('sp_1'); J(); nextLate('sp_2'); J(); nextLate('sp_3'); K(); nextLate('sp_drive'); },
   'spear|2|J J . J (wheel)': () => { free(); J(); nextLate('sp_1'); J(); nextLate('sp_2', 0); for (let i = 0; i < 25 && st() === 'sp_2'; i++) W().frame(1); W().frame(8); J(); nextLate('sp_wheel'); },
@@ -43,10 +51,12 @@ G.trn.start(); W().frame(10);
 for (const [type, rank, ids, play] of [
   ['sns', 2, ['sh_jab', 'sh_rim', 'sh_wheel', 'sh_charge'], () => { J(); toLate(); K(); nextLate('sh_jab'); J(); nextLate('sh_3'); K(); nextLate('sh_rim'); idle(); J(); toLate(); J(); nextLate('sh_2', 0); for (let i = 0; i < 20 && st() === 'sh_2'; i++) W().frame(1); W().frame(8); J(); nextLate('sh_wheel'); idle(); L(); W().frame(9); K(); nextLate('sh_charge'); idle(); }],
   ['spear', 3, ['sp_drive', 'sp_wheel', 'sp_hoplunge'], () => { J(); toLate(); J(); nextLate('sp_2'); J(); nextLate('sp_3'); K(); nextLate('sp_drive'); idle(); J(); toLate(); J(); nextLate('sp_2', 0); for (let i = 0; i < 25 && st() === 'sp_2'; i++) W().frame(1); W().frame(8); J(); nextLate('sp_wheel'); idle(); L(); W().frame(10); K(); nextLate('sp_hoplunge'); idle(); }],
+  ['sns', 2, ['sh_kj', 'sh_kk', 'sh_jkk'], () => { K(); nextLate('sh_heavy'); J(); nextLate('sh_kj'); idle(); W().frame(20); E('P.x = G_bx - 30'); K(); nextLate('sh_heavy'); K(); nextLate('sh_kk'); idle(); W().frame(20); E('P.x = G_bx - 30'); J(); nextLate('sh_1'); K(); nextLate('sh_jab'); K(); nextLate('sh_jkk'); idle(); }],
+  ['spear', 2, ['sp_jk', 'sp_jjk', 'sp_kj', 'sp_kk'], () => { J(); nextLate('sp_1'); K(); nextLate('sp_jk'); idle(); W().frame(20); E('P.x = G_bx - 50'); J(); nextLate('sp_1'); J(); nextLate('sp_2'); K(); nextLate('sp_jjk'); idle(); E(`P.x = G_bx - 50`); K(); nextLate('sp_heavy'); J(); nextLate('sp_kj'); idle(); K(); nextLate('sp_heavy'); K(); nextLate('sp_kk'); idle(); }],
 ]) {
   W().reset(type, rank); G.SETTINGS.god = 1; G.trn.summon('hound'); W().frame(5); W().reset(type, rank); E('D.maxSt = 1e6; P.st = 1e6'); const b = G.boss;
   for (let i = 0; i < 200 && !b.active; i++) W().frame(1);
-  b.active = true; const bx = b.x; b.update = function (dt) { this.x = bx; this.state = 'idle'; if (this.commonUpdate) this.commonUpdate(dt); };
+  b.active = true; const bx = b.x; E('window.G_bx = ' + bx); b.update = function (dt) { this.x = bx; this.state = 'idle'; if (this.commonUpdate) this.commonUpdate(dt); };
   const got = {}; const oh = b.hit; b.hit = function (info) { got[G.P.state] = (got[G.P.state] || 0) + 1; return oh.call(this, info); };
   E(`P.x = ${bx} - ${type === 'spear' ? 50 : 30}; P.face = 1; P.vx = 0`); W().frame(2);
   play();

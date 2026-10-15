@@ -1794,7 +1794,7 @@ def sp_3():  # overhead circular sweep
     return mseq([(dict(hand=(33, 22), ang=-60, flow=0.3), 90),
                  (dict(dx=-1, hand=(30, 15), ang=-145, flow=0.4, flutter=1), 100),
                  (dict(dx=-1, dy=1, head_dx=-1, hand=(29, 15), ang=-172, footB=(OX + 6, 39), flow=0.3, flutter=2), 120),
-                 (dict(dx=0, dy=-1, hand=(32, 13), ang=-100, flow=0.9, flutter=3, fx=[sw(w=0.3)]), 50),
+                 (dict(dx=0, dy=-1, hand=(32, 18), ang=-128, flow=0.9, flutter=3, fx=[sw(w=0.3)]), 50),
                  (dict(dx=1, dy=0, hand=(36, 16), ang=-35, footF=(FF[0] + 2, 39), flow=1.1, flutter=4, fx=[sw(w=0.3)]), 50),
                  (dict(dx=2, dy=2, hand=(38, 25), ang=22, footF=(FF[0] + 3, 39), flow=1.2, flutter=5, fx=[sw(w=0.3)]), 60),
                  (dict(dx=2, dy=2, hand=(36, 28), ang=30, footF=(FF[0] + 3, 39), flow=0.7, flutter=6), 110),
@@ -1806,11 +1806,11 @@ def sp_heavy():  # step-in charging lunge
                  (dict(dx=-3, dy=3, head_dx=-1, hand=(25, 27), ang=-5, footB=(OX + 4, 39), footF=(OX + 17, 39), flow=0.2, flutter=1,
                        fx=[("glint", "tip")]), 180),
                  (dict(dx=1, dy=1, hand=(31, 26), ang=-2, footB=(OX + 7, 38), footF=(OX + 22, 36), flow=1.2, flutter=2), 70),
-                 (dict(dx=3, dy=2, hand=(39, 26), ang=0, footB=(OX + 9, 39), footF=(OX + 25, 39), flow=1.6, flutter=3,
+                 (dict(dx=3, dy=2, hand=(38, 26), ang=0, footB=(OX + 9, 39), footF=(OX + 25, 39), flow=1.6, flutter=3,
                        fx=[("streak", 24)]), 50),
-                 (dict(dx=4, dy=3, head_dy=1, hand=(39, 26), ang=1, footB=(OX + 10, 39), footF=(OX + 26, 39), flow=1.5, flutter=4,
+                 (dict(dx=4, dy=3, head_dy=1, hand=(37, 26), ang=1, footB=(OX + 10, 39), footF=(OX + 26, 39), flow=1.5, flutter=4,
                        fx=[("streak", 14)]), 60),
-                 (dict(dx=4, dy=3, head_dy=1, hand=(39, 26), ang=1, footB=(OX + 10, 39), footF=(OX + 26, 39), flow=1.0, flutter=5), 70),
+                 (dict(dx=4, dy=3, head_dy=1, hand=(37, 26), ang=1, footB=(OX + 10, 39), footF=(OX + 26, 39), flow=1.0, flutter=5), 70),
                  (dict(dx=2, dy=1, hand=(34, 26), ang=-3, footF=(OX + 22, 39), flow=0.5), 140),
                  (dict(hand=(33, 27), ang=-8, flow=0.3), 140)], grip=GRIP_SPEAR)
 
@@ -4596,9 +4596,9 @@ def gs_down():  # lift the blade point-down before you, then drive it under the 
 # ---------------------------------------------------------------- spear: skyward thrust, a flat air thrust, tip-first dive
 def sp_up():  # coil low with the spear raised, then drive it straight at the sky with both hands
     return mseq([(dict(dx=-1, dy=3, hand=(30, 29), ang=-70, footB=(OX + 6, 39), flow=0.3), 80),
-                 (dict(dy=-1, hand=(33, 14), ang=-88, footB=(OX + 9, 37), flow=0.9, flutter=1, fx=[("streak", 18)]), 45),
-                 (dict(dy=-2, hand=(33, 13), ang=-89, footB=(OX + 9, 36), footF=(FF[0], 38), flow=1.0, flutter=2, fx=[("streak", 8)]), 60),
-                 (dict(hand=(33, 18), ang=-86, flow=0.6, flutter=3), 90),
+                 (dict(dy=-1, hand=(33, 22), ang=-88, footB=(OX + 9, 37), flow=0.9, flutter=1, fx=[("streak", 18)]), 45),
+                 (dict(dy=-2, hand=(33, 23), ang=-89, footB=(OX + 9, 36), footF=(FF[0], 38), flow=1.0, flutter=2, fx=[("streak", 8)]), 60),
+                 (dict(hand=(33, 21), ang=-86, flow=0.6, flutter=3), 90),
                  (dict(hand=(34, 24), ang=-62, flow=0.4, flutter=4), 70),
                  (dict(hand=(35, 27), ang=-48, flow=0.3), 60)], grip=GRIP_SPEAR)
 
@@ -4616,9 +4616,9 @@ def sp_air():  # draw the spear back along the body, then a flat thrust at full 
 def sp_down():  # turn the spear tip-down before you and ride it down
     base = dict(dy=-4, head_dy=1, **TUCK)
     fr = mseq([(dict(dy=-6, head_dy=0, hand=(35, 16), ang=86, flow=0.9, footB=(OX + 9, 34), footF=(OX + 17, 34)), 60),
-               (dict(hand=(34, 26), ang=90, flow=1.3, flutter=1, fx=[("streak", 14)] + DIVE(10), **LEGS_BACK), 45),
-               (dict(dy=-3, hand=(34, 26), ang=90, flow=1.5, flutter=3, fx=DIVE(8, 1), **LEGS_BACK), 55),
-               (dict(hand=(34, 26), ang=90, flow=1.3, flutter=5, **LEGS_BACK), 60),
+               (dict(hand=(34, 22), ang=90, flow=1.3, flutter=1, fx=[("streak", 14)] + DIVE(10), **LEGS_BACK), 45),
+               (dict(dy=-3, hand=(34, 21), ang=90, flow=1.5, flutter=3, fx=DIVE(8, 1), **LEGS_BACK), 55),
+               (dict(hand=(34, 22), ang=90, flow=1.3, flutter=5, **LEGS_BACK), 60),
                (dict(dy=-3, head_dy=0, hand=(34, 25), ang=-10, flow=0.7, flutter=4, **AIR), 90)], base, grip=GRIP_SPEAR)
     return cape_dive(fr, [1, 2, 3])
 

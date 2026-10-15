@@ -96,6 +96,41 @@ setup('spear', 2, 44); W().tap('attack'); toLate(); W().tap('attack'); toEnd(); 
 T('SP hop -> J continues the chain (after the 2nd poke: the 3rd)', s.includes('sp_3'), s.join(' '));
 setup('spear', 4); W().down('parry'); W().frame(10); W().tap('heavy'); W().frame(4); const pg = E('P.anim.tag + " " + P.spPower.toFixed(2)'); W().tap('heavy'); W().frame(2); const pg2 = E('P.spPower'); W().up('parry');
 T('SP IV power guard: its pose, not re-armed while up', pg.startsWith('sp_pguard') && pg2 < 1, pg + ' / ' + pg2.toFixed(2));
+
+// ================================================================== v14c: J/K mixes (and the spear art audit)
+const tg2 = E("['sh_kj','sh_kk','sh_jkk','sh_aegis','sp_jk','sp_jjk','sp_kj','sp_kk','sp_high'].filter(t => !pHas(t))");
+T('v14c art: every new tag is in the sheet (and the high thrust has its own sp_high)', tg2.length === 0, tg2.join(','));
+setup('sns'); W().tap('heavy'); toLate(); W().tap('attack'); s = trace(50);
+T('SnS K J -> under-rim cut (rank I)', s.includes('sh_kj') && per('sh_kj')[0] === 0.9, s.join(' ') + ' ' + per('sh_kj'));
+setup('sns'); W().tap('heavy'); toLate(); W().tap('attack'); nextLate('sh_kj'); W().tap('attack'); nextLate('sh_3'); W().tap('attack'); s = trace(70);
+T('SnS K J J J -> back into the chain: 3rd cut and finisher', s.includes('sh_3') && s.includes('sh_4'), s.join(' '));
+setup('sns'); W().tap('heavy'); toLate(); W().tap('heavy'); s = trace(60);
+T('SnS K K -> shield hammer (rank I)', s.includes('sh_kk') && per('sh_kk')[0] === 1.3, s.join(' ') + ' ' + per('sh_kk'));
+setup('sns'); W().down('heavy'); W().frame(30); W().up('heavy'); s = trace(50);
+T('SnS hold K is still the charged rush', s.includes('sh_rush'), s.join(' '));
+setup('sns'); W().tap('attack'); toLate(); W().tap('heavy'); nextLate('sh_jab'); W().tap('heavy'); s = trace(60);
+T('SnS J K K -> backhand rim bash (rank I)', s.includes('sh_jkk') && per('sh_jkk')[0] === 1.2, s.join(' ') + ' ' + per('sh_jkk'));
+setup('sns', 2); W().tap('attack'); toLate(); W().tap('attack'); nextLate('sh_2'); W().tap('attack'); nextLate('sh_3'); W().tap('attack'); nextLate('sh_4'); W().tap('heavy'); s = trace(60);
+T('SnS II J J J J K -> aegis plant', s.includes('sh_aegis') && per('sh_aegis').length === 1, s.join(' ') + ' ' + per('sh_aegis'));
+setup('sns', 2, -20); E('P.face = 1'); W().tap('attack'); toLate(); W().tap('attack'); nextLate('sh_2'); W().tap('attack'); nextLate('sh_3'); W().tap('attack'); nextLate('sh_4'); W().tap('heavy'); trace(60);
+T('SnS aegis plant also hits behind', per('sh_aegis').length === 1, String(per('sh_aegis')));
+setup('sns', 1); W().tap('attack'); toLate(); W().tap('attack'); nextLate('sh_2'); W().tap('attack'); nextLate('sh_3'); W().tap('attack'); nextLate('sh_4'); W().tap('heavy'); s = trace(60);
+T('SnS rank I: no aegis plant after the finisher', !s.includes('sh_aegis'), s.join(' '));
+setup('spear', 1, 44); W().tap('attack'); toLate(); W().tap('heavy'); s = trace(50);
+T('SP J K -> twin thrust, 2 hits (rank I)', s.includes('sp_jk') && per('sp_jk').length === 2, s.join(' ') + ' ' + per('sp_jk'));
+setup('spear', 1, 44); W().tap('attack'); toLate(); W().tap('heavy'); nextLate('sp_jk'); W().tap('attack'); s = trace(50);
+T('SP J K J -> the overhead sweep after the twin thrust', s.includes('sp_3'), s.join(' '));
+setup('spear', 1, 50); E('window.__wm.follow = 0'); const jx = P().x; W().tap('attack'); toLate(); W().tap('attack'); nextLate('sp_2'); const jx1 = P().x; W().tap('heavy'); s = trace(50);
+T('SP J J K -> recoil thrust: hits while stepping back', s.includes('sp_jjk') && per('sp_jjk').length === 1 && P().x < jx1 - 8, s.join(' ') + ' dx ' + (P().x - jx1).toFixed(0));
+setup('spear', 1, 30); W().tap('heavy'); toLate(); W().tap('attack'); s = trace(50);
+T('SP K J -> falling haft (rank I)', s.includes('sp_kj') && per('sp_kj')[0] === 1.2, s.join(' ') + ' ' + per('sp_kj'));
+setup('spear', 2, 30); W().tap('heavy'); toLate(); W().tap('heavy'); s = trace(50);
+T('SP II K K -> sky rake', s.includes('sp_kk') && per('sp_kk').length === 1, s.join(' ') + ' ' + per('sp_kk'));
+setup('spear', 1, 30); W().tap('heavy'); toLate(); W().tap('heavy'); s = trace(50);
+T('SP rank I: K K is two high thrusts', !s.includes('sp_kk'), s.join(' '));
+setup('spear', 1, 34); E('P.st = 100; D.maxSt = 100'); W().down('right'); W().down('heavy'); W().frame(60); s = trace(5); W().up('heavy'); W().up('right'); trace(40);
+T('SP hold K while moving is still the charge dash', s.includes('sp_run') || per('sp_finish').length === 1, s.join(' '));
+// (the spear art audit -- full length in every frame, tip inside the frame -- is tools/shots/v14/guard/spear_audit.py)
 // move lists
 const cl = E("({ sns: (MV.types.sns.combos || []).length, spear: (MV.types.spear.combos || []).length, bad: [...MV.types.sns.combos, ...MV.types.spear.combos].filter(c => c.desc.length > 70).map(c => c.name) })");
 T('combos: both move lists present, desc <= 70 chars', cl.sns >= 15 && cl.spear >= 15 && !cl.bad.length, JSON.stringify(cl));

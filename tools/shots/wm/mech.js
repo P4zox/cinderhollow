@@ -133,7 +133,7 @@ T('ST: momentum ends 0.5 s after landing', m3 === 0, String(m3));
 setup('staff', 1, 0, { tall: 70 }); E('P.mom = 2'); W().tap('jump'); W().frame(6); for (let i = 0; i < 80 && G.P.vy <= 20; i++) W().frame(1); E('P.airN = 1; P.airLock = false'); E('mvStart("st_down")'); const rf0 = E('P.airN'); W().frame(12); const rf = E('P.airN');
 T('ST: the dive kick bounce refunds one air attack', rf0 === 2 && rf === 1, `${rf0} -> ${rf}`);
 // ---- Whip
-setup('whip', 1, 70); E('window.__wm.follow = 70'); W().tap('attack'); W().frame(30); const c1 = E('P.crack'); W().tap('heavy'); W().frame(50); const c2 = E('P.crack');
+setup('whip', 1, 70); E('window.__wm.follow = 70'); W().tap('attack'); W().frame(45); const c1 = E('P.crack'); W().tap('heavy'); W().frame(50); const c2 = E('P.crack');   /* v14c: J K is the tip flick, so K waits out the lash */
 T('WH: tip hits fill the crack meter (+10 light, +20 heavy)', c1 === 10 && c2 === 30, `${c1} ${c2}`);
 setup('whip', 1, 20); E('window.__wm.follow = 20'); W().tap('attack'); W().frame(30);
 T('WH: a close hit (not the tip) adds no crack', E('P.crack') === 0, String(E('P.crack')));

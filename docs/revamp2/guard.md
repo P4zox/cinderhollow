@@ -131,3 +131,89 @@ Already failing before this pass, for every type: `J w6 J w6 J (w6 J)`. With the
 after another, inside the same move, is dropped.
 
 In `tools/shots/wm/mech.js`, "9 types x 4 unlocks" fails: SnS now has 5 unlocks and Spear 6.
+
+---
+# v14c: spear animation audit and more J/K combos
+
+## Spear animation audit (every sp_* tag)
+
+I audited all 25 spear tags: the 9 old ones in `gen_player.py`, 11 in `player_v13_b.py`, and the v14 ones, including
+the lead's `sp_guard_back`. I checked them in previews at 4x and in game. A per-frame check,
+`tools/shots/v14/guard/spear_audit.py`, now reports "shrunk frames: none".
+
+Montages are in `tools/shots/v14/guard/spear_audit/`:
+- `before_after_frames.png`: 15 key frames, before and after, from the same renderer as the sheet.
+- `before_counters_grid.png` / `after_counters_grid.png`: every frame of the counter, charged counter, finish and drive.
+- `after_ingame.png`: in-game shots with the hit box drawn.
+
+### What was wrong
+
+| Problem | Where | Detail |
+|---|---|---|
+| The spear shrank at the moment of impact | `sp_counter` f2-4 (0.79-0.84), `sp_finish` f2-4 (0.63-0.79), `sp_ccounter` f3-5 (0.63-0.79), `sp_drive` f2-5 (0.63-0.97), `sp_hoplunge` f2-4 (0.63-0.82) | `draw_weapon` shortens a weapon (down to 45%) until it fits the 64 x 40 frame, whose feet sit at x 28. These lunges put the hands 46-49 px out, so the tip would have passed x 63 and the spear was drawn 20-37% shorter on exactly the strike frames. The spear visibly telescoped on every counter. |
+| Smaller shrinks | `sp_heavy` f5-6 and `sp_charge_run` (0.97) | Same cause. |
+| Vertical spears shrank | `sp_up` f1-3 (0.47-0.87), `sp_down` f1-3 (0.74-0.79), `sp_3` f3 (0.55), `sp_rsweep` f3-4 (0.53-0.61) | Hands too high for an upward spear, or too low for a downward one. |
+| Wrong animation on K | `sp_heavy` | The row asked for `sp_high` but the sheet never had it, so K played the level lunge under a box that rose 64 px. |
+| Tip flipped in one frame | `sp_wheel` f0 | The tip flipped from forward (the end of `sp_2`) to backward. |
+| Guard didn't read as a brace | `sp_guard` | The haft was held up at -36°, like a walking stick, rather than braced at the foe. |
+| Thrusts drew ~34 px but hit 60 px out | All thrusts | A frame can only draw about 35 px ahead of the feet, so a 26 px stretch of each thrust's reach was invisible. |
+
+No problems on these points:
+- Grip: both hands are always on the haft. The off hand sits 6 px behind on the shaft (7.5 px in the guard).
+- Attachment and overlay: the `wpn_spear` overlay lines up with the hands in game.
+- Thrusts: every thrust leads with the tip; the only backward tips are swing wind-ups (`sp_3`, `sp_wheel`).
+
+### What I changed
+
+| Fix | Detail |
+|---|---|
+| Lunge poses | Every lunge keeps hands + body at or under 41 px, so the tip ends at x ~62. The full stretch now reads through the lean instead of a stubby spear. Files: `player_v13_b.py` (counter, finish, charged counter, charge run, guard poke), `gen_player.py` (`sp_heavy`, `sp_3`, `sp_up`, `sp_down`), and my v14 tags. |
+| Vertical poses | Hands placed so the whole spear fits: `sp_up` thrusts from shoulder height, `sp_down` rides with the hands at the chest. |
+| New `sp_high` tag | A real high thrust: coil low, step in, drive the spear up at 40°. Its box is now -4..50 out, up to 52 high (was 64). |
+| Wheeling haft wind-up | The spear rolls up over the head, then round behind. |
+| Guard pose | Crouched wide behind a haft levelled at -27°. The lead's walk and back-walk foot fixes are kept; they inherit the pose. |
+| Reach ghost | On each thrust's hit, two pale, fading copies of the spear lance on along the thrust line to the real reach (`thrust: deg` on each thrust row; render in `76_mech_guard.js`). What you see is what connects. |
+| Overhead sweep reach | `sp_3`'s reach is now its drawn arc (44 px, was 60): a sweep can't show a ghost. |
+
+Frame counts are unchanged except for the new `sp_high`.
+
+## More J/K combos (v14c)
+
+| Weapon | Input | Rank | Wind / total ms | Dmg | Poise | Stam | What it's for |
+|---|---|---|---|---|---|---|---|
+| SnS | **K J**: under-rim cut | I | 110 / 330 | 0.9 | 15 | 9 | After the bash, a fast flat cut from under the shield; J J go on to the 3rd cut and the finisher. |
+| SnS | **K K**: shield hammer | I | 220 / 560 | 1.3 | 60 | 16 | The shield hauled overhead and its rim hammered down: a 120-poise stagger pair. |
+| SnS | **J K K**: backhand rim bash | I | 200 / 520 | 1.2 | 50 | 15 | Jab, then the shield flung out edge-first in a backhand. |
+| SnS | **J J J J K**: aegis plant | II | 200 / 600 | 1.0 | 70 | 14 | The shield planted after the finisher: a stagger on both sides, to make room. |
+| Spear | **J K**: twin thrust | I | 150 / 520 | 0.5 + 0.6 | 28 | 13 | A poke at the knee, then the chest; J goes on to the overhead sweep. |
+| Spear | **J J K**: recoil thrust | I | 160 / 460 | 1.1 | 25 | 12 | The feet step back 18 px while the spear goes out: poke and keep the wall. |
+| Spear | **K J**: falling haft | I | 180 / 520 | 1.2 | 40 | 12 | From the high thrust, raise the spear and chop the haft down in front. |
+| Spear | **K K**: sky rake | II | 200 / 560 | 1.3 | 40 | 15 | A second, steeper high thrust that lifts small foes: the spear's anti-air string. |
+
+Each has its own new animation tag. All of them start from real inputs in `routes.js` (48/48 OK) and hit Gravetusk in the
+real-boss pass. Hold K is still the shield rush, and hold K while moving is still the charge dash.
+
+Behaviour changes for the spear:
+- A K pressed inside the J chain is now the twin or recoil thrust. Previously it was `@K`: the high thrust, or the
+  charge dash when moving.
+- To start the charge dash out of a chain, let the chain end first.
+
+### Bench (x light AR per second, dummy, real inputs)
+
+| Route | Dmg/s | Poise/s |
+|---|---|---|
+| SnS J J J J (reference) | 2.53 | 55 |
+| SnS K J J J | 2.47 | 80 |
+| SnS K K | 2.27 | 111 |
+| SnS J K K | 2.29 | 74 |
+| SnS J J J J K (II) | 2.40 | 72 |
+| Spear J J J (reference) | 2.62 | 38 |
+| Spear J K J | 2.41 | 44 |
+| Spear J J K | 2.51 | 43 |
+| Spear K J | 2.29 | 67 |
+| Spear K K (II) | 2.31 | 65 |
+
+All are below each weapon's main combo: they trade damage for stagger, spacing or anti-air.
+
+The shared WM `routes.js` breaks the same 3 checks as before (`sp_gpoke` damage, `sp_finish` stamina,
+`sp_ccounter` timing) and nothing new. Every SnS/Spear check in `mech.js` passes.

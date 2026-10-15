@@ -223,7 +223,7 @@ def register(G):
         return mseq(dance_open() + dance_hits() + extra + dance_finish(big=True) + dance_tail(200))
 
     # ============================================================ Spear: the planted guard, the poke, the charge
-    GD = dict(dx=-1, dy=3, hand=(36, 23), ang=-36, grip=7.5, footB=(OX + 5, 39), footF=(FF[0] + 2, 39))   # braced guard
+    GD = dict(dx=-2, dy=4, head_dx=-1, hand=(36, 25), ang=-27, grip=7.5, footB=(OX + 4, 39), footF=(FF[0] + 3, 39))   # braced guard: crouched wide behind the levelled haft
 
     def guard(**k):
         return {**GD, **k}
@@ -231,25 +231,25 @@ def register(G):
     def sp_guard():  # held guard (loop): feet planted wide, the haft braced diagonally across the body, a slow breath
         return mseq([(guard(flow=0.3, flutter=0), 150),
                      (guard(flow=0.25, flutter=1), 150),
-                     (guard(dy=4, hand=(36, 23), flow=0.2, flutter=2), 150),
-                     (guard(dy=4, hand=(36, 23), flow=0.25, flutter=3), 150)], grip=GS)
+                     (guard(dy=5, hand=(36, 26), flow=0.2, flutter=2), 150),
+                     (guard(dy=5, hand=(36, 26), flow=0.25, flutter=3), 150)], grip=GS)
 
     def sp_guard_walk():  # guard walk (loop): a slow shuffle that never breaks the brace; the lead foot slides, the back follows
         out = []
         for i in range(6):
             t = i / 6 * 2 * math.pi
             # a foot lifts while it moves forward (cos > 0) and is planted while it pushes back (v14b: was the other way)
-            fF = (FF[0] + 2 + 2.6 * math.sin(t), 39 - max(0.0, math.cos(t)) * 2.0)
-            fB = (OX + 5 + 2.6 * math.sin(t + math.pi), 39 - max(0.0, math.cos(t + math.pi)) * 2.0)
-            dy = 3 + (1 if i % 3 == 0 else 0)
+            fF = (FF[0] + 3 + 2.6 * math.sin(t), 39 - max(0.0, math.cos(t)) * 2.0)
+            fB = (OX + 4 + 2.6 * math.sin(t + math.pi), 39 - max(0.0, math.cos(t + math.pi)) * 2.0)
+            dy = 4 + (1 if i % 3 == 0 else 0)
             out.append((guard(dy=dy, footF=fF, footB=fB, flow=0.35 + 0.1 * (i % 2), flutter=i), 110))
         return mseq(out, grip=GS)
 
     def sp_gpoke():  # guard poke: a short thrust that leaves the brace intact, then back into the guard
         return mseq([(guard(dx=-2, hand=(34, 24), ang=-28, flow=0.3), 70),
                      (guard(dx=-2, hand=(31, 24), ang=-20, flow=0.25, flutter=1), 70),
-                     (guard(dx=1, hand=(42, 23), ang=-14, footF=(FF[0] + 3, 39), flow=0.9, flutter=2, fx=[("streak", 18)]), 45),
-                     (guard(dx=1, hand=(42, 23), ang=-15, footF=(FF[0] + 3, 39), flow=0.7, flutter=3, fx=[("streak", 8)]), 55),
+                     (guard(dx=1, hand=(40, 23), ang=-14, footF=(FF[0] + 3, 39), flow=0.9, flutter=2, fx=[("streak", 18)]), 45),
+                     (guard(dx=1, hand=(40, 23), ang=-15, footF=(FF[0] + 3, 39), flow=0.7, flutter=3, fx=[("streak", 8)]), 55),
                      (guard(hand=(38, 23), ang=-28, flow=0.4, flutter=4), 80),
                      (guard(flow=0.3, flutter=5), 60)], grip=GS)
 
@@ -257,11 +257,11 @@ def register(G):
         return mseq([(guard(dx=-3, head_dx=-1, flow=0.8, fx=[("flare", (44, 15), 5)]), 60),
                      (dict(dx=-3, dy=3, head_dx=-1, hand=(26, 26), ang=-4, footB=(OX + 4, 39), footF=(OX + 17, 39), flow=0.2,
                            flutter=1, fx=[("glint", "tip")]), 100),
-                     (dict(dx=4, dy=2, hand=(42, 25), ang=-2, footB=(OX + 8, 39), footF=(OX + 26, 39), flow=1.6, flutter=2,
+                     (dict(dx=4, dy=2, hand=(37, 25), ang=-2, footB=(OX + 8, 39), footF=(OX + 26, 39), flow=1.6, flutter=2,
                            fx=[("streak", 24), ("flare", "tip", 5), ("speed", (20, 17), 4, 12)]), 50),
-                     (dict(dx=4, dy=2, hand=(42, 25), ang=-1, footB=(OX + 8, 39), footF=(OX + 26, 39), flow=1.3, flutter=3,
+                     (dict(dx=4, dy=2, hand=(37, 25), ang=-1, footB=(OX + 8, 39), footF=(OX + 26, 39), flow=1.3, flutter=3,
                            fx=[("streak", 12)]), 60),
-                     (dict(dx=4, dy=3, head_dy=1, hand=(41, 26), ang=0, footB=(OX + 9, 39), footF=(OX + 26, 39), flow=0.9,
+                     (dict(dx=4, dy=3, head_dy=1, hand=(36, 26), ang=0, footB=(OX + 9, 39), footF=(OX + 26, 39), flow=0.9,
                            flutter=4), 120),
                      (dict(dx=1, dy=1, hand=(34, 26), ang=-4, footF=(OX + 21, 39), flow=0.4, flutter=5), 130)], grip=GS)
 
@@ -290,7 +290,7 @@ def register(G):
             fx = [("streak", 14 + 3 * (i % 2)), ("speed", (22, 8 + dy), 2, 9 + 2 * (i % 2))]
             if i in (0, 4):
                 fx.append(("dust", int(round(min(fF[0], fB[0]))) - 1, 2))
-            out.append((dict(dx=3, dy=dy, head_dx=1, hand=(40, 26), ang=1, footF=fF, footB=fB, flow=1.2, flutter=i, fx=fx), 60))
+            out.append((dict(dx=3, dy=dy, head_dx=1, hand=(38, 26), ang=1, footF=fF, footB=fB, flow=1.2, flutter=i, fx=fx), 60))
         fr = mseq(out, grip=GS)
         for i, (cels, _) in enumerate(fr):   # the cape streams flat behind, its ripple travelling back once per loop
             dy = out[i][0]["dy"]
@@ -302,11 +302,11 @@ def register(G):
                            fx=[("dust", 37, 2)]), 60),
                      (dict(dx=-1, dy=3, head_dx=-1, hand=(27, 26), ang=-2, footB=(OX + 5, 39), footF=(OX + 21, 39), flow=0.9,
                            flutter=1, fx=[("glint", "tip")]), 60),
-                     (dict(dx=5, dy=2, hand=(44, 25), ang=-1, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.8, flutter=2,
+                     (dict(dx=4, dy=2, hand=(37, 25), ang=-1, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.8, flutter=2,
                            fx=[("streak", 26), ("flare", "tip", 6), ("speed", (22, 17), 5, 14)]), 50),
-                     (dict(dx=5, dy=2, hand=(44, 25), ang=0, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.4, flutter=3,
+                     (dict(dx=4, dy=2, hand=(37, 25), ang=0, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.4, flutter=3,
                            fx=[("streak", 12)]), 60),
-                     (dict(dx=4, dy=3, head_dy=1, hand=(42, 26), ang=1, footB=(OX + 9, 39), footF=(OX + 27, 39), flow=0.9, flutter=4,
+                     (dict(dx=4, dy=3, head_dy=1, hand=(37, 26), ang=1, footB=(OX + 9, 39), footF=(OX + 27, 39), flow=0.9, flutter=4,
                            fx=[("dust", 26, 3)]), 130),
                      (dict(dx=1, dy=1, hand=(34, 26), ang=-4, footF=(OX + 21, 39), flow=0.4, flutter=5), 120)], grip=GS)
 
@@ -325,12 +325,12 @@ def register(G):
                            flutter=1, aura=1, aura_pal=P_GOLD), 150),
                      (dict(dx=-4, dy=4, head_dx=-1, hand=(25, 27), ang=-5, footB=(OX + 3, 39), footF=(OX + 17, 39), flow=0.2,
                            flutter=2, aura=1, aura_pal=P_GOLD, fx=[("flare", "tip", 5, P_GOLD)]), 150),
-                     (dict(dx=5, dy=2, hand=(44, 25), ang=-1, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.9, flutter=3,
+                     (dict(dx=4, dy=2, hand=(37, 25), ang=-1, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.9, flutter=3,
                            aura=1, aura_pal=P_GOLD, fx=[("streak", 28), ("flare", "tip", 8, P_GOLD), ("speed", (22, 17), 6, 16, P_GOLD)]),
                       50),
-                     (dict(dx=5, dy=2, hand=(44, 25), ang=0, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.5, flutter=4,
+                     (dict(dx=4, dy=2, hand=(37, 25), ang=0, footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.5, flutter=4,
                            fx=[("streak", 16), ("flare", "tip", 5, P_GOLD)]), 70),
-                     (dict(dx=4, dy=3, head_dy=1, hand=(42, 26), ang=1, footB=(OX + 9, 39), footF=(OX + 27, 39), flow=0.9,
+                     (dict(dx=4, dy=3, head_dy=1, hand=(37, 26), ang=1, footB=(OX + 9, 39), footF=(OX + 27, 39), flow=0.9,
                            flutter=5), 160),
                      (dict(dx=1, dy=1, hand=(34, 26), ang=-4, footF=(OX + 21, 39), flow=0.4, flutter=6), 160)], grip=GS)
 
