@@ -963,7 +963,7 @@ class Astrel extends BossBase {
         N.st = 'blast'; N.t = 0; flashScreen = 1; shake = 16; hitstop = 0.12; sfSfx.boom(); sfx.roar(); noise(1.5, 3000, 0.5, 0.6, 'highpass', 0.3);
         const cover = SFA.monos.some(mo => mo.k > 0.9 && (mo.x - this.x) * (P.x - mo.x) > 0 && Math.abs(P.x - mo.x) < 70 && P.y > fl - mo.h + 12);
         if (cover) { toast('The monolith drinks the light.', 2.2); hurtPlayer(sfDmg(10, this), P.x < this.x ? -1 : 1, ++hazardId, { src: this }); }
-        else { P.inv = 0; hurtPlayer(D.maxHp * 0.82 * NGP.dmg, P.x < this.x ? -1 : 1, ++hazardId, { src: this }); }
+        else { P.inv = 0; hurtPlayer(D.maxHp * 0.82, P.x < this.x ? -1 : 1, ++hazardId, { src: this }); }
         for (let i = 0; i < 80; i++) { const a = rand(0, 6.28); particles.push({ x: this.x, y: this.y - 30, vx: Math.cos(a) * rand(80, 320), vy: Math.sin(a) * rand(80, 320), life: rand(0.5, 1.2), kind: i % 3 ? 'star' : 'nebula' }); }
       }
       return;

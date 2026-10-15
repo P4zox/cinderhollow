@@ -27,18 +27,30 @@ function parryBody(src) {   // the thing that was parried: the boss itself, or o
       if (list && atk && list.includes(atk)) opt = { ...opt, parryable: true };
     }
     if (t && opt.parryable && typeof t.stance === 'number') t._stance0 = t.stance;   // stance before onParried
+    if (t) PARRY_LAST = { t, parryable: !!opt.parryable, at: time };   // v15: what the parry hook below is answering
     return _hurt.call(this, dmg, dir, id, opt);
   }; }
+// v15 balance (tools/shots/v15/balance, docs/v15/balance.md):
+//  * the parry's share is of the boss's stance bar as it GROWS (each stagger raises it x1.15, up to x2): it used to be a
+//    share of the current bar, so 3-4 parries broke a stance however often it had broken -- the Longsword and shield
+//    staggered Vael ~19 times a fight, Sanguine and Astrel 8-9.
+//  * a "parry" of a blow that can't be parried (the katana's Iai parry negates anything: grabs, slams, magic,
+//    projectiles) still turns it aside, but rattles the boss half as much and doesn't count toward breaking its rhythm.
+let PARRY_LAST = null;
+const PARRY_UNPARRYABLE = 0.5;
 HOOKS.parry.push(src => {
   const t = parryBody(src); if (!t || !t.alive || !boss.active) return;
-  const now = time;
+  const now = time, L = PARRY_LAST && PARRY_LAST.t === t && now - PARRY_LAST.at < 0.05 ? PARRY_LAST : null;
+  const clean = !L || L.parryable; PARRY_LAST = null;
   // stance: top the boss's own parry hit up to PARRY_STANCE of its bar
   if (typeof t.stance === 'number' && t.stanceMax > 0 && !(t.stanceImmune > 0) && t.state !== 'stagger') {
-    const gained = t.stance - (t._stance0 ?? t.stance), want = t.stanceMax * PARRY_STANCE;
+    const bar = t.stanceBase || t.stanceMax;   // the bar before any stagger grew it (BossBase.stagger keeps it)
+    const gained = t.stance - (t._stance0 ?? t.stance), want = bar * PARRY_STANCE * (clean ? 1 : PARRY_UNPARRYABLE);
     if (gained < want) t.stance += want - gained;
     if (t.stance >= t.stanceMax && typeof t.stagger === 'function' && (!t.canStagger || t.canStagger())) { t.stagger(); return; }
   }
   t._stance0 = undefined;
+  if (!clean) { parryFeedback(t, false); return; }
   // rhythm: the second parry in a row breaks the combo
   t._pChain = now - (t._pT ?? -9) < PARRY_CHAIN ? (t._pChain || 1) + 1 : 1;
   t._pT = now;

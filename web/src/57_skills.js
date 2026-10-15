@@ -28,16 +28,16 @@ const SK_BRANCH_NODES = {
   blade: [
     ['a', 'keen_edge', 'Keen Edge', 1, 'Melee damage +12%.', () => [['Light attack', dOr(() => Math.round(D.light)), dOr(() => pct(D.light, 12))]]],
     ['s1', 'heavy_hand', 'Heavy Hand', 1, 'Heavy attacks deal +15% damage and +25% stance damage.', () => [['Heavy attack', dOr(() => Math.round(D.heavy * 2)), dOr(() => pct(D.heavy * 2, 15))]]],
-    ['b', 'fourth_strike', 'Fourth Strike', 1, 'Your light combo gains an extra finishing strike.', () => [['Combo length', dOr(() => moveset().combo.length), dOr(() => moveset().combo.length + 1)]]],
-    ['f1a', 'measured_cut', 'Measured Cut', 2, 'The opening blow of a combo deals +30%.', () => [['Opening blow', 100, 130]]],
+    ['b', 'fourth_strike', 'Finishing Blow', 1, 'The last strike of a combo (every finisher) deals +20% damage and +30% stance damage.', () => [['Finisher damage', 100, 120], ['Finisher stance damage', 100, 130]]],
+    ['f1a', 'measured_cut', 'Measured Cut', 2, 'The first move you make after a breath (0.8 s without attacking) deals +25%: an opener, a charged blow, a draw.', () => [['Opening move', 100, 125]]],
     ['f1b', 'flowing_form', 'Flowing Form', 2, 'Each blow after the first in a combo costs 35% less stamina.', () => [['Follow-up stamina', 100, 65]]],
-    ['c', 'charged_arts', 'Charged Arts', 2, 'Heavy attacks charge 35% faster. A fully charged heavy looses a crescent of ash.', () => [['Charge time', 0.55, 0.35]]],
+    ['c', 'charged_arts', 'Charged Arts', 2, 'Held heavy attacks charge 35% faster (every charge stance and charge level). A charged heavy looses a crescent of ash.', () => [['Charge time', 100, 65]]],
     ['s2', 'sunder', 'Sunder', 1, 'All your blows deal +25% stance damage: foes break open sooner.', () => [['Stance damage', 100, 125]]],
     ['d', 'executioner', 'Executioner', 2, 'Critical hits (ripostes, backstabs, stagger crits) deal +30% and refund 30 stamina.', () => [['Critical damage', 100, 130]]],
-    ['f2a', 'blade_dancer', 'Blade Dancer', 2, 'Light attacks swing 15% faster.', () => [['Light swing speed', 100, 115]]],
-    ['f2b', 'crushing_weight', 'Crushing Weight', 2, 'Charged heavy attacks can’t be interrupted and deal +20%.', () => [['Charged heavy', 100, 120]]],
+    ['f2a', 'blade_dancer', 'Blade Dancer', 2, 'Light attacks swing 12% faster.', () => [['Light swing speed', 100, 112]]],
+    ['f2b', 'crushing_weight', 'Crushing Weight', 2, 'Charged heavy attacks deal +20%, and blows can’t interrupt you while you charge or swing one.', () => [['Charged heavy', 100, 120]]],
     ['e', 'tireless', 'Tireless', 2, 'Light and heavy attacks cost 20% less stamina.', () => [['Attack stamina', 100, 80]]],
-    ['k', 'relentless', 'Relentless', 4, 'KEYSTONE. Each hit in an unbroken combo deals +5% more, stacking to +25%. The stack is lost if you are hit or stop attacking for 1.2 s.', () => [['Damage at full stack', 100, 125]]],
+    ['k', 'relentless', 'Relentless', 4, 'KEYSTONE. Each move that connects in an unbroken combo adds +5% damage, stacking to +25%. The stack is lost if you are hit or stop attacking for 2.5 s.', () => [['Damage at full stack', 100, 125]]],
   ],
   ash: [
     ['a', 'kindled_mind', 'Kindled Mind', 1, 'Spell damage +15%.', () => [['Spell power', dOr(() => Math.round(D.spell * 100)), dOr(() => pct(D.spell * 100, 15))]]],
@@ -45,19 +45,19 @@ const SK_BRANCH_NODES = {
     ['b', 'azure_thrift', 'Azure Thrift', 1, 'All spells cost 30% less FP.', () => [['Ash Bolt FP', 10, 7]]],
     ['f1a', 'quick_recall', 'Quick Recall', 2, 'Spell cooldowns are 30% shorter, and spells cost 10% less FP.', () => [['Spell cooldown', 100, 70], ['Spell FP', 100, 90]]],
     ['f1b', 'overcharge', 'Overcharge', 2, 'Spells deal +20% damage, but their cooldowns are 35% longer.', () => [['Spell damage', 100, 120], ['Spell cooldown', 100, 135]]],
-    ['c', 'soul_siphon', 'Soul Siphon', 2, 'Melee hits restore 2 FP. Kills restore 8 FP and 3% HP.', () => [['FP per hit', 0, 2]]],
+    ['c', 'soul_siphon', 'Soul Siphon', 2, 'Melee hits restore FP by their damage (2 for each light hit’s worth).', () => [['FP per light hit', 0, 2]]],
     ['s2', 'mana_font', 'Mana Font', 1, 'FP slowly refills on its own: 1.5 FP per second.', () => [['FP per second', 0, 1.5]]],
     ['d', 'memory_palace', 'Memory Palace', 2, 'One more spell slot.', () => [['Spell slots', dOr(() => SAVE.spellSlots, 2), dOr(() => SAVE.spellSlots + (has('memory_palace') ? 0 : 1), 3)]]],
     ['f2a', 'steady_cast', 'Steady Casting', 2, 'Blows can’t interrupt your casting, and you take 20% less damage while casting.', () => [['Damage while casting', 100, 80]]],
     ['f2b', 'swift_incant', 'Swift Incantation', 2, 'Spells are cast 25% faster.', () => [['Cast speed', 100, 125]]],
     ['e', 'resonance', 'Resonance', 2, 'A spell that strikes a foe makes your next melee blow within 3 s deal +30%.', () => [['Next melee blow', 100, 130]]],
-    ['k', 'spellblade', 'Spellblade', 4, 'KEYSTONE. Every melee hit shaves 0.4 s off all your spell cooldowns.', () => [['Cooldown per hit', 0, 0.4]]],
+    ['k', 'spellblade', 'Spellblade', 4, 'KEYSTONE. Every melee move that connects shaves 0.5 s off all your spell cooldowns.', () => [['Cooldown per move', 0, 0.5]]],
   ],
   veil: [
     ['a', 'quickstep', 'Quickstep', 1, 'Rolling costs 30% less stamina and stays invulnerable a frame longer.', () => [['Roll stamina', 20, 14]]],
     ['s1', 'iron_flask', 'Iron Flask', 2, '+1 flask charge.', () => [['Flasks', dOr(() => flaskMax(), 4), dOr(() => flaskMax() + (has('iron_flask') ? 0 : 1), 5)]]],
-    ['b', 'riposte_mastery', 'Riposte Mastery', 1, 'Wider parry window. Critical hits deal +50% and restore 5% HP.', () => [['Parry window (s)', 0.17, 0.24]]],
-    ['f1a', 'deflect', 'Deflect', 2, 'A clean parry restores 30 stamina and 5% HP.', () => [['Stamina per parry', 0, 30]]],
+    ['b', 'riposte_mastery', 'Riposte Mastery', 1, 'Critical hits (ripostes on a broken stance) deal +50% and restore 5% HP. The Longsword and shield parry window is 40% wider.', () => [['Critical damage', 100, 150], ['Parry window (s)', 0.17, 0.24]]],
+    ['f1a', 'deflect', 'Deflect', 2, 'Every clean defence restores 25 stamina and 3% HP: a parry, an Iai parry, a foresight or snap counter, a perfect dodge, a counter after a guard.', () => [['Stamina per defence', 0, 25]]],
     ['f1b', 'evasive_strike', 'Evasive Strike', 2, 'Attacks out of a roll deal +15% and cost no stamina.', () => [['Roll attack', 100, 115]]],
     ['c', 'steadfast', 'Steadfast', 2, 'Greater poise, and damage taken is reduced by 10%.', () => [['Poise', dOr(() => Math.round(D.poise)), dOr(() => Math.round(D.poise + (has('steadfast') ? 0 : 25)))]]],
     ['s2', 'enduring', 'Enduring', 1, 'Maximum stamina +10%.', () => [['Max stamina', dOr(() => D.maxSt), dOr(() => pct(D.maxSt, 10))]]],
@@ -68,17 +68,17 @@ const SK_BRANCH_NODES = {
     ['k', 'shadowstep', 'Shadowstep', 4, 'KEYSTONE. Roll through an attack at the last moment and you step out behind the attacker.', () => [['Last-moment dodge', 'stay', 'behind']]],
   ],
   blood: [
-    ['a', 'bloodthirst', 'Bloodthirst', 1, 'Melee hits build Bleed (+16 per hit). A full bleed meter bursts for heavy damage.', () => [['Bleed per hit', dOr(() => Math.round(D.W.bleed || 0)), dOr(() => Math.round((D.W.bleed || 0) + 16))]]],
+    ['a', 'bloodthirst', 'Bloodthirst', 1, 'Melee hits build Bleed by their damage (+12 for each light hit’s worth). A full bleed meter bursts for heavy damage.', () => [['Bleed per light hit', dOr(() => Math.round(D.W.bleed || 0)), dOr(() => Math.round((D.W.bleed || 0) + 12))]]],
     ['s1', 'open_wounds', 'Open Wounds', 1, 'Bleed buildup on foes fades 60% slower.', () => [['Bleed fade', 100, 40]]],
     ['b', 'hemorrhage', 'Hemorrhage', 1, 'Bleed bursts deal +35% damage.', () => [['Bleed burst', 100, 135]]],
     ['f1a', 'vein_burst', 'Vein Burst', 2, 'When a foe’s bleed bursts, foes near it take half the burst too.', () => [['Burst spread', 0, 50]]],
     ['f1b', 'blood_drinker', 'Blood Drinker', 2, 'Killing a bleeding foe, or a critical hit on one, heals 5% HP.', () => [['Heal', 0, 5]]],
     ['c', 'last_stand', 'Last Stand', 2, 'Below 30% HP you deal 25% more damage.', () => [['Damage below 30% HP', 100, 125]]],
     ['s2', 'wrath', 'Wrath', 1, 'Taking a blow grants +10% damage for 3 s.', () => [['Damage after a blow', 100, 110]]],
-    ['d', 'frenzy', 'Frenzy', 2, 'Below 50% HP you attack 12% faster.', () => [['Attack speed below 50% HP', 100, 112]]],
+    ['d', 'frenzy', 'Frenzy', 2, 'Below 50% HP you attack 12% faster. (Attack speed from every source tops out at +40%.)', () => [['Attack speed below 50% HP', 100, 112]]],
     ['f2a', 'blood_price', 'Blood Price', 2, 'You deal +10% damage, but flasks restore 15% less.', () => [['Damage', 100, 110], ['Flask heal', 100, 85]]],
     ['f2b', 'crimson_veil', 'Crimson Veil', 2, 'Below 30% HP you take 20% less damage.', () => [['Damage taken below 30% HP', 100, 80]]],
-    ['e', 'leech', 'Leech', 2, 'Melee hits heal 0.8% of max HP (1.6% below 30% HP).', () => [['HP per hit', 0, dOr(() => +(D.maxHp * 0.008).toFixed(1))]]],
+    ['e', 'leech', 'Leech', 2, 'Melee hits heal you by their damage: 0.8% of max HP for each light hit’s worth (double below 30% HP).', () => [['HP per light hit', 0, dOr(() => +(D.maxHp * 0.008).toFixed(1))]]],
     ['k', 'crimson_pact', 'Crimson Pact', 4, 'KEYSTONE. Every bleed burst you cause heals 6% of your max HP, but you carry one fewer crimson flask.', () => [['Heal per bleed burst', 0, dOr(() => Math.round(D.maxHp * 0.06))], ['Crimson flasks', dOr(() => P.flasksR + (has('crimson_pact') ? 1 : 0), 4), dOr(() => P.flasksR - (has('crimson_pact') ? 0 : 1), 3)]]],
   ],
   flame: [
@@ -87,8 +87,8 @@ const SK_BRANCH_NODES = {
     ['b', 'kindling', 'Kindling', 1, 'Weapon arts cost 20% less FP.', () => [['Art FP', dOr(() => ARTS[SAVE.art].fp, 12), dOr(() => Math.round(ARTS[SAVE.art].fp * 0.8), 10)]]],
     ['f1a', 'quick_charge', 'Quick Charge', 2, 'Weapon arts reach a full charge 40% sooner.', () => [['Charge time (s)', 0.6, 0.36]]],
     ['f1b', 'wildfire', 'Wildfire', 2, 'Uncharged weapon arts deal +12% damage.', () => [['Quick-release art', 100, 112]]],
-    ['c', 'lingering_flame', 'Lingering Flame', 2, 'War Cry, Cinder Blade and other art buffs last 40% longer.', () => [['Cinder Blade (s)', 20, 28]]],
-    ['s2', 'pyre_heart', 'Pyre Heart', 1, 'Melee hits restore 1 FP, or 2 while your weapon burns.', () => [['FP per hit', 0, 1]]],
+    ['c', 'lingering_flame', 'Lingering Flame', 2, 'After a weapon art your blade smoulders for 6 s: melee hits deal +12%. (Art buffs also last 40% longer.)', () => [['Melee after an art', 100, 112]]],
+    ['s2', 'pyre_heart', 'Pyre Heart', 1, 'Melee hits restore FP by their damage: 1 for each light hit’s worth, 2 while your weapon burns.', () => [['FP per light hit', 0, 1]]],
     ['d', 'swift_arts', 'Swift Arts', 2, 'Weapon art cooldowns are 15% shorter.', () => [['Art cooldown', 100, 85]]],
     ['f2a', 'war_drums', 'War Drums', 2, 'Blows can’t interrupt your weapon arts, and you take 15% less damage while using one.', () => [['Damage during arts', 100, 85]]],
     ['f2b', 'ember_blood', 'Ember Blood', 2, 'After a weapon art, your next three melee hits deal +12%.', () => [['Next three hits', 100, 112]]],
@@ -165,9 +165,9 @@ function skOnLearn(id, on) {
 }
 // what a build adds up to, in plain words, for the summary panel
 const SK_SUM = {
-  keen_edge: [['Melee damage', 12]], heavy_hand: [['Heavy damage', 15], ['Heavy stance damage', 25]], measured_cut: [['Opening blow damage', 30]],
-  flowing_form: [['Follow-up stamina cost', -35]], charged_arts: [['Heavy charge time', -36]], sunder: [['Stance damage', 25]], executioner: [['Critical damage', 30]],
-  blade_dancer: [['Light swing speed', 15]], crushing_weight: [['Charged heavy damage', 20]], tireless: [['Attack stamina cost', -20]],
+  keen_edge: [['Melee damage', 12]], heavy_hand: [['Heavy damage', 15], ['Heavy stance damage', 25]], measured_cut: [['Opening move damage', 25]],
+  flowing_form: [['Follow-up stamina cost', -35]], charged_arts: [['Heavy charge time', -35]], fourth_strike: [['Finisher damage', 20], ['Finisher stance damage', 30]], lingering_flame: [['Melee after an art', 12]], sunder: [['Stance damage', 25]], executioner: [['Critical damage', 30]],
+  blade_dancer: [['Light swing speed', 12]], crushing_weight: [['Charged heavy damage', 20]], tireless: [['Attack stamina cost', -20]],
   kindled_mind: [['Spell damage', 15]], deep_well: [['Max FP', 15]], azure_thrift: [['Spell FP cost', -30]], quick_recall: [['Spell cooldowns', -30], ['Spell FP cost', -10]],
   overcharge: [['Spell damage', 20], ['Spell cooldowns', 35]], swift_incant: [['Cast speed', 25]], steady_cast: [['Damage taken while casting', -20]], resonance: [['Melee after a spell hit', 30]],
   quickstep: [['Roll stamina cost', -30]], riposte_mastery: [['Critical damage', 50], ['Parry window', 41]], evasive_strike: [['Roll attack damage', 15]],
@@ -175,12 +175,12 @@ const SK_SUM = {
   hemorrhage: [['Bleed burst damage', 35]], open_wounds: [['Bleed fade', -60]], last_stand: [['Damage below 30% HP', 25]], wrath: [['Damage after a blow', 10]],
   frenzy: [['Attack speed below 50% HP', 12]], blood_price: [['Damage', 10], ['Flask healing', -15]], crimson_veil: [['Damage taken below 30% HP', -20]],
   ember_focus: [['Weapon art damage', 15]], kindling: [['Art FP cost', -20]], quick_charge: [['Art charge time', -40]], wildfire: [['Quick-release art damage', 12]],
-  lingering_flame: [['Art buff duration', 40]], swift_arts: [['Art cooldowns', -15]], war_drums: [['Damage taken during arts', -15]],
+  swift_arts: [['Art cooldowns', -15]], war_drums: [['Damage taken during arts', -15]],
   ember_blood: [['Damage after an art (3 hits)', 12]], kindled: [['Art cooldowns', -20]], way_prosper: [['Cinders from foes', 10]], way_hook: [['Root Hook reach', 35]], way_glide: [['Glide speed', 25]],
 };
 const SK_SUM_TEXT = {
-  fourth_strike: 'An extra combo strike', soul_siphon: 'Melee hits restore FP', mana_font: 'FP regenerates', memory_palace: '+1 spell slot', iron_flask: '+1 flask',
-  deflect: 'Parries restore stamina and HP', second_wind: 'Perfect dodges restore stamina', featherfoot: 'Free follow-up rolls', bloodthirst: 'Every blow builds bleed',
+  soul_siphon: 'Melee hits restore FP', mana_font: 'FP regenerates', memory_palace: '+1 spell slot', iron_flask: '+1 flask',
+  deflect: 'Clean defences restore stamina and HP', second_wind: 'Perfect dodges restore stamina', featherfoot: 'Free follow-up rolls', bloodthirst: 'Every blow builds bleed',
   vein_burst: 'Bleed bursts spread', blood_drinker: 'Bleeding kills heal', leech: 'Melee lifesteal', afterglow: 'Arts restore stamina', pyre_heart: 'Melee hits restore FP', searing_arts: 'Arts set foes burning',
   way_glint: 'Breakable walls glint', way_remnant: 'Keep 30% of cinders on death', way_dash: 'Two Ember Dashes in the air', way_slam: 'Cinder Slam shockwaves', way_wall: 'Better wall grip',
 };
@@ -213,6 +213,7 @@ function skOutMul(kind, src) {
   if (has('last_stand') && P.hp < D.maxHp * 0.3) m *= 1.25;
   if (has('blood_price')) m *= 1.1;
   if (has('wrath') && P.skWrathT > time) m *= 1.1;
+  if (melee && has('lingering_flame') && P.skLingerT > time) m *= 1.12;
   if (skArtCtx(pr)) {
     if (has('ember_focus')) m *= 1.15;
     if (has('wildfire') && !(pr && pr.skArt ? pr.skArt.ch : P.artCharged)) m *= 1.12;
@@ -220,11 +221,12 @@ function skOutMul(kind, src) {
   }
   if (!melee || pr) return m;   // spells get theirs in derive(); a loose projectile carries no swing with it
   const A = ATK[P.state];
-  if (A) {
+  if (A) {   // v15: per MOVE (P.skMvN counts move starts, 57's mvStart wrapper), not per hit
     if (A.kind === 'heavy' && has('heavy_hand')) m *= 1.15;
     if (A.kind === 'heavy' && P.charged && has('crushing_weight')) m *= 1.2;
-    if (has('measured_cut') && P.comboStep === 0) m *= 1.3;
-    if (has('evasive_strike') && P.skRollAtk === P.hitSet) m *= 1.15;
+    if (has('measured_cut') && P.skOpenN === P.skMvN) m *= 1.25;
+    if (has('evasive_strike') && P.skRollAtk === P.skMvN) m *= 1.15;
+    if (has('fourth_strike') && A.mv && A.mv.fin) m *= 1.2;
   }
   if (P.state === 'riposte') { if (has('executioner')) m *= 1.3; if (skillOn('m_dagger')) m *= 1.25; }
   if (has('relentless')) m *= 1 + 0.05 * (P.skRel || 0);
@@ -233,7 +235,7 @@ function skOutMul(kind, src) {
   return m;
 }
 // stance (poise) damage of your melee blows, applied in playerStrike()
-function skPoiseMul(A) { if (!skL()) return 1; return (has('sunder') ? 1.25 : 1) * (A.kind === 'heavy' && has('heavy_hand') ? 1.25 : 1); }
+function skPoiseMul(A) { if (!skL()) return 1; return (has('sunder') ? 1.25 : 1) * (A.kind === 'heavy' && has('heavy_hand') ? 1.25 : 1) * (has('fourth_strike') && A.mv && A.mv.fin ? 1.3 : 1); }
 // blows that can't stagger you (hurtPlayer's armour check)
 function skArmored() {
   if (!skL()) return false;
@@ -267,9 +269,16 @@ HOOKS.playerHurt.push((dmg, opt) => {
   if (has('wrath')) P.skWrathT = time + 3;
   return dmg * m;
 });
-HOOKS.parry.push(() => {
-  if (has('deflect')) { P.st = Math.min(D.maxSt, P.st + 30); skHeal(0.05); }
-});
+// Deflect (v15): every type's clean defence. Each one already pays Weapon Mastery through mvGain: 'parry' (Longsword /
+// shield parry), 'counter' (Iai parry, foresight, snap counter -- and a counter move landing after a guard, block or
+// brace), 'perfect dodge' (Dual Blades). One payout per 0.6 s, and a counter that lands right after a payout is the same defence.
+function skDefended(why) {
+  if (!P || !skL() || !has('deflect')) return;
+  const hitAfter = why === 'counter' && P.mvGained && ATK[P.state] && ATK[P.state].counter;
+  if (time - (P.skDefT ?? -9) < (hitAfter ? 1.6 : 0.6)) return;
+  P.skDefT = time; P.st = Math.min(D.maxSt, P.st + 25); skHeal(0.03); skSpark(P.x, P.y - 18, 6, 'gold', 50);
+}
+{ const _mg = mvGain; mvGain = function (why) { _mg(why); if (why === 'parry' || why === 'counter' || why === 'perfect dodge') skDefended(why); }; }
 // dodges: Second Wind lives in hurtPlayer; Featherfoot and Shadowstep here
 (HOOKS.negated = HOOKS.negated || []).push((dmg, dir, opt) => {
   if (!P || P.state !== 'roll') return;
@@ -294,13 +303,16 @@ function skShadowstep(dir, opt) {
 // melee hits (playerStrike, plunge, spear dive)
 HOOKS.strike.push((t, info, A) => {
   if (!skL() || !P) return;
-  const once = P.skStrikeSet !== P.hitSet; P.skStrikeSet = P.hitSet;
+  // v15: once per MOVE that connects (multi-hit moves used to count every hit: Relentless and Spellblade ran away on the
+  // Dual Blades); the per-hit sustain (Leech, Pyre Heart) scales with the hit's damage in light-hit units instead
+  const mvN = ATK[P.state] ? P.skMvN : 'x' + P.hitSet, once = P.skStrikeMv !== mvN; P.skStrikeMv = mvN;
+  const lu = clamp((info && info.dmg || 0) / Math.max(1, D.light), 0, 3);   // this hit in light-hit units
   if (once && has('relentless')) { P.skRel = Math.min(5, (P.skRel || 0) + 1); P.skRelT = time; }
   if (P.skResoT > time) P.skResoT = 0;
-  if (P.skEmberN > 0) P.skEmberN--;
-  if (once && has('spellblade') && P.cds) { let any = false; for (const k in P.cds) if (k.startsWith('spell:') && P.cds[k] > time) { P.cds[k] -= 0.4; any = true; } if (any) particles.push({ x: P.x, y: P.y - 20, vx: 0, vy: -40, life: 0.4, kind: 'gold' }); }
-  if (has('leech')) { const f = P.hp < D.maxHp * 0.3 ? 0.016 : 0.008; P.hp = Math.min(D.maxHp, P.hp + D.maxHp * f); }
-  if (has('pyre_heart')) P.fp = Math.min(D.maxFp, P.fp + (P.fireT > 0 || D.W.fire ? 2 : 1));
+  if (P.skEmberN > 0 && once) P.skEmberN--;
+  if (once && has('spellblade') && P.cds) { let any = false; for (const k in P.cds) if (k.startsWith('spell:') && P.cds[k] > time) { P.cds[k] -= 0.5; any = true; } if (any) particles.push({ x: P.x, y: P.y - 20, vx: 0, vy: -40, life: 0.4, kind: 'gold' }); }
+  if (has('leech')) { const f = P.hp < D.maxHp * 0.3 ? 0.016 : 0.008; P.hp = Math.min(D.maxHp, P.hp + D.maxHp * f * lu); }
+  if (has('pyre_heart')) P.fp = Math.min(D.maxFp, P.fp + (P.fireT > 0 || D.W.fire ? 2 : 1) * lu);
   const lesser = t.alive !== false && !t.boss && !t.prop && t.breakStance && !(t.cfg && t.cfg.elite) && t.state !== 'stagger';
   if (skillOn('m_spear') && P.state === 'sp_heavy' && lesser) t.breakStance();
   if (skillOn('m_twin') && P.state === 'tw_5' && once) { P.skTwinT = time + 4; skSpark(P.x, P.y - 18, 8, 'gold'); }
@@ -314,6 +326,18 @@ HOOKS.cast.push(() => { if (P) P.skCastT = time; });
 // shorter / longer cooldowns (cdBase feeds both the timer and the HUD's cooldown pie)
 { const _cdb = cdBase; cdBase = function (kind, id) { return _cdb(kind, id) * skCdMul(kind); }; }
 { const _sc = spellCost; spellCost = function (id) { return Math.round(_sc(id) * (has('quick_recall') ? 0.9 : 1)); }; }
+// Bloodthirst (v15): its bleed follows the hit's damage (12 per light hit's worth) -- a flat 16 per hit gave the Dual
+// Blades (12 hits a Demon chain) a burst every chain and the Greatsword almost none. The weapon's own bleed is unchanged.
+function skHitUnits() {   // the current hit of the current move, in light-hit units
+  const A = P && ATK[P.state]; if (!A || !A.mv) return 1;
+  const d = A.mv, k = Math.max(0, P.mvHitK || 0);
+  return clamp((d.hits ? d.hits[Math.min(k, d.hits.length - 1)] : d.dmgFn ? d.dmgFn() : A.mult || 1) * (P.mvMul || 1), 0.25, 3);
+}
+{ const _ba = bleedAmt; bleedAmt = function (heavy) {
+  const b = _ba(heavy); if (!has('bloodthirst')) return b;
+  const fang = charmOn('c_fang') ? 1.5 : 1, flat = 16 * (heavy ? 1.5 : 1) * fang;
+  return Math.max(0, b - flat) + 12 * skHitUnits() * fang;
+}; }
 { const _fm = flaskMul; flaskMul = function () { return _fm() * (has('blood_price') ? 0.85 : 1); }; }
 // Crimson Pact: one fewer crimson flask
 { const _rf = refillFlasks; refillFlasks = function () { _rf(); if (P && has('crimson_pact')) P.flasksR = Math.max(0, P.flasksR - 1); }; }
@@ -337,26 +361,52 @@ const SKW = { waves: [], trail: [] };
 
 // ---- per-frame: detect starts of attacks/rolls/arts, keep timers, poll foes for bleed bursts, burns and kills
 const skSeen = new WeakMap();
-function skNewAttack(A) {
-  const cls = A.cls, first = P.comboStep === 0;
-  let cost = A.staffSpin ? 0 : A.cost * D.W.stam * (A.kind === 'heavy' && charmOn('c_brand') ? 0.8 : 1), refund = 0;
-  if (has('tireless') && (A.kind === 'light' || A.kind === 'heavy')) refund += 0.2;
-  if (has('flowing_form') && P.comboStep > 0) refund += 0.35;
-  if (has('evasive_strike') && P.skPrev === 'roll') { P.skRollAtk = P.hitSet; refund = 1; }
-  if (refund) P.st = Math.min(D.maxSt, P.st + cost * Math.min(1, refund));
-  // attack speed: Blade Dancer (lights), Frenzy (below half HP), Twin Rhythm
-  let sp = 1;
-  if (has('blade_dancer') && A.kind === 'light') sp *= 1.15;
-  if (has('frenzy') && P.hp < D.maxHp * 0.5) sp *= 1.12;
-  if (P.skTwinT > time && skillOn('m_twin')) sp *= 1.15;
-  if (sp !== 1) P.anim.speed *= sp;
+// v15: a new move is a call of mvStart that took (the old trigger, a fresh P.hitSet, also fired on every hit of a move,
+// so Tireless + Flowing Form refunded more stamina than the moves cost). The refund is a share of what the move REALLY
+// cost (o.cost overrides, charge-level costs, the weapon's own stamina) -- measured, not read off the table.
+//   chained: started out of another move (a queued press, a branch, a late press <= 0.35 s after one ended)
+//   opener : the first move after 0.8 s without attacking (Measured Cut)
+function skNewMove(A, cost, prev, gap) {
+  P.skMvN = (P.skMvN || 0) + 1;
+  const stance = ATK[prev] && ATK[prev].mv && ATK[prev].mv.noHit;   // out of a charge, a sheathe, an Iai wait: not a chain
+  const chained = (!!ATK[prev] && !stance) || gap < 0.35, rolled = prev === 'roll' || (P.dgEnd && P.clk - P.dgEnd.t < 0.25);
+  if (!chained && gap >= 0.8) P.skOpenN = P.skMvN;
   P.skRelT = time;   // Relentless: swinging keeps the chain alive
+  if (!skL() || !(cost > 0)) return;
+  let refund = 0;
+  if (has('tireless')) refund += 0.2;
+  if (has('flowing_form') && chained) refund += 0.35;
+  if (has('evasive_strike') && rolled) { P.skRollAtk = P.skMvN; refund = 1; }
+  if (refund) P.st = Math.min(D.maxSt, P.st + cost * Math.min(1, refund));
 }
+{ const _ms = mvStart; mvStart = function (id, o) {
+  const prev = P && P.state, st0 = P ? P.st : 0, gap = P ? time - (P.skAtkT ?? -99) : 99;
+  const r = _ms.apply(this, arguments);
+  if (r && P && P.state === id && ATK[id]) { skNewMove(ATK[id], Math.max(0, st0 - P.st), prev, gap); }
+  return r;
+}; }
+// attack speed (Blade Dancer, Frenzy): the move clock (75's mvSpeed) -- the old P.anim.speed nudge did nothing once moves
+// ran on their own clock. Added to the type's own speed (Demon Mode, the perfect-dodge buff), and everything together
+// tops out at +40%. Only moves that strike: stances (Iai, foresight, charges, guards) keep their windows.
+function skSpeedAdd(A) {
+  if (!skL() || !P || !A || !A.mv || A.mv.noHit || A.mv.loop) return 0;
+  let add = 0;
+  if (has('blade_dancer') && A.kind === 'light') add += 0.12;
+  if (has('frenzy') && P.hp < D.maxHp * 0.5) add += 0.12;
+  return add;
+}
+{ const _sp = mvSpeed; mvSpeed = function (A) { const b = _sp(A), add = skSpeedAdd(A); return add ? Math.max(b, Math.min(b + add, 1.4)) : b; }; }
+// Charged Arts: every charge stance (a held K: the Greatsword and Maul levels, the Longsword / shield / whip / dual holds,
+// the katana's focus draw, the spear's counter wind-up) builds 1.55x as fast. Their clocks and timers all run on the dt
+// the stance is updated with, so the whole stance is simply run faster (overcharge limits scale with it).
+// (a move can opt out with noSkillCharge: true -- e.g. a charge meant to stay hard to build)
+const SK_CHARGE = d => !!d && !d.noSkillCharge && d.kind === 'heavy' && d.loop && d.noHit && (d.charge || /(_hold|charge|_cwind)$/.test(d.id));
+{ const _mu = mvUpdate; mvUpdate = function (dt, ...rest) { const A = ATK[P.state]; return _mu.call(this, A && has('charged_arts') && SK_CHARGE(A.mv) ? dt * 1.55 : dt, ...rest); }; }
 HOOKS.update.push(dt => {
   if (!P || !D || P.state === 'dead') { if (P) P.skRel = 0; return; }
   const st = P.state, A = ATK[st], L = skL();
   // new swing / art / roll / cast
-  if (A && P.hitSet !== P.skAtkSet) { P.skAtkSet = P.hitSet; if (L) skNewAttack(A); }
+  if (A && !(A.mv && A.mv.noHit)) P.skAtkT = time;   // the last frame you were in a move that strikes (Measured Cut's "breath", the chain gap)
   if (st === 'roll' && P.skPrev !== 'roll' && L) {
     if (has('featherfoot') && P.skFreeRollT > time) { P.st = Math.min(D.maxSt, P.st + (has('quickstep') ? 14 : 20)); P.skFreeRollT = 0; skSpark(P.x, P.y - 8, 6, 'gold', 40); }
   }
@@ -365,6 +415,7 @@ HOOKS.update.push(dt => {
     P.skArtN = P.artCount; P.skArtT = time;
     if (has('afterglow')) P.st = Math.min(D.maxSt, P.st + 20);
     if (has('ember_blood')) P.skEmberN = 3;
+    if (has('lingering_flame')) P.skLingerT = time + 6;
   }
   if (st === 'art') P.skArtEnd = time;
   if (st === 'riposte' && P.skPrev !== 'riposte' && L) {
@@ -379,10 +430,10 @@ HOOKS.update.push(dt => {
   if (has('lingering_flame')) { if (P.cryT > (P.skCry || 0) + 0.05) P.cryT *= 1.4; if (P.fireT > (P.skFire || 0) + 0.05) P.fireT *= 1.4; }   // they only ever rise when an art sets them
   P.skCry = P.cryT; P.skFire = P.fireT;
   // Relentless: the chain falls apart if you stop swinging
-  if (P.skRel && time - (P.skRelT || 0) > 1.2) P.skRel = 0;
+  if (P.skRel && time - (P.skRelT || 0) > 2.5) P.skRel = 0;   // v15: 2.5 s (was 1.2): the stack now survives a boss's attack between two openings -- if you aren't hit
   // regen: Mana Font, Light Feet
   if (has('mana_font')) P.fp = Math.min(D.maxFp, P.fp + 1.5 * dt);
-  if (has('light_feet') && P.stDelay <= 0 && st !== 'roll' && !A && P.st < D.maxSt) P.st = Math.min(D.maxSt, P.st + (st === 'idle' ? 70 : 58) * 0.15 * dt * (st === 'guard' || st === 'block' ? 0.35 : 1));
+  if (has('light_feet') && P.stDelay <= 0 && st !== 'roll' && !A && P.st < D.maxSt) P.st = Math.min(D.maxSt, P.st + (st === 'idle' ? 70 : 58) * 0.15 * dt * (st === 'guard' || st === 'block' ? 0.35 : 1) * mvRegenMul());   // no regen in Demon Mode: none from here either
   // arsenal: frame-exact bits of a swing
   if (A && P.skLunge === P.hitSet && !P.anim.changed) { P.vx *= 1.3; P.skLunge = null; }
   if (A && L) skArsenalFrame(A);
@@ -499,6 +550,7 @@ HOOKS.hud.push(() => {
   if (!P || !skL()) return;
   if (P.skRel > 0 && has('relentless')) { text(`Relentless +${P.skRel * 5}%`, 10, 42, 5.5, '#ffd070', 'left', { alpha: clamp(1.2 - (time - P.skRelT), 0.4, 1) }); }
   if (P.skEmberN > 0) text('Ember Blood ×' + P.skEmberN, 10, 50, 5.5, '#ff9d4a');
+  if (P.skLingerT > time) text('Lingering Flame', 10, 66, 5.5, '#ff9d4a', 'left', { alpha: clamp(P.skLingerT - time, 0.3, 1) });
   if (P.skResoT > time) text('Resonance', 10, 58, 5.5, '#7fb0ff');
 });
 

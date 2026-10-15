@@ -559,7 +559,7 @@ function playerStrike(A) {
     mvOnHit(t, info, A, c);
     if (A.down && !P.pogoed && d.pogo !== false) pogo();
     if (P.empower > 0) P.empower = 0;
-    if (has('soul_siphon')) P.fp = Math.min(D.maxFp, P.fp + 2);
+    if (has('soul_siphon')) P.fp = Math.min(D.maxFp, P.fp + 2 * clamp(c.mul, 0.25, 3));   // v15 balance: by the hit's damage (multi-hit moves used to drink FP per hit)
   }
   if (P.twinBuff && P.hitSet.size && [...P.hitSet].some(x => x !== 'brk')) P.twinBuff = false;
   // pogo off spikes + break walls/urns

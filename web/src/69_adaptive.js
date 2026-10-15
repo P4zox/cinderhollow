@@ -48,7 +48,7 @@ HOOKS.update.push(() => {
     toast(`It rises to meet your strength: +${Math.round((adaptCur.hp - 1) * 100)}% endurance, +${Math.round((adaptCur.dmg - 1) * 100)}% force`, 3.5);
   }
 });
-{ const _hurt = hurtPlayer; hurtPlayer = function (dmg, ...rest) {
-    const on = boss && boss.active && boss.alive && adaptCur.kind === boss.kind;
-    return _hurt.call(this, on ? dmg * adaptCur.dmg : dmg, ...rest);
+{ const _hurt = hurtPlayer; hurtPlayer = function (dmg, dir, id, opt, ...rest) {
+    const on = boss && boss.active && boss.alive && adaptCur.kind === boss.kind && !bossPctHit(dmg, opt);   // v15: not blows sized to your health
+    return _hurt.call(this, on ? dmg * adaptCur.dmg : dmg, dir, id, opt, ...rest);
   }; }

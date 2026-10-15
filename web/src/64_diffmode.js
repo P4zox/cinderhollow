@@ -32,9 +32,10 @@ function diffRescale() {
 HOOKS.update.push(diffRescale);
 
 // damage: boss fights use the boss factor for everything that hurts there; elsewhere the general one
-{ const _hurt = hurtPlayer; hurtPlayer = function (dmg, ...rest) {
+{ const _hurt = hurtPlayer; hurtPlayer = function (dmg, dir, id, opt, ...rest) {
     const C = diffCfg(), inBoss = boss && boss.active && boss.alive;
-    return _hurt.call(this, dmg * (inBoss ? C.bossDmg : C.dmg), ...rest);
+    const k = inBoss ? (typeof bossPctHit === 'function' && bossPctHit(dmg, opt) ? Math.min(1, C.bossDmg) : C.bossDmg) : C.dmg;   // v15: Hard doesn't make health-sized blows lethal
+    return _hurt.call(this, dmg * k, dir, id, opt, ...rest);
   }; }
 // cinders from foes, urns and bosses (recovering your own remnant is not affected)
 { const _gain = gainCinders; gainCinders = function (n, ...rest) { const k = diffCfg().cinders; return _gain.call(this, k < 1 ? Math.max(1, Math.round(n * k)) : n, ...rest); }; }
