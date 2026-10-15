@@ -1,5 +1,5 @@
 // mouse in menus: hover selects, click confirms, right-click backs out, wheel scrolls, menu clicks never swing the weapon
-await boot(); G.give({ weapons: { longsword: 0, dagger: 0, katana: 0 } });
+await boot();   // weapon revamp: all nine weapons are always owned; the Esc weapon slot is read-only (Enter = Weapon Mastery)
 const E = G.sk.ev, out = [];
 const ev = (type, x, y, o = {}) => E(`(() => { const r = view.getBoundingClientRect(), k = view.width / (r.width || 1);
   const cx = r.left + (ox + ${x} * scale) / k, cy = r.top + (oy + ${y} * scale) / k;
@@ -12,19 +12,23 @@ const click = async (x, y, button = 0) => { ev('pointermove', x, y); G.step(1); 
 const M = () => E('menu ? { screen: menu.screen, sel: menu.sel, tab: menu.tab, sub: menu.sub && menu.sub.kind, pick: !!menu.pick, cat: menu.cat, isel: menu.isel, id: menu.id } : null');
 G.step(10);
 E("openShrineMenu({ name: 'Test Shrine' })"); G.step(2);
+// shrine rows (weapon revamp): Level Up, Skill Tree, Change Weapon, Flasks, Travel, Rebirth, Leave
 ev('pointermove', 69, 62 + 3 * 19 - 4); G.step(2); out.push('hover row 3 -> sel ' + M().sel);
 ev('wheel', 69, 100, { dy: 100 }); G.step(1); out.push('wheel down x2 -> sel ' + M().sel);
-await click(69, 62 + 2 * 19 - 4); out.push('click Flasks -> ' + M().screen);
+await click(69, 62 + 3 * 19 - 4); out.push('click Flasks -> ' + M().screen);
 await snap('flasks');
 const fb = G.SAVE.flaskBlue; await click(205, 104); out.push(`flask ▸ blue ${fb} -> ${G.SAVE.flaskBlue}`);
 await click(100, 100, 2); out.push('right-click -> ' + M().screen);
 await click(69, 62 + 0 * 19 - 4); out.push('click Level Up -> ' + M().screen);
 await snap('level');
 await click(100, 100, 2);
-await click(69, 62 + 3 * 19 - 4); out.push('click Travel -> ' + M().screen);
+await click(69, 62 + 4 * 19 - 4); out.push('click Travel -> ' + M().screen);
 await snap('travel');
 await click(100, 100, 2);
-await click(69, 62 + 5 * 19 - 4); out.push('click Leave -> state ' + G.state + ' player ' + G.P.state);
+await click(69, 62 + 2 * 19 - 4); out.push('click Change Weapon -> ' + M().screen);
+ev('pointermove', 60, 31 + 2 * 18.6 + 8); G.step(2); out.push('hover Greatsword row -> sel ' + M().sel);
+await click(60, 31 + 1 * 18.6 + 8); out.push('click Katana row -> weapon ' + G.SAVE.weapon + ' back on ' + M().screen);
+await click(69, 62 + 6 * 19 - 4); out.push('click Leave -> state ' + G.state + ' player ' + G.P.state);
 G.step(6); out.push('after leave player state ' + G.P.state);
 // Esc menu
 E('openPauseMenu()'); G.step(2);
@@ -35,9 +39,10 @@ await click(150, 44 + 3 * Math.min(17, 158 / 10) - 5); out.push('click Graphics 
 await snap('gfx');
 await click(100, 100, 2); out.push('right-click -> sub ' + M().sub);
 await click(x0 + 0 * 80, 17); out.push('click Equipment tab -> tab ' + M().tab);
-await click(80, 51); out.push('click weapon slot -> pick ' + M().pick);
+await click(80, 51); out.push('click weapon slot -> mastery ' + E('!!menu.mastery') + ' pick ' + M().pick);
 await snap('picker');
-await click(18 + 1 * 20 + 9, 49 + 9); out.push('click 2nd weapon cell -> pick ' + M().pick + ' weapon ' + G.SAVE.weapon);
+await click(80, 48 + 2 * 16.8 + 8); out.push('click 3rd mastery row -> sel ' + E('menu.mastery && menu.mastery.sel') + ' weapon ' + G.SAVE.weapon);
+await click(100, 100, 2); out.push('right-click -> mastery ' + E('!!menu.mastery') + ' state ' + G.state);
 await click(x0 + 1 * 80, 17); out.push('click Inventory tab -> tab ' + M().tab);
 await snap('inventory');
 await click(100, 100, 2); out.push('right-click closes -> state ' + G.state);

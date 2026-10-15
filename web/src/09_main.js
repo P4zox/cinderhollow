@@ -214,14 +214,14 @@ function continueGame() {
 let wantArmory = false;
 try { wantArmory = location.hash === '#armory'; } catch (e) {}
 function giveArmory() {
-  for (const id of Object.keys(WEAPONS)) if (SAVE.weapons[id] === undefined) SAVE.weapons[id] = 0;   // each carries its own art (60_wbal.js)
+  for (const id of Object.keys(WEAPONS)) if (SAVE.weapons[id] === undefined) SAVE.weapons[id] = 0;   // the nine (every save holds them all; 74_arsenal9.js)
   if (typeof wbLockArt === 'function') wbLockArt();
   for (const id of Object.keys(SPELL_DEFS)) if (!SAVE.spellsOwned.includes(id)) SAVE.spellsOwned.push(id);
   for (const id of Object.keys(CHARMS)) if (!SAVE.charms.includes(id)) SAVE.charms.push(id);
   SAVE.spellSlots = Math.max(SAVE.spellSlots, 4); SAVE.charmSlots = Math.max(SAVE.charmSlots, 4);
   SAVE.items.wings = 1; SAVE.items.talon = 1;   // double jump + wall-jump for testing
   saveGame(); sfx.levelup(); flashScreen = 0.3;
-  banner('The Armory', 'Every weapon, art, spell and charm is yours, plus wall-jump and double jump. Swap gear in the menu (Esc › Equipment).', 'w_greatsword');
+  banner('The Armory', 'All nine weapons, every spell and charm, plus wall-jump and double jump. Change weapons at any shrine.', 'w_greatsword');
 }
 function applyPendingArmory() { if (wantArmory) { wantArmory = false; setTimeout(giveArmory, 900); } }
 

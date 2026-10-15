@@ -92,7 +92,7 @@ for x, y, ch in [(28, 10, 'S'), (18, 10, 'g'), (5, 4, 'i'), (2, 10, 'k'), (34, 1
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- TV3 The Bramble Thicket
-r = Room('TV3', 'The Bramble Thicket', 'thornveil', -48, 28, 48, 14, indoor=True, shrine='Briarheart Shrine', chests=['w:briar_scythe'], items=['emberstone'],
+r = Room('TV3', 'The Bramble Thicket', 'thornveil', -48, 28, 48, 14, indoor=True, shrine='Briarheart Shrine', chests=['wc_cache'], items=['emberstone'],
          spawns=[_en('tv_hound', 9, 10), _en('tv_hound', 41, 10), _en('tv_wisp', 18, 5, air=True), _en('tv_husk', 35, 10),
                  dict(t='tv_fog', x=34, y=2, w=13, h=9),
                  dict(t='tv_pod', x=16, y=2), dict(t='tv_pod', x=40, y=2),
@@ -191,7 +191,7 @@ for x, y, ch in [(2, 6, 'i'), (4, 23, 'g'), (12, 3, '@'), (7, 3, '@'), (20, 23, 
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- TV6 The Hanging Canopy
-r = Room('TV6', 'The Hanging Canopy', 'thornveil', -84, 15, 60, 13, indoor=True, items=['emberstone', 'w:thornwood_staff'],
+r = Room('TV6', 'The Hanging Canopy', 'thornveil', -84, 15, 60, 13, indoor=True, items=['emberstone', 'wc_cache'],
          spawns=[_en('tv_hound', 14, 9), _en('tv_husk', 51, 9), _en('tv_wisp', 30, 6, air=True), _en('tv_wisp', 54, 3, air=True),
                  dict(t='tv_fog', x=43, y=1, w=16, h=9),
                  dict(t='tv_pod', x=24, y=1), dict(t='tv_pod', x=41, y=1),

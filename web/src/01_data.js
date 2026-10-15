@@ -15,7 +15,9 @@ function levelCost(L) { return Math.round(90 + 20 * L + 1.75 * L * L); }
 function charmOn(id) { return typeof SAVE !== 'undefined' && SAVE && SAVE.charmsEq && SAVE.charmsEq.includes(id); }
 function derive(st, skills) {
   const v = softcap(st.vig), m = softcap(st.mnd), e = softcap(st.end), f = softcap(st.fth);
-  const wid = (typeof SAVE !== 'undefined' && SAVE && SAVE.weapon) || 'longsword', W = WEAPONS[wid];
+  let wid = (typeof SAVE !== 'undefined' && SAVE && SAVE.weapon) || 'longsword';
+  if (!WEAPONS[wid]) wid = 'longsword';   // a removed weapon id (old save, stray data) never crashes the game
+  const W = WEAPONS[wid];
   const wlv = (SAVE && SAVE.weapons && SAVE.weapons[wid]) || 0;
   const ar = weaponAR(st, wid, wlv);
   const d = {

@@ -41,7 +41,8 @@ const WS_CLS = {
   scythe: { f: 1150, q: 0.9, d: 0.21, v: 0.24, sl: 0.33 },
   whip: { f: 1300, q: 1.0, d: 0.1, v: 0.16, sl: 2.2, crack: true },
   great: { f: 640, q: 0.7, d: 0.26, v: 0.3, sl: 0.3, sub: true },
-};
+};Object.assign(WS_CLS, { longsword: WS_CLS.sword, sns: WS_CLS.shield, dual: WS_CLS.twin, greatsword: WS_CLS.great, maul: { ...WS_CLS.great, f: 560, d: 0.28, v: 0.32 } });   // v13 weapon types
+
 function wsPitch() { const Wd = WEAPONS[SAVE.weapon] || {}; return Math.pow(clamp(Wd.speed || 1, 0.7, 1.45), 0.5); }
 WSFX.swing = function (A) {
   const cls = feelCls(A), C = WS_CLS[cls] || WS_CLS.sword, pm = wsPitch(), heavy = A.kind === 'heavy', fin = feelFinisher(A);
@@ -113,7 +114,7 @@ WSFX.land = function (down, w) {   // after an air/down attack: a soft body thud
   // a blow stopped on the shield rings the shield
   sfx.block = function () {
     S.block.apply(this, arguments);
-    if (!FEEL.off && P && !FEEL.strikeA && wcls() === 'shield' && ['guard', 'block', 'parry'].includes(P.state)) WSFX.ring(0.9);
+    if (!FEEL.off && P && !FEEL.strikeA && wcls() === 'sns' && ['guard', 'block', 'parry'].includes(P.state)) WSFX.ring(0.9);
   };
 }
 if (typeof window !== 'undefined' && window.__game && window.__game.feel) window.__game.feel.WSFX = WSFX;

@@ -121,7 +121,7 @@ r.fill(0, 15, 42, 17).fill(0, 0, 42, 1)
 r.put(1, 14, 'F')
 
 # ---------------------------------------------------------------- CM5 The Blood Cellars (side area: pools, hounds, loot)
-r = Room('CM5', 'The Blood Cellars', 'crimson', 397, 73, 55, 11, indoor=True, items=['c_bloodvial', 'emberstone'], chests=['w:crimson_scythe'],
+r = Room('CM5', 'The Blood Cellars', 'crimson', 397, 73, 55, 11, indoor=True, items=['c_bloodvial', 'emberstone'], chests=['wc_cache'],
          spawns=[dict(t='enemy', type='cm_hound', x=21, y=7),
                  dict(t='enemy', type='cm_hound', x=38, y=7),
                  dict(t='enemy', type='cm_hound', x=47, y=7),

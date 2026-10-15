@@ -90,7 +90,7 @@ for x, y, ch in [(3, 1, 'x'), (16, 1, 'x'), (9, 41, 'b')]:
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- NV4 The Tolling Streets (bridges, a bell-hung platform, the sealed stair's gate)
-r = Room('NV4', 'The Tolling Streets', 'necropolis', 58, 91, 72, 20, indoor=True, chests=['w:gravechain'], shrine='Yard Gate Shrine',
+r = Room('NV4', 'The Tolling Streets', 'necropolis', 58, 91, 72, 20, indoor=True, chests=['wc_great'], shrine='Yard Gate Shrine',
          bells=dict(every=5.5, warn=1.4),
          spawns=[dict(t='nv_bell', x=31, y=2),
                  dict(t='nv_plat', x=36, y=17, w=3, dx=7),

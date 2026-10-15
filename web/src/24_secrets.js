@@ -558,10 +558,10 @@ class FirstEmber extends BossBase {
     if (!this.arsenal.length) this.arsenal = [{ wid: 'longsword' }];
     this.equip(this.arsenal.find(a => a.wid === 'longsword') || this.arsenal[0], true);
   }
-  clsOk(c) { const s = MOVESETS[c]; return !!s && (c === 'sword' || (this.sh.has(s.combo[0]) && !!ATK[s.combo[0]] && !!ATK[s.heavy])); }
+  clsOk(c) { const s = MOVESETS[c]; return !!s && (c === 'longsword' || (this.sh.has(s.combo[0]) && !!ATK[s.combo[0]] && !!ATK[s.heavy])); }
   equip(a, quiet) { this.arm = a; this.wid = a.wid; this.wids[a.wid] = 1; if (!quiet) this.swaps++; }
-  get cls() { const c = WEAPON_CLASS[this.wid] || 'sword'; return this.clsOk(c) ? c : 'sword'; }
-  moveset() { return MOVESETS[this.cls] || MOVESETS.sword; }
+  get cls() { const c = WEAPON_CLASS[this.wid] || 'longsword'; return this.clsOk(c) ? c : 'longsword'; }
+  moveset() { return MOVESETS[this.cls] || MOVESETS.longsword; }
   wsheet() { const s = sheet('wpn_' + this.wid); return s.ok ? s : sheet('wpn_longsword'); }
   reach() { const A = ATK[this.moveset().combo[0]] || ATK.attack1; return Math.max(26, A.reach[1] * (A.cls ? 1 : (WEAPONS[this.wid] || {}).reach || 1)); }
   hurtbox() { if (!this.alive || this.hidden) return null; return rect(this.x - 7, this.y - 27, this.x + 7, this.y); }
@@ -722,7 +722,7 @@ class FirstEmber extends BossBase {
   startAtk(name, speed = 1, hold = 0) {
     const A = ATK[name] || ATK.attack1; this.facePlayer();
     this.atk = name; this.A = A; this.hitDone = false; this.hitBack = false; this.atkId = ++hazardId; this.hold = hold; this.charge = 0; this.glinted = false;
-    this.setA('atk', A.anim || name, false, speed * this.fast);
+    this.setA('atk', typeof mvAnimTag === 'function' ? mvAnimTag(name) : (A.anim || name), false, speed * this.fast);
   }
   updateAtk(dt) {
     const A = this.A, an = this.anim, heavy = A.kind === 'heavy';

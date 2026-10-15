@@ -147,7 +147,7 @@ for x, y, ch in [(2, 25, 'k'), (22, 25, 'b'), (15, 10, 'u')]:
     r.put(x, y, ch)
 
 # ---------------------------------------------------------------- SP4 The Windmill Hamlet (scarecrow fields, crows, gales)
-r = Room('SP4', 'The Windmill Hamlet', 'spire', 40, -45, 48, 14, chests=['w:stormvein'], items=['emberstone'],
+r = Room('SP4', 'The Windmill Hamlet', 'spire', 40, -45, 48, 14, chests=['wc_cache'], items=['emberstone'],
          wind=dict(dir=-1, every=[4.5, 7.0], dur=2.4, push=82),
          spawns=[dict(t='enemy', type='sp_scarecrow', x=9, y=10, hidden=True),
                  dict(t='enemy', type='sp_scarecrow', x=20, y=8, hidden=True),

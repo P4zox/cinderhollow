@@ -215,7 +215,7 @@ r.put(2, 8, '#').put(1, 8, '#')
 r.put(40, 12, 'i')
 
 # ---------------------------------------------------------------- NH6 Null Vestibule (shrine + the plasma katana)
-r = Room('NH6', 'Null Vestibule', 'neohallow', 1236, -14, 24, 16, indoor=True, shrine='Vestibule Shrine', chests=['w:plasma_katana'],
+r = Room('NH6', 'Null Vestibule', 'neohallow', 1236, -14, 24, 16, indoor=True, shrine='Vestibule Shrine', chests=['wc_great'],
          spawns=[_nh_deco('glyph', 16, 12), _nh_deco('lamp', 3, 12), _nh_deco('lamp', 21, 12), dict(t='nh_lore', x=13, y=12)])
 _nh_paint(r, [
     "########################",  # 0

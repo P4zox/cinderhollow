@@ -77,7 +77,7 @@ _put(r, [(4, 16, 'C'), (15, 1, ','), (22, 1, ','), (2, 16, 'k'), (20, 16, 'b'), 
 
 # ---------------------------------------------------------------- HF6: the open aqueduct channel (sky)
 r = Room('HF6', 'The Frozen Aqueduct', 'hoarfrost', 164, -34, 48, 16, shrine='Reservoir Shrine',
-         items=['w:frostbrand', 'emberstone'], chests=['c_frostheart'],
+         items=['wc_cache', 'emberstone'], chests=['c_frostheart'],
          spawns=[{'t': 'enemy', 'type': 'hf_lurker', 'x': 18, 'y': 12, 'air': True},
                  {'t': 'enemy', 'type': 'hf_golem', 'x': 27, 'y': 10},
                  {'t': 'enemy', 'type': 'hf_wraith', 'x': 18, 'y': 6}, {'t': 'enemy', 'type': 'hf_wraith', 'x': 34, 'y': 6}])

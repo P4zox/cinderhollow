@@ -1,0 +1,23 @@
+// screenshots of each mechanic's feedback (montage: tools/shots/wm/out/vis/montage.png)
+G.tp(window.__visRoom || 'C4', 8, 10); W().frame(10); E('SETTINGS.shaders = 0');
+const room = window.__visRoom || 'C4'; const POS = {};
+const shot = async (name, type, rank, fn, frames = 10) => { W().reset(type, rank); G.tp(room, 8, 10); W().frame(4); W().reset(type, rank); E('P.face = 1'); W().dummy(40); await fn(); W().frame(frames); E('areaCard = null; toasts.length = 0'); POS[name] = E('[(P.x - cam.x) * scale + ox, (P.y - cam.y) * scale + oy, scale]'); E('render()'); await snap(name); for (const a of ['heavy', 'attack', 'parry', 'right', 'left', 'jump', 'up']) W().up(a); W().frame(30); };
+await shot('01_kt_sheathed_glint', 'katana', 1, () => { E('P.sheathed = true; P.ktGlint = 0.01'); W().frame(2); }, 2);
+await shot('02_gs_charge_lv1', 'greatsword', 1, () => W().down('heavy'), 12);
+await shot('03_gs_charge_lv2', 'greatsword', 1, () => W().down('heavy'), 33);
+await shot('04_gs_charge_lv3', 'greatsword', 1, () => W().down('heavy'), 58);
+await shot('05_gs_wrath_lv4', 'greatsword', 5, () => W().down('heavy'), 84);
+await shot('06_ml_walkcharge_lv3', 'maul', 1, () => { W().down('right'); W().down('heavy'); }, 58);
+await shot('07_db_demon_aura', 'dual', 1, () => { W().tap('parry'); }, 20);
+await shot('08_db_archdemon', 'dual', 1, () => { E('P.demon = true; P.arch = true; P.gauge = 0.8'); }, 20);
+await shot('09_db_perfect_dodge', 'dual', 1, () => { W().tap('roll'); W().frame(3); E(`hurtPlayer(10, -1, 'vis1', { src: enemies.find(e => e.wmDummy) })`); }, 4);
+await shot('10_st_momentum3', 'staff', 1, () => { E('P.mom = 3'); W().down('jump'); }, 12);
+await shot('11_wh_tip_spark', 'whip', 1, () => { E('enemies.find(e => e.wmDummy).x = P.x + 70'); W().tap('attack'); }, 11);
+await shot('12_wh_crack_ready', 'whip', 1, () => { E('P.crack = 100'); }, 6);
+await shot('13_wh_grapple_line', 'whip', 1, () => { E('enemies.find(e => e.wmDummy).x = P.x + 55; enemies.find(e => e.wmDummy).half = 20; enemies.find(e => e.wmDummy).tall = 50'); W().tap('parry'); }, 8);
+await shot('14_sp_guard', 'spear', 1, () => W().down('parry'), 10);
+await shot('15_sh_block', 'sns', 1, () => { W().down('parry'); W().frame(20); E(`hurtPlayer(20, -1, 'vis2', { src: enemies.find(e => e.wmDummy) })`); }, 2);
+await shot('16_ml_brace', 'maul', 1, () => W().tap('parry'), 6);
+await shot('17_ls_charged_flash', 'longsword', 1, () => W().down('heavy'), 40);
+await shot('18_ml_stun', 'maul', 1, () => { E("(() => { const d = enemies.find(e => e.wmDummy); d.state = 'stagger'; mlStunFx(d); })()"); }, 3);
+return POS;

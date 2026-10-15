@@ -38,7 +38,7 @@ r.kw['spawns'] = [
 # ------------------------------------------------------------------ R2: the Knight's Sword & Shield on the high ledge
 r = ROOM('R2')
 r.put(45, 7, 'C')
-r.kw['chests'] = r.kw.get('chests', []) + ['w:knight_shield']
+r.kw['chests'] = r.kw.get('chests', []) + ['wc_small']
 
 # ------------------------------------------------------------------ R4: the Hollow Champion's gauntlet
 r = ROOM('R4')

@@ -45,7 +45,7 @@ r.kw['chests'] = list(r.kw.get('chests', [])) + ['sp:ink_seal']
 
 r = ROOM('A4')                                      # on the top shelf of the spiral
 r.put(14, 9, 'i')
-r.kw['items'] = list(r.kw.get('items', [])) + ['w:pagecutter']
+r.kw['items'] = list(r.kw.get('items', [])) + ['wc_cache']
 
 # ---------------------------------------------------------------- falling shelves (hazard)
 # hanging shelf-cages drop when you pass beneath them; top-heavy bookcases topple toward you (creak + dust first)

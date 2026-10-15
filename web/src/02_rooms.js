@@ -16,7 +16,7 @@ const ROOMS = [
     "##########################^^^^^^^^##############",
     "################################################",
   ] },
-  { ...{"id": "R2", "name": "Broken Rampart", "biome": "ramparts", "gx": 48, "gy": 0, "w": 48, "h": 14, "items": ["c_heel", "shard"], "chests": ["w:knight_shield"]}, map: [
+  { ...{"id": "R2", "name": "Broken Rampart", "biome": "ramparts", "gx": 48, "gy": 0, "w": 48, "h": 14, "items": ["c_heel", "shard"], "chests": ["wc_small"]}, map: [
     "...............................................#",
     "...............................................#",
     "...............................................#",
@@ -62,7 +62,7 @@ const ROOMS = [
     "##########....##########",
     "##########....##########",
   ] },
-  { ...{"id": "R4", "name": "Rampart Summit", "biome": "ramparts", "gx": 120, "gy": 0, "w": 40, "h": 14, "items": ["w:greatsword"], "chests": ["shard"], "npcs": ["kalden"], "spawns": [{"t": "sc_banner", "x": 19, "y": 10}, {"t": "boss", "kind": "champion", "x": 28, "y": 10}, {"t": "sc_fog", "x": 8, "y": 10, "kind": "champion", "top": 0, "gauntlet": 1}, {"t": "sc_fog", "x": 38, "y": 10, "kind": "champion", "top": 0, "gauntlet": 1}]}, map: [
+  { ...{"id": "R4", "name": "Rampart Summit", "biome": "ramparts", "gx": 120, "gy": 0, "w": 40, "h": 14, "items": ["wc_small"], "chests": ["shard"], "npcs": ["kalden"], "spawns": [{"t": "sc_banner", "x": 19, "y": 10}, {"t": "boss", "kind": "champion", "x": 28, "y": 10}, {"t": "sc_fog", "x": 8, "y": 10, "kind": "champion", "top": 0, "gauntlet": 1}, {"t": "sc_fog", "x": 38, "y": 10, "kind": "champion", "top": 0, "gauntlet": 1}]}, map: [
     "#......................................#",
     "#......................................#",
     "#......................................#",
@@ -78,7 +78,7 @@ const ROOMS = [
     "########################################",
     "########################################",
   ] },
-  { ...{"id": "C1", "name": "The Descent", "biome": "catacombs", "gx": 96, "gy": 28, "w": 24, "h": 28, "indoor": true, "chests": ["w:dagger"]}, map: [
+  { ...{"id": "C1", "name": "The Descent", "biome": "catacombs", "gx": 96, "gy": 28, "w": 24, "h": 28, "indoor": true, "chests": ["wc_small"]}, map: [
     "##########....##########",
     "#...l...r.......r..l...#",
     "#......................#",
@@ -188,7 +188,7 @@ const ROOMS = [
     "####################################",
     "####################################",
   ] },
-  { ...{"id": "C6", "name": "Root Shaft", "biome": "catacombs", "gx": 228, "gy": 14, "w": 24, "h": 42, "indoor": true, "items": ["w:katana"], "spawns": [{"t": "nh_portal", "x": 18, "y": 21, "to": "NH1", "tx": 7, "ty": 12}]}, map: [
+  { ...{"id": "C6", "name": "Root Shaft", "biome": "catacombs", "gx": 228, "gy": 14, "w": 24, "h": 42, "indoor": true, "items": ["wc_small"], "spawns": [{"t": "nh_portal", "x": 18, "y": 21, "to": "NH1", "tx": 7, "ty": 12}]}, map: [
     "########################",
     "#....l....r.......l....#",
     "#......................#",
@@ -248,7 +248,7 @@ const ROOMS = [
     "################################################",
     "################################################",
   ] },
-  { ...{"id": "K2", "name": "Flooded Aisle", "biome": "cathedral", "gx": 300, "gy": 14, "w": 48, "h": 14, "indoor": true, "chests": ["w:oathbrand", "slot"]}, map: [
+  { ...{"id": "K2", "name": "Flooded Aisle", "biome": "cathedral", "gx": 300, "gy": 14, "w": 48, "h": 14, "indoor": true, "chests": ["wc_cache", "slot"]}, map: [
     "#########...####################################",
     "#...l............x......l...................#..#",
     "#........===................................#..#",
@@ -404,7 +404,7 @@ const ROOMS = [
     "############################~~~~~~~#",
     "####################################",
   ] },
-  { ...{"id": "M4", "name": "Sunken Road", "biome": "mire", "gx": 248, "gy": 160, "w": 48, "h": 14, "indoor": true, "chests": ["w:maul"], "shrine": "Roadside Shrine"}, map: [
+  { ...{"id": "M4", "name": "Sunken Road", "biome": "mire", "gx": 248, "gy": 160, "w": 48, "h": 14, "indoor": true, "chests": ["wc_cache"], "shrine": "Roadside Shrine"}, map: [
     "################################################",
     "################################################",
     "#..l........r...........l.............r........#",
@@ -592,7 +592,7 @@ const ROOMS = [
     "########################",
     "########################",
   ] },
-  { ...{"id": "A4", "name": "Spiral of Shelves", "biome": "archives", "gx": 252, "gy": -112, "w": 24, "h": 28, "indoor": true, "chests": ["emberstone"], "items": ["w:pagecutter"]}, map: [
+  { ...{"id": "A4", "name": "Spiral of Shelves", "biome": "archives", "gx": 252, "gy": -112, "w": 24, "h": 28, "indoor": true, "chests": ["emberstone"], "items": ["wc_cache"]}, map: [
     "##...###################",
     "#......l...........l...#",
     "#......................#",
@@ -807,7 +807,7 @@ const ROOMS = [
     "#.k.C..u........g..ub..........#",
     "###########################...##",
   ] },
-  { ...{"id": "HF6", "name": "The Frozen Aqueduct", "biome": "hoarfrost", "gx": 164, "gy": -34, "w": 48, "h": 16, "shrine": "Reservoir Shrine", "items": ["w:frostbrand", "emberstone"], "chests": ["c_frostheart"], "spawns": [{"t": "enemy", "type": "hf_lurker", "x": 18, "y": 12, "air": true}, {"t": "enemy", "type": "hf_golem", "x": 27, "y": 10}, {"t": "enemy", "type": "hf_wraith", "x": 18, "y": 6}, {"t": "enemy", "type": "hf_wraith", "x": 34, "y": 6}], "graves": ["hf2"]}, map: [
+  { ...{"id": "HF6", "name": "The Frozen Aqueduct", "biome": "hoarfrost", "gx": 164, "gy": -34, "w": 48, "h": 16, "shrine": "Reservoir Shrine", "items": ["wc_cache", "emberstone"], "chests": ["c_frostheart"], "spawns": [{"t": "enemy", "type": "hf_lurker", "x": 18, "y": 12, "air": true}, {"t": "enemy", "type": "hf_golem", "x": 27, "y": 10}, {"t": "enemy", "type": "hf_wraith", "x": 18, "y": 6}, {"t": "enemy", "type": "hf_wraith", "x": 34, "y": 6}], "graves": ["hf2"]}, map: [
     "#.#======#.....................................#",
     "#..............................................#",
     "#..............................................#",
@@ -928,7 +928,7 @@ const ROOMS = [
     "########################",
     "########################",
   ] },
-  { ...{"id": "SP4", "name": "The Windmill Hamlet", "biome": "spire", "gx": 40, "gy": -115, "w": 48, "h": 14, "chests": ["w:stormvein"], "items": ["emberstone"], "wind": {"dir": -1, "every": [4.5, 7.0], "dur": 2.4, "push": 82}, "spawns": [{"t": "enemy", "type": "sp_scarecrow", "x": 9, "y": 10, "hidden": true}, {"t": "enemy", "type": "sp_scarecrow", "x": 20, "y": 8, "hidden": true}, {"t": "enemy", "type": "sp_scarecrow", "x": 32, "y": 10, "hidden": true}, {"t": "sp_perch", "x": 41, "y": 10, "n": 5}, {"t": "sp_prop", "kind": "windmill", "x": 14, "y": 10}, {"t": "sp_prop", "kind": "cottage", "x": 37, "y": 10}, {"t": "sp_prop", "kind": "fence", "x": 4, "y": 10}, {"t": "sp_prop", "kind": "fence", "x": 28, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 7, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 12, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 19, "y": 8}, {"t": "sp_prop", "kind": "wheat", "x": 22, "y": 8}, {"t": "sp_prop", "kind": "wheat", "x": 30, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 34, "y": 10}, {"t": "sp_prop", "kind": "lamp", "x": 45, "y": 10}, {"t": "sp_prop", "kind": "lamp", "x": 2, "y": 10}], "graves": ["sp1"], "shrine": "Hamlet Shrine"}, map: [
+  { ...{"id": "SP4", "name": "The Windmill Hamlet", "biome": "spire", "gx": 40, "gy": -115, "w": 48, "h": 14, "chests": ["wc_cache"], "items": ["emberstone"], "wind": {"dir": -1, "every": [4.5, 7.0], "dur": 2.4, "push": 82}, "spawns": [{"t": "enemy", "type": "sp_scarecrow", "x": 9, "y": 10, "hidden": true}, {"t": "enemy", "type": "sp_scarecrow", "x": 20, "y": 8, "hidden": true}, {"t": "enemy", "type": "sp_scarecrow", "x": 32, "y": 10, "hidden": true}, {"t": "sp_perch", "x": 41, "y": 10, "n": 5}, {"t": "sp_prop", "kind": "windmill", "x": 14, "y": 10}, {"t": "sp_prop", "kind": "cottage", "x": 37, "y": 10}, {"t": "sp_prop", "kind": "fence", "x": 4, "y": 10}, {"t": "sp_prop", "kind": "fence", "x": 28, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 7, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 12, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 19, "y": 8}, {"t": "sp_prop", "kind": "wheat", "x": 22, "y": 8}, {"t": "sp_prop", "kind": "wheat", "x": 30, "y": 10}, {"t": "sp_prop", "kind": "wheat", "x": 34, "y": 10}, {"t": "sp_prop", "kind": "lamp", "x": 45, "y": 10}, {"t": "sp_prop", "kind": "lamp", "x": 2, "y": 10}], "graves": ["sp1"], "shrine": "Hamlet Shrine"}, map: [
     "#..............................................#",
     "#..............................................#",
     "#..............................................#",
@@ -1075,7 +1075,7 @@ const ROOMS = [
     "########################################...#####",
     "########################################...#####",
   ] },
-  { ...{"id": "D4", "name": "Slag Chute", "biome": "deep", "gx": 376, "gy": 190, "w": 24, "h": 34, "indoor": true, "items": ["sp:magma_orb"], "chests": ["w:forge_cleaver"], "spawns": [{"t": "enemy", "type": "dp_slag_imp", "x": 5, "y": 10}, {"t": "enemy", "type": "dp_magma_crawler", "x": 17, "y": 16, "air": true}, {"t": "enemy", "type": "dp_forge_sentry", "x": 5, "y": 20}, {"t": "enemy", "type": "dp_slag_imp", "x": 19, "y": 24}, {"t": "enemy", "type": "dp_magma_crawler", "x": 12, "y": 31, "air": true}, {"t": "xrc", "kind": "dropmark", "x": 6, "y": 30}], "shrine": "Chute Shrine"}, map: [
+  { ...{"id": "D4", "name": "Slag Chute", "biome": "deep", "gx": 376, "gy": 190, "w": 24, "h": 34, "indoor": true, "items": ["sp:magma_orb"], "chests": ["wc_cache"], "spawns": [{"t": "enemy", "type": "dp_slag_imp", "x": 5, "y": 10}, {"t": "enemy", "type": "dp_magma_crawler", "x": 17, "y": 16, "air": true}, {"t": "enemy", "type": "dp_forge_sentry", "x": 5, "y": 20}, {"t": "enemy", "type": "dp_slag_imp", "x": 19, "y": 24}, {"t": "enemy", "type": "dp_magma_crawler", "x": 12, "y": 31, "air": true}, {"t": "xrc", "kind": "dropmark", "x": 6, "y": 30}], "shrine": "Chute Shrine"}, map: [
     "################...#####",
     "#...x......x.......x...#",
     "#......................#",
@@ -1309,7 +1309,7 @@ const ROOMS = [
     "########...#####################################",
     "########...#####################################",
   ] },
-  { ...{"id": "TV3", "name": "The Bramble Thicket", "biome": "thornveil", "gx": -48, "gy": 28, "w": 48, "h": 14, "indoor": true, "shrine": "Briarheart Shrine", "chests": ["w:briar_scythe"], "items": ["emberstone"], "spawns": [{"t": "enemy", "type": "tv_hound", "x": 9, "y": 10}, {"t": "enemy", "type": "tv_hound", "x": 41, "y": 10}, {"t": "enemy", "type": "tv_wisp", "x": 18, "y": 5, "air": true}, {"t": "enemy", "type": "tv_husk", "x": 35, "y": 10}, {"t": "tv_fog", "x": 34, "y": 2, "w": 13, "h": 9}, {"t": "tv_pod", "x": 16, "y": 2}, {"t": "tv_pod", "x": 40, "y": 2}, {"t": "tv_prop", "kind": "tree", "x": 5, "y": 10, "back": true, "v": 1}, {"t": "tv_prop", "kind": "tree", "x": 40, "y": 10, "back": true}, {"t": "tv_prop", "kind": "fern", "x": 13, "y": 10}, {"t": "tv_prop", "kind": "fern", "x": 44, "y": 10}, {"t": "tv_prop", "kind": "ribbons", "x": 25, "y": 10}, {"t": "tv_prop", "kind": "shroom", "x": 2, "y": 4}]}, map: [
+  { ...{"id": "TV3", "name": "The Bramble Thicket", "biome": "thornveil", "gx": -48, "gy": 28, "w": 48, "h": 14, "indoor": true, "shrine": "Briarheart Shrine", "chests": ["wc_cache"], "items": ["emberstone"], "spawns": [{"t": "enemy", "type": "tv_hound", "x": 9, "y": 10}, {"t": "enemy", "type": "tv_hound", "x": 41, "y": 10}, {"t": "enemy", "type": "tv_wisp", "x": 18, "y": 5, "air": true}, {"t": "enemy", "type": "tv_husk", "x": 35, "y": 10}, {"t": "tv_fog", "x": 34, "y": 2, "w": 13, "h": 9}, {"t": "tv_pod", "x": 16, "y": 2}, {"t": "tv_pod", "x": 40, "y": 2}, {"t": "tv_prop", "kind": "tree", "x": 5, "y": 10, "back": true, "v": 1}, {"t": "tv_prop", "kind": "tree", "x": 40, "y": 10, "back": true}, {"t": "tv_prop", "kind": "fern", "x": 13, "y": 10}, {"t": "tv_prop", "kind": "fern", "x": 44, "y": 10}, {"t": "tv_prop", "kind": "ribbons", "x": 25, "y": 10}, {"t": "tv_prop", "kind": "shroom", "x": 2, "y": 4}]}, map: [
     "################################################",
     "########r#########x###################r#####x###",
     "#..........)...........###########.............#",
@@ -1370,7 +1370,7 @@ const ROOMS = [
     "##########...###########",
     "##########...###########",
   ] },
-  { ...{"id": "TV6", "name": "The Hanging Canopy", "biome": "thornveil", "gx": -84, "gy": 15, "w": 60, "h": 13, "indoor": true, "items": ["emberstone", "w:thornwood_staff"], "spawns": [{"t": "enemy", "type": "tv_hound", "x": 14, "y": 9}, {"t": "enemy", "type": "tv_husk", "x": 51, "y": 9}, {"t": "enemy", "type": "tv_wisp", "x": 30, "y": 6, "air": true}, {"t": "enemy", "type": "tv_wisp", "x": 54, "y": 3, "air": true}, {"t": "tv_fog", "x": 43, "y": 1, "w": 16, "h": 9}, {"t": "tv_pod", "x": 24, "y": 1}, {"t": "tv_pod", "x": 41, "y": 1}, {"t": "tv_prop", "kind": "tree", "x": 7, "y": 9, "back": true}, {"t": "tv_prop", "kind": "tree", "x": 44, "y": 9, "back": true, "v": 2}, {"t": "tv_prop", "kind": "tree", "x": 55, "y": 9, "back": true, "v": 1}, {"t": "tv_prop", "kind": "ribbons", "x": 17, "y": 9}, {"t": "tv_prop", "kind": "fern", "x": 3, "y": 9}, {"t": "tv_prop", "kind": "fern", "x": 45, "y": 9}, {"t": "tv_prop", "kind": "vine", "x": 26, "y": 1}, {"t": "tv_prop", "kind": "vine", "x": 36, "y": 1}]}, map: [
+  { ...{"id": "TV6", "name": "The Hanging Canopy", "biome": "thornveil", "gx": -84, "gy": 15, "w": 60, "h": 13, "indoor": true, "items": ["emberstone", "wc_cache"], "spawns": [{"t": "enemy", "type": "tv_hound", "x": 14, "y": 9}, {"t": "enemy", "type": "tv_husk", "x": 51, "y": 9}, {"t": "enemy", "type": "tv_wisp", "x": 30, "y": 6, "air": true}, {"t": "enemy", "type": "tv_wisp", "x": 54, "y": 3, "air": true}, {"t": "tv_fog", "x": 43, "y": 1, "w": 16, "h": 9}, {"t": "tv_pod", "x": 24, "y": 1}, {"t": "tv_pod", "x": 41, "y": 1}, {"t": "tv_prop", "kind": "tree", "x": 7, "y": 9, "back": true}, {"t": "tv_prop", "kind": "tree", "x": 44, "y": 9, "back": true, "v": 2}, {"t": "tv_prop", "kind": "tree", "x": 55, "y": 9, "back": true, "v": 1}, {"t": "tv_prop", "kind": "ribbons", "x": 17, "y": 9}, {"t": "tv_prop", "kind": "fern", "x": 3, "y": 9}, {"t": "tv_prop", "kind": "fern", "x": 45, "y": 9}, {"t": "tv_prop", "kind": "vine", "x": 26, "y": 1}, {"t": "tv_prop", "kind": "vine", "x": 36, "y": 1}]}, map: [
     "############################################################",
     "#.....r......x.........................x......###.....r....#",
     "#.............................................###..........#",
@@ -1471,7 +1471,7 @@ const ROOMS = [
     "########################",
     "########################",
   ] },
-  { ...{"id": "DB4", "name": "The Sunken Chapels", "biome": "barrows", "gx": 253, "gy": 120, "w": 21, "h": 26, "indoor": true, "items": ["c_gill"], "chests": ["w:tidecleaver"], "graves": ["db3"], "shrine": "Mere Shrine", "spawns": [{"t": "enemy", "type": "db_pilgrim", "x": 16, "y": 11}, {"t": "enemy", "type": "db_barnacle", "x": 11, "y": 17}, {"t": "enemy", "type": "db_eel", "x": 7, "y": 19}, {"t": "enemy", "type": "db_pilgrim", "x": 7, "y": 24, "hidden": true}, {"t": "db_prop", "kind": "bell", "x": 16, "y": 1}, {"t": "db_prop", "kind": "bell", "x": 8, "y": 1}, {"t": "db_prop", "kind": "window", "x": 17, "y": 11}, {"t": "db_prop", "kind": "lamp", "x": 15, "y": 24}, {"t": "db_prop", "kind": "lamp", "x": 9, "y": 24}, {"t": "db_prop", "kind": "bones", "x": 3, "y": 17}, {"t": "db_prop", "kind": "lamp", "x": 13, "y": 11}]}, map: [
+  { ...{"id": "DB4", "name": "The Sunken Chapels", "biome": "barrows", "gx": 253, "gy": 120, "w": 21, "h": 26, "indoor": true, "items": ["c_gill"], "chests": ["wc_cache"], "graves": ["db3"], "shrine": "Mere Shrine", "spawns": [{"t": "enemy", "type": "db_pilgrim", "x": 16, "y": 11}, {"t": "enemy", "type": "db_barnacle", "x": 11, "y": 17}, {"t": "enemy", "type": "db_eel", "x": 7, "y": 19}, {"t": "enemy", "type": "db_pilgrim", "x": 7, "y": 24, "hidden": true}, {"t": "db_prop", "kind": "bell", "x": 16, "y": 1}, {"t": "db_prop", "kind": "bell", "x": 8, "y": 1}, {"t": "db_prop", "kind": "window", "x": 17, "y": 11}, {"t": "db_prop", "kind": "lamp", "x": 15, "y": 24}, {"t": "db_prop", "kind": "lamp", "x": 9, "y": 24}, {"t": "db_prop", "kind": "bones", "x": 3, "y": 17}, {"t": "db_prop", "kind": "lamp", "x": 13, "y": 11}]}, map: [
     "###############..==##",
     "#...................#",
     "#.........@.........#",
@@ -1739,7 +1739,7 @@ const ROOMS = [
     "###########################################",
     "###########################################",
   ] },
-  { ...{"id": "CM5", "name": "The Blood Cellars", "biome": "crimson", "gx": 397, "gy": 163, "w": 55, "h": 11, "indoor": true, "items": ["c_bloodvial", "emberstone"], "chests": ["w:crimson_scythe"], "spawns": [{"t": "enemy", "type": "cm_hound", "x": 21, "y": 7}, {"t": "enemy", "type": "cm_hound", "x": 38, "y": 7}, {"t": "enemy", "type": "cm_hound", "x": 47, "y": 7}, {"t": "enemy", "type": "cm_servant", "x": 8, "y": 7}, {"t": "cm_pool", "x": 12, "y": 8, "w": 5}, {"t": "cm_pool", "x": 30, "y": 8, "w": 5}, {"t": "cm_pool", "x": 42, "y": 8, "w": 3}, {"t": "cm_prop", "kind": "winerack", "x": 4, "y": 7}, {"t": "cm_prop", "kind": "barrel", "x": 19, "y": 7}, {"t": "cm_prop", "kind": "winerack", "x": 25, "y": 7}, {"t": "cm_prop", "kind": "coffin", "x": 37, "y": 7, "sub": "closed"}, {"t": "cm_prop", "kind": "coffin", "x": 40, "y": 7, "sub": "open"}, {"t": "cm_prop", "kind": "barrel", "x": 50, "y": 7}, {"t": "cm_diary", "x": 46, "y": 7, "lore": "cm_diary3"}]}, map: [
+  { ...{"id": "CM5", "name": "The Blood Cellars", "biome": "crimson", "gx": 397, "gy": 163, "w": 55, "h": 11, "indoor": true, "items": ["c_bloodvial", "emberstone"], "chests": ["wc_cache"], "spawns": [{"t": "enemy", "type": "cm_hound", "x": 21, "y": 7}, {"t": "enemy", "type": "cm_hound", "x": 38, "y": 7}, {"t": "enemy", "type": "cm_hound", "x": 47, "y": 7}, {"t": "enemy", "type": "cm_servant", "x": 8, "y": 7}, {"t": "cm_pool", "x": 12, "y": 8, "w": 5}, {"t": "cm_pool", "x": 30, "y": 8, "w": 5}, {"t": "cm_pool", "x": 42, "y": 8, "w": 3}, {"t": "cm_prop", "kind": "winerack", "x": 4, "y": 7}, {"t": "cm_prop", "kind": "barrel", "x": 19, "y": 7}, {"t": "cm_prop", "kind": "winerack", "x": 25, "y": 7}, {"t": "cm_prop", "kind": "coffin", "x": 37, "y": 7, "sub": "closed"}, {"t": "cm_prop", "kind": "coffin", "x": 40, "y": 7, "sub": "open"}, {"t": "cm_prop", "kind": "barrel", "x": 50, "y": 7}, {"t": "cm_diary", "x": 46, "y": 7, "lore": "cm_diary3"}]}, map: [
     "#######################################################",
     "#........x............##.......x...##........x........#",
     "#.....................##...........##.................#",
@@ -1860,7 +1860,7 @@ const ROOMS = [
     "###############...##",
     "###############===##",
   ] },
-  { ...{"id": "NV4", "name": "The Tolling Streets", "biome": "necropolis", "gx": 58, "gy": 181, "w": 72, "h": 20, "indoor": true, "chests": ["w:gravechain"], "shrine": "Yard Gate Shrine", "bells": {"every": 5.5, "warn": 1.4}, "spawns": [{"t": "nv_bell", "x": 31, "y": 2}, {"t": "nv_plat", "x": 36, "y": 17, "w": 3, "dx": 7}, {"t": "enemy", "type": "nv_noble", "x": 12, "y": 16}, {"t": "enemy", "type": "nv_noble", "x": 50, "y": 16}, {"t": "enemy", "type": "nv_ringer", "x": 66, "y": 16}, {"t": "enemy", "type": "nv_hound", "x": 30, "y": 16}, {"t": "enemy", "type": "nv_ringer", "x": 27, "y": 8}, {"t": "nv_prop", "kind": "statue", "x": 9, "y": 16}, {"t": "nv_prop", "kind": "coffin", "x": 17, "y": 16}, {"t": "nv_prop", "kind": "banner", "x": 12, "y": 2}, {"t": "nv_prop", "kind": "banner", "x": 48, "y": 2}, {"t": "nv_prop", "kind": "brazier", "x": 33, "y": 16}, {"t": "nv_prop", "kind": "brazier", "x": 54, "y": 16}, {"t": "nv_prop", "kind": "candles", "x": 68, "y": 16}, {"t": "nv_prop", "kind": "skulls", "x": 64, "y": 16}, {"t": "nv_prop", "kind": "candles", "x": 31, "y": 8}, {"t": "nv_prop", "kind": "skulls", "x": 17, "y": 8}, {"t": "xsb", "kind": "dropmark", "x": 15, "y": 16, "air": true}]}, map: [
+  { ...{"id": "NV4", "name": "The Tolling Streets", "biome": "necropolis", "gx": 58, "gy": 181, "w": 72, "h": 20, "indoor": true, "chests": ["wc_great"], "shrine": "Yard Gate Shrine", "bells": {"every": 5.5, "warn": 1.4}, "spawns": [{"t": "nv_bell", "x": 31, "y": 2}, {"t": "nv_plat", "x": 36, "y": 17, "w": 3, "dx": 7}, {"t": "enemy", "type": "nv_noble", "x": 12, "y": 16}, {"t": "enemy", "type": "nv_noble", "x": 50, "y": 16}, {"t": "enemy", "type": "nv_ringer", "x": 66, "y": 16}, {"t": "enemy", "type": "nv_hound", "x": 30, "y": 16}, {"t": "enemy", "type": "nv_ringer", "x": 27, "y": 8}, {"t": "nv_prop", "kind": "statue", "x": 9, "y": 16}, {"t": "nv_prop", "kind": "coffin", "x": 17, "y": 16}, {"t": "nv_prop", "kind": "banner", "x": 12, "y": 2}, {"t": "nv_prop", "kind": "banner", "x": 48, "y": 2}, {"t": "nv_prop", "kind": "brazier", "x": 33, "y": 16}, {"t": "nv_prop", "kind": "brazier", "x": 54, "y": 16}, {"t": "nv_prop", "kind": "candles", "x": 68, "y": 16}, {"t": "nv_prop", "kind": "skulls", "x": 64, "y": 16}, {"t": "nv_prop", "kind": "candles", "x": 31, "y": 8}, {"t": "nv_prop", "kind": "skulls", "x": 17, "y": 8}, {"t": "xsb", "kind": "dropmark", "x": 15, "y": 16, "air": true}]}, map: [
     "#########################################################.....##########",
     "#########################################################.....G#########",
     "#.....x.................................x...............#==........x...#",
@@ -2044,7 +2044,7 @@ const ROOMS = [
     "########################",
     "########################",
   ] },
-  { ...{"id": "DU5", "name": "Hieroglyph Halls", "biome": "dunes", "gx": 488, "gy": 198, "w": 72, "h": 16, "indoor": true, "shrine": "Scarab Gate Shrine", "chests": ["w:sun_sceptre"], "items": ["sp:sunbeam"], "spawns": [{"t": "du_altar", "x": 16, "y": 2, "air": true, "ph": 0.0}, {"t": "du_altar", "x": 24, "y": 2, "air": true, "ph": 1.1}, {"t": "du_altar", "x": 47, "y": 2, "air": true, "ph": 0.0}, {"t": "du_altar", "x": 55, "y": 2, "air": true, "ph": 1.1}, {"t": "enemy", "type": "du_jackal", "x": 62, "y": 11}, {"t": "enemy", "type": "du_priest", "x": 36, "y": 8}, {"t": "enemy", "type": "du_jackal", "x": 21, "y": 11}, {"t": "enemy", "type": "du_scarab", "x": 50, "y": 11}, {"t": "du_stele", "x": 68, "y": 11, "lore": "du_halls"}, {"t": "du_stele", "x": 11, "y": 11, "lore": "du_pharaoh"}]}, map: [
+  { ...{"id": "DU5", "name": "Hieroglyph Halls", "biome": "dunes", "gx": 488, "gy": 198, "w": 72, "h": 16, "indoor": true, "shrine": "Scarab Gate Shrine", "chests": ["wc_great"], "items": ["sp:sunbeam"], "spawns": [{"t": "du_altar", "x": 16, "y": 2, "air": true, "ph": 0.0}, {"t": "du_altar", "x": 24, "y": 2, "air": true, "ph": 1.1}, {"t": "du_altar", "x": 47, "y": 2, "air": true, "ph": 0.0}, {"t": "du_altar", "x": 55, "y": 2, "air": true, "ph": 1.1}, {"t": "enemy", "type": "du_jackal", "x": 62, "y": 11}, {"t": "enemy", "type": "du_priest", "x": 36, "y": 8}, {"t": "enemy", "type": "du_jackal", "x": 21, "y": 11}, {"t": "enemy", "type": "du_scarab", "x": 50, "y": 11}, {"t": "du_stele", "x": 68, "y": 11, "lore": "du_halls"}, {"t": "du_stele", "x": 11, "y": 11, "lore": "du_pharaoh"}]}, map: [
     "########################################################################",
     "########################################################################",
     "#....x..............x.............................x...............x....#",
@@ -2156,7 +2156,7 @@ const ROOMS = [
     "#++++++++++++++++++++++#",
     "#......................#",
   ] },
-  { ...{"id": "SF2", "name": "The Black Glass Plains", "biome": "starfall", "gx": 516, "gy": -118, "w": 64, "h": 16, "chests": ["w:meteor_maul"], "items": ["shard"], "spawns": [{"t": "enemy", "type": "sf_pilgrim", "x": 15, "y": 12}, {"t": "enemy", "type": "sf_golem", "x": 39, "y": 12}, {"t": "enemy", "type": "sf_pilgrim", "x": 54, "y": 12}, {"t": "enemy", "type": "sf_wisp", "x": 28, "y": 6, "air": true}, {"t": "sf_prop", "kind": "godbone", "x": 8, "y": 12}, {"t": "sf_prop", "kind": "spire", "x": 17, "y": 12}, {"t": "sf_prop", "kind": "spire", "x": 41, "y": 12}, {"t": "sf_prop", "kind": "godbone", "x": 61, "y": 12}, {"t": "sf_prop", "kind": "shard", "x": 24, "y": 3}, {"t": "sf_prop", "kind": "shard", "x": 52, "y": 5}]}, map: [
+  { ...{"id": "SF2", "name": "The Black Glass Plains", "biome": "starfall", "gx": 516, "gy": -118, "w": 64, "h": 16, "chests": ["wc_great"], "items": ["shard"], "spawns": [{"t": "enemy", "type": "sf_pilgrim", "x": 15, "y": 12}, {"t": "enemy", "type": "sf_golem", "x": 39, "y": 12}, {"t": "enemy", "type": "sf_pilgrim", "x": 54, "y": 12}, {"t": "enemy", "type": "sf_wisp", "x": 28, "y": 6, "air": true}, {"t": "sf_prop", "kind": "godbone", "x": 8, "y": 12}, {"t": "sf_prop", "kind": "spire", "x": 17, "y": 12}, {"t": "sf_prop", "kind": "spire", "x": 41, "y": 12}, {"t": "sf_prop", "kind": "godbone", "x": 61, "y": 12}, {"t": "sf_prop", "kind": "shard", "x": 24, "y": 3}, {"t": "sf_prop", "kind": "shard", "x": 52, "y": 5}]}, map: [
     "#..............................................................#",
     "#.............................................i................#",
     "#...........................................?????..............#",
@@ -2478,7 +2478,7 @@ const ROOMS = [
     "############################################",
     "############################################",
   ] },
-  { ...{"id": "NH6", "name": "Null Vestibule", "biome": "neohallow", "gx": 1236, "gy": -14, "w": 24, "h": 16, "indoor": true, "shrine": "Vestibule Shrine", "chests": ["w:plasma_katana"], "spawns": [{"t": "nh_deco", "kind": "glyph", "x": 16, "y": 12}, {"t": "nh_deco", "kind": "lamp", "x": 3, "y": 12}, {"t": "nh_deco", "kind": "lamp", "x": 21, "y": 12}, {"t": "nh_lore", "x": 13, "y": 12}, {"t": "xsc", "kind": "gratehint", "x": 14, "y": 12, "down": true}]}, map: [
+  { ...{"id": "NH6", "name": "Null Vestibule", "biome": "neohallow", "gx": 1236, "gy": -14, "w": 24, "h": 16, "indoor": true, "shrine": "Vestibule Shrine", "chests": ["wc_great"], "spawns": [{"t": "nh_deco", "kind": "glyph", "x": 16, "y": 12}, {"t": "nh_deco", "kind": "lamp", "x": 3, "y": 12}, {"t": "nh_deco", "kind": "lamp", "x": 21, "y": 12}, {"t": "nh_lore", "x": 13, "y": 12}, {"t": "xsc", "kind": "gratehint", "x": 14, "y": 12, "down": true}]}, map: [
     "########################",
     "########################",
     "#......................#",

@@ -123,7 +123,7 @@ r.kw['spawns'] = [
 ]
 
 # ---------------------------------------------------------------- DU5 Hieroglyph Halls (sun-altar beams)
-r = Room('DU5', 'Hieroglyph Halls', 'dunes', 488, 108, 72, 16, indoor=True, shrine='Scarab Gate Shrine', chests=['w:sun_sceptre'], items=['sp:sunbeam'])
+r = Room('DU5', 'Hieroglyph Halls', 'dunes', 488, 108, 72, 16, indoor=True, shrine='Scarab Gate Shrine', chests=['wc_great'], items=['sp:sunbeam'])
 r.walls().open('E', 8, 11).open('W', 8, 11)
 r.fill(0, 0, 71, 1)
 r.fill(0, 12, 71, 15)

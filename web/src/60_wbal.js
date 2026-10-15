@@ -1,34 +1,23 @@
 // ------------------------------------------------------------------ weapon-feel pass (agent WB): arts locked to weapons, art tuning,
 // signature info. docs/WEAPON_FEEL_CONTRACT.md B1/B4, numbers in docs/weapon_balance.md (bench: tools/shots/wb/).
-// Each weapon has exactly one art, its own (WEAPONS[id].art; the First Ember's is its Echo), and it can't be changed:
+// Each weapon has exactly one art, its own (WEAPONS[id].art: the nine default arts since the weapon revamp), and it can't be changed:
 // SAVE.art is forced to it on load, on every weapon swap and on NG+ (checked every frame -- cheap). SAVE.arts,
 // SAVE.artPinned and the "Ash of X" items are obsolete: old saves keep the fields, nothing reads them.
 function wbArtOf(id) { const w = WEAPONS[id || (SAVE && SAVE.weapon)]; return w && ARTS[w.art] ? w.art : 'crescent'; }
-const WB_CLS_LABEL = { sword: 'straight sword', dagger: 'dagger', great: 'greatsword', spear: 'spear', katana: 'katana', staff: 'staff',
-  shield: 'sword and shield', twin: 'twinblades', scythe: 'scythe', whip: 'whip', mirror: 'mirror blade' };
+// weapon revamp (agent WS): the nine type ids (74_arsenal9.js); the old class ids stay readable for old text and saves
+const WB_CLS_LABEL = { longsword: 'longsword', katana: 'katana', greatsword: 'greatsword', maul: 'maul', sns: 'sword and shield', dual: 'dual blades',
+  spear: 'spear', staff: 'staff', whip: 'whip',
+  sword: 'longsword', dagger: 'dual blades', great: 'greatsword', shield: 'sword and shield', twin: 'dual blades', scythe: 'greatsword', mirror: 'longsword' };
 function wbClassLabel(cls) { return WB_CLS_LABEL[cls] || 'weapon'; }
 function wbLockArt() {
   if (typeof SAVE === 'undefined' || !SAVE || !SAVE.weapon) return;
   const a = wbArtOf(SAVE.weapon);
   if (SAVE.art !== a) SAVE.art = a;
   if (SAVE.artPinned) delete SAVE.artPinned;   // the old "keep my art across swaps" pin
-  const c = WEAPON_CLASS[SAVE.weapon];
-  if (c && c !== 'mirror') { SAVE.x3 = SAVE.x3 || {}; SAVE.x3.wbLastW = SAVE.weapon; }   // the weapon the First Ember remembers
 }
-// called by the equipment screens when a weapon is put in hand
-function wbOnEquip(id) {
-  wbLockArt();
-  if (WEAPON_CLASS[id] === 'mirror') {
-    toast(`The First Ember takes the shape of your ${wbClassLabel(wcls())}`, 3.2);
-    wbSeedEcho();
-  }
-}
-// the First Ember's Echo repeats the last art performed; fresh from a load, that is the art of the weapon it remembers
-function wbSeedEcho() {
-  if (typeof GEAR2 === 'undefined' || !GEAR2.S || GEAR2.S.lastArt) return;
-  const w = SAVE.x3 && SAVE.x3.wbLastW; if (w && WEAPONS[w] && wbArtOf(w) !== 'echo') GEAR2.S.lastArt = wbArtOf(w);
-}
-HOOKS.update.push(() => { wbLockArt(); if (SAVE && SAVE.weapon === 'first_ember') wbSeedEcho(); });
+// called whenever a weapon is put in hand (shrine "Change weapon", the Training Grounds, the select screen)
+function wbOnEquip(id) { wbLockArt(); }
+HOOKS.update.push(() => wbLockArt());
 HOOKS.enter.push(() => wbLockArt());
 HOOKS.rest.push(() => wbLockArt());
 
@@ -74,9 +63,6 @@ ITEMS.ash_cache = { name: 'Tempering Cache', icon: 'i_emberstone', sheet: 'ui_ic
   desc: 'A scholar’s pouch: an emberstone wrapped in 300 cinders. Weapon arts are bound to their weapons now; this is what the ash was worth.' };
 for (const id of Object.keys(ARTS)) ITEMS['art:' + id] = { ...ITEMS.ash_cache, legacyArt: id };
 for (const list of Object.values(SHOPS)) for (const e of list) if (/^art:/.test(e.item)) e.item = 'ash_cache';
-
-// ---- signature info for the gear panel (04b_sigs.js `info`); the First Ember's is live (it names the class it mirrors)
-for (const id of Object.keys(SIGS)) if (WEAPONS[id]) Object.defineProperty(WEAPONS[id], 'sigInfo', { get() { return SIGS[id].info; }, configurable: true });
 
 // debug handle for tools/shots/wb/*
 if (typeof window !== 'undefined' && window.__game) window.__game.wb = { sus: WB_SUS, artOf: wbArtOf, lock: wbLockArt, onEquip: wbOnEquip, tune: WB_ART_TUNE, sigLimit: () => sigLimit(), sigReach: () => sigReach() };

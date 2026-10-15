@@ -17,11 +17,13 @@ function frand(a, b) { feelSeed = (feelSeed * 1664525 + 1013904223) >>> 0; retur
 const feelShake = () => clamp(SETTINGS.shake ?? 1, 0, 1);
 
 // ---- weight: 0 (dagger) .. 1 (hammer); the class sets the band, the weapon's own speed nudges it
-const FEEL_CLS_W = { dagger: 0.08, whip: 0.14, twin: 0.14, katana: 0.36, spear: 0.4, staff: 0.36, sword: 0.46, shield: 0.5, scythe: 0.6, great: 0.9 };
-function feelCls(A) { const c = A && A.cls && A.cls !== 'tech' ? A.cls : wcls(); return c === 'mirror' ? 'sword' : c; }
+// (weapon revamp: keyed by the 9 type ids; the old class ids stay for anything still passing one)
+const FEEL_CLS_W = { dual: 0.12, whip: 0.14, katana: 0.36, staff: 0.36, spear: 0.4, longsword: 0.46, sns: 0.5, greatsword: 0.9, maul: 1.0,
+  dagger: 0.08, twin: 0.14, sword: 0.46, shield: 0.5, scythe: 0.6, great: 0.9 };
+function feelCls(A) { return A && A.cls && A.cls !== 'tech' ? A.cls : wcls(); }
 function feelWeight(A) {
   const Wd = WEAPONS[SAVE.weapon] || {};
-  return clamp((FEEL_CLS_W[feelCls(A)] ?? 0.46) + clamp((1 - (Wd.speed || 1)) * 0.5, -0.12, 0.12), 0, 1);
+  return clamp((FEEL_CLS_W[feelCls(A)] ?? 0.46) + (FEEL_CLS_W[feelCls(A)] !== undefined && MV.types[feelCls(A)] ? 0 : clamp((1 - (Wd.speed || 1)) * 0.5, -0.12, 0.12)), 0, 1);
 }
 function feelFinisher(A) { return A.kind === 'heavy' || A.counter || (typeof isFinisher === 'function' && isFinisher(P.state)) || (A.cls === 'tech'); }
 
@@ -34,7 +36,7 @@ const FEEL_EL = {
   steel: { pk: 'spark', pk2: 'spark', light: '255,236,200', glow: '#dfe8f5' },
 };
 function feelElement(fire) {
-  const sg = SIGS[SAVE.weapon]; if (sg && sg.glow) return { pk: sg.pk || 'spark', pk2: sg.pk2 || sg.pk || 'spark', light: sg.light || '255,220,160', glow: sg.glow, sig: true };
+  const sg = typeof SIGS !== 'undefined' && SIGS[SAVE.weapon]; if (sg && sg.glow) return { pk: sg.pk || 'spark', pk2: sg.pk2 || sg.pk || 'spark', light: sg.light || '255,220,160', glow: sg.glow, sig: true };
   const Wd = WEAPONS[SAVE.weapon] || {};
   if (fire || Wd.fire) return FEEL_EL.fire;
   if (Wd.frost) return FEEL_EL.frost;

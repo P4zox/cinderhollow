@@ -112,7 +112,7 @@ function uiTabs(cur) {
   const n = TABS.length, pitch = 80, x0 = W / 2 - pitch * (n - 1) / 2;
   TABS.forEach((t, i) => {
     const x = x0 + i * pitch, sel = i === cur;
-    uiHit(x - 36, 9, 72, 16, null, () => { const M = menu; if (M && M.screen === 'pause' && M.tab !== i) { M.tab = i; M.sel = 0; M.pick = null; sfx.menu(); } });
+    uiHit(x - 36, 9, 72, 16, null, () => { const M = menu; if (M && M.screen === 'pause' && M.tab !== i) { M.tab = i; M.sel = 0; M.pick = null; M.mastery = null; sfx.menu(); } });
     text(t.toUpperCase(), x, 18, 6.6, sel ? UIC.hi : UIC.faint, 'center', { spacing: 1.6, weight: sel ? 600 : 500 });
     if (sel) { uiDiamond(x, 22.5, 1.3, UIC.gold); uiFade(x - 3, x - 34, 22.2, UI_RGB.gold, 0.9); uiFade(x + 3, x + 34, 22.2, UI_RGB.gold, 0.9); }
     if (i < n - 1) uiDiamond(x + pitch / 2, 16, 0.9, '#5a4a30');
@@ -123,12 +123,7 @@ function uiTabs(cur) {
 }
 
 // ---- gear entries (one shape for weapons, arts, spells, charms, key items and materials)
-const WCLASS_NAME = { sword: 'Straight Sword', dagger: 'Dagger', spear: 'Spear', katana: 'Katana', staff: 'Staff', shield: 'Sword & Shield', twin: 'Twinblades', mirror: 'Mirror Blade' };
-function wClassName(id) {
-  const c = (typeof WEAPON_CLASS !== 'undefined' && WEAPON_CLASS[id]) || 'sword';
-  if (c === 'great') return /maul|hammer/.test(id) ? 'Great Hammer' : /cleaver|rotmaw/.test(id) ? 'Great Cleaver' : 'Greatsword';
-  return WCLASS_NAME[c] || 'Weapon';
-}
+function wClassName(id) { const t = typeof WEAPON_TYPE !== 'undefined' && WEAPON_TYPE[id]; return t ? WTYPE_INFO[t].name : 'Weapon'; }   // the nine types (74_arsenal9.js)
 function gearEntry(kind, id) {
   if (kind === 'weapon') { const w = WEAPONS[id]; return w && { kind, id, name: w.name, icon: 'w_' + id, desc: w.desc || '', lv: SAVE.weapons[id] || 0, eq: SAVE.weapon === id }; }
   if (kind === 'art') { const r = ARTS[id]; if (!r) return null; const ws = Object.keys(WEAPONS).filter(w => wbArtOf(w) === id), own = ws.filter(w => SAVE.weapons[w] !== undefined);
@@ -222,7 +217,7 @@ function drawDetail(e, px, py, pw, ph, cmp) {
     const aid = wbArtOf(e.id), art = ARTS[aid];   // the weapon's own art: bound to it, shown read-only
     if (art) { const cd = cdBase('art', aid), fpS = `${art.fp} FP · ${cd % 1 ? cd.toFixed(1) : cd}s`; icon('a_' + aid, x - 1, y - 1, 10); text(art.name, x + 12, y + 6.5, 5.8, UIC.body, 'left', { weight: 500 }); text(fpS, R, y + 6.5, 5.2, UIC.fp, 'right', { weight: 600 }); text('ART', x + 12 + textW(art.name, 5.8, 500) + 4, y + 6.3, 4.4, UIC.faint, 'left', { spacing: 1 }); }
     y += 13;
-    if (w.sigInfo) { uiDiamond(x + 1.5, y + 2.6, 1.1, '#f0c890'); for (const l of wrap(w.sigInfo, pw - 24, 5.2)) { text(l, x + 5, y + 4.5, 5.2, '#f0c890', 'left', { weight: 500 }); y += 6.8; } y += 3; }   // the signature, in a line (WEAPONS[id].sigInfo)
+    { const t = WEAPON_TYPE[e.id]; if (t) { const r = masteryRank(t); text(`MASTERY ${WM_ROMAN[r - 1]}`, x, y + 4.5, 4.6, r > 1 ? UIC.gold : UIC.faint, 'left', { spacing: 1, weight: 600 }); wmPips(x + 46, y + 2.8, r, { r: 1.3, gap: 3.8 }); wmXpBar(x + 70, y + 2.3, 60, t, 1.6); text(wmXpLabel(t), R, y + 4.5, 4.6, UIC.muted, 'right', { weight: 500 }); y += 10; } }   // 74_arsenal9.js
     let tx = x; const tags = weaponTags(w);
     for (const [s, c] of tags) {
       const tw = textW(s, 4.8, 600) + 6; if (tx + tw > R + 0.5) { tx = x; y += 9.5; }
@@ -267,11 +262,12 @@ function pickIds(r) {
 }
 function openPicker(M, r) {
   if (r.k === 'art') { sfx.deny(); toast('The art is bound to the weapon', 1.6); return; }
+  if (r.k === 'weapon') return wmScreenOpen(M);   // read-only: weapons change at shrines; Enter shows Weapon Mastery
   const list = pickIds(r), cur = r.k === 'weapon' ? SAVE.weapon : r.k === 'art' ? SAVE.art : r.k === 'spell' ? SAVE.spellsEq[r.i] || null : SAVE.charmsEq[r.i] || null;
   M.pick = { row: r, list, sel: Math.max(0, list.indexOf(cur)), off: 0 }; sfx.menu();
 }
 function applyEquip(r, id) {
-  if (r.k === 'weapon') { if (!id) return; SAVE.weapon = id; wbOnEquip(id); }   // its art comes with it
+  if (r.k === 'weapon') { if (!id || !WEAPON_TYPE[id]) return; wmEquip(WEAPON_TYPE[id], { quiet: true }); }   // shrines / Training Grounds only (74_arsenal9.js)
   else if (r.k === 'art') return;
   else {
     const key = r.k === 'spell' ? 'spellsEq' : 'charmsEq', eq = [...SAVE[key]], j = id ? eq.indexOf(id) : -1, cur = eq[r.i] || null;
@@ -298,6 +294,7 @@ function pickInput(M, a) {
   if (conf) { applyEquip(K.row, K.list[K.sel]); M.pick = null; }
 }
 function equipInput(M, a) {
+  if (M.mastery) return wmScreenInput(M, a);
   const rows = equipRows(), n = rows.length, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
   M.sel = Math.min(M.sel, n - 1);
   if (a === 'up') { M.sel = (M.sel + n - 1) % n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % n; sfx.menu(); }
@@ -305,13 +302,18 @@ function equipInput(M, a) {
   else if (conf) openPicker(M, rows[M.sel]);
 }
 function renderEquipTab(M) {
+  if (M.mastery) return renderMasteryScreen(M);
   const rows = equipRows(); M.sel = Math.min(M.sel, rows.length - 1);
   panel(12, 30, 152, 172);
   if (M.pick) renderPicker(M.pick); else renderSlots(M, rows);
   panel(170, 30, 202, 172, 0.8);
   if (M.pick) { const id = M.pick.list[M.pick.sel]; drawDetail(id ? gearEntry(slotKind(M.pick.row), id) : { empty: true, title: 'Remove', sub: M.pick.row.k === 'spell' ? `Spell slot ${M.pick.row.i + 1}` : `Charm slot ${M.pick.row.i + 1}`, desc: 'Leave this slot empty.' }, 170, 30, 202, 172, slotEntry(M.pick.row)); }
-  else drawDetail(slotEntry(rows[M.sel]), 170, 30, 202, 172, null);
+  else if (rows[M.sel] && rows[M.sel].k === 'weapon') {   // read-only: a line says where to change it
+    drawDetail(slotEntry(rows[M.sel]), 170, 30, 202, 156, null);
+    uiFade(179, 363, 188, UI_RGB.accent, 0.4); text('Rest at a shrine to change weapons', 271, 196, 5, UIC.muted, 'center', { weight: 400 });
+  } else drawDetail(slotEntry(rows[M.sel]), 170, 30, 202, 172, null);
   if (M.pick) uiFooter([['↑↓←→', 'choose'], ['Enter', 'equip'], ['Esc', 'cancel']]);
+  else if (rows[M.sel] && rows[M.sel].k === 'weapon') uiFooter([['↑↓', 'slot'], ['Enter', 'mastery'], ...tabHint(), ['Esc', 'close']]);
   else uiFooter([['↑↓', 'slot'], ['Enter', 'choose'], ['←→', 'quick swap'], ...tabHint(), ['Esc', 'close']]);
 }
 function renderSlots(M, rows) {
@@ -331,7 +333,7 @@ function renderSlots(M, rows) {
     const r = L.r, sel = L.i === M.sel, e = slotEntry(r);
     if (Y >= top - 1 && Y + 12 <= bottom + 1) {
       uiHit(15, Y - 0.5, 146, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; openPicker(M, r); });
-      if (r.k !== 'art') { uiHit(137, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, -1); }); uiHit(150, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, 1); }); }
+      if (r.k !== 'art' && r.k !== 'weapon') { uiHit(137, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, -1); }); uiHit(150, Y - 0.5, 12, 13, () => { M.sel = L.i; }, () => { M.sel = L.i; changeEquip(r, 1); }); }
     }
     if (sel) uiSel(15, Y - 0.5, 146, 13);
     uiCell(19, Y + 0.5, 11, { eq: false });
@@ -340,6 +342,7 @@ function renderSlots(M, rows) {
     text(nm, 34, Y + 8.6, uiFit(nm, 104, 6.2, 4.8, sel ? 600 : 500), e.empty ? UIC.faint : sel ? UIC.hi : UIC.text, 'left', { weight: sel ? 600 : 500 });
     if (!e.empty && (r.k === 'spell' || r.k === 'art')) text(`${e.fp}`, 156, Y + 8.4, 5, UIC.fp, 'right', { weight: 600, alpha: sel ? 0 : 0.8 });
     if (sel && r.k === 'art') text('BOUND', 156, Y + 8.4, 4.4, UIC.faint, 'right', { spacing: 1 });
+    else if (r.k === 'weapon') { const t = WEAPON_TYPE[SAVE.weapon]; if (sel) text('SHRINE', 156, Y + 8.4, 4.4, UIC.faint, 'right', { spacing: 1 }); else if (t) text(WM_ROMAN[masteryRank(t) - 1], 156, Y + 8.4, 5, UIC.gold, 'right', { weight: 700, alpha: 0.85 }); }
     else if (sel) { const k = uiPulse(6); text('◂', 143.5 - k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); text('▸', 155.5 + k, Y + 8.6, 5.4, UIC.gold, 'center', { shadow: false }); }
   }
   vctx.restore();
@@ -390,7 +393,7 @@ function invInput(M, a) {
   if (conf) {   // OK equips straight from the bag: weapons and arts replace, spells and charms fill a free slot (or come off)
     const e = L[M.isel]; if (!e) return;
     if (e.kind === 'art') { sfx.deny(); toast('The art is bound to its weapon', 1.6); }
-    else if (e.kind === 'weapon') { if (e.eq) { sfx.deny(); return; } applyEquip({ k: e.kind }, e.id); toast(`${e.name} equipped`, 1.6); }
+    else if (e.kind === 'weapon') { sfx.deny(); toast(e.eq ? 'Already in your hand' : 'Rest at a shrine to change weapons', 1.8); }
     else if (e.kind === 'spell' || e.kind === 'charm') {
       const key = e.kind === 'spell' ? 'spellsEq' : 'charmsEq', slots = e.kind === 'spell' ? SAVE.spellSlots : SAVE.charmSlots;
       if (e.eq) { applyEquip({ k: e.kind, i: e.slot }, null); toast(`${e.name} removed`, 1.6); }
@@ -433,7 +436,7 @@ function renderInvTab(M) {
     text(C.name, 271, 128, 8, UIC.gold, 'center');
     text(L.length ? `${L.length} held · ↓ to browse` : 'You carry none yet.', 271, 140, 5.4, UIC.muted, 'center', { weight: 400 });
   }
-  const act = e && e.kind === 'weapon' ? (e.eq ? '' : 'equip') : e && (e.kind === 'spell' || e.kind === 'charm') ? (e.eq ? 'remove' : 'equip') : '';
+  const act = e && e.kind === 'weapon' ? '' : e && (e.kind === 'spell' || e.kind === 'charm') ? (e.eq ? 'remove' : 'equip') : '';
   uiFooter(M.bar ? [['←→', 'category'], ['↓', 'browse'], ...tabHint(), ['Esc', 'close']]
     : [['↑↓←→', 'browse'], ...(act ? [['Enter', act]] : []), ...tabHint(), ['Esc', 'close']]);
 }

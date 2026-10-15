@@ -1,0 +1,90 @@
+== new WA1 tags (speed 1) ==
+tag                frames  wind  total      table  check
+ls_kc_hold              4     -    520             loop/stance
+ls_kc                   8   380    650    380/650  OK
+ls_jjk                  7   330    640    330/640  OK
+ls_jjjk                 8   350    680    350/680  OK
+ls_quick                6   140    400    140/400  OK
+ls_step                 6   160    420    160/420  OK
+ls_fore_stance          3     -    400             loop/stance
+ls_fore_cut             7   100    560    100/560  OK
+ls_pommel               6   300    650    300/650  OK
+kt_sheathe              4     -    300             loop/stance
+kt_sheathed_idle        4     -    640             loop/stance
+kt_sheathed_walk        8     -    800             loop/stance
+kt_iai                  7    90    520     90/520  OK
+kt_focus_hold           3     -    360             loop/stance
+kt_focus                7   120    500    120/500  OK
+kt_iai_parry            7   200    600    200/600  OK
+kt_sidestep             4     -    260             loop/stance
+kt_stepcut              6   120    360    120/360  OK
+kt_flurry               9   180    600    180/600  OK
+kt_rush                 8   260    620    260/620  OK
+kt_flash                6   100    420    100/420  OK
+gs_charge_hold          4     -    520             loop/stance
+gs_charged              7   200    500    200/500  OK
+gs_strong               8   220    560    220/560  OK
+gs_true1                6   180    480    180/480  OK
+gs_true2                9   260    800    260/800  OK
+gs_guard                2     -    440             loop/stance
+gs_tackle               4    90    300     90/300  OK
+gs_rollheavy            8   220    600    220/600  OK
+gs_wrath                7   220    640    220/640  OK
+ml_1                    9   260    620    260/620  OK
+ml_2                    8   260    620    260/620  OK
+ml_3                    9   300    720    300/720  OK
+ml_charge_walk          8     -    880             loop/stance
+ml_charge_idle          4     -    520             loop/stance
+ml_upswing              7   140    520    140/520  OK
+ml_double              12   160    900    160/900  OK
+ml_bigsmash            10   240    820    240/820  OK
+ml_spin                 4     0    320             loop/stance
+ml_spin_end             8   160    700    160/700  OK
+ml_brace                4     -    720             loop/stance
+ml_rollswing            7   200    560    200/560  OK
+ml_bb1                  7   200    500    200/500  OK
+ml_bb2                  7   200    500    200/500  OK
+ml_bb3                  7   220    560    220/560  OK
+ml_bb4                 10   360   1000   360/1000  OK
+ml_quake                8   180    700    180/700  OK
+sh_4                    7   220    560    220/560  OK
+sh_rush_hold            3     -    420             loop/stance
+sh_rush                 8   220    450    220/450  OK
+sh_backhop              4     -    300             loop/stance
+sh_leap                 8   320    700    320/700  OK
+sh_slam                 7   240    620    240/620  OK
+sh_fallbash             5    90    420     90/420  OK
+== existing tags the tables reuse (for WM: speed = tag total / table total) ==
+ls J                       attack1      tag   90/350   table  160/380   speed x0.92 -> wind 98
+ls JJ                      attack2      tag   90/350   table  160/380   speed x0.92 -> wind 98
+ls JJJ poke                attack3      tag  160/620   table  200/420   speed x1.48 -> wind 108
+ls JJJJ crit (attack4)     riposte      tag  290/820   table  300/650   speed x1.26 -> wind 230
+ls K                       heavy        tag  510/980   table  380/700   speed x1.40 -> wind 364
+ls riposte                 riposte      tag  290/820   table  250/600   speed x1.37 -> wind 212
+ls air J                   air_attack   tag   70/310   table  150/330   speed x0.94 -> wind 75
+ls air up                  attack_up    tag  110/390   table  160/360   speed x1.08 -> wind 102
+ls air down                attack_down  tag   60/310   table  100/300   speed x1.03 -> wind 58
+kt J                       kt_1         tag  120/430   table  120/330   speed x1.30 -> wind 92
+kt JJ                      kt_2         tag  120/430   table  120/330   speed x1.30 -> wind 92
+kt K drawn (rushing draw)  kt_heavy     tag  660/1150  table  260/620   speed x1.85 -> wind 356
+kt air J                   kt_air       tag  110/400   table  140/330   speed x1.21 -> wind 91
+kt air up                  kt_up        tag  105/385   table  160/360   speed x1.07 -> wind 98
+kt air down                kt_down      tag   50/295   table  100/280   speed x1.05 -> wind 47
+gs J                       gs_1         tag  640/1170  table  300/700   speed x1.67 -> wind 383
+gs JJ                      gs_2         tag  490/1090  table  300/700   speed x1.56 -> wind 315
+gs JJJ                     gs_3         tag  550/1120  table  320/760   speed x1.47 -> wind 373
+gs air J                   gs_air       tag  225/555   table  220/560   speed x0.99 -> wind 227
+gs air up                  gs_up        tag  220/660   table  240/560   speed x1.18 -> wind 187
+gs air down                gs_down      tag   90/390   table  140/390   speed x1.00 -> wind 90
+ml air J (gs_air)          gs_air       tag  225/555   table  200/520   speed x1.07 -> wind 211
+ml air up (gs_up)          gs_up        tag  220/660   table  220/520   speed x1.27 -> wind 173
+ml air down (gs_down)      gs_down      tag   90/390   table  140/380   speed x1.03 -> wind 88
+sh J                       sh_1         tag   85/255   table  120/320   speed x0.80 -> wind 107
+sh JJ                      sh_2         tag   85/255   table  120/320   speed x0.80 -> wind 107
+sh JJJ                     sh_3         tag  140/445   table  140/340   speed x1.31 -> wind 107
+sh K                       sh_heavy     tag  370/730   table  200/520   speed x1.40 -> wind 264
+sh I->J counter            sh_counter   tag   40/310   table  200/520   speed x0.60 -> wind 67
+sh air J                   sh_air       tag   85/280   table  120/300   speed x0.93 -> wind 91
+sh air up                  sh_up        tag   55/320   table  150/340   speed x0.94 -> wind 58
+sh air down                sh_down      tag   55/305   table  100/300   speed x1.02 -> wind 54
+mismatches: 0

@@ -94,6 +94,12 @@ function stLayout() {
     const P2 = mk('arsenal', 'Arsenal', order, s => { const i = order.indexOf(s), r = Math.floor(i / cols), c = i % cols, nr = Math.min(cols, order.length - r * cols); return { x: (c - (nr - 1) / 2) * gx, y: (r - (rows - 1) / 2) * gy + 4 }; });
     P2.gallery = true; pages.push(P2);
   }
+  if (typeof WTYPES !== 'undefined') {   // the Weapon Mastery page (it replaced the Arsenal): the nine types in alcoves, 5 + 4
+    const order = WTYPES.map(t => ({ id: 'wm:' + t, br: 'arsenal', wtype: t, name: WTYPE_INFO[t].name, req: [], excl: [], cost: 0 }));
+    const cols = 5, rows = Math.ceil(order.length / cols), gx = 50, gy = 72;
+    const P2 = mk('mastery', 'Mastery', order, s => { const i = order.indexOf(s), r = Math.floor(i / cols), c = i % cols, nr = Math.min(cols, order.length - r * cols); return { x: (c - (nr - 1) / 2) * gx, y: (r - (rows - 1) / 2) * gy + 6 }; });
+    P2.gallery = true; P2.mastery = true; pages.splice(Math.min(1, pages.length), 0, P2);
+  }
   if (wayApart) {
     const wc = { x: way.reduce((a, s) => a + num(s.x), 0) / way.length, y: way.reduce((a, s) => a + num(s.y), 0) / way.length };
     pages.push(mk('way', 'Wayfarer', way, s => ({ x: (num(s.x) - wc.x) * k, y: (num(s.y) - wc.y) * k })));
@@ -144,7 +150,7 @@ function stSetPage(i, first) {
   ST.page = (i + L.length) % L.length; const pg = L[ST.page];
   // cursor: the last learned node on the page, else its first available root, else its first node
   const learned = SAVE.skills.filter(id => pg.pos[id]);
-  const pick = learned.length ? learned[learned.length - 1] : (pg.nodes.find(s => stState(s) === 'avail' && !(s.req || []).length) || pg.nodes.find(s => stState(s) === 'avail') || pg.nodes[0] || {}).id;
+  const pick = pg.mastery ? 'wm:' + wtype() : learned.length ? learned[learned.length - 1] : (pg.nodes.find(s => stState(s) === 'avail' && !(s.req || []).length) || pg.nodes.find(s => stState(s) === 'avail') || pg.nodes[0] || {}).id;
   ST.sel = pick; ST.arm = null;
   const Z = stZooms(pg);
   // a fresh tree opens on the whole constellation; a growing one on the middle zoom around the last node learned
@@ -317,6 +323,7 @@ function stHitNode(p) {
   const pg = stPage(); if (!pg) return null;
   if (p.x > ST_PANEL.x - 2 || p.y < ST_VP.y || p.y > ST_VP.y + ST_VP.h) return null;
   let best = null, bd = 1e9;
+  if (pg.mastery) { for (const s of pg.nodes) { const q = pg.pos[s.id], X = stSX(q.x), Y = stSY(q.y); if (Math.abs(p.x - X) <= 23 * ST.cam.z && p.y >= Y - 29 * ST.cam.z && p.y <= Y + 35 * ST.cam.z) return s.id; } return null; }
   for (const s of pg.nodes) { const q = pg.pos[s.id], d = Math.hypot(stSX(q.x) - p.x, stSY(q.y) - p.y), r = (ST_R[stKind(s)] + 2) * ST.cam.z; if (d < r && d < bd) { bd = d; best = s.id; } }
   return best;
 }
@@ -474,18 +481,21 @@ function stRender(M) {
     uiRect(sx, sy, d.s > 0.85 ? 1 : 0.6, d.s > 0.85 ? 1 : 0.6, d.s > 0.7 ? '#e6c77a' : '#a89a80', a);
   }
   if (pg.id === 'tree') stDrawTreeBack(pg, z);
-  if (pg.gallery) stDrawGalleryBack(pg, z);
-  stDrawEdges(pg, z);
-  stDrawNodes(pg, z);
-  stDrawForks(pg, z);
-  stDrawCursor(pg, z);
+  if (pg.mastery) stDrawMastery(pg, z);
+  else {
+    if (pg.gallery) stDrawGalleryBack(pg, z);
+    stDrawEdges(pg, z);
+    stDrawNodes(pg, z);
+    stDrawForks(pg, z);
+    stDrawCursor(pg, z);
+  }
   vctx.restore();
 
   // ---- chrome
   if (ST.summary) stSummarySheet();
   uiStrips();
   stHeader(pg, L);
-  if (ST.summary) stSummary(); else stDetail(pg);
+  if (ST.summary) stSummary(); else if (pg.mastery) stMasteryDetail(pg); else stDetail(pg);
   stLegend(pg);
   stFooter();
   if (ST.openT < 0.3) { vctx.fillStyle = `rgba(5,4,8,${1 - ST.openT / 0.3})`; vctx.fillRect(ox, oy, W * scale, H * scale); }
@@ -571,6 +581,48 @@ function stDrawGalleryBack(pg, z) {
   const wn = WEAPONS[SAVE.weapon] ? WEAPONS[SAVE.weapon].name : '';
   text('Each mastery wakes only while its weapon class is in your hand', ST_VP.x + ST_VP.w / 2, ST_VP.y + 12, 5, UIC.dim, 'center', { weight: 400 });
   if (wn) text(`In hand: ${wn} (${ST_CLS_NAME[cls] || cls})`, ST_VP.x + ST_VP.w / 2, ST_VP.y + 20, 4.8, '#8fd89a', 'center', { weight: 500 });
+}
+// ---- the Weapon Mastery page: nine alcoves (icon, rank, XP) and, on the right, the chosen type's ranks and unlocks (74_arsenal9.js)
+function stDrawMastery(pg, z) {
+  const cur = wtype();
+  text('Each weapon ranks up as you fight with it. Ranks unlock moves, not stats.', ST_VP.x + ST_VP.w / 2, ST_VP.y + 11, 5, UIC.dim, 'center', { weight: 400 });
+  for (const s of pg.nodes) {
+    const t = s.wtype, p = pg.pos[s.id], x = stSX(p.x), y = stSY(p.y), on = t === cur, sel = s.id === ST.sel, w = 46 * z, h = 64 * z, x0 = x - w / 2, y0 = y - 29 * z;
+    const r = masteryRank(t);
+    const g = vctx.createLinearGradient(0, oy + y0 * scale, 0, oy + (y0 + h) * scale);
+    g.addColorStop(0, on ? 'rgba(70,52,22,0.75)' : 'rgba(22,17,20,0.75)'); g.addColorStop(1, on ? 'rgba(30,22,12,0.75)' : 'rgba(10,8,11,0.75)');
+    vctx.fillStyle = g; vctx.fillRect(ox + x0 * scale, oy + y0 * scale, w * scale, h * scale);
+    vctx.strokeStyle = sel ? `rgba(245,227,176,${0.65 + 0.3 * uiPulse(5)})` : on ? 'rgba(230,199,122,0.6)' : 'rgba(109,90,58,0.45)'; vctx.lineWidth = Math.max(1, scale * (sel ? 0.7 : 0.5));
+    vctx.strokeRect(ox + x0 * scale + 0.5, oy + y0 * scale + 0.5, w * scale - 1, h * scale - 1);
+    uiDiamond(x, y0, 1.6, on ? UIC.gold : '#5a4a30');
+    if (on || sel) stGlow(x, y - 6 * z, 26 * z, UI_RGB.gold, (on ? 0.16 : 0.1) + 0.05 * Math.sin(time * 3));
+    const nm = WTYPE_INFO[t].name.toUpperCase();
+    text(nm, x, y0 + 8 * z, uiFit(nm, w - 4, 4 * z, 3, 600), on ? '#8fd89a' : sel ? UIC.hi : UIC.dim, 'center', { spacing: 0.5, weight: 600 });
+    wmIcon(t, x - 11 * z, y0 + 12 * z, 22 * z, on || sel ? 1 : 0.7);
+    text(WM_ROMAN[r - 1], x, y0 + 45 * z, 7 * z, r > 1 ? UIC.gold : UIC.faint, 'center', { weight: 700 });
+    wmPips(x - 9.2 * z, y0 + 50 * z, r, { r: 1.2 * z, gap: 4.6 * z });
+    wmXpBar(x0 + 5 * z, y0 + 55 * z, w - 10 * z, t, 1.4 * z);
+    if (on) text('IN HAND', x, y0 + h + 6 * z, 3.8 * z, '#8fd89a', 'center', { spacing: 0.8, weight: 600 });
+  }
+}
+function stMasteryDetail(pg) {
+  const P0 = ST_PANEL; panel(P0.x, P0.y, P0.w, P0.h, 0.94); stPanelTabs();
+  const s = pg.nodes.find(n => n.id === ST.sel) || pg.nodes[0]; if (!s) return;
+  const t = s.wtype, I = WTYPE_INFO[t], x = P0.x + 7, w = P0.w - 14, cur = t === wtype();
+  let y = P0.y + 22;
+  uiDiamond(x + 1.5, y - 1.7, 1.6, UIC.gold);
+  text('WEAPON MASTERY', x + 6, y, 4.5, UIC.gold, 'left', { spacing: 0.9, weight: 600 });
+  y += 5;
+  uiCell(x, y, 22, { eq: cur }); wmIcon(t, x + 2, y + 2, 18);
+  text(I.name, x + 27, y + 9, uiFit(I.name, w - 28, 7, 5, 600), UIC.hi, 'left', { weight: 600 });
+  text(cur ? 'In hand' : WEAPONS[I.weapon].name, x + 27, y + 17, uiFit(cur ? 'In hand' : WEAPONS[I.weapon].name, w - 28, 4.8, 3.8, 500), cur ? UIC.up : UIC.muted, 'left', { weight: 500 });
+  y += 30;
+  y = wmRankBlock(t, x, y, w);
+  y += 1; uiFade(x, x + w, y - 2, UI_RGB.accent, 0.5); y += 6;
+  wmUnlockRows(t, x, y, w, P0.y + P0.h - 16, { size: 4.6, gap: 1.6 });
+  const ay = P0.y + P0.h - 6;
+  uiFade(x, x + w, ay - 9, UI_RGB.accent, 0.4);
+  text(cur ? 'Fight with it to rank it up' : 'Change weapons at a shrine', x, ay, 4.8, UIC.faint, 'left', { weight: 400 });
 }
 function stTrim(pa, pb, ra, rb) {   // segment between two node rims
   const dx = pb.x - pa.x, dy = pb.y - pa.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
@@ -890,6 +942,18 @@ function stLegend(pg) {
 function stFooter() {
   const pad = PAD.active, touch = TOUCH_UI && !pad;
   const s = stNode(ST.sel), c = s ? stCan(s) : { ok: false };
+  if (stPage().mastery && !ST.summary) {   // nothing to learn here: ranks come from fighting
+    const it = touch ? [['Tap', 'select'], ['Esc', 'back']] : [[pad ? 'D-pad' : '←↑↓→', 'move'], [pad ? 'Y' : 'B', 'build'], [pad ? 'LB/RB' : kl('Q') ? 'Q/Tab' : 'Tab', 'page'], [kl('Esc'), 'back']];
+    const parts = it.map(([K, l]) => { const kw = Math.max(7.8, textW(K, 4.8, 600) + 5); return { K, l, kw, w: kw + 2.5 + textW(l, 5, 400) }; });
+    const total = parts.reduce((a, p) => a + p.w, 0) + 8 * (parts.length - 1); let x = W / 2 - total / 2;
+    for (const p of parts) {
+      uiKey(p.K, x, 211, { size: 4.8 }); text(p.l, x + p.kw + 2.5, 211, 5, UIC.faint, 'left', { weight: 400 });
+      const act = { build: () => { ST.summary = !ST.summary; sfx.menu(); }, page: () => stSetPage(ST.page + 1), back: () => stInput(menu, 'back') }[p.l];
+      if (act) ST.hits.push({ x, y: 204, w: p.w, h: 10, fn: act });
+      x += p.w + 8;
+    }
+    return;
+  }
   const items = touch ? [['Tap', 'select'], ['Tap', ST.arm ? 'confirm' : 'learn'], ['Drag', 'pan'], ['Esc', 'back']]
     : ST.summary ? [[pad ? 'D-pad' : '↑↓', 'scroll'], [pad ? 'Y' : 'B', 'close'], [kl('Esc'), 'back']]
     : [[pad ? 'D-pad' : '←↑↓→', 'move'], [kl('Enter'), ST.arm ? 'confirm' : 'learn'], [pad ? 'LT/RT' : 'Z', 'zoom'], [pad ? 'Y' : 'B', 'build'],

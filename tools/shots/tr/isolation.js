@@ -15,7 +15,7 @@ out.push('entered: state=' + G.state + ' room=' + G.room + ' TRAINING.on=' + T.T
 // --- do lots of things
 E("SAVE.stats.vig = 99; SAVE.stats.str = 80; trnApplyBuild()");
 E("trnLearnAll()"); out.push('skills learned in sandbox: ' + G.SAVE.skills.length);
-E("SAVE.weapon = 'starblade'; SAVE.weapons.starblade = 5; SAVE.charmsEq = Object.keys(CHARMS).slice(0, 4); trnApplyBuild()");
+E("SAVE.weapon = 'katana'; SAVE.weapons.katana = 5; SAVE.charmsEq = Object.keys(CHARMS).slice(0, 4); trnApplyBuild()");
 E("setDiff(2)"); E("SETTINGS.god = 1; SETTINGS.inffp = 1; SETTINGS.nocd = 1; saveSettings()");
 T.open(0); G.step(2); G.step(1, [], ['down']); G.step(1, [], ['right']); G.step(1, [], ['pause']);   // panel in and out
 E("menu = { screen: 'pause', tab: 0, sel: 0, trnRet: 2 }; state = 'menu'"); G.step(1, [], ['pause']); out.push('equipment screen closed -> ' + G.state + (G.menu ? ' ' + G.menu.screen : ''));

@@ -13,7 +13,7 @@ const SKILL_BRANCHES = [
   { id: 'veil', name: 'Veil', color: '#a79ce0', desc: 'Rolls, parries, stamina and defence.' },
   { id: 'blood', name: 'Blood', color: '#e0505a', desc: 'Bleed, lifesteal and fighting on the edge of death.' },
   { id: 'flame', name: 'Flame', color: '#ff9d4a', desc: 'Weapon arts, buffs and cooldowns.' },
-  { id: 'arsenal', name: 'Arsenal', color: '#c9a45a', desc: 'One mastery per weapon class. Each works only while that class is in your hand.' },
+  { id: 'arsenal', name: 'Weapon Mastery', color: '#c9a45a', desc: 'Each weapon type ranks up as you fight with it. Ranks unlock moves, not stats.' },
   { id: 'way', name: 'Wayfarer', color: '#9cc78e', desc: 'Techniques and the road: better traversal, and more from what you find.' },
 ];
 const SK_ANG = { blade: -90, ash: -18, veil: 54, blood: 126, flame: 198 };
@@ -97,18 +97,10 @@ const SK_BRANCH_NODES = {
   ],
 };
 const SK_CLS_NAMES = { sword: 'Sword', dagger: 'Dagger', great: 'Great Weapon', spear: 'Spear', katana: 'Katana', staff: 'Staff', shield: 'Sword & Shield', twin: 'Twinblade', scythe: 'Scythe', whip: 'Whip' };
-const SK_ARSENAL = [
-  ['sword', 'Blade Discipline', 'Swords: every combo finisher looses a short arc of ash (60% of a light blow).'],
-  ['dagger', 'Hollow Point', 'Daggers: critical hits deal +25% and burst the foe’s bleed at once.'],
-  ['great', 'Earthshaker', 'Great weapons: heavy slams send a shockwave along the ground that hits foes beyond the blade.'],
-  ['spear', 'Impaler', 'Spears: the heavy thrust lunges 30% further and breaks the stance of lesser foes.'],
-  ['katana', 'Flash Step', 'Katanas: you are untouchable during the heavy draw-cut’s lunge.'],
-  ['staff', 'Whirling Staff', 'Staves: the heavy spin costs 55% of your stamina instead of 80%, and knocks projectiles out of the air.'],
-  ['shield', 'Thorned Bulwark', 'Shields: blows you block deal 35% of their damage back to the attacker.'],
-  ['twin', 'Twin Rhythm', 'Twinblades: finishing the full five-hit combo quickens your blades by 15% for 4 s.'],
-  ['scythe', 'Reaper', 'Scythes: reaping kills heal twice as much, and every scythe kill restores 10 FP.'],
-  ['whip', 'Cracking Lash', 'Whips: the tip crack also staggers lesser foes.'],
-];
+// Weapon revamp (agent WS): the ten Arsenal masteries (m_<class>) are gone. The skill tree's Arsenal page became the Weapon
+// Mastery page (58_skilltree_ui.js, ranks from 74_arsenal9.js); saves that had them get the points back (74's migration).
+// skillOn('m_*') is simply false now, so the old per-class effects below never fire.
+const SK_ARSENAL = [];
 const SK_WAY = [   // [id, name, cost, desc, needs item?, req]
   ['way_prosper', 'Prospector', 1, 'Foes drop 10% more cinders.', null, []],
   ['way_glint', 'Keen Eye', 1, 'Breakable walls glint when you are near them.', null, ['way_prosper']],

@@ -21,7 +21,7 @@ function cycle(list, cur, d, allowNone) {
 }
 function changeEquip(row, d) {   // quick cycle (←→ on a slot); the picker grid lives in 29_ui2.js
   let nx;
-  if (row.k === 'weapon') nx = cycle(Object.keys(WEAPONS).filter(id => SAVE.weapons[id] !== undefined), SAVE.weapon, d);
+  if (row.k === 'weapon') { sfx.deny(); toast('Rest at a shrine to change weapons', 1.8); return; }   // read-only (74_arsenal9.js: shrine › Change Weapon)
   else if (row.k === 'art') { sfx.deny(); toast('The art is bound to the weapon', 1.6); return; }   // read-only: arts are locked to weapons (60_wbal.js)
   else {
     const key = row.k === 'spell' ? 'spellsEq' : 'charmsEq', others = SAVE[key].filter((s, j) => j !== row.i);
@@ -53,9 +53,10 @@ function pauseInput(a) {
   if (M.guide) return guideInput(M, a);
   if (M.sub) return settingsSubInput(M, a);
   if (M.tab === 0 && M.pick) return pickInput(M, a);
+  if (M.tab === 0 && M.mastery) return wmScreenInput(M, a);   // Equipment › Weapon › Weapon Mastery
   if (M.confirmQuit) return quitConfirmInput(M, a);
   if (a === 'pause' || a === 'back' || a === 'heavy') { menu = null; state = 'play'; clearBuffer(); saveGame(); return; }
-  if (a === 'spell' || a === 'map') { M.tab = (M.tab + (a === 'spell' ? 3 : 1)) % 4; M.sel = 0; sfx.menu(); return; }
+  if (a === 'spell' || a === 'map') { M.tab = (M.tab + (a === 'spell' ? 3 : 1)) % 4; M.sel = 0; M.mastery = null; sfx.menu(); return; }
   if (M.tab === 0) equipInput(M, a);
   else if (M.tab === 1) invInput(M, a);
   else if (M.tab === 2) {
@@ -225,7 +226,7 @@ function renderShop() {
   text('Enter — buy    Esc — leave', 120, 192, 5.5, '#7f745f', 'center', { weight: 400 });
 }
 function forgeInput(a) {
-  const M = menu, L = Object.keys(SAVE.weapons), conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
+  const M = menu, L = Object.keys(SAVE.weapons).filter(id => WEAPONS[id]), conf = ['confirm', 'interact', 'attack', 'jump'].includes(a);
   M.n = L.length;
   if (a === 'up') { M.sel = (M.sel + M.n - 1) % M.n; sfx.menu(); } else if (a === 'down') { M.sel = (M.sel + 1) % M.n; sfx.menu(); }
   else if (['pause', 'back', 'heavy', 'roll'].includes(a)) return leaveShop();
@@ -240,17 +241,19 @@ function forgeInput(a) {
   }
 }
 function renderForge() {
-  const M = menu, L = Object.keys(SAVE.weapons);
+  const M = menu, L = Object.keys(SAVE.weapons).filter(id => WEAPONS[id]);
   vctx.fillStyle = 'rgba(5,4,8,0.6)'; vctx.fillRect(ox, oy, W * scale, H * scale);
   panel(20, 22, 344, 176);
   text('TEMPER A WEAPON', 30, 38, 7.5, '#e6c77a', 'left', { spacing: 1 });
   text(`Emberstones ${SAVE.inv.emberstone || 0}     Cinders ${SAVE.cinders}`, 354, 38, 6.2, '#e8dcc0', 'right');
   L.forEach((id, i) => {
-    const w = WEAPONS[id], lv = SAVE.weapons[id], y = 58 + i * 16, sel = i === M.sel;
-    uiHit(24, y - 11, 336, 15, () => { M.sel = i; });
-    if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 11) * scale, 336 * scale, 15 * scale); }
-    icon('w_' + id, 28, y - 11, 12);
-    text(`${w.name}${lv ? ' +' + lv : ''}`, 44, y - 1, 6.6, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+    const w = WEAPONS[id], lv = SAVE.weapons[id], y = 56 + i * 14.4, sel = i === M.sel;   // nine rows (weapon revamp)
+    if (!w) return;
+    uiHit(24, y - 10.5, 336, 13.6, () => { M.sel = i; });
+    if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 10.5) * scale, 336 * scale, 13.6 * scale); }
+    icon('w_' + id, 28, y - 10, 11);
+    text(`${w.name}${lv ? ' +' + lv : ''}`, 44, y - 1, 6.4, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+    { const t = typeof WEAPON_TYPE !== 'undefined' && WEAPON_TYPE[id]; if (t) text(WTYPE_INFO[t].name, 170, y - 1, 5.2, '#8a7f6a', 'left', { weight: 400 }); }
     const a0 = Math.round(weaponAR(SAVE.stats, id, lv)), a1 = lv < 5 ? Math.round(weaponAR(SAVE.stats, id, lv + 1)) : null;
     text(a1 ? `Attack ${a0} → ${a1}` : `Attack ${a0}  (max)`, 230, y - 1, 6.2, '#b8ab90', 'left');
     if (lv < 5) { const c = upgradeCost(lv); text(`${c.stones}◆  ${c.cinders}`, 356, y - 1, 6.2, (SAVE.inv.emberstone || 0) >= c.stones && SAVE.cinders >= c.cinders ? '#e6c77a' : '#8a6050', 'right'); }

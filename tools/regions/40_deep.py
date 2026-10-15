@@ -68,7 +68,7 @@ r.kw['spawns'] = [
 ]
 
 # ---------------------------------------------------------------- D4 Slag Chute (descent)
-r = Room('D4', 'Slag Chute', 'deep', 376, 100, 24, 34, indoor=True, items=['sp:magma_orb'], chests=['w:forge_cleaver'])
+r = Room('D4', 'Slag Chute', 'deep', 376, 100, 24, 34, indoor=True, items=['sp:magma_orb'], chests=['wc_cache'])
 r.walls().open('N', 16, 18).open('W', 27, 30)
 r.fill(13, 6, 22, 7)                                        # A: landing under the hole
 r.fill(1, 11, 9, 12)                                        # B

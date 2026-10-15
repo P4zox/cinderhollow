@@ -17,7 +17,7 @@ await btn(1); o.push('B -> ' + G.state);
 frame(10); o.push('state stays play: ' + G.state + ' pstate=' + G.P.state);
 // ---- air attack limit: jump, then mash attack
 G.P.st = 999; pad.buttons[0].pressed = true; frame(4); let starts = 0, last = G.P.state;
-for (let k = 0; k < 5; k++) { pad.buttons[2].pressed = true; frame(2); pad.buttons[2].pressed = false; for (let j = 0; j < 12; j++) { frame(1); if (G.P.state !== last && G.P.state === 'air_attack') starts++; last = G.P.state; } }
+for (let k = 0; k < 5; k++) { { const n0 = G.P.airN || 0; pad.buttons[2].pressed = true; frame(2); pad.buttons[2].pressed = false; if ((G.P.airN || 0) > n0) starts += (G.P.airN || 0) - n0; } for (let j = 0; j < 12; j++) { const n0 = G.P.airN || 0; frame(1); if ((G.P.airN || 0) > n0) starts++; last = G.P.state; } }   // (WM: counted by the air limit's own counter)
 pad.buttons[0].pressed = false;
 o.push('air attacks started in one jump (max 2): ' + starts + ' lock=' + G.P.airLock);
 frame(90); o.push('after landing lock=' + G.P.airLock + ' n=' + G.P.airN);

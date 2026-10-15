@@ -44,7 +44,7 @@ _zone(r, 1, 12, 14, 24)
 _zone(r, 15, 13, 22, 24)
 
 # ---------------------------------------------------------------- SF2 The Black Glass Plains
-r = Room('SF2', 'The Black Glass Plains', 'starfall', 516, -48, 64, 16, chests=['w:meteor_maul'], items=['shard'],
+r = Room('SF2', 'The Black Glass Plains', 'starfall', 516, -48, 64, 16, chests=['wc_great'], items=['shard'],
          spawns=[_en('sf_pilgrim', 15, 12), _en('sf_golem', 39, 12), _en('sf_pilgrim', 54, 12), _en('sf_wisp', 28, 6, air=True),
                  _sfd('godbone', 8, 12), _sfd('spire', 17, 12), _sfd('spire', 41, 12), _sfd('godbone', 61, 12), _sfd('shard', 24, 3),
                  _sfd('shard', 52, 5)])

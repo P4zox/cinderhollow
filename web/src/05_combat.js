@@ -229,7 +229,7 @@ function grantItem(id, x, y) {
   else if (it.charm) { if (!SAVE.charms.includes(id)) SAVE.charms.push(id); if (SAVE.charmsEq.length < SAVE.charmSlots) { SAVE.charmsEq.push(id); refreshDerived(); } }
   else SAVE.items[id] = 1;
   if (x !== undefined) for (let i = 0; i < 16; i++) particles.push({ x, y, vx: rand(-60, 60), vy: -rand(20, 100), g: 60, life: rand(0.6, 1.2), kind: 'gold' });
-  const hint = it.weapon ? ' Equip it from the menu (Esc).' : it.charm ? ' Charms are worn from the menu (Esc).' : it.spell ? ' Equip spells from the menu (Esc).' : '';
+  const hint = it.weapon ? ' Change weapons at any shrine.' : it.charm ? ' Charms are worn from the menu (Esc).' : it.spell ? ' Equip spells from the menu (Esc).' : '';
   banner(it.name, it.desc + hint, it.icon);
   saveGame();
 }

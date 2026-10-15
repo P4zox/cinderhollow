@@ -1,0 +1,41 @@
+tag                weapon           fr        wind       total   active type        meta / loop
+tw_demon_on        twinfangs         4         -/-     200/200        - move   ok   
+tw_d5              twinfangs         6     100/100     280/280   (2, 3) atk    ok   hit [0, -34, 29, 0] hits [2, 3]
+tw_d6              twinfangs         6     100/100     280/280   (2, 4) atk    ok   hit [-26, -36, 26, -2] hits [2, 3, 4]
+tw_dflurry         twinfangs        11     150/150     800/800   (2, 7) atk    ok   hit [0, -37, 33, 0] hits [2, 3, 4, 5, 6, 7]
+tw_ddash           twinfangs         3         -/-     120/120        - move   ok   
+tw_dance           twinfangs        14     120/120   1400/1400  (2, 11) atk    ok   hit [-31, -40, 31, 0] hits [2, 3, 4, 5, 6, 7, 8, 9, 11]
+tw_dance2          twinfangs        17     120/120   1680/1680  (2, 14) atk    ok   hit [-35, -40, 35, 0] hits [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14]
+tw_dashslash       twinfangs         6     100/100     320/320   (2, 3) atk    ok   hit [0, -30, 34, 0]
+tw_counter         twinfangs         6       80/80     300/300   (1, 3) atk    ok   hit [0, -33, 32, 0] hits [1, 2, 3]
+tw_pdodge          twinfangs         3         -/-     180/180        - move   ok   
+sp_guard           spear             4         -/-     600/600        - loop   ok   seam 272px / max step 270px
+sp_guard_walk      spear             6         -/-     660/660        - loop   ok   seam 322px / max step 335px
+sp_gpoke           spear             6     140/140     380/380   (2, 3) atk    ok   hit [5, -20, 36, -10]
+sp_counter         spear             7     160/160     520/520   (2, 3) atk    ok   hit [-4, -21, 36, -8]
+sp_hop             spear             5         -/-     260/260        - move   ok   
+sp_charge_wind     spear             3         -/-     400/400        - move   ok   
+sp_charge_run      spear             8         0/0     480/480   (0, 7) loop   ok   seam 440px / max step 452px
+sp_finish          spear             7     120/120     480/480   (2, 3) atk    ok   hit [-4, -21, 36, -6]
+sp_pguard          spear             6         -/-   1000/1000        - stance ok   
+sp_ccounter        spear             8     360/360     800/800   (3, 4) atk    ok   hit [-4, -21, 36, -4]
+st_vault           quarterstaff      4         -/-     350/350        - move   ok   
+st_aspin           quarterstaff      7     180/180     460/460   (2, 5) atk    ok   hit [-27, -28, 27, -6]
+st_aspin2          quarterstaff      9     120/120     540/540   (2, 6) atk    ok   hit [-31, -39, 31, 0]
+st_divekick        quarterstaff      5     100/100     300/300   (2, 3) atk    ok   hit [0, -12, 16, 22]
+st_lowsweep        quarterstaff      7     140/140     380/380   (2, 3) atk    ok   hit [-29, -5, 29, 0]
+st_twirl_up        quarterstaff      6     140/140     340/340   (2, 4) atk    ok   hit [-8, -54, 25, -15]
+st_gale            quarterstaff     10     220/220     700/700   (2, 6) atk    ok   hit [-36, -26, 36, -1]
+wh_overhead_hold   headsman_chain    6         -/-     480/480        - loop   ok   seam 329px / max step 327px
+wh_overhead        headsman_chain    7     300/300     600/600   (3, 4) atk    ok   hit [0, -33, 36, -11]
+wh_thunder         headsman_chain    7     300/300     700/700   (3, 4) atk    ok   hit [0, -27, 36, 0]
+wh_grapple         headsman_chain    4         -/-     300/300        - move   ok   
+wh_grapple_pull    headsman_chain    4         -/-     300/300        - move   ok   
+wh_grapple_zip     headsman_chain    2         -/-     120/120        - loop   ok   
+wh_retreat         headsman_chain    6     160/160     420/420   (2, 3) atk    ok   hit [1, -31, 36, -3]
+wh_snap            headsman_chain    6       80/80     320/320   (2, 3) atk    ok   hit [8, -24, 36, -4]
+wh_slam            headsman_chain    7     250/250     600/600   (3, 4) atk    ok   hit [9, -26, 35, 0]
+wh_double          headsman_chain    6     220/220     550/550   (2, 3) atk    ok   hit [4, -32, 36, -4]
+wh_thousand        headsman_chain    6         0/0     360/360   (0, 5) loop   ok   seam 336px / max step 415px
+
+38 tags, 0 failures

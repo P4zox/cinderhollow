@@ -11,7 +11,8 @@ function saveMeta(raw) {   // a short description of a stored journey
   if (!s || !s.stats) return { ok: false, line1: 'Unreadable journey', line2: '' };
   const lv = levelOf(s.stats), R = ROOM_BY[s.shrine] || ROOM_BY.R1, area = AREAS[R.biome] ? AREAS[R.biome].name : R.name;
   const diff = typeof DIFFS !== 'undefined' ? (DIFFS[s.diff === 0 || s.diff === 2 ? s.diff : 1] || DIFFS[1]).name : '';
-  const wpn = WEAPONS[s.weapon] ? WEAPONS[s.weapon].name : '';
+  const wt = typeof wmTypeOfAny === 'function' ? wmTypeOfAny(s.weapon) : null;   // old journeys name a weapon that may be gone: show its type's
+  const wpn = WEAPONS[s.weapon] ? WEAPONS[s.weapon].name : wt && WTYPE_INFO[wt] && WEAPONS[WTYPE_INFO[wt].weapon] ? WEAPONS[WTYPE_INFO[wt].weapon].name : '';
   return { ok: true, lv, diff, line1: `Level ${lv}  ·  ${area}`, line2: `${fmtTime(s.playTime || 0)}  ·  ${diff}${s.ngp ? `  ·  Journey ${s.ngp + 1}` : ''}  ·  ${wpn}` };
 }
 // move the current journey into the old list (replacing index `rep` when the list is full)
@@ -45,7 +46,7 @@ titleOptions = function () {
 function titleNewGame() {   // New Game: make room for the current journey first, then choose a difficulty
   TITLE_SLOTS.rep = undefined;
   if (hasSave() && oldSaves().length >= OLD_MAX) { TITLE_SLOTS.screen = 'replace'; TITLE_SLOTS.sel = 0; TITLE_SLOTS.pop = null; sfx.menu(); return; }
-  TITLE_DIFF.open = true; TITLE_DIFF.sel = 1;
+  TITLE_DIFF.open = true; TITLE_DIFF.sel = 1; TITLE_DIFF.stage = 'diff';
 }
 function titleChoose(o) {
   if (o === 'Continue') { sfx.kindle(); clearBuffer(); continueGame(); }
@@ -53,10 +54,11 @@ function titleChoose(o) {
   else if (o === 'Training Grounds') { sfx.kindle(); clearBuffer(); trainingStart(); }
   else titleNewGame();
 }
-// the difficulty chooser starts the game: archive the current journey right then (not before, so backing out keeps it)
+// the weapon select (after the difficulty) starts the game: archive the current journey right then (not before, so backing
+// out of either screen keeps it)
 { const _tdi = titleDiffInput; titleDiffInput = function (a) {
     const conf = ['confirm', 'attack', 'jump', 'interact'].includes(a);
-    if (conf && TITLE_DIFF.open && !archiveCurrent(TITLE_SLOTS.rep)) { sfx.deny(); return; }
+    if (conf && TITLE_DIFF.open && TITLE_DIFF.stage === 'weapon' && !archiveCurrent(TITLE_SLOTS.rep)) { sfx.deny(); return; }
     return _tdi(a);
   }; }
 function slotRows() {   // load screen rows: the current journey (if any) then the old ones
@@ -77,7 +79,7 @@ function titleSlotsInput(a) {
     if (pick === 'Load') loadOld(P2.row.old);
     else if (pick === 'Forget') { T.pop = { row: P2.row, opts: ['Forget it', 'Keep it'], sel: 1, ask: 'Forget this journey? It cannot be recovered.' }; sfx.menu(); }
     else if (pick === 'Forget it') {
-      if (T.screen === 'replace') { T.rep = P2.row.old; T.screen = null; TITLE_DIFF.open = true; TITLE_DIFF.sel = 1; sfx.menu(); }   // forgotten once the new journey starts
+      if (T.screen === 'replace') { T.rep = P2.row.old; T.screen = null; TITLE_DIFF.open = true; TITLE_DIFF.sel = 1; TITLE_DIFF.stage = 'diff'; sfx.menu(); }   // forgotten once the new journey starts
       else { forgetOld(P2.row.old); sfx.crumble(); if (!oldSaves().length && !hasSave()) T.screen = null; T.sel = Math.max(0, Math.min(T.sel, slotRows().length - 1)); }
     } else sfx.menu();
     return;

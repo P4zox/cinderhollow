@@ -52,15 +52,29 @@ HOOKS.update.push(diffRescale);
 // New Game+ keeps the difficulty
 { const _ng = startNGPlus; startNGPlus = function (...a) { const d = SAVE.diff; const r = _ng.apply(this, a); SAVE.diff = d; saveGame(); return r; }; }
 
-// ---- title: New Game asks for a difficulty first (TITLE_DIFF is read by 09_main.js's title input and 08_ui.js's renderTitle)
-const TITLE_DIFF = { open: false, sel: 1 };
+// ---- title: New Game asks for a difficulty, then a starting weapon (TITLE_DIFF is read by 09_main.js's title input and
+// 08_ui.js's renderTitle). stage 'diff' -> 'weapon' (the weapon select lives in 74_arsenal9.js); the journey starts on the
+// weapon's confirm, and 66_slots.js archives the current journey right then.
+const TITLE_DIFF = { open: false, sel: 1, stage: 'diff' };
 function titleDiffInput(a) {
-  const conf = ['confirm', 'attack', 'jump', 'interact'].includes(a);
+  const conf = ['confirm', 'attack', 'jump', 'interact'].includes(a), back = ['pause', 'back', 'heavy', 'roll'].includes(a);
+  if (TITLE_DIFF.stage === 'weapon') {
+    if (a === 'left' || a === 'up') wselMove(-1);
+    else if (a === 'right' || a === 'down') wselMove(1);
+    else if (back) { TITLE_DIFF.stage = 'diff'; sfx.menu(); }
+    else if (conf) {
+      TITLE_DIFF.open = false; TITLE_DIFF.stage = 'diff';
+      WSEL.pending = { type: WTYPES[TITLE_WSEL.sel], diff: TITLE_DIFF.sel };   // newSave() (74_arsenal9.js) takes both once the intro ends
+      sfx.kindle(); clearBuffer(); newGame();
+    }
+    return;
+  }
   if (a === 'up' || a === 'down') { TITLE_DIFF.sel = (TITLE_DIFF.sel + (a === 'up' ? 2 : 1)) % 3; sfx.menu(); }
-  else if (['pause', 'back', 'heavy', 'roll'].includes(a)) { TITLE_DIFF.open = false; sfx.menu(); }
-  else if (conf) { TITLE_DIFF.open = false; sfx.kindle(); clearBuffer(); newGame(); SAVE.diff = TITLE_DIFF.sel; saveGame(); }
+  else if (back) { TITLE_DIFF.open = false; sfx.menu(); }
+  else if (conf) { TITLE_DIFF.stage = 'weapon'; wselOpen(); sfx.menu(); }
 }
 function renderTitleDiff() {
+  if (TITLE_DIFF.stage === 'weapon') return renderTitleWeapon();
   vctx.fillStyle = 'rgba(4,3,6,0.72)'; vctx.fillRect(ox, oy, W * scale, H * scale);
   panel(92, 70, 200, 104);
   text('CHOOSE YOUR PATH', W / 2, 86, 7.5, '#e6c77a', 'center', { spacing: 1.5 });

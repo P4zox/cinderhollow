@@ -459,6 +459,7 @@ function trnLoadBuild() {
   if (!s) { sfx.deny(); toast('No saved journey to copy', 2.5); return; }
   SAVE.stats = { ...s.stats }; SAVE.weapon = WEAPONS[s.weapon] ? s.weapon : 'longsword';
   for (const [id, lv] of Object.entries(s.weapons || {})) if (WEAPONS[id]) SAVE.weapons[id] = lv;
+  SAVE.mastery = { ...(s.mastery || {}) };   // Weapon Mastery comes along (a copy)
   SAVE.skills = (s.skills || []).filter(id => SKILL_BY[id]); SAVE.spellSlots = Math.max(1, s.spellSlots || 2); SAVE.charmSlots = Math.max(1, s.charmSlots || 1);
   SAVE.spellsEq = (s.spellsEq || []).filter(id => SPELLS[id]).slice(0, SAVE.spellSlots); SAVE.spell = SAVE.spellsEq.includes(s.spell) ? s.spell : SAVE.spellsEq[0] || null;
   SAVE.charmsEq = (s.charmsEq || []).filter(id => CHARMS[id]).slice(0, SAVE.charmSlots); SAVE.flaskBase = s.flaskBase || 4; SAVE.flaskBlue = s.flaskBlue || 1;
@@ -498,15 +499,9 @@ function trnRows(M) {
     R.push(trnToggleRow('One-hit kills', () => TRN.ohk, v => { TRN.ohk = v; }, 'Every blow and spell of yours deals at least 99999.'));
     head('Build');
     R.push({ label: 'Copy my saved build', act: true, conf: trnLoadBuild, desc: 'Stats, weapons, skills, spells and charms from your saved journey. It is a copy: nothing done here flows back.' });
-    R.push({ label: 'Reset to the training build', act: true, conf: () => { const k = SAVE.flags; SAVE = trnNewSave(); SAVE.flags = k; trnApplyBuild(); toast('Training build restored', 2); }, desc: 'Every weapon, spell and charm; level 87; no skills.' });
+    R.push({ label: 'Reset to the training build', act: true, conf: () => { const k = SAVE.flags; SAVE = trnNewSave(); SAVE.flags = k; trnApplyBuild(); toast('Training build restored', 2); }, desc: 'All nine weapons at Mastery I, every spell and charm; level 87; no skills.' });
   } else if (M.tab === 1) {
-    const cur = SAVE.weapon;
-    head('In hand', WEAPONS[cur].name);
-    R.push({ label: 'Upgrade level', val: () => '+' + (SAVE.weapons[SAVE.weapon] || 0), lr: d => { SAVE.weapons[SAVE.weapon] = clamp((SAVE.weapons[SAVE.weapon] || 0) + d, 0, 5); trnApplyBuild(false); }, conf: () => { SAVE.weapons[SAVE.weapon] = ((SAVE.weapons[SAVE.weapon] || 0) + 1) % 6; trnApplyBuild(false); }, wpn: cur, desc: 'Tempering, +0 to +5 (◂ ▸).' });
-    head('Arsenal', `${Object.keys(WEAPONS).length} weapons`);
-    const cls = id => { const c = WEAPON_CLASS[id] || '', l = typeof wbClassLabel === 'function' ? wbClassLabel(c) : c; return l.replace(/\b\w/g, m => m.toUpperCase()); };
-    for (const id of Object.keys(WEAPONS)) R.push({ label: WEAPONS[id].name, wpn: id, val: () => (SAVE.weapon === id ? '● ' : '') + cls(id), eq: () => SAVE.weapon === id,
-      conf: () => { SAVE.weapon = id; if (typeof wbOnEquip === 'function') wbOnEquip(id); trnApplyBuild(false); sfx.menu(); }, desc: WEAPONS[id].desc || '' });
+    wmTrainingRows(R, head);   // the nine types + their mastery rank (74_arsenal9.js)
   } else if (M.tab === 2) {
     head('Spells', `${SAVE.spellsEq.length} / ${SAVE.spellSlots} slots`);
     R.push({ label: 'Spell slots', val: () => String(SAVE.spellSlots), lr: d => { SAVE.spellSlots = clamp(SAVE.spellSlots + d, 1, 8); SAVE.spellsEq = SAVE.spellsEq.slice(0, SAVE.spellSlots); if (!SAVE.spellsEq.includes(SAVE.spell)) SAVE.spell = SAVE.spellsEq[0] || null; }, desc: 'How many spells you can attune.' });
@@ -658,7 +653,7 @@ function trnRenderDetail(M, r) {
     const id = r && r.wpn || SAVE.weapon, w = WEAPONS[id], lv = SAVE.weapons[id] || 0;
     icon('w_' + id, px + 8, y - 6, 20);
     text(w.name, px + 32, y + 1, uiFit(w.name, pw - 40, 6.4, 4.4), UIC.gold, 'left');
-    text(`${(typeof wbClassLabel === 'function' ? wbClassLabel(WEAPON_CLASS[id]) : '').replace(/\b\w/g, m => m.toUpperCase())}  ·  +${lv}`, px + 32, y + 8, 4.8, UIC.muted, 'left', { weight: 400 });
+    { const t = WEAPON_TYPE[id]; text(`${t ? WTYPE_INFO[t].name : ''}  ·  +${lv}  ·  Mastery ${t ? WM_ROMAN[masteryRank(t) - 1] : 'I'}`, px + 32, y + 8, 4.8, UIC.muted, 'left', { weight: 400 }); }
     y += 22;
     text(`Attack ${Math.round(weaponAR(SAVE.stats, id, lv))}`, px + 8, y, 5.4, UIC.text, 'left'); y += 8;
     const sc = w.sc || {}; text(`Scaling  Str ${sc.str ?? '-'}  Dex ${sc.dex ?? '-'}  Fth ${sc.fth ?? '-'}`, px + 8, y, 4.6, UIC.muted, 'left', { weight: 400 }); y += 9;
@@ -668,7 +663,7 @@ function trnRenderDetail(M, r) {
       icon('a_' + art, px + 8, y - 6, 10); text(A.name, px + 21, y + 1, 5.6, UIC.hi, 'left'); text(`${A.fp} FP`, px + pw - 8, y + 1, 4.8, UIC.fp, 'right'); y += 10;
       para(A.desc || '', UIC.body, 4.8);
     }
-    y += 2; if (w.desc) para(w.desc, UIC.dim, 4.6);
+    { const t = WEAPON_TYPE[id]; if (t) { y += 3; uiHead('Mastery unlocks', px + 8, y, pw - 16); y += 9; y = wmUnlockRows(t, px + 8, y, pw - 16, top + ph - 8, { desc: false, size: 4.6, gap: 0.6 }); } }   // 74_arsenal9.js
     return;
   }
   if (r && r.gear && r.gear()) {

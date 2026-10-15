@@ -5354,13 +5354,66 @@ ART_TINT.update({
 })
 
 
+# v13 weapon revamp: new tags from two agent modules (art/player_v13_a.py, art/player_v13_b.py), appended last
+import player_v13_a as _v13a, player_v13_b as _v13b  # noqa: E402
+# The revamp keeps exactly one weapon per type: only these 9 wpn_* overlays are built (docs/WEAPON_REVAMP_CONTRACT.md §1).
+# (V8_IDS / V9_IDS stay defined: their shapes still render in previews and meta_for keys off them.)
+WPN_IDS = ["longsword", "katana", "greatsword", "maul", "knight_shield", "twinfangs", "spear", "quarterstaff", "headsman_chain"]
+# v13 type prefixes -> the weapon whose blade / smear measures a tag's hit box (meta_for). The whip is the Headsman's Chain now.
+MOVE_CLASS.update({"ls": ("longsword",), "ml": ("maul",), "wh": ("headsman_chain",)})
+# v13 metadata. A module's register(G) returns entries (tag, fn) or (tag, fn, opts); opts (all optional):
+#   active=(i0, i1)  frames that deal damage (no `active` = a stance / loop / dodge: no hit box, no meta entry)
+#   hits=[i, ...]    multi-hit moves: the frame each hit lands on (written to player_meta as "hits")
+#   kinds=(kind,..)  weapons that measure the box (default: MOVE_CLASS of the prefix)
+#   extras=True      include the shield / off-hand blade in the box     x0=n    clamp the box's back edge
+#   down=True        plunge box (the weapon's own column under the feet)  up=True  tall box (shortened long weapons)
+#   hit=[x0,y0,x1,y1] fixed box (feet-relative)   fxat=(x, y) slash-fx point   body=True  the body itself is the box
+#   both=True        hits both sides: the box is mirrored round the feet (spins)
+# A module may also write G.ACTIVE etc. itself; both work.
+V13_META, META_KINDS, V13_HITS, V13_BOTH = {}, {}, {}, set()
+
+
+def _v13_take(entries):
+    out = []
+    for e in entries:
+        t, fn = e[0], e[1]
+        o = e[2] if len(e) > 2 and e[2] else {}
+        V13_META[t] = o
+        if "active" in o:
+            ACTIVE[t] = tuple(o["active"])
+        if o.get("hits"):
+            V13_HITS[t] = list(o["hits"])
+        if o.get("kinds"):
+            META_KINDS[t] = tuple(o["kinds"])
+        if o.get("extras"):
+            HIT_EXTRAS.add(t)
+        if "x0" in o:
+            HIT_X0[t] = o["x0"]
+        if o.get("hit"):
+            HIT_OVERRIDE[t] = list(o["hit"])
+        if o.get("fxat"):
+            FXAT_OVERRIDE[t] = tuple(o["fxat"])
+        if o.get("down"):
+            V10_DOWN.add(t)
+        if o.get("up"):
+            V10_UP.add(t)
+        if o.get("body"):
+            BODY_HIT.add(t)
+        if o.get("both"):
+            V13_BOTH.add(t)
+        out.append((t, fn))
+    return out
+
+
+V13_MOVES = _v13_take(_v13a.register(sys.modules[__name__])) + _v13_take(_v13b.register(sys.modules[__name__]))
+
 ANIMS = [("idle", idle), ("run", run), ("jump_up", jump_up), ("jump_fall", jump_fall), ("land", land),
          ("roll", roll), ("attack1", attack1), ("attack2", attack2), ("attack3", attack3), ("heavy", heavy),
          ("hurt", hurt), ("heal", heal), ("death", death),
          # v3 additions (appended; the frames above keep their indices)
          ("attack_up", attack_up), ("attack_down", attack_down), ("air_attack", air_attack), ("cast", cast),
          ("parry", parry), ("riposte", riposte), ("wall_slide", wall_slide), ("double_jump", double_jump),
-         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS   # v4 movesets after frame 124, v5 arts after 252,
+         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS + V13_MOVES   # v4 movesets after frame 124, v5 arts after 252,
                                                             # v7 traversal after 308, v8 classes/techniques after 329
 
 # v10 polish: these tags ease back toward the idle pose at the end (last frame split; active frames and total time unchanged)
@@ -5402,6 +5455,8 @@ def movesets_preview(raw, tags, body_comp, wpn, prev_dir, scale=3):
     rows, labels = [], []
     for pre, kinds in MOVE_CLASS.items():
         for kind in kinds:
+            if kind not in wpn:   # v13: only the 9 kept weapons are rendered
+                continue
             for t, a, b in tags:
                 if t.startswith(pre + "_"):
                     rows.append([over(body_comp[i], wpn[kind][i]) for i in range(a, b + 1)])
@@ -5480,6 +5535,7 @@ def meta_for(raw, tags):
         if t not in ACTIVE:
             continue
         kinds = MOVE_CLASS.get(t.split("_")[0], ("longsword",)) if "_" in t and t.split("_")[0] in MOVE_CLASS else ("longsword",)
+        kinds = META_KINDS.get(t, kinds)
         i0, i1 = ACTIVE[t]
         xs, ys, pts = [], [], []
         for i in range(a + i0, a + i1 + 1):
@@ -5523,10 +5579,15 @@ def meta_for(raw, tags):
             hit = [max(-20, hit[0]), hit[1] - 14, hit[2], hit[3]]
         if t in HIT_X0:
             hit[0] = max(hit[0], HIT_X0[t])
+        if t in V13_BOTH:   # spins: the far side gets the same reach as the near one
+            r = max(abs(hit[0]), abs(hit[2]))
+            hit = [-r, hit[1], r, hit[3]]
         if t in HIT_OVERRIDE:
             hit = list(HIT_OVERRIDE[t])
-        fxat = [round(sum(p[0] for p in pts) / len(pts)) - AX, round(sum(p[1] for p in pts) / len(pts)) - AY]
+        fxat = [round(sum(p[0] for p in pts) / len(pts)) - AX, round(sum(p[1] for p in pts) / len(pts)) - AY] if pts else [18, -17]
         moves[t] = {"active": [i0, i1], "hit": hit, "fxAt": list(FXAT_OVERRIDE.get(t, fxat))}
+        if t in V13_HITS:
+            moves[t]["hits"] = list(V13_HITS[t])
     return moves
 
 import random
@@ -6235,6 +6296,8 @@ def main(build=True, kinds=None, previews=True):
                                                     for w, (_, ms) in zip(wpn[kind], raw)]))
         with ThreadPoolExecutor(3) as ex:   # a few Aseprite instances at once (many at once can hang)
             list(ex.map(lambda j: _ase_build(j[0], W, H, j[1], j[2], tags), jobs))
+    if build:   # v13: the metadata is written before the previews, so a preview error can't leave a stale player_meta.json
+        write_meta(raw, tags)
     prev_dir = os.path.join(asebuild.ART, "previews")
     os.makedirs(prev_dir, exist_ok=True)
     if previews and "longsword" in wpn:
@@ -6256,8 +6319,6 @@ def main(build=True, kinds=None, previews=True):
         arts_preview(raw, tags, body_comp, wpn, prev_dir)
         techniques_preview(raw, tags, body_comp, wpn, prev_dir)
     expansion_preview(raw, tags, body_comp, wpn, prev_dir)
-    if build:
-        write_meta(raw, tags)
     old = os.path.join(prev_dir, "player_preview.png")
     if os.path.exists(old):
         os.remove(old)

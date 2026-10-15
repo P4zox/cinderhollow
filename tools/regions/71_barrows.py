@@ -123,7 +123,7 @@ _db_paint(r, [
 r.put(12, 9, 'S').put(16, 9, 'g')
 
 # ---------------------------------------------------------------- DB4 The Sunken Chapels (descent, x 253..273, y 30..55)
-r = Room('DB4', 'The Sunken Chapels', 'barrows', 253, 30, 21, 26, indoor=True, items=['c_gill'], chests=['w:tidecleaver'],
+r = Room('DB4', 'The Sunken Chapels', 'barrows', 253, 30, 21, 26, indoor=True, items=['c_gill'], chests=['wc_cache'],
          graves=['db3'], shrine='Mere Shrine',
          spawns=[_db_en('db_pilgrim', 16, 11), _db_en('db_barnacle', 11, 17), _db_en('db_eel', 7, 19),
                  _db_en('db_pilgrim', 7, 24, hidden=True),

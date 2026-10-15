@@ -8,7 +8,8 @@ const olds = () => E('oldSaves()').map(o => vigOf(o.data));
 const cur = () => vigOf(E('curSaveRaw()'));
 const title = () => { E("state = 'title'; menu = null; titleSel = 0; TITLE_DIFF.open = false; TITLE_SLOTS.screen = null"); G.step(2); };
 const choose = name => { const i = E('titleOptions()').indexOf(name); E(`titleSel = ${i}`); G.step(1, [], ['confirm']); G.step(2); };
-const startNew = () => { choose('New Game'); if (E('TITLE_DIFF.open')) { G.step(1, [], ['confirm']); G.step(2); E("newGame(true)"); G.step(3); } };
+// New Game: difficulty, then the starting weapon (weapon revamp): the weapon's confirm archives and starts the journey
+const startNew = () => { choose('New Game'); if (E('TITLE_DIFF.open')) { G.step(1, [], ['confirm']); G.step(2); G.step(1, [], ['confirm']); G.step(2); E("newGame(true)"); G.step(3); } };
 mark(11);
 for (const v of [12, 13, 14]) { title(); startNew(); mark(v); }
 out.push(`after 3 new games: current ${cur()} old ${JSON.stringify(olds())}  options ${JSON.stringify((title(), E('titleOptions()')))}`);
@@ -17,7 +18,7 @@ title(); choose('New Game'); out.push('4th New Game opens ' + E('TITLE_SLOTS.scr
 await snap('replace');
 G.step(1, [], ['down']); G.step(1, [], ['confirm']); out.push('popup ' + E('TITLE_SLOTS.pop && TITLE_SLOTS.pop.opts.join("/")'));
 G.step(1, [], ['left']); G.step(1, [], ['confirm']); out.push('forget chosen -> difficulty open ' + E('TITLE_DIFF.open'));
-G.step(1, [], ['confirm']); G.step(2); E('newGame(true)'); G.step(3); mark(15);
+G.step(1, [], ['confirm']); G.step(2); G.step(1, [], ['confirm']); G.step(2); E('newGame(true)'); G.step(3); mark(15);
 out.push(`after replace: current ${cur()} old ${JSON.stringify(olds())} (12 forgotten)`);
 // Load Journey: open the oldest (vig 11) -> it becomes current, 15 goes to the old list
 title(); choose('Load Journey'); out.push('load screen ' + E('TITLE_SLOTS.screen') + ' rows ' + E('slotRows().length'));

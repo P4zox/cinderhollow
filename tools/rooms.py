@@ -87,14 +87,14 @@ for y, x0 in [(22, 15), (19, 9), (16, 14), (13, 10)]:
 for x, y, ch in [(20, 8, 'a'), (12, 18, 'f'), (5, 24, 's'), (20, 24, 'C'), (3, 24, 'u'), (4, 1, 'l'), (19, 1, 'l'), (7, 10, 'u')]:
     r.put(x, y, ch)
 
-r = Room('R4', 'Rampart Summit', 'ramparts', 120, 0, 40, 14, items=['w:greatsword'], chests=['shard'], npcs=['kalden'])
+r = Room('R4', 'Rampart Summit', 'ramparts', 120, 0, 40, 14, items=['wc_small'], chests=['shard'], npcs=['kalden'])
 r.fill(0, 9, 7, 13).fill(8, 11, 39, 13).fill(39, 0, 39, 13).fill(0, 0, 0, 2)
 r.fill(16, 7, 19, 7, '=').fill(28, 8, 30, 8, '=')
 for x, y, ch in [(12, 10, 'c'), (26, 10, 'K'), (37, 10, 'i'), (34, 10, 'C'), (22, 10, 'b'), (3, 8, 'u'), (6, 8, 'N')]:
     r.put(x, y, ch)
 
 # ============================================================ ROOTBOUND CATACOMBS (indoor)
-r = Room('C1', 'The Descent', 'catacombs', 96, 28, 24, 28, indoor=True, chests=['w:dagger'])
+r = Room('C1', 'The Descent', 'catacombs', 96, 28, 24, 28, indoor=True, chests=['wc_small'])
 r.walls().open('N', 10, 13).open('W', 21, 24).open('E', 21, 24)
 r.fill(0, 25, 23, 27)
 for y, x0, x1 in [(6, 3, 8), (10, 14, 20), (14, 4, 10), (18, 13, 19)]:
@@ -144,7 +144,7 @@ r.fill(8, 7, 11, 7, '=').fill(24, 7, 27, 7, '=')
 for x, y, ch in [(1, 10, 'F'), (34, 10, 'F'), (26, 10, 'H'), (6, 2, 'r'), (18, 2, 'r'), (30, 2, 'r'), (4, 10, 'b'), (31, 10, 'b')]:
     r.put(x, y, ch)
 
-r = Room('C6', 'Root Shaft', 'catacombs', 228, 14, 24, 42, indoor=True, items=['w:katana'])
+r = Room('C6', 'Root Shaft', 'catacombs', 228, 14, 24, 42, indoor=True, items=['wc_small'])
 r.walls().open('W', 34, 38).open('E', 3, 8)
 r.fill(0, 39, 23, 41)
 r.fill(1, 10, 7, 33).fill(14, 9, 22, 33)
@@ -163,7 +163,7 @@ for x, y, ch in [(3, 8, 'S'), (24, 6, 'a'), (38, 10, 'e'), (14, 10, 's'), (31, 1
                  (44, 10, 'u'), (20, 10, 'k'), (42, 1, 'x'), (9, 10, 'N'), (27, 6, 'g')]:
     r.put(x, y, ch)
 
-r = Room('K2', 'Flooded Aisle', 'cathedral', 300, 14, 48, 14, indoor=True, chests=['w:oathbrand'])
+r = Room('K2', 'Flooded Aisle', 'cathedral', 300, 14, 48, 14, indoor=True, chests=['wc_cache'])
 r.walls().open('W', 7, 10).open('E', 7, 10)
 r.fill(0, 11, 47, 13)
 r.fill(12, 11, 14, 12, '.').fill(12, 12, 14, 12, '^')
@@ -232,7 +232,7 @@ r.fill(28, 11, 34, 12, '~')
 for x, y, ch in [(10, 10, 'V'), (3, 1, 'r'), (16, 1, 'r'), (31, 1, 'r'), (2, 10, 'b'), (18, 10, 'b')]:
     r.put(x, y, ch)
 
-r = Room('M4', 'Sunken Road', 'mire', 248, 70, 48, 14, indoor=True, chests=['w:maul'])
+r = Room('M4', 'Sunken Road', 'mire', 248, 70, 48, 14, indoor=True, chests=['wc_cache'])
 r.walls().open('W', 7, 10).open('E', 7, 10)
 r.fill(0, 11, 47, 13).fill(0, 0, 47, 1)
 r.fill(8, 11, 40, 12, '~')

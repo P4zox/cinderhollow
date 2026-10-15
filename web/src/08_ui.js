@@ -163,7 +163,7 @@ function renderHUD() {
 
 // ---- shrine menus
 let menu = null;   // {screen, sel, ...}
-const SHRINE_OPTS = ['Level Up', 'Skill Tree', 'Flasks', 'Travel', 'Rebirth', 'Leave'];
+const SHRINE_OPTS = ['Level Up', 'Skill Tree', 'Change Weapon', 'Flasks', 'Travel', 'Rebirth', 'Leave'];   // Change Weapon: the only place to switch (74_arsenal9.js)
 function openShrineMenu(p) { menu = { screen: 'shrine', sel: 0, shrine: p }; state = 'menu'; clearBuffer(); }
 function closeMenu() {
   menu = null; state = 'play'; clearBuffer();
@@ -175,6 +175,7 @@ function menuInput(a) {
   if (menu.screen === 'pause') return pauseInput(a);
   if (menu.screen === 'shop') return shopInput(a);
   if (menu.screen === 'forge') return forgeInput(a);
+  if (menu.screen === 'wchange') return wchangeInput(menu, a);
   const M = menu, conf = ['confirm', 'interact', 'attack', 'jump'].includes(a), back = ['pause', 'back', 'heavy', 'roll'].includes(a);
   const nav = d => { M.sel = (M.sel + d + M.n) % M.n; sfx.menu(); };
   if (M.screen === 'shrine') {
@@ -185,6 +186,7 @@ function menuInput(a) {
       sfx.menu(); const o = SHRINE_OPTS[M.sel];
       if (o === 'Level Up') menu = { screen: 'level', sel: 0, alloc: { ...SAVE.stats }, prev: M };
       else if (o === 'Skill Tree') menu = { screen: 'tree', br: 0, t: 0, prev: M };
+      else if (o === 'Change Weapon') menu = wchangeOpen(M);
       else if (o === 'Flasks') menu = { screen: 'flasks', prev: M };
       else if (o === 'Travel') menu = travelOpen(M);
       else if (o === 'Rebirth') {
@@ -223,6 +225,7 @@ function renderMenu() {
   if (M.screen === 'pause') return renderPauseMenu();
   if (M.screen === 'shop') return renderShop();
   if (M.screen === 'forge') return renderForge();
+  if (M.screen === 'wchange') return renderWChange(M);
   vctx.fillStyle = 'rgba(5,4,8,0.55)'; vctx.fillRect(ox, oy, W * scale, H * scale);
   if (M.screen === 'shrine') {
     vctx.fillStyle = 'rgba(5,4,8,0.75)'; vctx.fillRect(ox, oy, W * scale, H * scale);
@@ -230,7 +233,7 @@ function renderMenu() {
     text((M.shrine.name || 'Shrine').toUpperCase(), W / 2, 22, 9, '#e6c77a', 'center', { spacing: 2 });
     vctx.fillStyle = '#6d5a3a'; vctx.fillRect(ox + (W / 2 - 70) * scale, oy + 26 * scale, 140 * scale, Math.max(1, scale * 0.5));
     text(`${room.def.name}  ·  ${AREAS[room.def.biome].name}`, W / 2, 35, 5.8, '#9a8f78', 'center', { weight: 400 });
-    box(16, 42, 106, 134);
+    box(16, 42, 106, 148);
     SHRINE_OPTS.forEach((o, i) => {
       const y = 62 + i * 19, sel = i === M.sel;
       uiHit(21, y - 11, 96, 15, () => { M.sel = i; });
@@ -246,6 +249,7 @@ function renderMenu() {
     text(`Skill points ${pts}`, 214, 67, 6.3, pts > 0 ? '#ffd070' : '#b8ab90', 'left', { weight: 500 });
     text(`Pale Tears ${SAVE.inv.tear || 0}`, 300, 54, 6, '#b8ab90', 'left', { weight: 400 });
     text(`Flasks ${SAVE.flaskBase}`, 300, 67, 6, '#b8ab90', 'left', { weight: 400 });
+    { const t = wtype(); icon(WTYPE_INFO[t].icon, 128, 179, 9); text(`${WEAPONS[SAVE.weapon].name}  ·  ${WTYPE_INFO[t].name} Mastery ${WM_ROMAN[masteryRank(t) - 1]}`, 140, 186, 5.4, '#b8ab90', 'left', { weight: 500 }); }
     // local map around this shrine: this region's explored rooms plus direct neighbours
     box(128, 80, 240, 96, 0.85);
     const adj = roomAdj(), vis = mapVisible(), near = vis.filter(r => r.biome === room.def.biome || r.id === here || (adj[here] || []).includes(r.id));
