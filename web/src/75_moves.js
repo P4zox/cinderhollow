@@ -100,9 +100,11 @@ function mvStart(id, o = {}) {
   let cost = o.cost !== undefined ? o.cost : (typeof d.stam === 'function' ? d.stam(o) : d.stam || 0);
   if (A.kind === 'heavy' && charmOn('c_brand')) cost *= 0.8;   // Brand of the Forge: heavies cost 20% less
   if (cost) spend(cost);
-  const q2 = P.mvQ2; P.mvQ2 = null;
-  P.hitSet = new Set(); P.mvT = o.t0 || 0; P.mvHitK = -1; P.mvQ = q2 ? { ...q2, t: 30 } : null; P.mvO = o; P.mvMul = o.mul || 1; P.mvGained = false;
-  P.mvLunge = d.lungeFn ? d.lungeFn(o) : d.lunge || 0; P.counterMul = o.counterMul || 1; P.charged = !!o.charged; P.charge = o.charge || 0; P.pogoed = false; P.mvLv = o.lv || 0;
+  P.mvQ2 = null;
+  P.hitSet = new Set(); P.mvT = o.t0 || 0; P.mvHitK = -1; P.mvQ = null; P.mvO = o; P.mvMul = o.mul || 1; P.mvGained = false;
+  P.mvLunge = d.lungeFn ? d.lungeFn(o) : d.lunge || 0;
+  // a plain swing only steps its full distance when you push forward (half standing still); dash moves (own lungeLead) always do
+  if (P.mvLunge > 0 && d.lungeLead === undefined && !d.dash && inputX() !== P.face) P.mvLunge *= 0.5; P.counterMul = o.counterMul || 1; P.charged = !!o.charged; P.charge = o.charge || 0; P.pogoed = false; P.mvLv = o.lv || 0;
   P.comboStep = o.step !== undefined ? o.step : (d.step !== undefined ? d.step : -1);
   if (d.step === 0) P.combo = 1; else if (d.step > 0) P.combo = d.step + 1;
   const loop = !!((d.loop || d.animLoop) && R.real);
@@ -208,7 +210,8 @@ function mvUpdate(dt, ax, grav) {
   if (d.move) d.move(dt, A, ax, grav);
   else if (P.ground) {
     if (P.mvLunge && t >= lw0 && t < lw1) P.vx = P.face * P.mvLunge / ((lw1 - lw0) / 1000) * spd;
-    else P.vx *= Math.pow(0.0008, dt);
+    else if (P.mvLunge && t0 < lw1 && t >= lw1) P.vx *= 0.15;   // the step ends planted: no slide past the lunge
+    else P.vx *= Math.pow(0.0002, dt);
     grav();
   }
   else if (d.hang && t < W + 150) { P.vx *= Math.pow(0.02, dt); P.vy = Math.min(Math.max(P.vy, 0) + GRAV_DN * 0.2 * dt, 50); }   // hangs: the rise stops for the heave
@@ -243,18 +246,24 @@ function mvSwing(A) {
   if (d.slam) { shake = Math.max(shake, 6); sfx.boom(); spawnFx('shockwave', P.x + P.face * 22, P.y, 1); spawnFx('ground_crack', P.x + P.face * 22, P.y, 1); for (let i = 0; i < 12; i++) particles.push({ x: P.x + P.face * 22 + rand(-16, 16), y: P.y - 2, vx: rand(-80, 80), vy: -rand(30, 110), g: 320, life: 0.6, kind: 'dust' }); }
   if (d.on && d.on.swing) d.on.swing(A);
 }
-// latch J / K / I pressed during a move (played at its total)
-// (a second press while one is already queued waits its turn for the move after: J J K mashed inside one swing still
-// plays all three)
+// latch J / K / I pressed during a move (played at its total). One press is kept, never two, so a mash can't run on
+// past the move you're in. On a finisher (or the last step of a chain), a press that would START A NEW chain only
+// latches in the move's last MV_QFIN ms: mashing through a finisher ends the combo there instead of rolling straight
+// into the next one. Earlier presses are dropped. Presses that continue the chain latch from 30 ms in, as before.
+const MV_QFIN = 120;
+function mvRouted(A, b) {   // does button b continue A's chain (vs falling back to a fresh neutral press)?
+  const d = A.mv, r = d.next && d.next[b];
+  if (!r) return false;
+  if (typeof r === 'string') return r !== '@' + b;
+  if (typeof r === 'object') return true;
+  try { const nx = r({ b, t: P.mvT, at: P.clk, peek: true }, A); return !!nx && nx !== '@' + b; } catch (e) { return true; }
+}
 function mvQueue(A) {
-  if (P.mvT < 30) return;
-  const d = A.mv;
-  if (P.mvQ) {
-    if (!P.mvQ2) { if (take('attack')) P.mvQ2 = { b: 'J', at: P.clk, up: held.has('up') }; else if (take('heavy')) P.mvQ2 = { b: 'K', at: P.clk }; }
-    return;
-  }
-  if (take('attack')) P.mvQ = { b: 'J', t: P.mvT, at: P.clk, up: held.has('up') };
-  else if (take('heavy')) P.mvQ = { b: 'K', t: P.mvT, at: P.clk };
+  if (P.mvT < 30 || P.mvQ) return;
+  const d = A.mv, ender = d.fin || (d.step !== undefined && !(d.next && d.next.J)), late = d.total - P.mvT <= MV_QFIN;
+  const want = b => !ender || late || mvRouted(A, b);
+  if (peek('attack')) { take('attack'); if (want('J')) P.mvQ = { b: 'J', t: P.mvT, at: P.clk, up: held.has('up') }; }
+  else if (peek('heavy')) { take('heavy'); if (want('K')) P.mvQ = { b: 'K', t: P.mvT, at: P.clk }; }
   else if (d.next && d.next.I && take('parry')) P.mvQ = { b: 'I', t: P.mvT, at: P.clk };
   if (P.mvQ && d.onQueue) d.onQueue(P.mvQ, A);
 }
@@ -263,6 +272,7 @@ function mvEnd(A, fell) {
   if (d.on && d.on.end) d.on.end(A);
   if (P.state !== d.id) return;   // the end hook started something else
   if (q && !fell && P.st > 0) {
+    const ax = inputX(); if (ax && !d.keepFace) P.face = ax;   // each step of a chain can turn round
     if (q.b === 'J' && q.up && MV.types[d.type].up && !(d.next && typeof d.next.J === 'function')) { if (mvStart(MV.types[d.type].up)) return; }
     const nx = mvNext(A, q);
     if (nx && typeof nx === 'string' && nx[0] !== '@') { const o = { perfect: mvPerfect(q, A) }; if (mvStart(nx, o)) return; }
@@ -360,6 +370,7 @@ function mvRollUpdate(dt, ax, grav) {
   if (g.t >= g.total) { P.dgEnd = { t: P.clk, g }; P.dg = null; setP(P.ground ? 'idle' : 'air', P.ground ? 'idle' : 'jump_fall', P.ground); }
 }
 function mvRollJ(g) {
+  const ax = inputX(); if (ax) P.face = ax;
   const T = mvT(); const id = typeof T.rollJ === 'function' ? T.rollJ(g) : T.rollJ;
   if (!id) return false;
   if (typeof id === 'object') return mvStart(id.id, id);

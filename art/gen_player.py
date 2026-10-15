@@ -5407,13 +5407,24 @@ def _v13_take(entries):
 
 V13_MOVES = _v13_take(_v13a.register(sys.modules[__name__])) + _v13_take(_v13b.register(sys.modules[__name__]))
 
+# v14 combo pass: one module per weapon group (art/player_v14_<group>.py), same register(G) contract as v13. Appended
+# after V13 in a fixed order; a module that fails to import is skipped with a warning so one group's work in progress
+# can't break another group's build.
+V14_MOVES = []
+for _grp in ("blade", "heavy", "guard", "dual", "reach"):
+    try:
+        _m = __import__("player_v14_" + _grp)
+        V14_MOVES += _v13_take(_m.register(sys.modules[__name__]))
+    except Exception as _e:  # noqa: BLE001
+        print("WARNING: player_v14_%s skipped: %r" % (_grp, _e), file=sys.stderr)
+
 ANIMS = [("idle", idle), ("run", run), ("jump_up", jump_up), ("jump_fall", jump_fall), ("land", land),
          ("roll", roll), ("attack1", attack1), ("attack2", attack2), ("attack3", attack3), ("heavy", heavy),
          ("hurt", hurt), ("heal", heal), ("death", death),
          # v3 additions (appended; the frames above keep their indices)
          ("attack_up", attack_up), ("attack_down", attack_down), ("air_attack", air_attack), ("cast", cast),
          ("parry", parry), ("riposte", riposte), ("wall_slide", wall_slide), ("double_jump", double_jump),
-         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS + V13_MOVES   # v4 movesets after frame 124, v5 arts after 252,
+         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS + V13_MOVES + V14_MOVES   # v4 movesets after frame 124, v5 arts after 252,
                                                             # v7 traversal after 308, v8 classes/techniques after 329
 
 # v10 polish: these tags ease back toward the idle pose at the end (last frame split; active frames and total time unchanged)

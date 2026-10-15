@@ -45,10 +45,10 @@ mvRegister('longsword', {
   attack3: { tags: ['attack3'], dmg: 1.1, poise: 14, stam: 13, wind: 200, total: 420, step: 2, reach: MV_SR * 1.3, fx: 'slash3',
     lungeFn() {   // chases a backing foe
       let best = null; for (const t of targets()) { if (t.prop) continue; const dx = (t.x - P.x) * P.face; if (dx > 0 && dx < 110 && Math.abs(t.y - P.y) < 30 && (!best || dx < best.dx)) best = { t, dx }; }
-      return best && (best.t.vx || 0) * P.face > 10 ? 52 : 26;
+      return best && (best.t.vx || 0) * P.face > 10 ? 34 : 18;
     },
     next: { J: 'attack4', K: q => (mvHas(4) && mvHeldK(q, 150) ? 'ls_pommel' : { id: 'ls_jjjk', pommelAt: mvHas(4) && held.has('heavy') ? q.at : null }) } },
-  attack4: { tags: ['ls_crit', 'riposte'], dmg: 2.0, poise: 40, stam: 18, wind: 300, total: 650, step: 3, commit: true, fin: true, lunge: 30, fx: 'heavy',
+  attack4: { tags: ['ls_crit', 'riposte'], dmg: 2.0, poise: 40, stam: 18, wind: 300, total: 650, step: 3, commit: true, fin: true, lunge: 20, fx: 'heavy',
     on: {
       start(A, o) { P.emberEdge = mvHas(5) && !!o.perfect; if (P.emberEdge) { sfx.fire(); for (let i = 0; i < 10; i++) particles.push({ x: P.x + P.face * rand(0, 16), y: P.y - rand(8, 30), vx: 0, vy: -rand(20, 60), life: 0.5, kind: 'fire' }); } },
       update(dt, A) {
@@ -73,7 +73,7 @@ mvRegister('longsword', {
     }, start() { P.lsFull = false; } } },
   ls_kc: { tags: ['ls_kc', 'heavy'], kind: 'heavy', dmg: 2.4, poise: 70, stam: 30, wind: 380, total: 650, fin: true, lunge: 24, fx: 'heavy' },
   ls_jjk: { tags: ['ls_jjk', 'heavy'], kind: 'heavy', dmg: 1.7, poise: 35, stam: 22, wind: 330, total: 640, box: [-16, 46, -46, 0], fin: true, fx: 'heavy', next: { J: '@J' } },
-  ls_jjjk: { tags: ['ls_jjjk', 'attack3'], kind: 'heavy', dmg: 1.9, poise: 38, stam: 24, wind: 350, total: 680, lunge: 60, reach: 58, fin: true, fx: 'slash3',
+  ls_jjjk: { tags: ['ls_jjjk', 'attack3'], kind: 'heavy', dmg: 1.9, poise: 38, stam: 24, wind: 350, total: 680, lunge: 34, reach: 58, fin: true, fx: 'slash3',
     on: { update() {   // J J J -> K pressed late in the poke and kept held: it becomes the pommel strike (IV)
       const at = P.mvO.pommelAt; if (at == null || P.mvT > 160) return;
       if (!held.has('heavy')) { P.mvO.pommelAt = null; return; }
@@ -81,9 +81,9 @@ mvRegister('longsword', {
     } } },
   ls_pommel: { tags: ['ls_pommel', 'heavy'], kind: 'heavy', rank: 4, dmg: 1.0, poise: 90, stam: 16, wind: 260, total: 600, box: [-2, 32, -34, -6], fin: true,
     on: { hit(t) { if (typeof feelFlash === 'function') feelFlash(P.x + P.face * 20, P.y - 20, 30, '255,230,170', 1); shake = Math.max(shake, 4); } } },
-  ls_riposte: { tags: ['ls_riposte', 'riposte'], dmg: 2.2, poise: 50, stam: 10, wind: 250, total: 600, counter: true, fin: true, lunge: 30, fx: 'heavy' },
+  ls_riposte: { tags: ['ls_riposte', 'riposte'], dmg: 2.2, poise: 50, stam: 10, wind: 250, total: 600, counter: true, fin: true, lunge: 22, fx: 'heavy' },
   ls_quick: { tags: ['ls_quick', 'attack1'], dmg: 1.2, poise: 14, stam: 12, wind: 140, total: 400, lunge: 20, fx: 'slash', next: { J: 'attack2' } },
-  ls_step: { tags: ['ls_step', 'attack3'], rank: 2, dmg: 1.2, poise: 14, stam: 10, wind: 140, total: 400, lunge: 46, lungeLead: 140, fx: 'slash3', next: { J: 'attack2' } },
+  ls_step: { tags: ['ls_step', 'attack3'], rank: 2, dmg: 1.2, poise: 14, stam: 10, wind: 140, total: 400, lunge: 36, lungeLead: 140, fx: 'slash3', next: { J: 'attack2' } },
   ls_fore: { tags: ['ls_fore_stance', 'parry'], rank: 3, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 400, total: 400,
     on: { update() { addLight(P.x + P.face * 6, P.y - 20, 26, '230,230,255', 0.6); if (Math.random() < 0.3) particles.push({ x: P.x + P.face * rand(4, 14), y: P.y - rand(10, 30), vx: 0, vy: -rand(10, 30), life: 0.3, kind: 'mote' }); } } },
   ls_fore_cut: { tags: ['ls_fore_cut', 'counter', 'riposte'], rank: 3, dmg: 2.8, poise: 50, stam: 0, wind: 120, total: 520, counter: true, fin: true, lunge: 34, inv: [0, 220], fx: 'heavy' },
@@ -162,14 +162,14 @@ mvRegister('katana', {
   },
   unlocks: [
     { rank: 2, id: 'kt_stride', name: 'Sheathed stride', input: '–', desc: 'Walk at full speed while sheathed.' },
-    { rank: 3, id: 'kt_flash', name: 'Flash step', input: 'L while sheathed', desc: 'A blink of 80 px through the foe with a 1.6 cut; fully invulnerable.' },
+    { rank: 3, id: 'kt_flash', name: 'Flash step', input: 'L while sheathed', desc: 'A short invulnerable blink (50 px) that stays sheathed: no cut, but K out of it is an Iai.' },
     { rank: 4, id: 'kt_thousand', name: 'Thousand cuts', input: 'J J J → I', desc: 'Each flurry hit echoes 0.5 s later (+0.9 total).' },
     { rank: 5, id: 'kt_moonlit', name: 'Moonlit iai', input: 'perfect Iai parry', desc: 'Time slows for a moment and your next Iai deals 3.0.' },
   ],
 }, {
-  kt_1: { tags: ['kt_1'], dmg: 0.9, poise: 10, stam: 10, wind: 120, total: 330, step: 0, fx: 'slash2', next: { J: 'kt_2' } },
-  kt_2: { tags: ['kt_2'], dmg: 0.9, poise: 10, stam: 10, wind: 120, total: 330, step: 1, fx: 'slash', next: { J: 'kt_3' } },
-  kt_3: { tags: ['kt_flurry', 'kt_3'], hits: [0.45, 0.45, 0.45], gap: 90, poise: 18, stam: 16, wind: 180, total: 600, step: 2, fin: true, fx: 'slash3', fxEach: true,
+  kt_1: { tags: ['kt_1'], dmg: 0.9, poise: 10, stam: 10, wind: 140, total: 380, step: 0, fx: 'slash2', next: { J: 'kt_2' } },
+  kt_2: { tags: ['kt_2'], dmg: 0.9, poise: 10, stam: 10, wind: 140, total: 380, step: 1, fx: 'slash', next: { J: 'kt_3' } },
+  kt_3: { tags: ['kt_flurry', 'kt_3'], hits: [0.45, 0.45, 0.45], gap: 100, poise: 18, stam: 16, wind: 200, total: 680, step: 2, fin: true, fx: 'slash3', fxEach: true,
     next: { I: 'kt_fsheathe' },
     on: { start() { P.ktFlurry = []; }, hit(t) { if (!t.prop) P.ktFlurry.push({ t, at: P.clk }); } } },
   kt_fsheathe: { tags: ['kt_sheathe', 'parry'], noHit: true, dmg: 0, poise: 0, stam: 4, wind: 250, total: 250,
@@ -186,9 +186,9 @@ mvRegister('katana', {
       end() { ktSheathe(true); },
     } },
   kt_sheathe: { tags: ['kt_sheathe', 'parry'], noHit: true, dmg: 0, poise: 0, stam: 4, wind: 300, total: 300, on: { end() { ktSheathe(true); } } },
-  kt_rush: { tags: ['kt_rush', 'kt_heavy'], kind: 'heavy', dmg: 1.4, poise: 30, stam: 20, wind: 260, total: 620, lunge: 40, fx: 'slash3', next: { K: '@K' },
+  kt_rush: { tags: ['kt_rush', 'kt_heavy'], kind: 'heavy', dmg: 1.4, poise: 30, stam: 20, wind: 300, total: 700, lunge: 30, fx: 'slash3', next: { K: '@K' },
     on: { end() { ktSheathe(true); } } },
-  kt_iai: { tags: ['kt_iai', 'kt_heavy'], kind: 'heavy', dmg: 2.2, poise: 45, stam: 18, wind: 90, total: 520, lunge: 22, lungeLead: 90, fin: true, fx: 'slash3', next: { K: '@K' },
+  kt_iai: { tags: ['kt_iai', 'kt_heavy'], kind: 'heavy', dmg: 2.2, poise: 45, stam: 18, wind: 110, total: 600, lunge: 20, lungeLead: 110, fin: true, fx: 'slash3', next: { K: '@K' },
     on: { start(A) { if (P.moonlit) { P.moonlit = false; P.mvMul = 3.0 / 2.2; flashScreen = Math.max(flashScreen, 0.12); } if (typeof feelFlash === 'function') feelFlash(P.x + P.face * 16, P.y - 18, 40, '235,240,255', 1.2, 0.1); } } },
   kt_focus_hold: { tags: ['kt_focus_hold', 'kt_heavy'], kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9,
     on: { update(dt) {
@@ -196,15 +196,15 @@ mvRegister('katana', {
       if (P.mvT >= 400 && !P.ktFocus) { P.ktFocus = true; sfx.glint(); spawnFx('telegraph', P.x, P.y - 36, P.face); }
       if (!held.has('heavy') || P.mvT > 2500) { const f = P.ktFocus; P.ktFocus = false; mvStart(f ? 'kt_focus' : 'kt_iai'); return 'stop'; }
     }, start() { P.ktFocus = false; } } },
-  kt_focus: { tags: ['kt_focus', 'kt_heavy'], kind: 'heavy', dmg: 2.6, poise: 55, stam: 28, wind: 120, total: 500, lunge: 90, lungeLead: 120, lungeTail: 60, inv: [0, 150], fin: true, fx: 'slash3',
+  kt_focus: { tags: ['kt_focus', 'kt_heavy'], kind: 'heavy', dmg: 2.6, poise: 55, stam: 28, wind: 140, total: 580, lunge: 60, lungeLead: 140, lungeTail: 60, inv: [0, 150], fin: true, fx: 'slash3',
     on: { start() { P.charged = true; } } },
   kt_iaiw: { tags: ['kt_iai_parry', 'parry'], noHit: true, dmg: 0, poise: 0, stam: 0, wind: 150, total: 300,
     on: { update() { if (P.mvT <= 150) addLight(P.x + P.face * 6, P.y - 16, 22, '220,230,255', 0.7); } } },
-  kt_iaicut: { tags: ['kt_iai', 'kt_heavy'], dmg: 2.4, poise: 60, stam: 12, wind: 60, total: 450, counter: true, fin: true, lunge: 30, lungeLead: 60, inv: [0, 260], fx: 'slash3' },
-  kt_stepcut: { tags: ['kt_stepcut', 'kt_1'], dmg: 1.1, poise: 12, stam: 10, wind: 120, total: 360, lunge: 24, fx: 'slash2', next: { J: 'kt_2' } },
-  kt_flash: { tags: ['kt_flash', 'kt_stepcut', 'kt_heavy'], rank: 3, dmg: 1.6, poise: 30, stam: 12, wind: 80, total: 360, lunge: 80, lungeLead: 80, lungeTail: 40, inv: [0, 360], fx: 'slash3',
+  kt_iaicut: { tags: ['kt_iai', 'kt_heavy'], dmg: 2.4, poise: 60, stam: 12, wind: 70, total: 500, counter: true, fin: true, lunge: 24, lungeLead: 70, inv: [0, 260], fx: 'slash3' },
+  kt_stepcut: { tags: ['kt_stepcut', 'kt_1'], dmg: 1.1, poise: 12, stam: 10, wind: 140, total: 400, lunge: 24, fx: 'slash2', next: { J: 'kt_2' } },
+  kt_flash: { tags: ['kt_flash', 'kt_stepcut', 'kt_heavy'], rank: 3, noHit: true, dmg: 0, poise: 0, stam: 14, wind: 80, total: 380, lunge: 50, lungeLead: 80, lungeTail: 40, inv: [0, 240], fx: null,
     on: { start() { mvAfterimage('#cfe0ff', 0.3, 0.5); }, update() { if (P.mvT < 140 && Math.random() < 0.8) mvAfterimage('#cfe0ff', 0.2, 0.35); } } },
-  kt_air: { tags: ['kt_air'], air: true, dmg: 1.0, poise: 12, stam: 12, wind: 140, total: 330 },
-  kt_up: { tags: ['kt_up'], up: true, dmg: 1.0, poise: 14, stam: 12, wind: 160, total: 360 },
+  kt_air: { tags: ['kt_air'], air: true, dmg: 1.0, poise: 12, stam: 12, wind: 150, total: 370 },
+  kt_up: { tags: ['kt_up'], up: true, dmg: 1.0, poise: 14, stam: 12, wind: 180, total: 400 },
   kt_down: { tags: ['kt_down'], down: true, dmg: 0.9, poise: 10, stam: 10, wind: 100, total: 280 },
 });
