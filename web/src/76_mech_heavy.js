@@ -10,9 +10,9 @@
 //    earthshaker shockwave toned down; L -> K starts the charge; the big bounce is a little lower; the brace can be left
 //    early once its window has passed. New: brace -> K payback, hold K + J haft jab, double smash -> K third pound, air J J spike.
 // ================================================================== Greatsword: one huge hit at a time
-// Hold K: level 1 (0-400 ms) 1.8 / 50, level 2 (400-800) 2.6 / 70, level 3 (800-1400) 3.6 / 95; past 1.4 s it overcharges
-// back to level 2 (Mastery V, plain charge only: a fourth level, wrath, 1.4-2.1 s: 4.2 + a small flame burst). K within 0.5 s
-// of a charged slash: the strong charged slash (x1.25, +4 stam); Mastery III: K after that = the true charged slash (1.5 + 4.5).
+// Hold K: level 1 (0-400 ms) 2.0 / 50, level 2 (400-800) 2.85 / 70, level 3 (800-1400) 3.9 / 95; past 1.4 s it overcharges
+// back to level 2 (Mastery V, plain charge only: a fourth level, wrath, 1.4-2.1 s: 4.5 + a small flame burst). K within 0.5 s
+// of a charged slash: the strong charged slash (x1.25, +4 stam); Mastery III: K after that = the true charged slash (1.5 + 4.9).
 // Charging is flinch-proof against hits under 30% max HP (x0.8 damage). I = blade guard (1.2 x dmg stamina, 25% chip, no parry).
 const GS_LV = { dmg: [0, 2.0, 2.85, 3.9, 4.5], poise: [0, 50, 70, 95, 110], stam: [0, 28, 32, 36, 40] };
 const GS_MIN = 180, GS_OVER = 1400, GS_WRATH_OVER = 2100;
@@ -106,16 +106,16 @@ mvRegister('greatsword', {
   },
   unlocks: [
     { rank: 2, id: 'gs_tackle', name: 'Shoulder tackle', input: 'L while charging', desc: "Once per charge: a 300 ms tackle (0.6 dmg). Can't be flinched, takes half damage, keeps the charge." },
-    { rank: 3, id: 'gs_true1', name: 'True Charged Slash', input: 'K after a strong charged slash', desc: 'A two-part slash: 1.5 + 4.5 at full charge.' },
+    { rank: 3, id: 'gs_true1', name: 'True Charged Slash', input: 'K after a strong charged slash', desc: 'A two-part slash: 1.5 + 4.9 at full charge.' },
     { rank: 3, id: 'gs_leap', name: 'Leaping wide slash', input: 'tackle → J', desc: 'Cash the charge in at once: a bounding sweep, 2.0 / 2.4 / 2.8 by level.' },
     { rank: 4, id: 'gs_guardtackle', name: 'Guard tackle', input: 'block → K', desc: 'Tackle out of a block straight into a level 2 charge.' },
-    { rank: 5, id: 'gs_wrath', name: 'Wrath charge', input: 'hold past level 3', desc: 'A fourth level (1.4-2.1 s) replaces the overcharge: 4.2 + a small flame burst.' },
+    { rank: 5, id: 'gs_wrath', name: 'Wrath charge', input: 'hold past level 3', desc: 'A fourth level (1.4-2.1 s) replaces the overcharge: 4.5 + a small flame burst.' },
   ],
   combos: [
     { rank: 1, name: 'Light chain', input: 'J J J', desc: 'Overhead hack, wide sweep, rising spin that lifts small foes.' },
     { rank: 1, name: 'Hilt bash', input: 'J → K  /  J J → K', desc: 'A pommel shove. Keep K held: the charge goes on from level 2.' },
-    { rank: 1, name: 'Momentum cleave', input: 'J J J → K', desc: 'The spin rolls on into a full overhead cleave (2.4).' },
-    { rank: 1, name: 'Charged slash', input: 'hold K', desc: 'Release on a pip: 1.8 / 2.6 / 3.6. Past 1.4 s it overcharges.' },
+    { rank: 1, name: 'Momentum cleave', input: 'J J J → K', desc: 'The spin rolls on into a full overhead cleave (2.6).' },
+    { rank: 1, name: 'Charged slash', input: 'hold K', desc: 'Release on a pip: 2.0 / 2.85 / 3.9. Past 1.4 s it overcharges.' },
     { rank: 1, name: 'Strong charged slash', input: 'charged slash → hold K', desc: 'The same levels, ×1.25.' },
     { rank: 1, name: 'Keep charging', input: 'hold K through a swing', desc: 'Keep K held as a swing ends and the next charge starts at once.' },
     { rank: 1, name: 'Blade guard', input: 'hold I', desc: 'Block frontal blows: stamina and 25% chip, no parry.' },
@@ -126,10 +126,10 @@ mvRegister('greatsword', {
     { rank: 1, name: 'Two-handed plunge', input: 'air ↓J', desc: 'Pogo off foes and spikes (wide).' },
     { rank: 1, name: 'Earth plunge', input: 'air K', desc: 'A falling slam.' },
     { rank: 2, name: 'Shoulder tackle', input: 'hold K → L', desc: 'Once per charge: shoulder through a blow and keep charging.' },
-    { rank: 3, name: 'True charged slash', input: 'strong slash → hold K', desc: 'A rising backhand, then 4.5 at full charge.' },
+    { rank: 3, name: 'True charged slash', input: 'strong slash → hold K', desc: 'A rising backhand, then 4.9 at full charge.' },
     { rank: 3, name: 'Leaping wide slash', input: 'hold K → L → J', desc: 'Tackle, then cash the charge in at once with a bounding sweep.' },
     { rank: 4, name: 'Guard tackle', input: 'block → K', desc: 'Shoulder out of the guard into a level 2 charge.' },
-    { rank: 5, name: 'Wrath', input: 'hold K past level 3', desc: 'A red fourth level (1.4-2.1 s): 4.2 and a small flame burst.' },
+    { rank: 5, name: 'Wrath', input: 'hold K past level 3', desc: 'A red fourth level (1.4-2.1 s): 4.5 and a small flame burst.' },
   ],
 }, {
   gs_1: { tags: ['gs_1'], dmg: 1.45, poise: 32, stam: 20, wind: 350, total: 820, step: 0, fx: 'heavy', lunge: 14, next: { J: 'gs_2', K: 'gs_bash' } },

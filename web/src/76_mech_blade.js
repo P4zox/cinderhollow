@@ -11,7 +11,7 @@ function bladeNearest(dx = 100, dy = 40) {
   let best = null; for (const t of targets()) { if (t.prop || t.alive === false) continue; const d = Math.abs(t.x - P.x); if (d < dx && Math.abs(t.y - P.y) < dy && (!best || d < best.d)) best = { t, d }; }
   return best && best.t;
 }
-// J J J -> K: a tap is the heavy poke, K held 0.15 s (during the poke or into the next move) is the pommel strike (IV)
+// J J J -> K: a tap is the heavy poke, K held 0.18 s (during the poke or into the next move) is the pommel strike (IV)
 const LS_POMMEL_MS = 180;   // a deliberate hold: slow taps (~100-150 ms) stay the heavy poke
 function lsPokeK(q) {
   if (!mvHas(4)) return 'ls_jjjk';
@@ -73,7 +73,7 @@ mvRegister('longsword', {
     { rank: 2, name: 'Step slash', input: 'L forward → J', desc: 'The roll becomes a gliding cut: stay in close.' },
     { rank: 2, name: 'Wheel slash', input: 'J J (beat) J', desc: 'Wait a beat after the 2nd cut: a turn that cuts both sides. J: crit.' },
     { rank: 3, name: 'Foresight cut', input: 'I → K', desc: 'A short stance: a blow in it is negated and answered with a 2.8 cut.' },
-    { rank: 4, name: 'Pommel strike', input: 'J J J → hold K', desc: 'Hold K ~0.15 s after the poke: a pommel bash with huge poise.' },
+    { rank: 4, name: 'Pommel strike', input: 'J J J → hold K', desc: 'Hold K ~0.2 s after the poke: a pommel bash with huge poise.' },
     { rank: 5, name: 'Ember edge', input: 'J J J ·J (on the flash)', desc: 'Press the 4th J as the poke flashes: a burning follow-up (+1.2).' },
   ],
   render() {
