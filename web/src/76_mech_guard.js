@@ -137,6 +137,7 @@ mvRegister('sns', {
 const SP_PAUSE = 100, SP_CC_HOLD = 150, SP_RUN_FULL = 400;   // SP_CC_HOLD: ms of real time K is held from its press (hitstop included)
 function spGuardTag(moving) {
   if (P.spPower > 0 && !moving && pHas('sp_pguard')) return 'sp_pguard';
+  if (moving && moving === -P.face && pHas('sp_guard_back')) return 'sp_guard_back';   // backing off behind the guard
   return moving && pHas('sp_guard_walk') ? 'sp_guard_walk' : pHas('sp_guard') ? 'sp_guard' : 'parry';
 }
 function spEnterGuard() {
@@ -176,7 +177,7 @@ mvRegister('spear', {
     P.vx = approach(P.vx, ax * MAXV * 0.32, 700 * dt); grav();
     if (!P.ground) { P.guardKind = null; setP('air', 'jump_fall'); return true; }
     if (P.state === 'block' && P.anim.done) spEnterGuard();
-    if (P.state === 'guard') { const t = spGuardTag(!!ax); if (P.anim.tag !== t && t !== 'parry') P.anim.set(t, true); }
+    if (P.state === 'guard') { const t = spGuardTag(ax); if (P.anim.tag !== t && t !== 'parry') P.anim.set(t, true); }
     if (P.spPower > 0) { P.spPower -= dt; addLight(P.x + P.face * 10, P.y - 18, 26, '200,220,255', 0.7); }
     if (peek('attack') && P.st > 0) { take('attack'); mvStart('sp_gpoke'); return true; }   // I + J: the guard comes back after
     if (peek('heavy') && P.st > 0) {

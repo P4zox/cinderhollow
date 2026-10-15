@@ -128,9 +128,9 @@ def ik(a, b, l1, l2, bend=1):
     return ax + l1 * math.cos(ang), ay + l1 * math.sin(ang)
 
 # ------------------------------------------------------------------ procedural parts
-def draw_leg(hip, foot, front, bend=1):
+def draw_leg(hip, foot, front, bend=1, seg=5.2):
     g = blank()
-    knee = ik(hip, foot, 5.2, 5.2, bend)
+    knee = ik(hip, foot, seg, seg, bend)
     ramp = ('4', '3', '2') if front else ('3', '2', '1')
     limb(g, [hip, knee], 4.2, *ramp)
     limb(g, [knee, (foot[0], foot[1] - 1)], 3.4, *ramp)
@@ -861,9 +861,9 @@ def pose(p):
     shoulder = (OX + 13 + bx, OY + 14 + by)
     cels = {
         "Cape": draw_cape(OY + 10 + by, OX + 8 + bx, p.get("flow", 0.3), by, flutter=p.get("flutter", 0)),
-        "BackLeg": draw_leg(hipB, p.get("footB", (OX + 9, 39)), False, p.get("bendB", 1)),
+        "BackLeg": draw_leg(hipB, p.get("footB", (OX + 9, 39)), False, p.get("bendB", 1), p.get("leg", 5.2)),
         "Torso": draw_torso(OX + bx, OY + by),
-        "FrontLeg": draw_leg(hipF, p.get("footF", (OX + 17, 39)), True, p.get("bendF", 1)),
+        "FrontLeg": draw_leg(hipF, p.get("footF", (OX + 17, 39)), True, p.get("bendF", 1), p.get("leg", 5.2)),
         "Pauldron": draw_pauldron(OX + bx, OY + by),
         "Head": draw_helmet(OX + hx, OY + hy),
     }
@@ -934,17 +934,29 @@ def idle():
                 for i, b in enumerate(bob)])
 
 def run():
+    """A real run cycle (v14b). Each foot is planted for half the cycle and pushes straight back along the floor
+    (front of the stride to the back), then lifts and swings forward through the air. The old cycle lifted the foot on
+    the way back and slid it forward on the floor -- a moonwalk. The hips sit a pixel low and the legs are a touch longer
+    (seg 5.7) so the stride is 16 px instead of the ~5 the straight legs could reach. 8 x 45 ms: the planted foot
+    sweeps back at ~90 px/s against the 122 px/s run, close enough that the feet read as gripping the floor."""
+    def foot(ph, hip_x):
+        ph %= 1.0
+        if ph < 0.5:                                  # planted: front -> back at a steady rate
+            return (hip_x + 8 - 32 * ph, 39)
+        s = (ph - 0.5) * 2                            # swing: lift, carry forward, reach
+        e = s * s * (3 - 2 * s)
+        return (hip_x - 8 + 16 * e, 39 - 4.5 * math.sin(math.pi * s))
     out = []
     for i in range(8):
-        t = i / 8 * 2 * math.pi
-        # contact at i=0/4 (low), passing at 2/6 (high)
-        dy = [1, 0, -1, 0, 1, 0, -1, 0][i]
-        fF = (OX + 14 + 7 * math.cos(t), 39 - max(0, math.sin(t)) * 4)
-        fB = (OX + 14 + 7 * math.cos(t + math.pi), 39 - max(0, math.sin(t + math.pi)) * 4)
-        swing = math.sin(t) * 1.5
-        out.append((pose(dict(dx=1, dy=dy, head_dx=1, footF=fF, footB=fB,
-                              hand=(31 + swing, 29), ang=160 - swing * 6,
-                              flow=1.1 + 0.25 * math.sin(t * 2), flutter=i)), 80))
+        ph = i / 8
+        dy = [1, 0, -1, 0, 1, 0, -1, 0][i] + 1        # down on each contact, up in the drive
+        fF = foot(ph, OX + 15)
+        fB = foot(ph + 0.5, OX + 11)
+        swing = -math.cos(2 * math.pi * ph) * 1.6     # the sword arm swings against the front leg
+        out.append((pose(dict(dx=1, dy=dy, head_dx=1, footF=fF, footB=fB, leg=5.7,
+                              bendF=1, bendB=1,
+                              hand=(31 + swing, 29 + dy * 0.5), ang=160 - swing * 6,
+                              flow=1.1 + 0.25 * math.sin(ph * 4 * math.pi), flutter=i)), 45))
     return out
 
 def jump_up():

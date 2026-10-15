@@ -238,8 +238,9 @@ def register(G):
         out = []
         for i in range(6):
             t = i / 6 * 2 * math.pi
-            fF = (FF[0] + 2 + 2.6 * math.sin(t), 39 - max(0.0, math.sin(t)) * 2.0)
-            fB = (OX + 5 + 2.6 * math.sin(t + math.pi), 39 - max(0.0, math.sin(t + math.pi)) * 2.0)
+            # a foot lifts while it moves forward (cos > 0) and is planted while it pushes back (v14b: was the other way)
+            fF = (FF[0] + 2 + 2.6 * math.sin(t), 39 - max(0.0, math.cos(t)) * 2.0)
+            fB = (OX + 5 + 2.6 * math.sin(t + math.pi), 39 - max(0.0, math.cos(t + math.pi)) * 2.0)
             dy = 3 + (1 if i % 3 == 0 else 0)
             out.append((guard(dy=dy, footF=fF, footB=fB, flow=0.35 + 0.1 * (i % 2), flutter=i), 110))
         return mseq(out, grip=GS)

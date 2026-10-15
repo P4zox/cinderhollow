@@ -34,8 +34,10 @@ def walk_legs(i, n, stride=5.0, lift=2.4, cx=None):
     """Feet of a walk cycle (frame i of n): contact at 0 and n/2, the lifted foot passing at n/4 and 3n/4."""
     cx = G.OX + 14 if cx is None else cx
     t = i / n * 2 * math.pi
-    fF = (cx + stride * math.cos(t), 39 - max(0.0, math.sin(t)) * lift)
-    fB = (cx + stride * math.cos(t + math.pi), 39 - max(0.0, math.sin(t + math.pi)) * lift)
+    # a foot lifts while it travels FORWARD (cos rising: sin < 0) and is planted while it pushes back (v14b: the lift
+    # used to be on the backward half, so the planted foot slid forward -- a moonwalk)
+    fF = (cx + stride * math.cos(t), 39 - max(0.0, -math.sin(t)) * lift)
+    fB = (cx + stride * math.cos(t + math.pi), 39 - max(0.0, -math.sin(t + math.pi)) * lift)
     dy = 1 if i % (n // 2) == 0 else 0
     return dict(footF=fF, footB=fB, dy=dy)
 

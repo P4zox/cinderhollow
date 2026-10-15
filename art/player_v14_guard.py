@@ -192,6 +192,11 @@ def register(g):
     add("sp_hoplunge", sp_hoplunge, 200, 540, A(2, 3), x0=-4)
     add("sp_wheel", sp_wheel, 180, 600, A(2, 3), hits=[2, 3], both=True)
     add("sp_rsweep", sp_rsweep, 160, 500, A(2, 3), up=True, x0=-4)
+    # the guard walk played backwards: backing away behind the guard (the guard never turns, so stepping back with the
+    # forward cycle read as a moonwalk). Same frames in reverse order: planted feet now push the body backwards.
+    walk = dict(getattr(g, "V13_MOVES", []) or []).get("sp_guard_walk")
+    if walk:
+        E.append(("sp_guard_back", lambda: list(reversed(walk())), {}))
     return E
 
 
