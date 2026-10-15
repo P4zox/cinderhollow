@@ -100,7 +100,7 @@ function mvStart(id, o = {}) {
   let cost = o.cost !== undefined ? o.cost : (typeof d.stam === 'function' ? d.stam(o) : d.stam || 0);
   if (A.kind === 'heavy' && charmOn('c_brand')) cost *= 0.8;   // Brand of the Forge: heavies cost 20% less
   if (cost) spend(cost);
-  P.mvQ2 = null;
+  if (P.mvQ2) { buffered.set(P.mvQ2.b === 'J' ? 'attack' : 'heavy', performance.now()); P.mvQ2 = null; }
   P.hitSet = new Set(); P.mvT = o.t0 || 0; P.mvHitK = -1; P.mvQ = null; P.mvO = o; P.mvMul = o.mul || 1; P.mvGained = false;
   P.mvLunge = d.lungeFn ? d.lungeFn(o) : d.lunge || 0;
   // a plain swing only steps its full distance when you push forward (half standing still); dash moves (own lungeLead) always do
@@ -140,7 +140,7 @@ function mvNeutral(ax) {
     if (P.dgEnd && P.clk - P.dgEnd.t < 0.25 && mvRollJ(P.dgEnd.g)) { P.dgEnd = null; return true; }
     if (P.mvChain && P.clk - P.mvChain.t < 0.3) {   // a press just after a move ended still continues its chain
       const c = P.mvChain, A = ATK[c.id]; P.mvChain = null;
-      if (A) { const nx = mvNext(A, { b: 'J', t: A.mv.total + (P.clk - c.t) * 1000, at: P.clk, after: (P.clk - c.t) * 1000 }); if (nx && mvGo(nx)) return true; }
+      if (A) { const q = { b: 'J', t: A.mv.total + (P.clk - c.t) * 1000, at: P.clk, after: (P.clk - c.t) * 1000 }, nx = mvNext(A, q); if (nx && mvGo(nx, typeof nx === 'string' && nx[0] !== '@' ? { perfect: mvPerfect(q, A) } : undefined)) return true; }
     }
     return mvStartLight() || true;
   }
@@ -181,7 +181,7 @@ function mvNext(A, q) {
   return nx;
 }
 // "perfect timing": the press came in the last 150 ms of the move (or within 80 ms after it)
-function mvPerfect(q, A) { const late = A.mv.total - q.t; return (late >= 0 && late <= 150) || (q.after !== undefined && q.after <= 80); }
+function mvPerfect(q, A) { const late = A.mv.total - q.t; return (late >= -34 && late <= 150) || (q.after !== undefined && q.after <= 80); }   // -34: a press on the move's last frame
 function mvHeldK(q, ms = 150) { return held.has('heavy') && q.b === 'K' && (P.clk - q.at) * 1000 >= ms; }
 
 // ---- the per-frame update of a move (04_player: case 'ATTACK')
@@ -246,8 +246,8 @@ function mvSwing(A) {
   if (d.slam) { shake = Math.max(shake, 6); sfx.boom(); spawnFx('shockwave', P.x + P.face * 22, P.y, 1); spawnFx('ground_crack', P.x + P.face * 22, P.y, 1); for (let i = 0; i < 12; i++) particles.push({ x: P.x + P.face * 22 + rand(-16, 16), y: P.y - 2, vx: rand(-80, 80), vy: -rand(30, 110), g: 320, life: 0.6, kind: 'dust' }); }
   if (d.on && d.on.swing) d.on.swing(A);
 }
-// latch J / K / I pressed during a move (played at its total). One press is kept, never two, so a mash can't run on
-// past the move you're in. On a finisher (or the last step of a chain), a press that would START A NEW chain only
+// latch J / K / I pressed during a move (played at its total). One press is queued (a second waits for the next
+// move and is judged there). On a finisher (or the last step of a chain), a press that would START A NEW chain only
 // latches in the move's last MV_QFIN ms: mashing through a finisher ends the combo there instead of rolling straight
 // into the next one. Earlier presses are dropped. Presses that continue the chain latch from 30 ms in, as before.
 const MV_QFIN = 120;
@@ -259,7 +259,12 @@ function mvRouted(A, b) {   // does button b continue A's chain (vs falling back
   try { const nx = r({ b, t: P.mvT, at: P.clk, peek: true }, A); return !!nx && nx !== '@' + b; } catch (e) { return true; }
 }
 function mvQueue(A) {
-  if (P.mvT < 30 || P.mvQ) return;
+  if (P.mvT < 30) return;
+  if (P.mvQ) {   // one more press waits for the next move, which re-judges it with its own rules (so J J J typed fast
+    // still plays three cuts, but nothing carries on past a finisher)
+    if (!P.mvQ2) { if (take('attack')) P.mvQ2 = { b: 'J' }; else if (take('heavy')) P.mvQ2 = { b: 'K' }; }
+    return;
+  }
   const d = A.mv, ender = d.fin || (d.step !== undefined && !(d.next && d.next.J)), late = d.total - P.mvT <= MV_QFIN;
   const want = b => !ender || late || mvRouted(A, b);
   if (peek('attack')) { take('attack'); if (want('J')) P.mvQ = { b: 'J', t: P.mvT, at: P.clk, up: held.has('up') }; }
