@@ -8,6 +8,7 @@
 // kick (its bounce refunds one air attack, once per trip through the air).
 // New in v14: J J K pole launcher (into the air), I -> J vault kick, air J J cartwheel, dive kick -> K pole drop (II).
 // (air down K is the Cinder Slam technique for every weapon, so the pole drop hangs off the dive kick instead)
+// v14c J/K mixes: J K back vault, K -> J spin vault, air K -> J comet (spends the momentum).
 // Mastery: roll vault (II), pole drop (II), spin finisher (III), double vault (IV), gale (V).
 const ST_SPIN_STAM = 24;
 function stSpinStam() { return ST_SPIN_STAM * ((typeof skillOn === 'function' && skillOn('m_staff')) ? 55 / 80 : 1); }   // Whirling Staff: cheaper
@@ -87,6 +88,28 @@ function stPdropImpact(A, midair) {
   if (!midair) { spawnFx('shockwave', P.x, P.y, 1); for (const s of [-1, 1]) spawnFx('dust', P.x + s * 18, P.y, s); for (let i = 0; i < 14; i++) particles.push({ x: P.x + rand(-34, 34), y: P.y - 2, vx: rand(-90, 90), vy: -rand(30, 120), g: 320, life: 0.6, kind: 'dust' }); }
   else { P.vy = -210; P.ground = false; spawnFx(fxOr('pogo', 'hit'), P.x, P.y + 6, P.face); }
 }
+// v14c: a hop out of a ground move (the back vault, the spin vault): planted until `at` ms, then vy / vx (vx < 0 = backward)
+function stHopMove(at, vy, vx) {
+  return (dt, A, ax, grav) => {
+    if (!P.stHop) { if (P.mvT >= at && P.ground) { P.stHop = true; P.vy = vy; P.vx = P.face * vx; P.ground = false; spawnFx('dust', P.x, P.y, P.face); } else P.vx *= Math.pow(0.0002, dt); }
+    else if (P.ground) P.vx *= Math.pow(0.0002, dt);
+    grav();
+  };
+}
+function stCometImpact(A, midair) {
+  const d = A.mv, n = P.mom || 0; P.cmLand = true; P.mvT = d.wind; P.vx = 0; smashLanded();
+  P.mom = 0; P.momKeep = null; P.momLand = null;
+  const x0 = P.x - P.face * 8, x1 = P.x + P.face * 42;
+  P.hitSet = new Set(); P.mvHitK = 0;
+  mvStrikeAt(rect(Math.min(x0, x1), P.y - 34, Math.max(x0, x1), P.y + (midair ? 20 : 4)), d.dmg * (1 + 0.25 * n), d.poise + 12 * n,
+    { A, kind: 'heavy', big: true, onHit: (t, info) => { if (!t.prop) mvOnHit(t, info, A, { tip: false }); } });
+  shake = Math.max(shake, 5 + n); sfx.boom(); hitstop = Math.max(hitstop, 0.05 + 0.02 * n);
+  const fx = P.x + P.face * 22;
+  spawnFx('shockwave', fx, P.y, P.face); mvSpark(fx, P.y - 6, 6 + 4 * n, '190,230,255', 140 + 40 * n);
+  if (n) { tone(660 + n * 220, 0.25, 0.05, 'triangle', 1.5); if (typeof feelFlash === 'function') feelFlash(fx, P.y - 10, 20 + 8 * n, '200,235,255', 1.2, 0.12); }
+  for (let i = 0; i < 10; i++) particles.push({ x: fx + rand(-14, 14), y: P.y - 2, vx: P.face * rand(20, 110), vy: -rand(30, 110), g: 320, life: 0.5, kind: 'dust' });
+  if (midair) { P.vy = -200; P.ground = false; }
+}
 mvRegister('staff', {
   light: ['st_1', 'st_2', 'st_3', 'st_4'], K: 'st_heavy', up: 'st_up', air: 'st_air', down: 'st_down',
   plunge: { dmg: 1.4, poise: 40, stam: 16 },
@@ -136,7 +159,7 @@ mvRegister('staff', {
   hud(x) { for (let i = 0; i < 3; i++) mvHudPip(x + 3 + i * 5, 22, i < (P.mom || 0), '#a8dcff'); },
   unlocks: [
     { rank: 2, id: 'st_rollvault', name: 'Roll vault', input: 'L → I', desc: 'Vault straight out of a roll.' },
-    { rank: 2, id: 'st_pdrop', name: 'Pole drop', input: 'air ↓J → K', desc: 'Off the dive kick, drop on the staff point: 1.4, a shock on both sides.' },
+    { rank: 2, id: 'st_pdrop', name: 'Pole drop', input: 'air ↓J → K', desc: 'Off the dive kick, ride the staff point down: 1.4, a shock both sides.' },
     { rank: 3, id: 'st_aspin2', name: 'Spin finisher', input: 'air K → K', desc: 'A second aerial spin: 1.8 dmg, uses one air attack.' },
     { rank: 4, id: 'st_doublevault', name: 'Double vault', input: 'I in the air near a foe', desc: "Vault off the foe's head; refunds the air attacks once per jump." },
     { rank: 5, id: 'st_gale', name: 'Gale', input: 'K with 3 momentum stacks', desc: 'The spin becomes a slow tornado: 3 hits of 0.6 on what stands in it.' },
@@ -144,7 +167,9 @@ mvRegister('staff', {
   combos: [
     { rank: 1, name: 'Strike · Butt strike · Low sweep · Overhead', input: 'J J J J', desc: 'Both ends: every step also hits just behind you. The sweep trips.' },
     { rank: 1, name: 'Pole launcher', input: 'J J K', desc: 'Upswing that launches small foes and carries you into the air.' },
+    { rank: 1, name: 'Back vault', input: 'J K', desc: 'Flip back over the planted staff, kicking up through the foe.' },
     { rank: 1, name: 'Spin', input: 'K', desc: 'Two full turns at the waist, front and back. 24 stamina.' },
+    { rank: 1, name: 'Spin vault', input: 'K → J', desc: "Ride the spin up and over: the staff comes down from above." },
     { rank: 1, name: 'Vault', input: 'I', desc: 'Spring off the staff, up and forward. Invulnerable at the start.' },
     { rank: 1, name: 'Vault kick', input: 'I → J', desc: 'A flying kick off the planted staff at the top of the vault.' },
     { rank: 1, name: 'Vault spin', input: 'I → K', desc: 'The aerial spin straight out of the vault.' },
@@ -152,6 +177,7 @@ mvRegister('staff', {
     { rank: 1, name: 'Aerial strike', input: 'air J', desc: 'An air wheel. Each air hit adds a momentum stack (+8%, max 3).' },
     { rank: 1, name: 'Cartwheel', input: 'air J J', desc: 'Turn over the staff: the butt behind you, then the head in front.' },
     { rank: 1, name: 'Aerial spin', input: 'air K', desc: 'A gliding spin round the waist, front and back.' },
+    { rank: 1, name: 'Comet', input: 'air K → J', desc: 'Dive staff-first to the floor; spends momentum: +25% per stack.' },
     { rank: 1, name: 'Rising twirl', input: '↑J', desc: 'The staff wheels overhead: for fliers.' },
     { rank: 1, name: 'Dive kick', input: 'air ↓J', desc: 'Pogo off a foe. The first bounce of a jump refunds an air attack.' },
     { rank: 2, name: 'Roll vault', input: 'L → I', desc: 'Vault straight out of a roll.' },
@@ -161,12 +187,14 @@ mvRegister('staff', {
     { rank: 5, name: 'Gale', input: 'K with 3 momentum', desc: 'Spend the momentum: a slow tornado strikes 3 times.' },
   ],
 }, {
-  st_1: { tags: ['st_1'], dmg: 0.9, poise: 12, stam: 10, wind: 140, total: 360, step: 0, back: 14, fx: 'slash_air', next: { J: 'st_2' } },
+  st_1: { tags: ['st_1'], dmg: 0.9, poise: 12, stam: 10, wind: 140, total: 360, step: 0, back: 14, fx: 'slash_air',
+    next: { J: 'st_2', K: () => (mvHas(5) && (P.mom || 0) >= 3 ? '@K' : 'st_bvault') } },
   st_2: { tags: ['st_2'], dmg: 0.9, poise: 12, stam: 10, wind: 140, total: 360, step: 1, back: 30,
     next: { J: 'st_3', K: () => (mvHas(5) && (P.mom || 0) >= 3 ? '@K' : 'st_rise') } },
   st_3: { tags: ['st_3'], dmg: 0.9, poise: 16, stam: 11, wind: 160, total: 380, step: 2, back: 14, reel: true, ys: [-14, 0], next: { J: 'st_4' } },
   st_4: { tags: ['st_4'], dmg: 1.5, poise: 40, stam: 14, wind: 240, total: 560, step: 3, back: 14, fin: true, fx: 'heavy' },
-  st_heavy: { tags: ['st_heavy'], kind: 'heavy', staffSpin: true, hits: [0.8, 0.8], gap: 180, poise: 60, stam: () => stSpinStam(), wind: 220, total: 640, spin: true, reach: 40, backReach: 40, fin: true },
+  st_heavy: { tags: ['st_heavy'], kind: 'heavy', staffSpin: true, hits: [0.8, 0.8], gap: 180, poise: 60, stam: () => stSpinStam(), wind: 220, total: 640, spin: true, reach: 40, backReach: 40, fin: true,
+    next: { J: 'st_svault' } },
   st_gale: { tags: ['st_gale', 'st_heavy'], kind: 'heavy', rank: 5, noHit: true, dmg: 0.6, poise: 20, stam: 16, wind: 220, total: 640,
     on: { swing() { P.mom = 0; stGale(); } } },
   st_lowsweep: { tags: ['st_lowsweep', 'st_3'], dmg: 1.1, poise: 20, stam: 10, wind: 140, total: 380, back: 14, reel: true, ys: [-14, 0], next: { J: 'st_4' } },
@@ -180,12 +208,32 @@ mvRegister('staff', {
   // v14: I -> J -- the vault kick: both legs swung through off the planted pole
   st_vkick: stAir({ tags: ['st_vkick', 'st_air'], air: true, dmg: 1.1, poise: 24, stam: 10, wind: 110, total: 360, drive: 150, reach: 30, ys: [-30, 4] }, 50),
   st_aspin: stAir({ tags: ['st_aspin', 'st_air'], air: true, kind: 'heavy', dmg: 1.4, poise: 40, stam: 16, wind: 180, total: 460, spin: true, reach: 38, ys: [-38, 2],
-    next: { K: () => (mvHas(3) && !P.ground ? 'st_aspin2' : null) } }, 60),
+    next: { K: () => (mvHas(3) && !P.ground ? 'st_aspin2' : null), J: () => (!P.ground ? 'st_comet' : null) } }, 60),
   st_aspin2: stAir({ tags: ['st_aspin2', 'st_aspin', 'st_air'], air: true, kind: 'heavy', rank: 3, dmg: 1.8, poise: 45, stam: 16, wind: 120, total: 540, spin: true, reach: 40, ys: [-38, 2], fin: true,
     can: () => !P.airLock }, 60),
   st_up: stAir({ tags: ['st_twirl_up', 'st_up'], up: true, dmg: 0.9, poise: 14, stam: 10, wind: 140, total: 340 }, 0),
   st_down: stAir({ tags: ['st_divekick', 'st_down'], down: true, dmg: 1.0, poise: 30, stam: 10, wind: 100, total: 300,
     next: { K: () => (mvHas(2) && !P.ground ? 'st_pdrop' : null) } }, 0),
+  // v14c: J K -- the back vault: plant the staff ahead and flip back over it, both feet kicking up through the foe
+  st_bvault: { tags: ['st_bvault', 'st_vault'], dmg: 0.8, poise: 22, stam: 12, wind: 150, total: 500, airOk: true, keepFace: true, reach: 30, back: 4, ys: [-40, -6],
+    on: { start() { P.stHop = false; } }, move: stHopMove(110, -240, -100) },
+  // v14c: K -> J -- the spin vault: the spin's swing carries you up and over, the staff comes down from above
+  st_svault: { tags: ['st_svault', 'st_4'], dmg: 1.1, poise: 34, stam: 13, wind: 230, total: 560, airOk: true, reach: 36, back: 6, ys: [-42, 6],
+    on: { start() { P.stHop = false; } }, move: stHopMove(100, -165, 70) },   // a low hop: it lands before the move ends (no free aerial spin after it)
+  // v14c: air K -> J -- the comet: out of the aerial spin, dive staff-first down and forward; the momentum stacks are spent
+  // on the impact (+25% dmg, +12 poise each). Uses the smash limit like every plunge.
+  st_comet: { tags: ['st_comet', 'st_down'], kind: 'heavy', noHit: true, commit: true, dmg: 1.1, poise: 30, stam: 14, wind: 160, total: 500, fin: true, keepFace: true,
+    can: () => !P.ground && smashReady(),
+    on: { start() { smashStart(); P.cmLand = false; P.cmX0 = P.x; },
+      update(dt, A) { if (!P.cmLand && P.mvT >= 100) { P.mvT = Math.min(P.mvT, A.mv.wind - 1); P.mvHitK = 0; } } },
+    move(dt, A, ax, grav) {
+      if (P.cmLand) { if (P.ground) P.vx *= Math.pow(0.0002, dt); else P.vx = approach(P.vx, 0, 400 * dt); grav(); return; }
+      if (P.mvT < 90) { P.vx *= Math.pow(0.02, dt); P.vy = approach(Math.min(P.vy, 40), 0, 1600 * dt); return; }
+      const left = 64 - Math.abs(P.x - P.cmX0); P.vx = left > 0.5 ? P.face * Math.min(240, left / Math.max(dt, 1e-3)) : 0; P.vy = 320;   // a 40-degree dive, at most 64 px forward
+      if (P.ground) return stCometImpact(A, false);
+      const r = rect(Math.min(P.x, P.x + P.face * 18), P.y - 10, Math.max(P.x, P.x + P.face * 18), P.y + 10);
+      if (targets().some(t => { const hb = hbOf(t); return hb && !t.prop && t.alive !== false && overlap(r, hb); })) stCometImpact(A, true);
+    } },
   // v14 (II): dive kick -> K -- the pole drop
   st_pdrop: { tags: ['st_pdrop', 'st_down'], kind: 'heavy', rank: 2, noHit: true, commit: true, dmg: 1.4, poise: 40, stam: 16, wind: 150, total: 520, fin: true, keepFace: true,
     can: () => !P.ground && smashReady(),
@@ -226,6 +274,7 @@ HOOKS.render.push(() => { for (const gl of ST_GALES) { const k = Math.min(1, gl.
 // New in v14: J J K trip lash, L -> K coil spin (the close-range answer: shoves small foes out to the tip), air J J skyfall
 // crack, grapple -> J reel kick (II). Mastery: snap counter (II), reel kick (II), grapple slam (III), double crack (IV),
 // thousand lashes (V).
+// v14c J/K mixes: J K tip flick (+15 crack), K -> J wrench (drags small foes in, 40 poise), J J J K cyclone (II).
 const WH_REACH = MV_SR * 2;   // 80 px
 const WH_TIP = 0.7;           // the tip zone: the last 30% of the reach
 function whTip(c) {
@@ -233,7 +282,11 @@ function whTip(c) {
   if (!d.tip) return;
   let dist, front;
   if (c.A.up) { dist = P.y - hb.y1; front = -c.A.ys[0]; }
-  else { dist = P.face > 0 ? hb.x0 - P.x : P.x - hb.x1; front = c.A.reach[1]; }
+  else {
+    const side = (hb.x0 + hb.x1) / 2 >= P.x ? 1 : -1;
+    if (c.A.spin && side !== P.face) { dist = side > 0 ? hb.x0 - P.x : P.x - hb.x1; front = -c.A.reach[0]; }   // a spin's back lash has a tip too
+    else { dist = P.face > 0 ? hb.x0 - P.x : P.x - hb.x1; front = c.A.reach[1]; }
+  }
   if (dist >= front * WH_TIP) { c.tip = true; c.mul *= 1.3; }
   else if (d.tipOnly) c.skip = true;
 }
@@ -243,11 +296,12 @@ function whTipFx(x, y, big) {   // the tip spark: a bright crack of light where 
   for (let i = 0; i < 4; i++) particles.push({ x, y, vx: P.face * rand(20, 90), vy: -rand(10, 70), g: 200, life: 0.3, kind: 'spark' });
 }
 function whSmall(t) { return t && !t.prop && !t.boss && t !== boss && t.alive !== false && !(t.cfg && (t.cfg.elite || t.cfg.flying)) && !whLarge(t); }
-// shove a small foe out along the floor to `to` px from you (the coil spin and the reel kick put it back at the tip)
+// move a small foe along the floor to `to` px from you, on its side: out (the coil spin and the reel kick put it back at
+// the tip) or in (the wrench)
 function whShove(t, to) {
   if (!whSmall(t)) return;
-  const dir = t.x >= P.x ? 1 : -1, x0 = t.x, goal = P.x + dir * to;
-  if ((goal - x0) * dir <= 0) return;
+  const side = t.x >= P.x ? 1 : -1, x0 = t.x, goal = P.x + side * to, dir = Math.sign(goal - x0);
+  if (Math.abs(goal - x0) < 2) return;
   let gx = x0; for (let x = x0; (goal - x) * dir > 0; x += dir * 4) { if (solidAtPx(x + dir * 6, t.y - 6) || solidAtPx(x + dir * 6, t.y - 20)) break; gx = x; }
   wfx({ life: 0.2, update() { if (t.alive === false) return false; t.x = x0 + (gx - x0) * Math.min(1, this.t / 0.18); if (t.vx !== undefined) t.vx = 0; } });
   for (let i = 0; i < 6; i++) particles.push({ x: t.x, y: t.y - 2, vx: dir * rand(30, 90), vy: -rand(10, 50), g: 300, life: 0.4, kind: 'dust' });
@@ -297,7 +351,7 @@ mvRegister('whip', {
     const big = A.kind === 'heavy';
     whTipFx(info.x, info.y, big);
     if (A.mv.id !== 'wh_thunder') {
-      const was = P.crack || 0; P.crack = Math.min(100, was + (big ? 20 : 10));
+      const was = P.crack || 0; P.crack = Math.min(100, was + (A.mv.crack || (big ? 20 : 10)));
       if (was < 100 && P.crack >= 100) { tone(1568, 0.3, 0.06, 'triangle', 1.6); sfx.glint(); }
     }
   },
@@ -317,7 +371,8 @@ mvRegister('whip', {
     if ((P.whCd || 0) > 0) mvHudBar(x, 25, 34 * P.whCd / 2, 1, 1, 'rgba(200,200,215,0.5)', 'rgba(0,0,0,0)');
   },
   unlocks: [
-    { rank: 2, id: 'wh_snap', name: 'Snap counter', input: 'I within 150 ms of a hit', desc: 'Lashes the attacker out of its move: the hit is negated, small foes stagger, a boss takes +60 stance.' },
+    { rank: 2, id: 'wh_snap', name: 'Snap counter', input: 'I within 150 ms of a hit', desc: 'Negate the hit and lash the attacker: small foes stagger, bosses +60.' },
+    { rank: 2, id: 'wh_cyclone', name: 'Cyclone', input: 'J J J K', desc: 'Two full-length cracks, ahead then behind, each with a tip.' },
     { rank: 2, id: 'wh_reelkick', name: 'Reel kick', input: 'grapple → J', desc: 'Kick the foe you just reeled in back out to the tip: 1.2 dmg.' },
     { rank: 3, id: 'wh_slam', name: 'Grapple slam', input: 'grapple → K', desc: 'Pull a small foe in and slam it: 1.6 dmg, stunned.' },
     { rank: 4, id: 'wh_double', name: 'Double crack', input: 'K → K', desc: 'A follow-up crack: 1.4 then 1.8, both with tip bonuses.' },
@@ -326,30 +381,35 @@ mvRegister('whip', {
   combos: [
     { rank: 1, name: 'Lash · Lash II · Whirl lash', input: 'J J J', desc: 'Twice sword reach. The last 30% of the lash is the tip: ×1.3.' },
     { rank: 1, name: 'Trip lash', input: 'J J K', desc: 'A low crack along the floor. Tipped, it trips small foes.' },
+    { rank: 1, name: 'Tip flick', input: 'J K', desc: 'A fast wrist-snap, tip only: little damage, +15 crack.' },
     { rank: 1, name: 'Heavy crack', input: 'K', desc: 'Fling the chain straight out. A tip hit fills the crack meter.' },
+    { rank: 1, name: 'Wrench', input: 'K → J', desc: 'Haul on the chain at the tip: drags small foes in, 40 poise.' },
     { rank: 1, name: 'Overhead crack', input: 'hold K', desc: 'Whirl it overhead, release at full: 2.4× sword reach.' },
     { rank: 1, name: 'Thunderclap', input: 'K at 100 crack', desc: '2.5 (3.25 at the tip), 90 poise, a blast and a stagger.' },
     { rank: 1, name: 'Grapple', input: 'I', desc: 'Small foes are reeled in; large foes and hook rings pull you. 2 s.' },
     { rank: 1, name: 'Retreat lash', input: 'L → J', desc: 'Back off 40 px and crack forward: the tip lands where you were.' },
-    { rank: 1, name: 'Coil spin', input: 'L → K', desc: 'Out of a roll, the chain whirls round you: shoves small foes to the tip.' },
+    { rank: 1, name: 'Coil spin', input: 'L → K', desc: 'Out of a roll, the chain whirls round you: small foes go to the tip.' },
     { rank: 1, name: 'Circular lash', input: 'air J', desc: 'A full circle round the body, front and back.' },
     { rank: 1, name: 'Skyfall crack', input: 'air J J', desc: 'From the circle, a long crack down to the floor ahead.' },
     { rank: 1, name: 'Vertical crack', input: '↑J', desc: 'The tip cracks straight overhead: for fliers.' },
     { rank: 1, name: 'Down crack', input: 'air ↓J', desc: 'Pogo off a foe on a long box below.' },
     { rank: 2, name: 'Snap counter', input: 'I just before a hit', desc: 'Negate it and lash the attacker out of its move. 6 stamina.' },
     { rank: 2, name: 'Reel kick', input: 'grapple → J', desc: 'Kick the foe you reeled in back out to the tip.' },
+    { rank: 2, name: 'Cyclone', input: 'J J J K', desc: 'Two full-length cracks, ahead then behind: a tip on both sides.' },
     { rank: 3, name: 'Grapple slam', input: 'grapple → K', desc: 'Haul the catch overhead and slam it: 1.6 dmg, stunned.' },
     { rank: 4, name: 'Double crack', input: 'K → K', desc: 'A rising backhand into a second, harder crack.' },
     { rank: 5, name: 'Thousand lashes', input: 'hold J', desc: 'Keep J held through the lash: 8 tip-only cracks.' },
   ],
 }, {
-  wh_1: { tags: ['wh_1'], dmg: 0.8, poise: 8, stam: 9, wind: 160, total: 400, step: 0, reach: WH_REACH, tip: true, next: { J: 'wh_2' },
+  wh_1: { tags: ['wh_1'], dmg: 0.8, poise: 8, stam: 9, wind: 160, total: 400, step: 0, reach: WH_REACH, tip: true,
+    next: { J: 'wh_2', K: () => ((P.crack || 0) >= 100 ? '@K' : 'wh_flick') },
     on: { start() { whHoldStart('attack'); }, update() { if (whHolding('attack') && mvHas(5) && P.mvT >= 240) { mvStart('wh_thousand'); return 'stop'; } } } },
   wh_2: { tags: ['wh_2'], dmg: 0.8, poise: 8, stam: 9, wind: 160, total: 400, step: 1, reach: WH_REACH, tip: true,
     next: { J: 'wh_3', K: () => ((P.crack || 0) >= 100 ? '@K' : 'wh_trip') } },
-  wh_3: { tags: ['wh_3'], dmg: 1.1, poise: 20, stam: 14, wind: 260, total: 620, step: 2, fin: true, spin: true, reach: WH_REACH },   // the whirl spans the whole lash, front and back
+  wh_3: { tags: ['wh_3'], dmg: 1.1, poise: 20, stam: 14, wind: 260, total: 620, step: 2, fin: true, spin: true, reach: WH_REACH,
+    next: { K: () => (mvHas(2) && (P.crack || 0) < 100 ? 'wh_cyclone' : null) } },   // the whirl spans the whole lash, front and back
   wh_heavy: { tags: ['wh_heavy'], kind: 'heavy', dmg: 1.4, poise: 30, stam: 18, wind: 300, total: 680, reach: WH_REACH, tip: true,
-    next: { K: () => (mvHas(4) ? 'wh_double' : '@K') },
+    next: { K: () => (mvHas(4) ? 'wh_double' : '@K'), J: 'wh_wrench' },
     on: { start() { whHoldStart('heavy'); }, update() { if (whHolding('heavy') && P.mvT >= 180 && P.mvT < 285 && !P.mvO.noHold) { mvStart('wh_overhead_hold', { cost: 0 }); return 'stop'; } } } },
   wh_overhead_hold: { tags: ['wh_overhead_hold', 'wh_heavy'], kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9, charge: true,
     on: { update(dt) {
@@ -377,6 +437,15 @@ mvRegister('whip', {
   // v14: J J K -- the trip lash: a low crack skimming the floor at full length; tipped, it takes a small foe's legs
   wh_trip: { tags: ['wh_trip', 'wh_2'], dmg: 1.0, poise: 22, stam: 12, wind: 200, total: 560, step: 2, fin: true, reach: WH_REACH, tip: true, ys: [-16, 0],
     on: { hit(t, info, A, c) { if (c && c.tip && whSmall(t) && t.breakStance && t.state !== 'stagger') t.breakStance(); } } },
+  // v14c: J K -- the tip flick: a wrist-snap at full length, fast and light; tip-only, and it feeds the crack meter (+15)
+  wh_flick: { tags: ['wh_flick', 'wh_1'], dmg: 0.5, poise: 6, stam: 7, wind: 110, total: 340, reach: WH_REACH, tip: true, tipOnly: true, crack: 15,
+    next: { J: 'wh_2' } },
+  // v14c: K -> J -- the wrench: the cracked chain bites at the tip and you haul on it; a small foe is dragged in to 30 px and
+  // staggered, anything bigger takes the poise
+  wh_wrench: { tags: ['wh_wrench', 'wh_grapple_pull'], dmg: 0.7, poise: 40, stam: 10, wind: 130, total: 460, reach: WH_REACH, tip: true, tipOnly: true,
+    on: { hit(t) { if (whSmall(t)) { whShove(t, 30); if (t.breakStance && t.state !== 'stagger') { t.breakStance(); if (t.state === 'stagger' && typeof t.t === 'number') t.t = Math.min(t.t, 0.5); } } } } },
+  // v14c (II): J J J K -- the cyclone: the whirl's turn carried on into two full-length cracks, ahead then behind, each with a tip
+  wh_cyclone: { tags: ['wh_cyclone', 'wh_3'], rank: 2, hits: [0.8, 0.8], gap: 170, poise: 30, stam: 16, wind: 200, total: 640, spin: true, reach: WH_REACH, backReach: WH_REACH, tip: true, fin: true },
   // v14: L -> K -- the coil spin: the chain whirls tight round you, both sides; small foes are flung out to the tip
   wh_coil: { tags: ['wh_coil', 'wh_3'], hits: [0.6, 0.7], gap: 140, poise: 26, stam: 14, wind: 140, total: 520, spin: true, reach: 46, backReach: 40, lashExt: false,
     on: { hit(t) { if (P.mvHitK === 1) whShove(t, 64); } } },

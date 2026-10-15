@@ -13,6 +13,14 @@ total = all frames; tm() rescales the hand-timed frames onto those two numbers) 
   wh_coil      L -> K       coil spin: the chain whirled tight round the waist, front, back, then flung out    140 / 520 (2)
   wh_reelkick  grapple -> J reel kick: turn, the chain wrapped round the boot, a spinning heel kick             150 / 460
   wh_air2      air J J      skyfall crack: arm high, the lash cracked down to the floor ahead                  150 / 400
+
+v14c (J/K mixes):
+  st_bvault    J K          back vault: plant ahead, flip back over the staff, both feet kicking up through it 150 / 500
+  st_svault    K -> J       spin vault: out of the spin, hop up and over, the staff chopping down from above   230 / 560
+  st_comet     air K -> J   comet: hang, then dive staff-first at 40 degrees, the point driven into the floor 160* / 500
+  wh_flick     J K          tip flick: wrist cocked, then a straight, thin snap to the very end of the chain   110 / 340
+  wh_wrench    K -> J       wrench: the chain taut at full length, lean back and haul it in hand over hand     130 / 460
+  wh_cyclone   J J J K      cyclone: whirl overhead, crack it out ahead, turn, and crack it out behind        200 / 640 (2)
 """
 
 G = None   # gen_player, set by register()
@@ -150,6 +158,90 @@ def wh_air2():  # air J J: out of the circle the arm goes high, then the lash is
     return G.mseq(tm(fr, 150, 400, 2), G.AIRB)
 
 
+# ============================================================================================================== v14c
+def st_bvault():  # J K: the staff planted ahead, a push off it, and a back flip over it with both feet kicking up
+    OX, FF, GT, P_WIND = G.OX, G.FF, G.GRIP_STAFF, G.P_WIND
+    fr = G.mseq(tm([
+        (dict(dx=1, dy=1, hand=(37, 26), ang=58, footB=(OX + 6, 39), footF=(FF[0] + 2, 39), flow=0.4, fx=[("dust", 46, 2)]), 60),
+        (dict(dy=-2, hand=(35, 25), ang=72, footB=(OX + 7, 36), footF=(OX + 20, 34), air=True, flow=0.9, flutter=1), 90),
+        (dict(dx=-1, dy=-4, head_dx=-1, hand=(33, 24), ang=82, footB=(OX + 20, 31), footF=(OX + 25, 27), air=True, flow=1.5, flutter=2,
+              fx=[("flare", (40, 26), 6), ("vspeed", (38, 34), 2, 8, P_WIND)]), 50),
+        (dict(dx=-2, dy=-5, head_dx=-1, hand=(32, 22), ang=96, footB=(OX + 16, 27), footF=(OX + 21, 24), air=True, flow=1.3, flutter=3,
+              fx=[("flare", (36, 23), 3)]), 60),
+        (dict(dx=-1, dy=-3, hand=(32, 19), ang=-140, flow=1.0, flutter=4, **G.TUCK), 130),
+        (dict(dy=-2, hand=(33, 24), ang=-30, flow=0.6, flutter=5, **G.AIR), 110)], 150, 500, 2), grip=GT)
+    return G.cape_trail(fr, [2, 3, 4], dy=-3, ang=200)
+
+
+def st_svault():  # K -> J: the spin's swing carried up into a hop; over the top, the staff chops down from above
+    OX, FF, GT, P_WIND = G.OX, G.FF, G.GRIP_STAFF, G.P_WIND
+    fr = G.mseq(tm([
+        (dict(dx=-1, dy=3, hand=(29, 27), ang=170, footB=(OX + 5, 39), footF=(FF[0] + 1, 39), flow=0.5), 100),
+        (dict(dy=-3, hand=(31, 12), ang=-120, flow=1.1, flutter=1, fx=[("glint", "tip"), ("vspeed", (26, 34), 2, 8, P_WIND)], **G.TUCK), 130),
+        (dict(dx=2, dy=-2, hand=(38, 20), ang=22, flow=1.5, flutter=2, fx=[G.sw(w=0.6), ("flare", "tip", 5, P_WIND)], fx_pal=P_WIND, **G.AIR), 45),
+        (dict(dx=2, hand=(38, 26), ang=46, flow=1.2, flutter=3, fx=[G.sw(w=0.4)], fx_pal=P_WIND, **G.AIR), 55),
+        (dict(dx=2, dy=3, head_dy=1, hand=(37, 28), ang=40, footB=(OX + 6, 39), footF=(FF[0] + 4, 39), flow=0.8, flutter=4,
+              fx=[("dust", 46, 4), ("dust", 24, 2)]), 140),
+        (dict(dx=1, dy=1, hand=(33, 27), ang=-14, flow=0.3, flutter=5), 160)], 230, 560, 2), grip=GT)
+    return G.cape_trail(fr, [1, 2], dy=-3)
+
+
+def st_comet():  # air K -> J: hang with the staff drawn back, dive point-first at 40 degrees, drive it into the floor
+    OX, FF, GT, P_WIND = G.OX, G.FF, G.GRIP_STAFF, G.P_WIND
+    fr = G.mseq(tm([
+        (dict(dx=-1, hand=(30, 15), ang=-150, flow=0.8, fx=[("glint", "tip")], **G.AIRB), 90),
+        (dict(dx=2, dy=-3, hand=(38, 25), ang=40, slen=20, flow=1.6, flutter=1, fx=[("speed", (20, 14), 4, 14, P_WIND), ("flare", "tip", 3, P_WIND)],
+              **G.LEGS_BACK), 70),
+        (dict(dx=3, dy=3, head_dy=1, hand=(40, 28), ang=45, footB=(OX + 5, 39), footF=(FF[0] + 4, 39), flow=1.0, flutter=2,
+              fx=[("dust", 50, 6), ("flare", (50, 37), 9, P_WIND), ("speed", (26, 26), 3, 10, P_WIND)]), 60),
+        (dict(dx=3, dy=3, head_dy=1, hand=(40, 28), ang=45, footB=(OX + 5, 39), footF=(FF[0] + 4, 39), flow=0.7, flutter=3,
+              fx=[("dust", 40, 5), ("dust", 58, 5), ("flare", (50, 37), 4, P_WIND)]), 80),
+        (dict(dx=1, dy=2, hand=(35, 22), ang=-70, flow=0.4, flutter=4), 110),
+        (dict(hand=(33, 27), ang=-14, flow=0.3, flutter=5), 120)], 160, 500, 2), grip=GT)
+    return G.cape_trail(fr, [1], dy=-4, ang=190)
+
+
+def wh_flick():  # J K: the wrist cocks back by the ear, then one straight, thin snap out to the very end of the chain
+    fr = [(dict(hand=(34, 22), ang=-70, flow=0.4, lash=[(36, 16), (33, 11), (29, 10), (26, 13)]), 55),
+          (dict(dx=-1, hand=(33, 20), ang=-95, flow=0.3, flutter=1, lash=[(31, 13), (26, 10), (21, 11), (18, 15)], fx=[("glint", (33, 19))]), 55),
+          (dict(dx=2, hand=(41, 22), ang=-6, flow=1.0, flutter=2, lash=[(48, 21), (54, 20.5), (59, 20), (63.5, 19.5)],
+                fx=[("flare", (61, 19.5), 4), ("speed", (34, 18), 2, 8)]), 40),
+          (dict(dx=2, hand=(40, 23), ang=0, flow=0.8, flutter=3, lash=[(47, 23), (52, 25), (57, 24), (61, 26)]), 45),
+          (dict(dx=1, hand=(37, 25), ang=20, flow=0.5, flutter=4, lash=[(41, 28), (45, 33), (50, 37), (56, 38.5)]), 80),
+          (dict(hand=(35, 27), ang=-50, flow=0.3, flutter=5), 65)]
+    return G.mseq(tm(fr, 110, 340, 2))
+
+
+def wh_wrench():  # K -> J: the chain taut at full length after the crack; set the feet, lean back and haul it in
+    OX, FF = G.OX, G.FF
+    fr = [(dict(dx=2, hand=(41, 23), ang=-4, footF=(FF[0] + 2, 39), flow=0.6, lash=[(48, 23), (54, 23), (59, 23), (63.5, 23)],
+                fx=[("flare", (62, 23), 3)]), 60),
+          (dict(dx=1, dy=1, hand=(40, 24), ang=-2, footB=(OX + 6, 39), footF=(FF[0] + 2, 39), flow=0.4, flutter=1,
+                lash=[(47, 25), (53, 27), (58, 27), (63.5, 25)]), 70),
+          (dict(dx=-3, dy=1, head_dx=-1, hand=(30, 24), ang=165, footB=(OX + 4, 39), flow=0.2, flutter=2,
+                lash=[(40, 23), (48, 22), (56, 22), (63.5, 21)], fx=[("speed", (58, 20), 3, 12), ("flare", (62, 21), 5)]), 45),
+          (dict(dx=-3, dy=1, head_dx=-1, hand=(29, 25), ang=170, footB=(OX + 4, 39), flow=0.3, flutter=3,
+                lash=[(36, 26), (42, 28), (48, 30), (52, 33)], fx=[("speed", (50, 26), 3, 10)]), 60),
+          (dict(dx=-1, dy=1, hand=(32, 26), ang=-30, flow=0.4, flutter=4, lash=[(36, 31), (40, 36), (45, 38.5), (50, 38.5)]), 130),
+          (dict(hand=(35, 27), ang=-50, flow=0.3, flutter=5), 100)]
+    return G.mseq(tm(fr, 130, 460, 2))
+
+
+def wh_cyclone():  # J J J K: the chain kept whirling overhead, cracked out flat ahead, a turn, and cracked out behind
+    FF = G.FF
+    full = [(48, 21), (54, 20), (59, 21), (63.5, 21)]
+    fr = [(dict(hand=(33, 12), ang=-90, flow=0.6, lash=[(30, 5), (22, 4), (15, 7), (11, 13)]), 100),
+          (dict(dy=-1, hand=(32, 13), ang=-120, flow=0.8, flutter=1, lash=[(28, 6), (21, 8), (16, 13), (14, 19)], fx=[("glint", (32, 12))]), 100),
+          (dict(dx=2, hand=(41, 22), ang=-6, footF=(FF[0] + 2, 39), flow=1.4, flutter=2, lash=full,
+                fx=[("flare", (61, 21), 6), ("speed", (30, 18), 3, 10)]), 70),
+          (dict(dy=-1, hand=(36, 15), ang=-70, flow=1.3, flutter=3, mirror=True, lash=[(39, 7), (45, 5), (51, 7), (55, 12)]), 100),
+          (dict(dx=2, hand=(41, 22), ang=-6, footF=(FF[0] + 2, 39), flow=1.5, flutter=4, mirror=True, lash=full,
+                fx=[("flare", (61, 21), 6), ("speed", (30, 18), 3, 10)]), 60),
+          (dict(dx=1, hand=(37, 26), ang=30, flow=0.8, flutter=5, lash=[(42, 31), (46, 36), (51, 38.5), (57, 38.5)]), 130),
+          (dict(hand=(35, 27), ang=-50, flow=0.3, flutter=6), 140)]
+    return G.mseq(tm(fr, 200, 640, 2))
+
+
 def register(g):
     global G
     G = g
@@ -163,5 +255,12 @@ def register(g):
         ("wh_coil", settled(wh_coil), dict(active=(2, 4), hits=[2, 4], both=True)),
         ("wh_reelkick", settled(wh_reelkick), dict(active=(2, 3), hit=[0, -24, 16, -4], fxat=(14, -12))),
         ("wh_air2", wh_air2, dict(active=(2, 3), x0=0, fxat=(32, -2))),
+        # v14c
+        ("st_bvault", st_bvault, dict(active=(2, 3), hit=[-2, -32, 16, -8], fxat=(12, -14))),
+        ("st_svault", settled(st_svault), dict(active=(2, 3))),
+        ("st_comet", settled(st_comet), dict(active=(2, 3), hit=[-6, -32, 40, 2], fxat=(22, -3))),
+        ("wh_flick", settled(wh_flick), dict(active=(2, 3), x0=0, fxat=(33, -20))),
+        ("wh_wrench", settled(wh_wrench), dict(active=(2, 3), x0=0, fxat=(34, -18))),
+        ("wh_cyclone", settled(wh_cyclone), dict(active=(2, 4), hits=[2, 4], both=True)),
     ]
     return moves

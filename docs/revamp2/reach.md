@@ -104,3 +104,36 @@ Real boss (Gravetusk with its AI, 40 s, a scripted player that rolls through its
   bot puts it above the Longsword). It pays for that with more hits taken at that range. I left the heavy alone: say if
   you want it at 1.3 (2.49/s).
 - Air ↓K is the Cinder Slam technique for every weapon, so the pole drop hangs off the dive kick (↓J → K) instead.
+
+## v14c: J/K mixes
+
+Three new combos per weapon, each with its own animation (`art/player_v14_reach.py`, v14c block). Staff mixes play into
+the vault, the air and momentum; whip mixes play into spacing, the tip and control. Every existing route still works
+(`tools/shots/v14/reach/routes.js`: 54/54, 15 new checks).
+
+| Weapon | Input | Rank | Move | Time | Dmg | Poise | Stam | What it's for |
+|---|---|---|---|---|---|---|---|---|
+| Staff | J K | I | **Back vault** (`st_bvault`) | 150 / 500 | 0.8 | 22 | 12 | Plant the staff ahead and flip back over it, feet kicking up through the foe. Ends ~44 px back and 43 px up, in the air (air J/K follow). The hit is airborne: +1 momentum from the ground. A disengage. |
+| Staff | K → J | I | **Spin vault** (`st_svault`) | 230 / 560 | 1.1 | 34 | 13 | The spin's swing carries you up and over (a low ~35 px hop forward); the staff chops down from above. Airborne hit: +1 momentum. Lands before it ends (no free aerial spin after it). |
+| Staff | air K → J | I | **Comet** (`st_comet`) | 160* / 500 | 1.1, +25% per momentum stack spent | 30 + 12 per stack | 14 | Out of the aerial spin, dive staff-first at 40° (64 px forward at most) and drive it into the floor. **Spends the momentum**: 3 stacks = ×1.75, 66 poise. Bounces off a head. Smash limit. *Hits on impact. |
+| Whip | J K | I | **Tip flick** (`wh_flick`) | 110 / 340 | 0.5 (tip only: 0.65) | 6 | 7 | A fast wrist-snap to the very end of the chain. Misses entirely off the tip; a tip hit feeds the crack meter +15. A precision builder. J K J continues into Lash II. At 100 crack, J K is the thunderclap. |
+| Whip | K → J | I | **Wrench** (`wh_wrench`) | 130 / 460 | 0.7 (tip only: 0.91) | 40 | 10 | After the heavy crack, haul on the taut chain: a small foe at the tip is dragged in to 30 px and staggered 0.5 s; a boss takes the 40 poise. Control at range. |
+| Whip | J J J K | II | **Cyclone** (`wh_cyclone`) | 200 / 640 | 0.8 + 0.8 (tip 1.04 each) | 30 | 16 | The whirl kept turning into two full-length cracks, ahead then behind, each with its own tip: the spacer caught between two foes. (Rank I: J J J then a late K is the heavy crack, as before.) |
+
+Engine-side, `whTip` now gives a spin's back lash its own tip (the cyclone and the whirl lash); forward lashes are
+unchanged. The crack fill per move can be set with a row's `crack` (the flick: 15).
+
+### Bench (exact cycles: route, land, dummy back in front; dmg/s in light AR, infinite stamina)
+
+| Route | dmg/s | Compare |
+|---|---|---|
+| Staff J K (back vault) | 1.79 | a disengage, not damage |
+| Staff J K + air J | 2.50 | = J J J J 2.50, but you end 40 px away in the air |
+| Staff K → J (spin vault) | 2.31 | spin loop 2.49 |
+| Whip J K (flick), tipped | 2.35 | J J J tipped 2.22; builds crack 1.5× faster per press |
+| Whip K → J (wrench), tipped | 2.37 | tipped K loop 2.73 |
+| Whip J J J K (cyclone), tipped | 2.52 | tipped K loop 2.73 |
+
+First pass of the staff mixes was too strong (back-vault loop 2.93/s with a following dummy, spin-vault loop 3.17/s: its
+hop left time for a free aerial spin with momentum). Trimmed: back vault 1.0 → 0.8, spin vault 1.2 → 1.1 and a lower
+hop (vy 200 → 165) so it lands before the move ends.

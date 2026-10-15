@@ -114,4 +114,43 @@ setup('whip', 2, 40); E('P.whCd = 99'); W().tap('parry'); run(3); const sn0 = P(
 T('WH II snap still negates a hit inside 150 ms (no grapple)', P().hp === sn0 && st() === 'wh_snap', `${sn0 - P().hp} ${st()}`);
 // the lash extension draws (no errors) during a lash
 setup('whip', 1, 70); W().tap('attack'); run(10); E('render()'); T('WH lash extension renders', true);
+
+// ================================================================ v14c J/K mixes
+// staff J K = back vault: kicks the foe in front, flips you back and up (+1 momentum: the hit is airborne)
+setup('staff', 1, 24, { tall: 40 }); E('P.x = 220; enemies.find(e => e.wmDummy).x = 244'); clr(); { W().tap('attack'); run(6); W().tap('heavy'); for (let i = 0; i < 40 && st() !== 'st_bvault'; i++) W().frame(1); const x0 = P().x; let top = 0; for (let i = 0; i < 60; i++) { W().frame(1); top = Math.max(top, 304 - P().y); } run(40);
+T('ST J K = back vault: hits, flips back and up, +1 momentum', started().includes('st_bvault') && hitsOf('st_bvault').length === 1 && P().x < x0 - 20 && top > 25 && W().log.length >= 2, `${started().join(' ')} ${dm('st_bvault')} dx ${(P().x - x0).toFixed(0)} up ${top.toFixed(0)}`); }
+setup('staff', 1, 24, { tall: 40 }); clr(); W().tap('attack'); run(6); W().tap('heavy'); for (let i = 0; i < 40 && st() !== 'st_bvault'; i++) W().frame(1); run(14); const bvMom = E('P.mom'); run(60);
+T('ST back vault builds a momentum stack', bvMom === 1, String(bvMom));
+// staff K -> J = spin vault (J pressed early in the spin is kept)
+setup('staff', 1, 30, { tall: 40 }); E('window.__wm.follow = 30'); clr(); { const x0 = P().x; W().tap('heavy'); run(8); W().tap('attack'); run(90);
+T('ST K -> J = spin vault: hop over, chop from above', started().join(' ') === 'st_heavy st_svault' && hitsOf('st_svault').length === 1, `${started().join(' ')} ${dm('st_svault')} dx ${(P().x - x0).toFixed(0)}`); }
+setup('staff', 1, 30, { tall: 40 }); clr(); W().tap('heavy'); run(70); W().tap('attack'); run(60);
+T('ST K, then J well after the spin = a plain strike', started().join(' ') === 'st_heavy st_1', started().join(' '));
+// staff air K -> J = comet: spends momentum on the impact
+const comet = (mom) => { setup('staff', 1, 40, { tall: 40 }); clr(); W().down('jump'); run(10); W().tap('heavy'); run(6); W().tap('attack'); W().up('jump'); E('P.mom = ' + mom + '; P.momLand = null'); run(80); };
+comet(0); const c0 = dm('st_comet'), cs0 = started().join(' ');
+comet(3); const c3 = dm('st_comet'), cm3 = E('P.mom');
+T('ST air K -> J = comet, x1.75 with 3 stacks spent', cs0.includes('st_aspin st_comet') && +c0 > 1 && Math.abs(+c3 / +c0 - 1.75) < 0.03 && cm3 <= 1, `${cs0} | ${c0} -> ${c3}, mom after ${cm3} (a bounce off the foe may build 1)`);
+setup('staff', 1, 200); clr(); { W().down('jump'); run(14); W().up('jump'); run(4); E('mvStart("st_comet")'); const x0 = P().x; for (let i = 0; i < 80 && st() === 'st_comet'; i++) W().frame(1); T('ST comet dives at most ~64 px forward', P().x - x0 <= 68, (P().x - x0).toFixed(0)); }
+// whip J K = tip flick: tip only, +15 crack
+setup('whip', 1, 70); E('window.__wm.follow = 70'); clr(); W().tap('attack'); run(8); W().tap('heavy'); run(40);
+T('WH J K = tip flick: tipped, fills 10 + 15 crack', started().join(' ') === 'wh_1 wh_flick' && hitsOf('wh_flick').length === 1 && E('P.crack') === 25, `${started().join(' ')} ${dm('wh_flick')} crack ${E('P.crack')}`);
+setup('whip', 1, 40); E('window.__wm.follow = 40'); clr(); W().tap('attack'); run(8); W().tap('heavy'); run(40);
+T('WH tip flick misses entirely off the tip', started().includes('wh_flick') && hitsOf('wh_flick').length === 0, dm('wh_flick'));
+setup('whip', 1, 70); E('window.__wm.follow = 70; P.crack = 100'); clr(); W().tap('attack'); run(8); W().tap('heavy'); run(50);
+T('WH J K at 100 crack = thunderclap', started().includes('wh_thunder'), started().join(' '));
+setup('whip', 1, 70); clr(); W().tap('attack'); run(8); W().tap('heavy'); run(8); W().tap('attack'); run(40);
+T('WH J K J = flick then Lash II', started().join(' ') === 'wh_1 wh_flick wh_2', started().join(' '));
+// whip K -> J = wrench: drags a small foe in, staggers it; a boss takes the poise
+setup('whip', 1, 70); E(`(() => { const d = enemies.find(e => e.wmDummy); d.breakStance = function () { this.state = 'stagger'; this.t = 1.8; }; })()`); clr(); W().tap('heavy'); run(14); W().tap('attack'); run(60); const wd = E('enemies.find(e => e.wmDummy).x - P.x');
+T('WH K -> J = wrench: the tipped foe is dragged in to ~30 px, staggered 0.5 s', started().join(' ') === 'wh_heavy wh_wrench' && hitsOf('wh_wrench').length === 1 && wd < 36, `${started().join(' ')} ${dm('wh_wrench')} dist ${wd.toFixed(0)}`);
+setup('whip', 1, 78, { boss: true }); E('enemies.find(e => e.wmDummy).boss = true'); clr(); W().tap('heavy'); run(14); W().tap('attack'); run(60);
+T('WH wrench on a boss: no drag, the poise lands', hitsOf('wh_wrench').length === 1 && Math.abs(E('enemies.find(e => e.wmDummy).x - P.x') - 78) < 2 && hitsOf('wh_wrench')[0].poise >= 39, `poise ${hitsOf('wh_wrench')[0] && hitsOf('wh_wrench')[0].poise.toFixed(0)}`);
+// whip J J J K = cyclone (II): a tip ahead and behind; rank I = heavy
+setup('whip', 2, 70); clr(); E(`window.__wm.follow = 0; window.__wm.d2 = enemies.find(e => e.wmDummy)`); W().tap('attack'); run(8); W().tap('attack'); run(8); W().tap('attack'); run(8); W().tap('heavy'); for (let i = 0; i < 30 && st() !== 'wh_cyclone'; i++) W().frame(1); E('enemies.find(e => e.wmDummy).x = P.x - P.face * 70'); W().log = []; run(60);
+T('WH II J J J K = cyclone: tipped behind (the back lash has a tip)', started().includes('wh_cyclone') && hitsOf('wh_cyclone').length === 2 && hitsOf('wh_cyclone').every(h => h.dmg / G.D.light > 1), `${started().join(' ')} ${dm('wh_cyclone')}`);
+setup('whip', 1, 70); clr(); W().tap('attack'); run(8); W().tap('attack'); run(8); W().tap('attack'); for (let i = 0; i < 90 && !(st() === 'wh_3' && E('ATK.wh_3.mv.total - P.mvT') < 100); i++) W().frame(1); W().tap('heavy'); run(80);
+T('WH rank I: J J J (late K) = whirl then heavy crack', !started().includes('wh_cyclone') && started().includes('wh_heavy'), started().join(' '));
+setup('whip', 4, 70); clr(); W().tap('heavy'); run(10); W().tap('heavy'); run(60);
+T('WH IV: K K is still the double crack', started().join(' ') === 'wh_heavy wh_double', started().join(' '));
 return { pass: R.filter(r => r.startsWith('OK')).length, n: R.length, R };

@@ -7,6 +7,8 @@ const ROUTES = [
   ['staff', 1, 'J J J J', ['J', 'J', 'J', 'J']],
   ['staff', 1, 'K spin loop', ['K']],
   ['staff', 1, 'J J K (launcher) + air J', ['J', 'J', 'K', 'J']],
+  ['staff', 1, 'v14c J K (back vault) loop', ['J', 'K']],
+  ['staff', 1, 'v14c K J (spin vault) loop', ['K', 'J']],
   ['whip', 1, 'J J J untipped', ['J', 'J', 'J'], { far: 22 }],
   ['whip', 1, 'J J J tipped', ['J', 'J', 'J'], { far: 70 }],
   ['whip', 1, 'J J K tipped (trip lash)', ['J', 'J', 'K'], { far: 70, keep: 'P.crack = 0' }],
@@ -14,6 +16,10 @@ const ROUTES = [
   ['whip', 1, 'tipped K loop + thunderclaps', ['K'], { far: 70 }],
   ['whip', 1, 'close K loop + thunderclaps', ['K'], { far: 24 }],
   ['whip', 1, 'L K coil loop (close)', ['L', 'K'], { far: 30 }],
+  ['whip', 1, 'v14c J K (flick) tipped loop, no claps', ['J', 'K'], { far: 70, keep: 'P.crack = 0' }],
+  ['whip', 1, 'v14c J K (flick) tipped loop + claps', ['J', 'K'], { far: 70 }],
+  ['whip', 1, 'v14c K J (wrench) tipped loop', ['K', 'J'], { far: 76, keep: 'P.crack = 0' }],
+  ['whip', 2, 'v14c J J J K (cyclone) tipped', ['J', 'J', 'J', 'K'], { far: 70, keep: 'P.crack = 0' }],
 ];
 const out = { table: [], boss: [] };
 for (const [type, rank, name, pat, o = {}] of (window.__noTable ? [] : ROUTES)) {
@@ -30,6 +36,30 @@ for (const [type, rank, name, pat, o = {}] of (window.__noTable ? [] : ROUTES)) 
   const secs = (W().ms - t0) / 1000, dmg = W().log.filter(h => h.melee).reduce((a, h) => a + h.dmg, 0) / G.D.light;
   const tally = {}; for (const h of W().log.filter(h => h.melee)) tally[h.st] = (tally[h.st] || 0) + 1;
   out.table.push(`${type} ${name}: ${(dmg / secs).toFixed(2)}/s  [${Object.entries(tally).map(([k, v]) => k + 'x' + v).join(' ')}]`);
+}
+// ---- exact cycles: play the route, wait until you can act on the ground, put the dummy back in front, repeat (time
+//      includes walking nothing: the dummy is moved to you). 'jJ' = J once airborne.
+const CYCLES = [
+  ['staff', 1, 'J K (back vault) per cycle', ['J', 'K'], 24], ['staff', 1, 'J K + air J per cycle', ['J', 'K', 'jJ'], 24],
+  ['staff', 1, 'K J (spin vault) per cycle', ['K', 'J'], 26], ['staff', 1, 'J J J J per cycle', ['J', 'J', 'J', 'J'], 24],
+  ['whip', 1, 'J K (flick) tipped per cycle', ['J', 'K'], 70], ['whip', 1, 'K J (wrench) tipped per cycle', ['K', 'J'], 76],
+  ['whip', 2, 'J J J K (cyclone) tipped per cycle', ['J', 'J', 'J', 'K'], 70], ['whip', 1, 'J J J tipped per cycle', ['J', 'J', 'J'], 70],
+];
+for (const [type, rank, name, seq, far] of (window.__noTable ? [] : CYCLES)) {
+  W().reset(type, rank); arena(); W().reset(type, rank); E('D.maxSt = 1e6; P.st = 1e6; P.momLand = null'); W().dummy(far); E('window.__wm.follow = 0');
+  const t0 = W().ms; W().log = []; let n = 0;
+  while (W().ms - t0 < SECS * 1000) {
+    E(`P.st = 1e6; P.crack = 0; if (P.x > 300) P.x = 160; enemies.find(e => e.wmDummy).x = P.x + P.face * ${far}`);
+    for (const b of seq) {
+      if (b === 'jJ') { for (let k = 0; k < 40 && (G.P.ground || E('!!ATK[P.state]')); k++) W().frame(1); if (!G.P.ground) W().tap('attack'); continue; }
+      W().tap(KEY[b]); W().frame(5);
+    }
+    for (let k = 0; k < 120 && !(G.P.ground && ['idle', 'run', 'land'].includes(G.P.state)); k++) W().frame(1);
+    n++;
+  }
+  const secs = (W().ms - t0) / 1000, dmg = W().log.filter(h => h.melee).reduce((a, h) => a + h.dmg, 0) / G.D.light;
+  const tally = {}; for (const h of W().log.filter(h => h.melee)) tally[h.st] = (tally[h.st] || 0) + 1;
+  out.table.push(`CYCLE ${type} ${name}: ${(dmg / secs).toFixed(2)}/s over ${n} cycles  [${Object.entries(tally).map(([k, v]) => k + 'x' + v).join(' ')}]`);
 }
 // ---- the real boss
 const PLANS = {
