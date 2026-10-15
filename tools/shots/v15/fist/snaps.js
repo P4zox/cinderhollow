@@ -1,0 +1,42 @@
+// v15 Martial Arts: in-game snapshots of the new tags (WM prelude). Each shot plays the move from real inputs and snaps
+// the canvas on its impact frame. SHOT_HTML=web/dist/v15_fist.html sh tools/shots/wm/run.sh tools/shots/v15/fist/snaps.js tools/shots/v15/fist/snaps
+const B = { J: 'attack', K: 'heavy', I: 'parry', L: 'roll' };
+const go = (style, r = 5) => { W().reset('fist', r); G.tp('C4', 8, 10); W().frame(4); W().reset('fist', r); E(`P.vx = 0; P.vy = 0; P.face = 1; P.ftStyle = '${style}'; P.ftFlow = 0; P.inv = 0; enemies = enemies.filter(e => !e.wmDummy)`); W().frame(30); };
+const waitTag = (tag, max = 240) => { for (let i = 0; i < max; i++) { if (E('P.anim.tag') === tag) return true; W().frame(1); } return false; };
+const atHit = (tag, max = 240) => { if (!waitTag(tag, max)) return false; for (let i = 0; i < max; i++) { if (E(`P.anim.i >= (ATK[P.state] && ATK[P.state].active ? ATK[P.state].active[0] : 2)`)) return true; W().frame(1); } return false; };
+const shots = [], POS = {};
+const shot = async (name, style, act, tag, extra = 1) => {
+  go(style); act(); const ok = tag ? atHit(tag) : true; W().frame(extra); E('hitstop = 0; areaCard = null; toasts.length = 0; render()'); POS[name] = E('[Math.round((P.x - cam.x) * scale + ox), Math.round((P.y - cam.y) * scale + oy), scale]'); await snap(name); shots.push(name + (ok ? '' : ' (tag not seen)'));
+};
+const seq = s => () => { for (const c of s.split(' ')) { if (c === '_') { W().frame(8); continue; } W().tap(B[c] || c, 2); W().frame(6); } };
+await shot('01_sw_idle', 'swift', () => W().frame(20), null);
+await shot('02_ir_idle', 'iron', () => W().frame(20), null);
+await shot('03_sw_run', 'swift', () => { W().down('right'); W().frame(14); }, null); W().up('right');
+await shot('04_ir_walk', 'iron', () => { W().down('right'); W().frame(14); }, null); W().up('right');
+await shot('05_jab', 'swift', seq('J'), 'ft_jab');
+await shot('06_cross', 'swift', seq('J J'), 'ft_cross');
+await shot('07_hook', 'swift', seq('J J J'), 'ft_hook');
+await shot('08_knee', 'swift', seq('J J J J'), 'ft_knee', 6);
+await shot('09_snap', 'swift', seq('K'), 'ft_snap');
+await shot('10_round', 'swift', seq('K K'), 'ft_round', 14);
+await shot('11_whirl', 'swift', seq('J J K'), 'ft_whirl', 4);
+await shot('12_upper', 'swift', () => { W().down('up'); W().tap('attack', 2); W().up('up'); }, 'ft_upper');
+await shot('13_hundred', 'swift', () => { W().down('heavy'); W().frame(30); }, 'ft_hundred', 3); W().up('heavy');
+await shot('14_sweep', 'swift', seq('L _ K'), 'ft_sweep');
+await shot('15_palm', 'iron', seq('J'), 'ft_palm');
+await shot('16_elbow', 'iron', seq('J J'), 'ft_elbow');
+await shot('17_shoulder', 'iron', seq('J J J'), 'ft_shoulder');
+await shot('18_hammer', 'iron', seq('K'), 'ft_hammer');
+await shot('19_stomp', 'iron', seq('K K'), 'ft_stomp');
+await shot('20_ichg', 'iron', () => { W().down('heavy'); W().frame(50); }, 'ft_ichg', 2);
+W().up('heavy'); W().frame(4); E('hitstop = 0; render()'); POS['21_ifist'] = E('[Math.round((P.x - cam.x) * scale + ox), Math.round((P.y - cam.y) * scale + oy), scale]'); await snap('21_ifist'); shots.push('21_ifist');
+await shot('22_pillar', 'iron', seq('J J K'), 'ft_pillar', 2);
+await shot('23_heaven', 'iron', () => { W().down('up'); W().tap('attack', 2); W().up('up'); }, 'ft_heaven');
+await shot('24_fstar', 'swift', seq('J J I'), 'ft_fstar', 1);
+await shot('25_wind', 'iron', seq('J I'), 'ft_wind', 3);
+await shot('26_tempest', 'swift', seq('J J J I K'), 'ft_tempest', 30);
+await shot('27_ember', 'iron', () => { E('P.ftFlow = 5; P.ftFlowT = 9'); W().down('parry'); W().frame(20); W().up('parry'); }, 'ft_ember', 1);
+await shot('28_akick3', 'swift', () => { W().tap('jump', 2); W().frame(8); W().tap('attack', 2); W().frame(10); W().tap('attack', 2); }, 'ft_akick3', 6);
+await shot('29_aheel', 'swift', () => { W().tap('jump', 2); W().frame(14); W().tap('heavy', 2); W().frame(14); }, null);
+await shot('30_toiron', 'swift', () => { W().tap('parry', 2); W().frame(8); }, null);
+return { shots, POS };
