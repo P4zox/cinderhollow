@@ -89,6 +89,59 @@ def gs_leap():  # leaping wide slash: out of the tackle a short bound, the slab 
     return G.mseq(tm(fr, 260, 700, 3), grip=G.GRIP_GREAT)
 
 
+# ---- v14c: more J / K mixes (all as slow and weighty as the 25%-slower Greatsword)
+def _gs_buried(**k):   # the end of a cleave: the slab bitten into the floor in front, knees bent over it
+    d = dict(dx=3, dy=6, head_dy=1, hand=(37, 31), ang=52, footB=(G.OX + 6, 39), footF=(G.FF[0] + 4, 39))
+    d.update(k)
+    return d
+
+
+def gs_heave():  # upheaval (charged slash -> J): the buried blade wrenched up out of the floor, grit flying, all the way overhead
+    fr = [(dict(flow=0.3, **_gs_buried()), 110),
+          (dict(flow=0.2, fx=[("dust", 48, 4)], **_gs_buried(dx=1, dy=5, head_dx=-1, head_dy=0, ang=58, footB=(G.OX + 5, 39),
+                                                             footF=(G.FF[0] + 3, 39))), 160),
+          (dict(dx=2, dy=4, hand=(38, 29), ang=30, footF=(G.FF[0] + 3, 39), flow=0.8, flutter=1, fx=[G.sw(w=0.35), ("dust", 50, 8)]), 120),
+          (dict(dx=3, dy=1, hand=(40, 22), ang=-32, footF=(G.FF[0] + 4, 39), flow=1.3, flutter=2,
+                fx=[G.sw(w=0.6), ("dust", 50, 5), ("flare", (52, 12), 5)]), 50),
+          (dict(dx=3, dy=-1, hand=(36, 13), ang=-92, footB=(G.OX + 9, 38), footF=(G.FF[0] + 4, 39), flow=1.3, flutter=3,
+                fx=[G.sw(w=0.45)]), 60),
+          (dict(dx=2, dy=0, hand=(32, 12), ang=-125, footF=(G.FF[0] + 3, 39), flow=0.7, flutter=4), 220),
+          (dict(dx=1, dy=1, hand=(32, 18), ang=-105, flow=0.4, flutter=5), 160),
+          (dict(dy=1, hand=(33, 22), ang=-90, flow=0.3, flutter=6), 130)]
+    return G.mseq(tm(fr, 440, 1000, 3), grip=G.GRIP_GREAT)
+
+
+def gs_turn():  # turning sweep (hilt bash -> J): off the shoulder the body wheels round, the slab carried flat through a full half-circle
+    ARC = dict(sq=0.42, w=0.65)
+    fr = [(dict(flow=0.4, **_gs_hold(3)), 100),
+          (dict(dx=-1, dy=3, head_dx=-1, hand=(26, 20), ang=-170, footB=(G.OX + 5, 39), footF=(G.FF[0] + 2, 39), flow=0.5, flutter=1), 140),
+          (dict(dx=0, dy=3, hand=(30, 25), ang=176, slen=14, footF=(G.FF[0] + 2, 39), flow=0.9, flutter=2, mirror=True, behind=True,
+                fx=[("speed", (22, 22), 3, 10)]), 120),
+          (dict(dx=2, dy=3, hand=(40, 25), ang=-2, footF=(G.FF[0] + 3, 39), flow=1.4, flutter=3,
+                fx=[("arc", (29, 26), 176, -2, ARC), ("flare", (56, 24), 5)]), 50),
+          (dict(dx=3, dy=3, hand=(40, 23), ang=-30, footF=(G.FF[0] + 3, 39), flow=1.2, flutter=4, fx=[G.sw(w=0.45)]), 60),
+          (dict(dx=3, dy=3, hand=(38, 20), ang=-55, footF=(G.FF[0] + 3, 39), flow=0.7, flutter=5), 220),
+          (dict(dx=1, dy=2, hand=(35, 24), ang=-40, flow=0.3, flutter=6), 190)]
+    return G.mseq(tm(fr, 420, 1000, 3), grip=G.GRIP_GREAT)
+
+
+def gs_split():  # earthsplitter (momentum cleave -> K): the buried slab ploughed forward through the floor, ripped out level in a spray
+    fr = [(dict(flow=0.3, **_gs_buried()), 120),
+          (dict(flow=1.0, flutter=1, fx=[("dust", 52, 6), ("speed", (20, 26), 4, 10)],
+                **_gs_buried(dx=4, dy=5, head_dx=1, hand=(39, 31), ang=40, footB=(G.OX + 8, 39), footF=(G.OX + 26, 39))), 170),
+          (dict(flow=1.2, flutter=2, fx=[("dust", 54, 8)],
+                **_gs_buried(dx=5, dy=5, head_dx=1, head_dy=0, hand=(40, 31), ang=30, footB=(G.OX + 10, 39), footF=(G.OX + 27, 39))), 160),
+          (dict(dx=4, dy=3, hand=(38, 27), ang=-12, footB=(G.OX + 9, 39), footF=(G.OX + 26, 39), flow=1.6, flutter=3,
+                fx=[G.sw(w=0.65), ("dust", 56, 12), ("flare", (58, 26), 8), ("speed", (22, 26), 5, 14)]), 50),
+          (dict(dx=4, dy=1, hand=(38, 20), ang=-55, footB=(G.OX + 9, 39), footF=(G.OX + 26, 39), flow=1.3, flutter=4,
+                fx=[G.sw(w=0.45), ("dust", 56, 6)]), 70),
+          (dict(dx=4, dy=1, hand=(37, 19), ang=-62, footB=(G.OX + 9, 39), footF=(G.OX + 26, 39), flow=0.7, flutter=5,
+                fx=[("dust", 57, 3)]), 260),
+          (dict(dx=2, dy=1, hand=(36, 23), ang=-50, footF=(G.OX + 23, 39), flow=0.4, flutter=6), 180),
+          (dict(dy=1, hand=(35, 25), ang=-40, flow=0.3, flutter=7), 140)]
+    return G.mseq(tm(fr, 520, 1200, 3), grip=G.GRIP_GREAT)
+
+
 # =================================================================================================== MAUL
 def _mlow(**k):   # the walk-charge carry (as player_v13_a._mlow): leaning in, the hammer low behind the heel
     d = dict(dx=1, dy=3, head_dx=1, hand=(29, 26), ang=166, slen=18, footB=(G.OX + 5, 39), footF=(G.FF[0] + 2, 39))
@@ -148,6 +201,48 @@ def ml_spike():  # hammer spike: in the air the hammer goes back over the head a
     return G.mseq(tm(fr, 200, 500, 2), grip=GRIP_MAUL)
 
 
+# ---- v14c: more J / K mixes for the brawler
+def ml_side():  # side blow (J -> K tap): the hammer slung round from behind the hip, a flat hook that knocks the foe aside
+    fr = [(dict(dx=-1, dy=2, head_dx=-1, hand=(27, 27), ang=-178, footB=(G.OX + 5, 39), flow=0.3), 110),
+          (dict(dx=-2, dy=3, head_dx=-1, hand=(26, 28), ang=172, footB=(G.OX + 4, 39), footF=(G.FF[0] + 1, 39), flow=0.2, flutter=1,
+                fx=[("glint", "tip")]), 130),
+          (dict(dx=3, dy=2, hand=(41, 26), ang=-6, footB=(G.OX + 8, 39), footF=(G.OX + 25, 39), flow=1.5, flutter=2,
+                fx=[("arc", (30, 27), 176, -6, dict(sq=0.38, w=0.7)), ("flare", (58, 24), 6)]), 50),
+          (dict(dx=3, dy=2, hand=(39, 22), ang=-48, footB=(G.OX + 8, 39), footF=(G.OX + 25, 39), flow=1.2, flutter=3, fx=[G.sw(w=0.45)]), 60),
+          (dict(dx=2, dy=2, hand=(35, 20), ang=-80, footF=(G.OX + 23, 39), flow=0.7, flutter=4), 150),
+          (dict(dx=1, dy=1, hand=(34, 24), ang=-60, flow=0.4, flutter=5), 120)]
+    return G.mseq(tm(fr, 240, 620, 2), grip=GRIP_MAUL)
+
+
+def ml_drop():  # hammer drop (upswing -> J): the hammer is already in the sky -- it comes straight down on whatever went up
+    fr = [(dict(dx=1, dy=-1, hand=(31, 11), ang=-125, footB=(G.OX + 9, 38), footF=(G.FF[0] + 2, 39), flow=0.6), 90),
+          (dict(dx=0, dy=-2, head_dx=-1, hand=(29, 9), ang=-158, footB=(G.OX + 8, 38), footF=(G.FF[0] + 2, 39), flow=0.5, flutter=1,
+                fx=[("glint", "tip")]), 130),
+          (dict(dx=2, dy=2, hand=(39, 21), ang=-6, footF=(G.FF[0] + 3, 39), flow=1.3, flutter=2, fx=[G.sw(w=0.6)]), 45),
+          (dict(dx=2, dy=5, head_dy=1, hand=(37, 27), ang=80, footB=(G.OX + 6, 39), footF=(G.FF[0] + 3, 39), flow=1.2, flutter=3,
+                fx=[G.sw(w=0.45), ("dust", 38, 8), ("flare", (38, 37), 6)]), 60),
+          (dict(dx=2, dy=5, head_dy=1, hand=(37, 27), ang=82, footB=(G.OX + 6, 39), footF=(G.FF[0] + 3, 39), flow=0.6, flutter=4,
+                fx=[("dust", 38, 3)]), 180),
+          (dict(dx=1, dy=2, hand=(35, 28), ang=40, footF=(G.FF[0] + 1, 39), flow=0.3, flutter=5), 130)]
+    return G.mseq(tm(fr, 220, 600, 2), grip=GRIP_MAUL)
+
+
+def ml_backslam():  # backswing slam (side blow -> K): the hook's momentum carries the body all the way round, up and over -- crack
+    fr = [(dict(dx=2, dy=2, hand=(35, 20), ang=-80, footF=(G.OX + 23, 39), flow=0.6), 80),
+          (dict(dx=1, dy=2, hand=(37, 26), ang=-6, footF=(G.FF[0] + 2, 39), flow=1.3, flutter=1, mirror=True, behind=True,
+                fx=[("arc", (29, 27), 10, -170, dict(sq=0.38, w=0.5))]), 90),
+          (dict(dx=-1, dy=-1, head_dx=-1, hand=(28, 10), ang=-150, footB=(G.OX + 6, 38), footF=(G.FF[0] + 2, 39), flow=0.6, flutter=2), 110),
+          (dict(dx=-1, dy=-1, head_dx=-1, hand=(28, 9), ang=-168, footB=(G.OX + 6, 38), footF=(G.FF[0] + 2, 39), flow=0.3, flutter=3,
+                fx=[("glint", "tip")]), 90),
+          (dict(dx=2, dy=2, hand=(39, 21), ang=-4, footF=(G.FF[0] + 4, 39), flow=1.4, flutter=4, fx=[G.sw(w=0.6)]), 40),
+          (dict(dx=3, dy=6, head_dy=1, hand=(38, 27), ang=84, footB=(G.OX + 6, 39), footF=(G.FF[0] + 4, 39), flow=1.5, flutter=5,
+                fx=[G.sw(w=0.45), ("dust", 39, 11), ("flare", (39, 36), 8), ("rings", (39, 37), (6, 10))]), 70),
+          (dict(dx=3, dy=6, head_dy=2, hand=(38, 27), ang=86, footB=(G.OX + 6, 39), footF=(G.FF[0] + 4, 39), flow=0.8, flutter=6,
+                fx=[("dust", 39, 5), ("rings", (39, 37), (11, 15))]), 220),
+          (dict(dx=1, dy=2, hand=(35, 28), ang=40, footF=(G.FF[0] + 1, 39), flow=0.3, flutter=7), 170)]
+    return G.mseq(tm(fr, 320, 820, 4), grip=GRIP_MAUL)
+
+
 # =================================================================================================== registry
 def register(g):
     global G
@@ -172,6 +267,13 @@ def register(g):
     add("ml_jab", ml_jab, 120, 360, A(2, 3), settle=False, x0=0)
     add("ml_pound", ml_pound, 260, 700, A(3, 4))
     add("ml_spike", ml_spike, 200, 500, A(2, 3))
+    # v14c
+    add("gs_heave", gs_heave, 440, 1000, A(3, 4), up=True, **gs)
+    add("gs_turn", gs_turn, 420, 1000, A(3, 4), x0=-10, **gs)
+    add("gs_split", gs_split, 520, 1200, A(3, 4), **gs)
+    add("ml_side", ml_side, 240, 620, A(2, 3), x0=-4)
+    add("ml_drop", ml_drop, 220, 600, A(2, 3))
+    add("ml_backslam", ml_backslam, 320, 820, A(4, 5))
     return E
 
 

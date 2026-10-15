@@ -135,3 +135,50 @@ The patient routes (pre-charge, bash into charge, strong chain) are now the Grea
   since bracing is the Maul's only defence.
 - The Maul plunge is 1.8 / 192 poise + a 58 poise wave per jump. The 2-smash limit and stagger immunity cap it, but it's
   the strongest stun per stamina. Left alone (shared plunge rules).
+
+## v14c: more J / K mixes (6 new combos)
+
+These are built on the slower Greatsword (lights 350/820, 350/820, 400/920; charged slash 250/620). The new Greatsword
+moves are just as heavy: every swing winds up over 400 ms and takes about a second. The Maul's new moves are
+brawler-quick hooks and drops that keep the stun going.
+
+| Weapon | Input | Rank | Wind / total ms | Dmg | Poise | Stam | What it's for |
+|---|---|---|---|---|---|---|---|
+| GS | **Upheaval**: charged slash (also rolling / strong / wrath) → J | I | 440 / 1000 | 1.8 | 55 | 20 | Wrench the buried blade up out of the floor; it lifts small foes. Then J → the rising spin (gs_3): K → J → J. A J pressed during a short charge carries into the release |
+| GS | **Turning sweep**: J → K → J (or J J → K → J) | I | 420 / 1000 | 2.0 | 55 | 22 | From the hilt bash's shoulder rest, the body wheels round in a flat sweep that also covers 20 px behind |
+| GS | **Earthsplitter**: J J J → K → K (tap; K held = a fresh charge) | II | 520 / 1200 | 2.4 | 85 | 26 | Plough the buried blade forward 20 px through the floor (dust trail, ground crack) and rip it out level |
+| Maul | **Side blow**: J → K or J J → K (tap; K held = the walk-charge, as before) | I | 240 / 660 | 1.15 | 55 | 18 | A flat hook that knocks small foes aside and staggers them. J → the upswing (J → K → J) |
+| Maul | **Backswing slam**: J → K → K | II | 320 / 820 | 2.0 | 90 | 26 | The hook's momentum carries the body all the way round into an overhead slam |
+| Maul | **Hammer drop**: K (upswing) → J | I | 220 / 600 | 1.4 | 60 | 18 | The raised hammer comes straight down and spikes a launched small foe. J → the upswing again (K → J → J) |
+
+New tags in `art/player_v14_heavy.py`: `gs_heave gs_turn gs_split ml_side ml_drop ml_backslam`. The full sheet is built and
+the hit boxes are in player_meta. All six are in the `combos` lists; gs_split and ml_backslam are also in `unlocks` (rank II).
+
+How the inputs stay clear of each other:
+- **Tap vs hold.** The Maul's J → K, and K after the momentum cleave, check how long K has been held when the move ends.
+  Held for 150 ms or more, it is the old route (the walk-charge, or a fresh GS charge); tapped, it is the new move.
+- **Mashing still stops.** The engine's finisher rule still applies: a J mash stops at gs_3 / ml_3, a K mash stops after the
+  strong slash, and the rank-II taps are dropped at rank I.
+- **No old route lost.** J after a charged slash used to start a new light chain only in the release's last 120 ms; it now
+  goes to the upheaval.
+
+Tests: `tools/shots/v14/heavy/routes.js` is now 56 checks, all passing with real inputs. 17 are new, covering every new route,
+its rank gate, and the hold-instead-of-tap fallbacks. `feel.js` mash checks are unchanged (gs_1 gs_2 gs_3 idle; ml_1 ml_2
+ml_3 idle).
+
+Bench (dummy table, infinite stamina, hold time counted):
+
+| Route | dmg/s |
+|---|---|
+| GS lv3 → J → J (upheaval, spin) | 2.21 |
+| GS J → K → J (turning sweep) | 1.98 |
+| GS II J J J → K → K (earthsplitter) | 2.01 |
+| GS lv3 loop, for comparison | 2.52 |
+| GS J J J, for comparison | 1.83 |
+| Maul J → K → J (side blow, upswing) | 1.97 |
+| Maul II J → K → K (backswing slam) | 2.06 |
+| Maul K → J → J (drop, upswing) | 2.01 |
+| Maul J J J, for comparison | 2.02 |
+| Maul K tap loop, for comparison | 2.40 |
+
+None of the new routes beats the existing best loops. They are for positioning, stagger, crowds and style.

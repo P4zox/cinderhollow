@@ -43,7 +43,11 @@ function gsChargeDef(tags, rel) {
           mvDodgeStart(ax); return 'stop';
         }
         const over = P.gsWrath ? 2600 : 2200;   // held far too long: it swings on its own
-        if ((!held.has('heavy') && P.gsMs >= GS_MIN) || P.gsMs > over) { mvStart(P.mvO.roll ? 'gs_rollheavy' : lv === 4 ? 'gs_wrath' : rel, { lv, charged: lv >= 2, bank: P.gsMs }); return 'stop'; }
+        if ((!held.has('heavy') && P.gsMs >= GS_MIN) || P.gsMs > over) {
+          const q = P.mvQ && P.mvQ.b === 'J' ? P.mvQ : null;   // a J pressed during the heave carries into the release (-> upheaval)
+          if (mvStart(P.mvO.roll ? 'gs_rollheavy' : lv === 4 ? 'gs_wrath' : rel, { lv, charged: lv >= 2, bank: P.gsMs }) && q) { P.mvQ = { b: 'J', t: 0, at: P.clk }; P.hvQ = P.mvQ; }
+          return 'stop';
+        }
       },
     } };
 }
@@ -105,17 +109,20 @@ mvRegister('greatsword', {
     }
   },
   unlocks: [
-    { rank: 2, id: 'gs_tackle', name: 'Shoulder tackle', input: 'L while charging', desc: "Once per charge: a 300 ms tackle (0.6 dmg). Can't be flinched, takes half damage, keeps the charge." },
+    { rank: 2, id: 'gs_tackle', name: 'Shoulder tackle', input: 'L while charging', desc: "Once per charge: an unflinching tackle, half damage taken, charge kept." },
     { rank: 3, id: 'gs_true1', name: 'True Charged Slash', input: 'K after a strong charged slash', desc: 'A two-part slash: 1.5 + 4.9 at full charge.' },
-    { rank: 3, id: 'gs_leap', name: 'Leaping wide slash', input: 'tackle → J', desc: 'Cash the charge in at once: a bounding sweep, 2.0 / 2.4 / 2.8 by level.' },
+    { rank: 3, id: 'gs_leap', name: 'Leaping wide slash', input: 'tackle → J', desc: 'Cash the charge in at once: a bounding sweep, 2.0 / 2.4 / 2.8.' },
+    { rank: 2, id: 'gs_split', name: 'Earthsplitter', input: 'J J J → K → K', desc: 'Plough the buried blade forward and rip it out level (2.4).' },
     { rank: 4, id: 'gs_guardtackle', name: 'Guard tackle', input: 'block → K', desc: 'Tackle out of a block straight into a level 2 charge.' },
-    { rank: 5, id: 'gs_wrath', name: 'Wrath charge', input: 'hold past level 3', desc: 'A fourth level (1.4-2.1 s) replaces the overcharge: 4.5 + a small flame burst.' },
+    { rank: 5, id: 'gs_wrath', name: 'Wrath charge', input: 'hold past level 3', desc: 'A 4th level (1.4-2.1 s) instead of overcharging: 4.5 + a flame burst.' },
   ],
   combos: [
     { rank: 1, name: 'Light chain', input: 'J J J', desc: 'Overhead hack, wide sweep, rising spin that lifts small foes.' },
     { rank: 1, name: 'Hilt bash', input: 'J → K  /  J J → K', desc: 'A pommel shove. Keep K held: the charge goes on from level 2.' },
     { rank: 1, name: 'Momentum cleave', input: 'J J J → K', desc: 'The spin rolls on into a full overhead cleave (2.6).' },
+    { rank: 1, name: 'Turning sweep', input: 'J → K → J', desc: 'Off the hilt bash, the body wheels round in a flat sweep (2.0).' },
     { rank: 1, name: 'Charged slash', input: 'hold K', desc: 'Release on a pip: 2.0 / 2.85 / 3.9. Past 1.4 s it overcharges.' },
+    { rank: 1, name: 'Upheaval', input: 'charged slash → J', desc: 'Wrench the buried blade up out of the floor (1.8, lifts). J: spin.' },
     { rank: 1, name: 'Strong charged slash', input: 'charged slash → hold K', desc: 'The same levels, ×1.25.' },
     { rank: 1, name: 'Keep charging', input: 'hold K through a swing', desc: 'Keep K held as a swing ends and the next charge starts at once.' },
     { rank: 1, name: 'Blade guard', input: 'hold I', desc: 'Block frontal blows: stamina and 25% chip, no parry.' },
@@ -126,6 +133,7 @@ mvRegister('greatsword', {
     { rank: 1, name: 'Two-handed plunge', input: 'air ↓J', desc: 'Pogo off foes and spikes (wide).' },
     { rank: 1, name: 'Earth plunge', input: 'air K', desc: 'A falling slam.' },
     { rank: 2, name: 'Shoulder tackle', input: 'hold K → L', desc: 'Once per charge: shoulder through a blow and keep charging.' },
+    { rank: 2, name: 'Earthsplitter', input: 'J J J → K → K', desc: 'Plough the buried blade forward and rip it out level (2.4).' },
     { rank: 3, name: 'True charged slash', input: 'strong slash → hold K', desc: 'A rising backhand, then 4.9 at full charge.' },
     { rank: 3, name: 'Leaping wide slash', input: 'hold K → L → J', desc: 'Tackle, then cash the charge in at once with a bounding sweep.' },
     { rank: 4, name: 'Guard tackle', input: 'block → K', desc: 'Shoulder out of the guard into a level 2 charge.' },
@@ -136,19 +144,29 @@ mvRegister('greatsword', {
   gs_2: { tags: ['gs_2'], dmg: 1.5, poise: 32, stam: 20, wind: 350, total: 820, step: 1, box: [-22, 44, -42, 0], fx: 'slash_up', next: { J: 'gs_3', K: 'gs_bash' } },
   gs_3: { tags: ['gs_3'], dmg: 1.8, poise: 45, stam: 22, wind: 400, total: 920, step: 2, fin: true, launch: 180, fx: 'slash3', next: { K: 'gs_mcleave' } },
   // J (J) -> K: a pommel shove; K still held as it ends = the charge goes on from 400 ms (level 2)
-  gs_bash: { tags: ['gs_bash', 'gs_tackle', 'gs_1'], kind: 'heavy', dmg: 0.8, poise: 45, stam: 12, wind: 220, total: 580, lunge: 10, fx: null,
+  gs_bash: { tags: ['gs_bash', 'gs_tackle', 'gs_1'], kind: 'heavy', dmg: 0.8, poise: 45, stam: 12, wind: 220, total: 580, lunge: 10, fx: null, next: { J: 'gs_turn' },
     on: { swing() { spawnFx(fxOr('parry_spark', 'hit'), P.x + P.face * 22, P.y - 21, P.face); },
           end() { if (held.has('heavy') && P.ground && P.st > 0) mvStart('gs_charge', { bank: 400 }); } } },
   // J J J -> K: the finisher's spin rolls on into a full overhead cleave
-  gs_mcleave: { tags: ['gs_mcleave', 'gs_heavy'], kind: 'heavy', dmg: 2.6, poise: 70, stam: 26, wind: 430, total: 980, fin: true, slam: true, lunge: 14, fx: 'heavy' },
+  gs_mcleave: { tags: ['gs_mcleave', 'gs_heavy'], kind: 'heavy', dmg: 2.6, poise: 70, stam: 26, wind: 430, total: 980, fin: true, slam: true, lunge: 14, fx: 'heavy',
+    next: { K: q => (mvHas(2) ? (mvHeldK(q) ? '@K' : 'gs_split') : '@K') } },   // II: tap K = earthsplitter; K held = a fresh charge
+  // v14c -- charged slash (any release but the true one) -> J: upheaval, the buried blade wrenched up; J again: the rising spin
+  gs_heave: { tags: ['gs_heave', 'gs_up', 'gs_2'], kind: 'heavy', dmg: 1.8, poise: 55, stam: 20, wind: 440, total: 1000, launch: 200, reach: 40, fx: 'slash_up',
+    on: { start() { spawnFx('ground_crack', P.x + P.face * 24, P.y, P.face); } }, next: { J: 'gs_3' } },
+  // v14c -- J (J) -> K -> J: off the hilt bash's shoulder, a full turning sweep that covers the back too
+  gs_turn: { tags: ['gs_turn', 'gs_3'], kind: 'heavy', dmg: 2.0, poise: 55, stam: 22, wind: 420, total: 1000, back: 20, fin: true, fx: 'slash3' },
+  // v14c, II -- J J J -> K -> K (tap): earthsplitter, the buried slab ploughed forward through the floor and ripped out level
+  gs_split: { tags: ['gs_split', 'gs_heavy'], kind: 'heavy', rank: 2, dmg: 2.4, poise: 85, stam: 26, wind: 520, total: 1200, lunge: 20, dash: true, fin: true, fx: 'heavy',
+    on: { update() { if (P.mvT < 480 && Math.random() < 0.5) particles.push({ x: P.x + P.face * rand(18, 30), y: P.y - 1, vx: P.face * rand(10, 50), vy: -rand(20, 70), g: 320, life: 0.4, kind: 'dust' }); },
+          swing() { spawnFx('ground_crack', P.x + P.face * 30, P.y, P.face); shake = Math.max(shake, 5); } } },
   // block a blow -> J (0.7 s): the blade torn up out of the floor
   gs_retort: { tags: ['gs_retort', 'gs_up', 'gs_2'], kind: 'heavy', counter: true, dmg: 1.8, poise: 60, stam: 14, wind: 170, total: 640, fin: true, fx: 'slash_up', reach: 38 },
   gs_charge: gsChargeDef(['gs_charge_hold', 'gs_heavy'], 'gs_charged'),
-  gs_charged: gsReleaseDef(['gs_charged', 'gs_heavy'], () => 1, 0, 250, 620, { next: { K: 'gs_scharge' } }),
-  gs_wrath: gsReleaseDef(['gs_wrath', 'gs_charged', 'gs_heavy'], () => 1, 0, 280, 800, { rank: 5, next: { K: 'gs_scharge' } }),
-  gs_rollheavy: gsReleaseDef(['gs_rollheavy', 'gs_charged', 'gs_heavy'], () => 1, 0, 280, 750, { next: { K: 'gs_scharge' } }),
+  gs_charged: gsReleaseDef(['gs_charged', 'gs_heavy'], () => 1, 0, 250, 620, { next: { K: 'gs_scharge', J: 'gs_heave' } }),
+  gs_wrath: gsReleaseDef(['gs_wrath', 'gs_charged', 'gs_heavy'], () => 1, 0, 280, 800, { rank: 5, next: { K: 'gs_scharge', J: 'gs_heave' } }),
+  gs_rollheavy: gsReleaseDef(['gs_rollheavy', 'gs_charged', 'gs_heavy'], () => 1, 0, 280, 750, { next: { K: 'gs_scharge', J: 'gs_heave' } }),
   gs_scharge: gsChargeDef(['gs_charge_hold', 'gs_heavy'], 'gs_strong'),
-  gs_strong: gsReleaseDef(['gs_strong', 'gs_heavy'], () => 1.25, 4, 280, 700, { next: { K: q => (mvHas(3) ? 'gs_tcharge' : '@K') } }),
+  gs_strong: gsReleaseDef(['gs_strong', 'gs_heavy'], () => 1.25, 4, 280, 700, { next: { K: q => (mvHas(3) ? 'gs_tcharge' : '@K'), J: 'gs_heave' } }),
   gs_tcharge: { ...gsChargeDef(['gs_charge_hold', 'gs_heavy'], 'gs_true1'), rank: 3 },
   gs_true1: { tags: ['gs_true1', 'gs_heavy'], kind: 'heavy', rank: 3, dmg: 1.5, poise: 40, wind: 280, total: 520, fx: 'heavy', lunge: 20, stam: o => GS_LV.stam[o.lv || 1] + 8,
     on: { end() { const lv = P.mvLv; mvStart('gs_true2', { lv, cost: 0, charged: true }); } } },
@@ -251,6 +269,7 @@ mvRegister('maul', {
   unlocks: [
     { rank: 2, id: 'ml_chargestep', name: 'Charge step', input: 'L while charging', desc: 'Roll without losing the charge.' },
     { rank: 2, id: 'ml_pound', name: 'Third pound', input: 'double smash → K', desc: 'A hop and a third blow into the same spot (1.6, heavy stun).' },
+    { rank: 2, id: 'ml_backslam', name: 'Backswing slam', input: 'J → K → K', desc: 'Off the side blow, all the way round into an overhead slam (2.0).' },
     { rank: 3, id: 'ml_bb1', name: 'Big Bang', input: 'J J J → K K K K', desc: 'A 4-hit chain: 1.0, 1.0, 1.2, 3.0 (stun ×2).' },
     { rank: 4, id: 'ml_steer', name: 'Steered spin', input: 'while spinning', desc: 'Steer the spin; each spin does 0.6.' },
     { rank: 4, id: 'ml_spike', name: 'Hammer spike', input: 'air J J', desc: 'A second air blow that spikes small foes into the ground.' },
@@ -258,7 +277,9 @@ mvRegister('maul', {
   ],
   combos: [
     { rank: 1, name: 'Light chain', input: 'J J J', desc: 'Two overhead smashes, then a golf-swing upswing that lifts small foes.' },
-    { rank: 1, name: 'Walk-charge', input: 'hold K', desc: 'Walk at 60% while charging. Release: upswing / double smash / big smash.' },
+    { rank: 1, name: 'Side blow', input: 'J → K  /  J J → K (tap)', desc: 'A flat hook that knocks small foes aside. J after it: the upswing.' },
+    { rank: 1, name: 'Walk-charge', input: 'hold K', desc: 'Walk at 60% while charging. Release: upswing / double / big smash.' },
+    { rank: 1, name: 'Hammer drop', input: 'K (upswing) → J', desc: 'The raised hammer comes straight down (1.4). J again: the upswing.' },
     { rank: 1, name: 'Spinning bludgeon', input: 'hold K 1.4 s (moving)', desc: 'Up to 4 spins (0.5 each); let go for the 2.0 spin finisher.' },
     { rank: 1, name: 'Haft jab', input: 'hold K → J', desc: 'Once per charge: a lunging jab (0.7) that keeps the charge going.' },
     { rank: 1, name: 'Keep charging', input: 'hold K through a swing', desc: 'Keep K held as a swing ends and the walk-charge starts at once.' },
@@ -272,14 +293,24 @@ mvRegister('maul', {
     { rank: 1, name: 'Meteor plunge', input: 'air K', desc: 'A falling slam with a small shockwave.' },
     { rank: 2, name: 'Charge step', input: 'hold K → L', desc: 'Roll without losing the charge.' },
     { rank: 2, name: 'Third pound', input: 'double smash → K', desc: 'A hop and a third blow into the same spot (1.6).' },
+    { rank: 2, name: 'Backswing slam', input: 'J → K → K', desc: 'Off the side blow, all the way round into an overhead slam (2.0).' },
     { rank: 3, name: 'Big Bang', input: 'J J J → K K K K', desc: 'Hook, backhand, uppercut, then a leaping 3.0 that stuns ×2.' },
     { rank: 4, name: 'Steered spin', input: 'spin + ← / →', desc: 'Steer the spinning bludgeon; each spin deals 0.6.' },
     { rank: 4, name: 'Hammer spike', input: 'air J J', desc: 'Spike small foes into the ground and bounce off.' },
     { rank: 5, name: 'Earthshaker', input: 'hold K 1.4 s, standing still', desc: 'Slam the overcharge down: a shockwave both ways (1.0, stuns).' },
   ],
 }, {
-  ml_1: { tags: ['ml_1', 'gs_1'], dmg: 1.2, poise: 40, stam: 18, wind: 260, total: 620, step: 0, reach: 34, fx: 'heavy', next: { J: 'ml_2' } },
-  ml_2: { tags: ['ml_2', 'gs_2'], dmg: 1.25, poise: 40, stam: 18, wind: 260, total: 620, step: 1, reach: 34, fx: 'heavy', next: { J: 'ml_3' } },
+  ml_1: { tags: ['ml_1', 'gs_1'], dmg: 1.2, poise: 40, stam: 18, wind: 260, total: 620, step: 0, reach: 34, fx: 'heavy', next: { J: 'ml_2', K: q => (mvHeldK(q) ? '@K' : 'ml_side') } },
+  ml_2: { tags: ['ml_2', 'gs_2'], dmg: 1.25, poise: 40, stam: 18, wind: 260, total: 620, step: 1, reach: 34, fx: 'heavy', next: { J: 'ml_3', K: q => (mvHeldK(q) ? '@K' : 'ml_side') } },
+  // v14c -- J (J) -> K tap (K held = the walk-charge): side blow, a flat hook that knocks small foes aside. J: upswing; K (II): backswing slam
+  ml_side: { tags: ['ml_side', 'ml_bb1', 'gs_1'], kind: 'heavy', dmg: 1.15, poise: 55, stam: 18, wind: 240, total: 660, reach: 36, back: 10, reel: true, fx: 'heavy',
+    on: { hit(t) { if (t && !t.boss && !t.prop && !(t.cfg && t.cfg.elite) && t.vx !== undefined) t.vx = P.face * 160; } },
+    next: { J: 'ml_3', K: q => (mvHas(2) ? (mvHeldK(q) ? '@K' : 'ml_backslam') : '@K') } },
+  ml_backslam: { tags: ['ml_backslam', 'ml_bigsmash', 'gs_heavy'], kind: 'heavy', rank: 2, dmg: 2.0, poise: 90, stam: 26, wind: 320, total: 820, reach: 38, fin: true, slam: true, fx: 'heavy' },
+  // v14c -- K (upswing) -> J: hammer drop, the raised hammer brought straight down on whatever went up. J: upswing
+  ml_drop: { tags: ['ml_drop', 'ml_1', 'gs_1'], kind: 'heavy', dmg: 1.4, poise: 60, stam: 18, wind: 220, total: 600, reach: 36, fx: 'heavy',
+    on: { hit(t) { if (t && !t.boss && !t.prop && !(t.cfg && t.cfg.elite) && t.vy !== undefined && t.vy < 0) t.vy = 260; } },
+    next: { J: 'ml_3' } },
   ml_3: { tags: ['ml_3', 'gs_3'], dmg: 1.6, poise: 70, stam: 22, wind: 300, total: 720, step: 2, reach: 34, fin: true, launch: 200, fx: 'slash_up', next: { K: q => (mvHas(3) ? 'ml_bb1' : '@K') } },
   ml_charge: { tags: ['ml_charge_walk', 'ml_charge_idle', 'gs_heavy'], kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9, charge: true,
     move(dt, A, ax) {},
@@ -305,7 +336,7 @@ mvRegister('maul', {
         if (!held.has('heavy') && P.mlMs >= ML_MIN) { mvStart(mlRelease(lv), { charged: lv >= 2 }); return 'stop'; }
       },
     } },
-  ml_upswing: { tags: ['ml_upswing', 'gs_3'], kind: 'heavy', dmg: 1.6, poise: 50, stam: 24, wind: 200, total: 520, reach: 36, launch: 200, fx: 'slash_up' },
+  ml_upswing: { tags: ['ml_upswing', 'gs_3'], kind: 'heavy', dmg: 1.6, poise: 50, stam: 24, wind: 200, total: 520, reach: 36, launch: 200, fx: 'slash_up', next: { J: 'ml_drop' } },
   // II: double smash -> K (tap): a third pound; K kept held as it ends = a fresh charge instead
   ml_double: { tags: ['ml_double', 'gs_1'], kind: 'heavy', hits: [1.2, 1.2], gap: 360, poise: 110, stam: 28, wind: 180, total: 900, reach: 36, fin: true, slam: true, fx: 'heavy', fxEach: true,
     next: { K: q => (mvHas(2) ? (mvHeldK(q) ? '@K' : 'ml_pound') : '@K') } },

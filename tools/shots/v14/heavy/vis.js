@@ -8,6 +8,13 @@ const cases = [
   ['maul', 1, 'ml_jab', [['down', 'heavy'], 20, ['tap', 'attack'], 40, ['up', 'heavy']]],
   ['maul', 2, 'ml_pound', [['down', 'heavy'], 36, ['up', 'heavy'], 20, ['tap', 'heavy']]],
   ['maul', 4, 'ml_spike', [['down', 'jump'], 3, ['tap', 'attack'], 8, ['tap', 'attack'], 20, ['up', 'jump']]],
+  // v14c
+  ['greatsword', 1, 'gs_heave', [['down', 'heavy'], 60, ['up', 'heavy'], 5, ['tap', 'attack']]],
+  ['greatsword', 1, 'gs_turn', [['tap', 'attack'], 10, ['tap', 'heavy'], 10, ['tap', 'attack']]],
+  ['greatsword', 2, 'gs_split', [['tap', 'attack'], 45, ['tap', 'attack'], 45, ['tap', 'attack'], 15, ['tap', 'heavy'], 35, ['tap', 'heavy']]],
+  ['maul', 1, 'ml_side', [['tap', 'attack'], 10, ['tap', 'heavy']]],
+  ['maul', 1, 'ml_drop', [['tap', 'heavy'], 10, ['tap', 'attack']]],
+  ['maul', 2, 'ml_backslam', [['tap', 'attack'], 10, ['tap', 'heavy'], 10, ['tap', 'heavy']]],
 ];
 const shots = {}, POS = {};
 for (const [type, rank, id, steps] of cases) {
@@ -19,7 +26,7 @@ for (const [type, rank, id, steps] of cases) {
     const [k, a] = s;
     if (k === 'down') W().down(a); else if (k === 'up') W().up(a); else if (k === 'eval') E(a); else { W().down(a); await fr(1); W().up(a); }
   }
-  await fr(90);
+  await fr(150);
   if (!snapped) shots[id] = 'NOT SEEN';
 }
 return { shots, POS };

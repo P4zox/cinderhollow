@@ -15,6 +15,9 @@ const TABLE = [
   ['greatsword', 1, 'J J J -> K (momentum cleave)', ['J', 'J', 'J', 'K']],
   ['greatsword', 3, 'lv3 -> strong lv3 -> true lv3', [KI(1200), K(1660), K(1660)]],
   ['greatsword', 5, 'wrath loop (hold 1.6 s)', [KI(1600)]],
+  ['greatsword', 1, 'v14c lv3 -> J -> J (upheaval, spin)', [KI(1000), 'J', 'J']],
+  ['greatsword', 1, 'v14c J -> K -> J (turning sweep)', ['J', 'K', 'J']],
+  ['greatsword', 2, 'v14c J J J -> K -> K (earthsplitter)', ['J', 'J', 'J', 'K', 'K']],
   ['maul', 1, 'J J J', ['J', 'J', 'J']],
   ['maul', 1, 'K tap loop (upswing)', ['K']],
   ['maul', 1, 'lv2 double smash loop', [KI(600)]],
@@ -22,6 +25,9 @@ const TABLE = [
   ['maul', 2, 'double smash -> K (third pound)', [KI(600), 'K']],
   ['maul', 3, 'J J J -> K K K K (Big Bang)', ['J', 'J', 'J', 'K', 'K', 'K', 'K']],
   ['maul', 5, 'earthshaker loop (hold 1.5 s still)', [KI(1500)]],
+  ['maul', 1, 'v14c J -> K -> J (side blow, upswing)', ['J', 'K', 'J']],
+  ['maul', 2, 'v14c J -> K -> K (side blow, backswing slam)', ['J', 'K', 'K']],
+  ['maul', 1, 'v14c K -> J -> J (upswing, drop, upswing)', ['K', 'J', 'J']],
 ];
 const BOSS = [
   ['longsword', 1, 'J J J J (reference)', ['J', 'J', 'J', 'J']],

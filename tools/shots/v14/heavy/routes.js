@@ -32,7 +32,7 @@ function play(type, rank, steps, o = {}) {
 }
 const res = [], T = (name, ok, info) => res.push((ok ? 'PASS ' : 'FAIL ') + name + (info ? '  [' + info + ']' : ''));
 const has = (r, s) => r.tl.split(' ').some(x => x.split('@')[0].split(':')[0] === s);
-const hit = (r, s) => r.hits.split(' | ').filter(h => h.split(' ')[0].split(':')[0] === s).map(h => +h.split(' ')[1].split('/')[0]);
+const hit = (r, s) => r.hits.split(' | ').filter(h => h.split(' ')[0].split(':')[0] === s && !/\/0@/.test(h)).map(h => +h.split(' ')[1].split('/')[0]);
 const ev = (r) => r.tl + ' || ' + r.hits.split(' | ').filter(h => !/ 0\.\d+\/0@/.test(h)).join(' | ');
 let r;
 // ---------------- Greatsword: new combos
@@ -81,4 +81,22 @@ r = play('maul', 3, ['J', 'w25', 'J', 'w25', 'J', 'w25', ...Array(16).fill(['K',
   r = play('maul', 1, ['hjump400', 'w10', 'dD', 'J', 'uD', 'w60'], { dx: 0.01, dopt: { tall: 70 }, follow: false, pre, each }); const ml = 304 - E('window.__minY');
   r = play('greatsword', 1, ['hjump400', 'w10', 'dD', 'J', 'uD', 'w60'], { dx: 0.01, dopt: { tall: 70 }, follow: false, pre, each }); const gs = 304 - E('window.__minY');
   T('ML ground pound bounces higher than a plain pogo', ml > gs + 6, `maul ${Math.round(ml)} px vs greatsword ${Math.round(gs)} px`); }
+// ---------------- v14c: more J / K mixes
+r = play('greatsword', 1, ['hK1000', 'w5', 'J']); T('GS charged slash -> J: upheaval 1.8', Math.abs((hit(r, 'gs_heave')[0] || 0) - 1.8) < 0.1, ev(r));
+r = play('greatsword', 1, ['hK1000', 'w5', 'J', 'w30', 'J']); T('GS charged slash -> J -> J: upheaval, then the rising spin', /gs_heave@\d+ gs_3@/.test(r.tl), r.tl);
+r = play('greatsword', 1, ['L', 'w15', 'hK300', 'w5', 'J']); T('GS rolling heavy -> J: upheaval', /gs_rollheavy:\d@\d+ gs_heave@/.test(r.tl), r.tl);
+r = play('greatsword', 1, ['hK1000', 'w5', 'K', 'w5', 'J']); T('GS charged -> K tap still the strong slash, J after it: upheaval', /gs_strong:\d@\d+ gs_heave@/.test(r.tl), r.tl);
+r = play('greatsword', 1, ['J', 'w10', 'K', 'w10', 'J']); T('GS J -> K -> J: turning sweep 2.0', /gs_bash@\d+ gs_turn@/.test(r.tl) && Math.abs((hit(r, 'gs_turn')[0] || 0) - 2.0) < 0.1, ev(r));
+r = play('greatsword', 2, ['J', 'w45', 'J', 'w45', 'J', 'w15', 'K', 'w35', 'K'], { tail: 160 }); T('GS II J J J -> K -> K: earthsplitter 2.4', Math.abs((hit(r, 'gs_split')[0] || 0) - 2.4) < 0.1, ev(r));
+r = play('greatsword', 1, ['J', 'w45', 'J', 'w45', 'J', 'w15', 'K', 'w35', 'K']); T('GS I: no earthsplitter below rank II (the tap is dropped)', !has(r, 'gs_split') && !/gs_mcleave@\d+ gs_charge/.test(r.tl), r.tl);
+r = play('greatsword', 2, ['J', 'w45', 'J', 'w45', 'J', 'w15', 'K', 'w35', 'hK1800']); T('GS II momentum cleave -> hold K: a charge, not the earthsplitter', !has(r, 'gs_split') && /gs_mcleave@\d+ gs_charge@/.test(r.tl), r.tl);
+r = play('maul', 1, ['J', 'w10', 'K']); T('ML J -> K tap: side blow 1.15', Math.abs((hit(r, 'ml_side')[0] || 0) - 1.15) < 0.1, ev(r));
+r = play('maul', 1, ['J', 'w25', 'J', 'w10', 'K']); T('ML J J -> K tap: side blow', /ml_2@\d+ ml_side@/.test(r.tl), r.tl);
+r = play('maul', 1, ['J', 'w10', 'hK900']); T('ML J -> hold K: the walk-charge (no side blow)', !has(r, 'ml_side') && /ml_1@\d+ ml_charge@/.test(r.tl), r.tl);
+r = play('maul', 1, ['J', 'w10', 'K', 'w10', 'J']); T('ML J -> K -> J: side blow, then the upswing', /ml_side@\d+ ml_3@/.test(r.tl), r.tl);
+r = play('maul', 2, ['J', 'w10', 'K', 'w10', 'K']); T('ML II J -> K -> K: backswing slam 2.0', Math.abs((hit(r, 'ml_backslam')[0] || 0) - 2.0) < 0.1, ev(r));
+r = play('maul', 1, ['J', 'w10', 'K', 'w10', 'K']); T('ML I: no backswing slam below rank II', !has(r, 'ml_backslam'), r.tl);
+r = play('maul', 1, ['K', 'w10', 'J']); T('ML K -> J: hammer drop 1.4', /ml_upswing@\d+ ml_drop@/.test(r.tl) && Math.abs((hit(r, 'ml_drop')[0] || 0) - 1.4) < 0.1, ev(r));
+r = play('maul', 1, ['K', 'w10', 'J', 'w15', 'J']); T('ML K -> J -> J: drop, then the upswing', /ml_drop@\d+ ml_3@/.test(r.tl), r.tl);
+r = play('maul', 1, ['J', 'w5', 'J', 'w5', 'J', 'w5', 'J', 'w5', 'J', 'w5', 'J']); T('ML J mash still stops at the light finisher', !/ml_3@\d+ ml_/.test(r.tl), r.tl);
 return { pass: res.filter(x => x.startsWith('PASS')).length, fail: res.filter(x => x.startsWith('FAIL')).length, res };
