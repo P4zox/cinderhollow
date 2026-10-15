@@ -38,7 +38,7 @@ ok(G.ws.gain('spear', 50) === 0, 'no more XP past V');
 const c0 = G.ws.xp('longsword'); E("masteryGain(wtype(), 5, 'counter')"); ok(G.ws.xp('longsword') - c0 === 5, "masteryGain(wtype(), 5, 'counter') +5");
 // API shape
 ok(E('typeof masteryRank') === 'function' && E('typeof masteryXP') === 'function' && E('typeof masteryGain') === 'function', 'masteryRank / masteryXP / masteryGain exist');
-ok(E('WTYPES.join()') === 'longsword,katana,greatsword,maul,sns,dual,spear,staff,whip', 'WTYPES order');
+ok(E('WTYPES.join()') === 'longsword,katana,greatsword,maul,sns,dual,spear,staff,whip,saxe,bow,fist,scythe,bell', 'WTYPES order (v15: the nine, then the five)');
 ok(E("WTYPE_INFO.sns.weapon") === 'knight_shield' && E("WTYPE_INFO.whip.art") === 'lash' && E("WTYPE_INFO.dual.prefix") === 'tw_', 'WTYPE_INFO fields');
 ok(G.ws.unlocks('longsword').length >= 4 && G.ws.unlocks('whip').some(u => u.name === 'Thousand lashes' && u.rank === 5), 'unlock lists (WM or the doc tables)');
 // NG+ keeps mastery

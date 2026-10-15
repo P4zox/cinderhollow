@@ -152,7 +152,10 @@ T('WH rank gate: no snap counter below II', P().hp < sn1, `${sn1 - P().hp}`);
 // ---- mastery API and unlock lists
 const U = E('JSON.stringify(Object.fromEntries(Object.entries(WEAPON_UNLOCKS).map(([k, v]) => [k, v.map(u => u.rank + ":" + u.id)])))');
 const UU = JSON.parse(U);
-T('WEAPON_UNLOCKS: 9 types, every rank II-V unlocks something', Object.keys(UU).length === 9 && Object.values(UU).every(v => [2, 3, 4, 5].every(r => v.some(x => +x[0] === r))), U.slice(0, 200));
+// v15: 14 types registered; the nine must unlock something at every rank II-V (the five v15 skeletons are checked by
+// tools/shots/v15/platform/ and their own moveset tests)
+const NINE = ['longsword', 'katana', 'greatsword', 'maul', 'sns', 'dual', 'spear', 'staff', 'whip'];
+T('WEAPON_UNLOCKS: every type registered, the nine unlock something at every rank II-V', Object.keys(UU).length === E('WTYPES.length') && NINE.every(t => [2, 3, 4, 5].every(r => (UU[t] || []).some(x => +x[0] === r))), U.slice(0, 200));
 E('MV.rank = null'); const rk = E("(SAVE.mastery = SAVE.mastery || {}, SAVE.mastery.longsword = 950, mvRank('longsword'))");
 T("rank gating reads WS's masteryRank (950 XP = III)", rk === 3, String(rk));
 return { pass: R.filter(r => r.startsWith('OK')).length, n: R.length, R };

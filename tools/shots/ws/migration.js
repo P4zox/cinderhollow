@@ -21,7 +21,7 @@ G.continueGame(); G.step(30);
 const S = G.SAVE;
 out.push('weapons ' + JSON.stringify(S.weapons) + ' in hand ' + S.weapon);
 out.push('mastery ' + JSON.stringify(S.mastery));
-ok(Object.keys(S.weapons).length === 9, 'nine weapons in the save');
+ok(Object.keys(S.weapons).length === 14, 'fourteen weapons in the save (v15)');
 ok(S.weapon === 'longsword', 'First Ember (mirror) in hand -> the Longsword');
 ok(S.weapons.longsword === 3, 'longsword level = best of longsword 1 / kalden 3 / first_ember 2 -> 3');
 ok(S.weapons.twinfangs === 4, 'dual = best of dagger 2 / pagecutter 4 / twinfangs 1 -> 4');
@@ -31,7 +31,8 @@ ok(S.weapons.knight_shield === 4, 'sns = best of twinborne 4 / bulwark 2 -> 4');
 ok(S.weapons.spear === 3 && S.weapons.headsman_chain === 0 && S.weapons.quarterstaff === 1 && S.weapons.katana === 0, 'spear 3, whip 0, staff 1, katana 0 (not owned)');
 for (const t of ['longsword', 'dual', 'greatsword', 'maul', 'sns', 'spear', 'whip', 'staff']) ok(G.ws.rank(t) === 2, `${t} owned -> Mastery II`);
 ok(G.ws.rank('katana') === 1, 'katana never owned -> Mastery I');
-ok(S.art === 'crescent' && !S.arts.includes('echo') && !S.arts.includes('bloodstep') && !S.arts.includes('warcry'), 'removed arts dropped, art = crescent: ' + JSON.stringify(S.arts));
+// v15: bloodstep / warcry are the Martial Arts' / Warbell's default arts again, so they're kept
+ok(S.art === 'crescent' && !S.arts.includes('echo') && S.arts.every(a => E('WTYPES.map(t => WTYPE_INFO[t].art)').includes(a)), 'arts no type uses dropped, art = crescent: ' + JSON.stringify(S.arts));
 ok(!S.skills.some(id => /^m_/.test(id)) && S.skills.includes('keen_edge') && S.skills.includes('heavy_hand'), 'Arsenal nodes removed, others kept: ' + JSON.stringify(S.skills));
 ok(S.wv === 9 && !(S.x3 && S.x3.wbLastW) && S.artPinned === undefined, 'wv 9, mirror / art-pin leftovers cleaned');
 ok(E('D.wid') === 'longsword' && E('D.W.name') === 'Ashen Longsword', 'derived stats use the migrated weapon');

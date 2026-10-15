@@ -21,14 +21,14 @@ E("grantItem('wc_cache', P.x, P.y - 20)"); G.step(3);
 ok((G.SAVE.inv.emberstone || 0) === s0 + 2 && G.SAVE.cinders > c0, `wc_cache: emberstones ${s0} -> ${G.SAVE.inv.emberstone}, cinders ${c0} -> ${G.SAVE.cinders}`);
 await snap('cache_banner');
 const s1 = G.SAVE.inv.emberstone; E("grantItem('w:dagger', P.x, P.y - 20)"); G.step(3);
-ok(G.SAVE.inv.emberstone === s1 + 2 && !('dagger' in G.SAVE.weapons) && Object.keys(G.SAVE.weapons).length === 9, 'a stray old weapon id grants a cache, not a weapon');
+ok(G.SAVE.inv.emberstone === s1 + 2 && !('dagger' in G.SAVE.weapons) && Object.keys(G.SAVE.weapons).length === 14, 'a stray old weapon id grants a cache, not a weapon');
 // a boss's rewards through BossBase.rewards
 const b = G.w.spawnBoss('hound', 10, 10); const r0 = JSON.stringify(E("BOSS_INFO.hound.reward")); const s2 = G.SAVE.inv.emberstone;
 E("boss.rewards()"); await new Promise(r => setTimeout(r, 2600 + 2400 * 3 + 500)); G.step(3);
-ok(G.SAVE.inv.emberstone >= s2 + 2 && Object.keys(G.SAVE.weapons).length === 9, `hound rewards ${r0}: emberstones ${s2} -> ${G.SAVE.inv.emberstone}`);
+ok(G.SAVE.inv.emberstone >= s2 + 2 && Object.keys(G.SAVE.weapons).length === 14, `hound rewards ${r0}: emberstones ${s2} -> ${G.SAVE.inv.emberstone}`);
 // the armory cheat gives the nine
 E('giveArmory()'); G.step(3);
-ok(Object.keys(G.SAVE.weapons).length === 9 && E('bannerMsg && bannerMsg.desc').includes('nine'), 'armory: nine weapons, banner says so');
+ok(Object.keys(G.SAVE.weapons).length === 14 && E('bannerMsg && bannerMsg.desc').includes('14 weapons'), 'armory: fourteen weapons, banner says so');
 // SIGS are gone
 ok(Object.keys(E('SIGS')).length === 0 && typeof E('sigLimit()') === 'number', 'SIGS empty, helpers still there');
 out.push(fail.length ? `${fail.length} FAILED` : 'ALL PASS');

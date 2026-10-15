@@ -96,9 +96,10 @@ function stLayout() {
   }
   if (typeof WTYPES !== 'undefined') {   // the Weapon Mastery page (it replaced the Arsenal): the nine types in alcoves, 5 + 4
     const order = WTYPES.map(t => ({ id: 'wm:' + t, br: 'arsenal', wtype: t, name: WTYPE_INFO[t].name, req: [], excl: [], cost: 0 }));
-    const cols = 5, rows = Math.ceil(order.length / cols), gx = 50, gy = 72;
+    // v15: past ten types the alcoves narrow to 7 per row (14 = 7 + 7), so the page still fits the field at full size
+    const cols = order.length > 10 ? 7 : 5, rows = Math.ceil(order.length / cols), gx = order.length > 10 ? 36 : 50, gy = 72;
     const P2 = mk('mastery', 'Mastery', order, s => { const i = order.indexOf(s), r = Math.floor(i / cols), c = i % cols, nr = Math.min(cols, order.length - r * cols); return { x: (c - (nr - 1) / 2) * gx, y: (r - (rows - 1) / 2) * gy + 6 }; });
-    P2.gallery = true; P2.mastery = true; pages.splice(Math.min(1, pages.length), 0, P2);
+    P2.gallery = true; P2.mastery = true; P2.aw = order.length > 10 ? 34 : 46; pages.splice(Math.min(1, pages.length), 0, P2);
   }
   if (wayApart) {
     const wc = { x: way.reduce((a, s) => a + num(s.x), 0) / way.length, y: way.reduce((a, s) => a + num(s.y), 0) / way.length };
@@ -587,7 +588,7 @@ function stDrawMastery(pg, z) {
   const cur = wtype();
   text('Each weapon ranks up as you fight with it. Ranks unlock moves, not stats.', ST_VP.x + ST_VP.w / 2, ST_VP.y + 11, 5, UIC.dim, 'center', { weight: 400 });
   for (const s of pg.nodes) {
-    const t = s.wtype, p = pg.pos[s.id], x = stSX(p.x), y = stSY(p.y), on = t === cur, sel = s.id === ST.sel, w = 46 * z, h = 64 * z, x0 = x - w / 2, y0 = y - 29 * z;
+    const t = s.wtype, p = pg.pos[s.id], x = stSX(p.x), y = stSY(p.y), on = t === cur, sel = s.id === ST.sel, w = (pg.aw || 46) * z, h = 64 * z, x0 = x - w / 2, y0 = y - 29 * z;
     const r = masteryRank(t);
     const g = vctx.createLinearGradient(0, oy + y0 * scale, 0, oy + (y0 + h) * scale);
     g.addColorStop(0, on ? 'rgba(70,52,22,0.75)' : 'rgba(22,17,20,0.75)'); g.addColorStop(1, on ? 'rgba(30,22,12,0.75)' : 'rgba(10,8,11,0.75)');
@@ -596,8 +597,8 @@ function stDrawMastery(pg, z) {
     vctx.strokeRect(ox + x0 * scale + 0.5, oy + y0 * scale + 0.5, w * scale - 1, h * scale - 1);
     uiDiamond(x, y0, 1.6, on ? UIC.gold : '#5a4a30');
     if (on || sel) stGlow(x, y - 6 * z, 26 * z, UI_RGB.gold, (on ? 0.16 : 0.1) + 0.05 * Math.sin(time * 3));
-    const nm = WTYPE_INFO[t].name.toUpperCase();
-    text(nm, x, y0 + 8 * z, uiFit(nm, w - 4, 4 * z, 3, 600), on ? '#8fd89a' : sel ? UIC.hi : UIC.dim, 'center', { spacing: 0.5, weight: 600 });
+    let nm = WTYPE_INFO[t].name.toUpperCase(); if (textW(nm, 3.2 * z, 600) > w - 4 && WTYPE_INFO[t].short) nm = WTYPE_INFO[t].short.toUpperCase();
+    text(nm, x, y0 + 8 * z, uiFit(nm, w - 4, 4 * z, 2.8 * z, 600), on ? '#8fd89a' : sel ? UIC.hi : UIC.dim, 'center', { spacing: 0.5, weight: 600 });
     wmIcon(t, x - 11 * z, y0 + 12 * z, 22 * z, on || sel ? 1 : 0.7);
     text(WM_ROMAN[r - 1], x, y0 + 45 * z, 7 * z, r > 1 ? UIC.gold : UIC.faint, 'center', { weight: 700 });
     wmPips(x - 9.2 * z, y0 + 50 * z, r, { r: 1.2 * z, gap: 4.6 * z });

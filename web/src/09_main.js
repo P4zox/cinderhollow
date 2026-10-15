@@ -221,7 +221,7 @@ function giveArmory() {
   SAVE.spellSlots = Math.max(SAVE.spellSlots, 4); SAVE.charmSlots = Math.max(SAVE.charmSlots, 4);
   SAVE.items.wings = 1; SAVE.items.talon = 1;   // double jump + wall-jump for testing
   saveGame(); sfx.levelup(); flashScreen = 0.3;
-  banner('The Armory', 'All nine weapons, every spell and charm, plus wall-jump and double jump. Change weapons at any shrine.', 'w_greatsword');
+  banner('The Armory', `All ${Object.keys(WEAPONS).length} weapons, every spell and charm, plus wall-jump and double jump. Change weapons at any shrine.`, 'w_greatsword');
 }
 function applyPendingArmory() { if (wantArmory) { wantArmory = false; setTimeout(giveArmory, 900); } }
 

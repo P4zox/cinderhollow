@@ -499,7 +499,7 @@ function trnRows(M) {
     R.push(trnToggleRow('One-hit kills', () => TRN.ohk, v => { TRN.ohk = v; }, 'Every blow and spell of yours deals at least 99999.'));
     head('Build');
     R.push({ label: 'Copy my saved build', act: true, conf: trnLoadBuild, desc: 'Stats, weapons, skills, spells and charms from your saved journey. It is a copy: nothing done here flows back.' });
-    R.push({ label: 'Reset to the training build', act: true, conf: () => { const k = SAVE.flags; SAVE = trnNewSave(); SAVE.flags = k; trnApplyBuild(); toast('Training build restored', 2); }, desc: 'All nine weapons at Mastery I, every spell and charm; level 87; no skills.' });
+    R.push({ label: 'Reset to the training build', act: true, conf: () => { const k = SAVE.flags; SAVE = trnNewSave(); SAVE.flags = k; trnApplyBuild(); toast('Training build restored', 2); }, desc: 'Every weapon at Mastery I, every spell and charm; level 87; no skills.' });
   } else if (M.tab === 1) {
     wmTrainingRows(R, head);   // the nine types + their mastery rank (74_arsenal9.js)
   } else if (M.tab === 2) {

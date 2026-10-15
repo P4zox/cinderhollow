@@ -39,14 +39,15 @@ const click = (x, y) => E(`(() => { const r = view.getBoundingClientRect(), k = 
   window.dispatchEvent(new PointerEvent('pointermove', init)); })()`);
 const down = (x, y) => E(`(() => { const r = view.getBoundingClientRect(), k = view.width / (r.width || 1); const cx = r.left + (ox + ${x} * scale) / k, cy = r.top + (oy + ${y} * scale) / k;
   view.dispatchEvent(new PointerEvent('pointerdown', { clientX: cx, clientY: cy, button: 0, buttons: 1, pointerType: 'mouse', pointerId: 1, bubbles: true, cancelable: true })); })()`);
-click(60, 31 + 8 * 18.6 + 8); G.step(2); ok(E('menu.sel') === 8, 'mouse hover selects the Whip row: ' + E('menu.sel'));
-down(60, 31 + 8 * 18.6 + 8); G.step(2); ok(G.SAVE.weapon === 'headsman_chain', 'click takes it up: ' + G.SAVE.weapon);
+const rowY = i => E('WTYPES.length > 9') ? 30 + i * E('wchangeRowH()') + 5 : 31 + i * 18.6 + 8;   // v15: compact rows past nine types
+click(60, rowY(8)); G.step(2); ok(E('menu.sel') === 8, 'mouse hover selects the Whip row: ' + E('menu.sel'));
+down(60, rowY(8)); G.step(2); ok(G.SAVE.weapon === 'headsman_chain', 'click takes it up: ' + G.SAVE.weapon);
 E('closeMenu()'); G.step(2);
 // the Training Grounds weapon tab
 E('trainingStart()'); G.step(30);
 E('trnOpen(1)'); G.step(2);
 const rows = E('trnRows({ tab: 1 }).map(r => r.label)'); out.push('training weapon tab: ' + rows.join(' | '));
-ok(['Longsword', 'Katana', 'Greatsword', 'Maul', 'Sword & Shield', 'Dual Blades', 'Spear', 'Staff', 'Whip'].every(n => rows.includes(n)) && rows.includes('Mastery rank'), 'nine types + a Mastery rank row');
+ok(['Longsword', 'Katana', 'Greatsword', 'Maul', 'Sword & Shield', 'Dual Blades', 'Spear', 'Staff', 'Whip', 'Switch Axe', 'Bow', 'Martial Arts', 'Scythe', 'Warbell'].every(n => rows.includes(n)) && rows.includes('Mastery rank'), 'fourteen types + a Mastery rank row');
 E(`(() => { const R = trnRows(menu); const i = R.findIndex(r => r.label === 'Spear'); menu.sel = i; })()`); G.step(1, [], ['confirm']); G.step(2);
 ok(G.SAVE.weapon === 'spear', 'Training: pick the Spear freely');
 E(`(() => { const R = trnRows(menu); menu.sel = R.findIndex(r => r.label === 'Mastery rank'); })()`); G.step(1, [], ['right']); G.step(1, [], ['right']); G.step(1, [], ['right']); G.step(2);

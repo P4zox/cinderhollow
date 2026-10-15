@@ -247,16 +247,18 @@ function renderForge() {
   text('TEMPER A WEAPON', 30, 38, 7.5, '#e6c77a', 'left', { spacing: 1 });
   text(`Emberstones ${SAVE.inv.emberstone || 0}     Cinders ${SAVE.cinders}`, 354, 38, 6.2, '#e8dcc0', 'right');
   L.forEach((id, i) => {
-    const w = WEAPONS[id], lv = SAVE.weapons[id], y = 56 + i * 14.4, sel = i === M.sel;   // nine rows (weapon revamp)
+    // one row per weapon; v15: rows shrink to fit every type (9: 14.4 px, 14: 9.6 px)
+    const ph = Math.min(14.4, 134 / L.length), k = ph / 14.4, fs = k < 1 ? 5.4 : 6.4, fs2 = k < 1 ? 5.2 : 6.2;
+    const w = WEAPONS[id], lv = SAVE.weapons[id], y = 56 - (1 - k) * 8 + i * ph, sel = i === M.sel;
     if (!w) return;
-    uiHit(24, y - 10.5, 336, 13.6, () => { M.sel = i; });
-    if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 10.5) * scale, 336 * scale, 13.6 * scale); }
-    icon('w_' + id, 28, y - 10, 11);
-    text(`${w.name}${lv ? ' +' + lv : ''}`, 44, y - 1, 6.4, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
+    uiHit(24, y - 10.5 * k, 336, ph - 0.8, () => { M.sel = i; });
+    if (sel) { vctx.fillStyle = 'rgba(176,138,58,0.16)'; vctx.fillRect(ox + 24 * scale, oy + (y - 10.5 * k) * scale, 336 * scale, (ph - 0.8) * scale); }
+    icon('w_' + id, 28, y - 10 * k, 11 * k);
+    text(`${w.name}${lv ? ' +' + lv : ''}`, 44, y - 1, fs, sel ? '#f5e3b0' : '#d8cdb4', 'left', { weight: sel ? 600 : 400 });
     { const t = typeof WEAPON_TYPE !== 'undefined' && WEAPON_TYPE[id]; if (t) text(WTYPE_INFO[t].name, 170, y - 1, 5.2, '#8a7f6a', 'left', { weight: 400 }); }
     const a0 = Math.round(weaponAR(SAVE.stats, id, lv)), a1 = lv < 5 ? Math.round(weaponAR(SAVE.stats, id, lv + 1)) : null;
-    text(a1 ? `Attack ${a0} → ${a1}` : `Attack ${a0}  (max)`, 230, y - 1, 6.2, '#b8ab90', 'left');
-    if (lv < 5) { const c = upgradeCost(lv); text(`${c.stones}◆  ${c.cinders}`, 356, y - 1, 6.2, (SAVE.inv.emberstone || 0) >= c.stones && SAVE.cinders >= c.cinders ? '#e6c77a' : '#8a6050', 'right'); }
+    text(a1 ? `Attack ${a0} → ${a1}` : `Attack ${a0}  (max)`, 230, y - 1, fs2, '#b8ab90', 'left');
+    if (lv < 5) { const c = upgradeCost(lv); text(`${c.stones}◆  ${c.cinders}`, 356, y - 1, fs2, (SAVE.inv.emberstone || 0) >= c.stones && SAVE.cinders >= c.cinders ? '#e6c77a' : '#8a6050', 'right'); }
   });
   text('Enter — temper    Esc — leave', W / 2, 192, 5.5, '#7f745f', 'center', { weight: 400 });
 }

@@ -71,7 +71,7 @@ const WM_OLD_TYPE = {
   pharaoh_khopesh: 'longsword', first_ember: 'longsword',
   dagger: 'dual', pagecutter: 'dual', barnacle_fang: 'dual', carving_knife: 'dual', twinfangs: 'dual',
   greatsword: 'greatsword', forge_cleaver: 'greatsword', tidecleaver: 'greatsword', vael_greatsword: 'greatsword',
-  antler_scythe: 'greatsword', briar_scythe: 'greatsword', crimson_scythe: 'greatsword', last_kindling: 'greatsword',
+  antler_scythe: 'scythe', briar_scythe: 'scythe', crimson_scythe: 'scythe', last_kindling: 'greatsword',
   maul: 'maul', colossus_hammer: 'maul', glacier_maul: 'maul', bell_hammer: 'maul', meteor_maul: 'maul', gravetusk: 'maul', rotmaw: 'maul',
   spear: 'spear', scepter: 'spear', stormfang: 'spear', choir_harpoon: 'spear', scarab_spear: 'spear', saint_lance: 'spear',
   katana: 'katana', stormvein: 'katana', starblade: 'katana', plasma_katana: 'katana',
@@ -202,7 +202,7 @@ const WM_CACHES = {
   wc_hoard3: { name: 'Sovereign Ember Hoard', cache: { emberstone: 4, cinders: 6000 } },
 };
 for (const [id, c] of Object.entries(WM_CACHES)) ITEMS[id] = { name: c.name, icon: 'i_emberstone', sheet: 'ui_icons2', cache: c.cache,
-  desc: `${c.cache.emberstone} Emberstone${c.cache.emberstone > 1 ? 's' : ''} wrapped in ${c.cache.cinders} cinders. The Ashwright tempers any of your nine weapons with them.` };
+  desc: `${c.cache.emberstone} Emberstone${c.cache.emberstone > 1 ? 's' : ''} wrapped in ${c.cache.cinders} cinders. The Ashwright tempers any of your weapons with them.` };
 function wmHoardFor(B) { const c = (B && B.cinders) || 0; return c >= 15000 ? 'wc_hoard3' : c >= 7000 ? 'wc_hoard2' : 'wc_hoard1'; }
 function wmLoot(id, B) { const m = /^w:(.+)$/.exec(id || ''); if (!m || WEAPON_TYPE[m[1]] && !B) return id; return B ? wmHoardFor(B) : 'wc_cache'; }
 for (const id of Object.keys(WM_OLD_TYPE)) if (!WEAPONS[id]) ITEMS['w:' + id] = { ...ITEMS.wc_cache, legacyWeapon: id };   // anything still naming an old weapon
@@ -263,7 +263,7 @@ let wmMigrateNote = null;
 HOOKS.update.push(() => {
   const r = wmMigrateNote; if (!r || state !== 'play') return;
   wmMigrateNote = null;
-  toast(`The arsenal is reforged: nine weapons, each with its own Mastery. ${r.types.length > 1 ? 'Every type you carried starts' : 'Your weapon starts'} at Mastery II. Change weapons at any shrine.`, 7);
+  toast(`The arsenal is reforged: ${WTYPES.length} weapons, each with its own Mastery. ${r.types.length > 1 ? 'Every type you carried starts' : 'Your weapon starts'} at Mastery II. Change weapons at any shrine.`, 7);
   if (r.refunded) setTimeout(() => toast(`The Arsenal skills became Weapon Mastery: ${r.refunded} skill${r.refunded === 1 ? '' : 's'} refunded.`, 5), 2500);
   saveGame();
 });
@@ -390,14 +390,15 @@ function renderTitleWeapon() {
   vctx.fillStyle = 'rgba(4,3,6,0.95)'; vctx.fillRect(ox, oy, W * scale, H * scale);
   uiTitle('CHOOSE YOUR WEAPON', 17, 8);
   text('You can change weapons later, at any shrine. Each one keeps its own upgrades and Mastery.', W / 2, 27, 4.8, UIC.faint, 'center', { weight: 400 });
-  const n = WTYPES.length, pitch = 36, x0 = W / 2 - pitch * (n - 1) / 2, cy = 33, cs = 26;
+  // v15: the strip scales with the count (9 types: 36 px cells; 14: 26 px, short labels)
+  const n = WTYPES.length, pitch = Math.min(36, Math.floor(372 / n)), x0 = W / 2 - pitch * (n - 1) / 2, cy = 33, cs = Math.min(26, pitch - 4);
   WTYPES.forEach((t, i) => {
     const x = x0 + i * pitch, sel = i === TITLE_WSEL.sel;
     uiHit(x - cs / 2 - 2, cy - 1, cs + 4, cs + 10, () => { if (TITLE_WSEL.sel !== i) { TITLE_WSEL.sel = i; TITLE_WSEL.t0 = time; sfx.menu(); } });
     if (sel) stGlowSafe(x, cy + cs / 2, 22, UI_RGB.gold, 0.22 + 0.06 * uiPulse(3));
     uiCell(x - cs / 2, cy, cs, { sel, eq: sel });
     wmIcon(t, x - cs / 2 + 3, cy + 3, cs - 6, sel ? 1 : 0.62);
-    const nm = WTYPE_INFO[t].name;
+    const nm = n > 9 ? WTYPE_INFO[t].short || WTYPE_INFO[t].name : WTYPE_INFO[t].name;
     text(nm, x, cy + cs + 6.5, uiFit(nm, pitch - 2, 4.4, 3.4, 600), sel ? UIC.hi : UIC.faint, 'center', { weight: sel ? 600 : 500 });
   });
   const t = WTYPES[TITLE_WSEL.sel];
@@ -432,7 +433,8 @@ function renderWChange(M) {
   // the nine (left)
   panel(12, 26, 132, 176, 0.96);
   const cur = wtype();
-  WTYPES.forEach((t, i) => {
+  if (WTYPES.length > 9) wchangeRows(M, cur);
+  else WTYPES.forEach((t, i) => {
     const y = 31 + i * 18.6, sel = i === M.sel, I = WTYPE_INFO[t], lv = SAVE.weapons[I.weapon] || 0, r = masteryRank(t);
     uiHit(15, y, 126, 17.6, () => { if (M.sel !== i) { M.sel = i; M.t0 = time; } });
     if (sel) uiSel(15, y, 126, 17.6);
@@ -463,6 +465,22 @@ function renderWChange(M) {
     text('DEFAULT ART', 172 + textW(art.name, 5.4), ay - 0.2, 3.9, UIC.faint, 'left', { spacing: 0.8 }); text(`${art.fp} FP`, 364, ay, 4.8, UIC.fp, 'right', { weight: 600 }); }
   const here = t === cur;
   uiFooter([['↑↓', 'weapon'], ['Enter', here ? 'in hand' : 'take it up'], ['Esc', 'back']]);
+}
+
+// v15: more than nine types -> one compact row each (icon, name +lv, XP bar, rank pips); all 14 fit the 176 px panel
+function wchangeRowH() { return Math.min(18.6, 170 / WTYPES.length); }
+function wchangeRows(M, cur) {
+  const ph = wchangeRowH();
+  WTYPES.forEach((t, i) => {
+    const y = 30 + i * ph, sel = i === M.sel, I = WTYPE_INFO[t], lv = SAVE.weapons[I.weapon] || 0, r = masteryRank(t), eq = t === cur;
+    uiHit(15, y, 126, ph - 0.6, () => { if (M.sel !== i) { M.sel = i; M.t0 = time; } });
+    if (sel) uiSel(15, y, 126, ph - 0.6);
+    uiCell(18, y + 0.7, ph - 1.8, { eq }); wmIcon(t, 19, y + 1.7, ph - 3.8, sel || eq ? 1 : 0.7);
+    text(I.name + (lv ? ` +${lv}` : ''), 32, y + ph * 0.52, 5.2, sel ? UIC.hi : eq ? UIC.gold : UIC.text, 'left', { weight: sel ? 600 : 500 });
+    wmXpBar(32, y + ph - 2.6, 72, t, 0.9);
+    wmPips(110, y + ph * 0.5 - 1, r, { r: 1.1, gap: 3.4 });
+    if (eq) uiDiamond(137, y + ph * 0.5 - 1, 1.5, UIC.gold);
+  });
 }
 
 // ================================================================== Esc › Equipment › Weapon: the mastery screen (29_ui2.js opens it)
@@ -512,14 +530,16 @@ function renderMasteryScreen(M) {
   text('WEAPON MASTERY', 18, 41, 6, UIC.gold, 'left', { spacing: 1 });
   text('rank · progress', 158, 41, 4.6, UIC.faint, 'right', { weight: 500 });
   uiHair(18, 44.5, 140, UIC.line, 0.8);
+  const ph = Math.min(16.8, 151 / WTYPES.length), k = ph / 16.8;   // v15: rows shrink to fit every type (14: 10.8 px)
   WTYPES.forEach((t, i) => {
-    const y = 48 + i * 16.8, sel = i === S.sel, r = masteryRank(t);
-    uiHit(15, y, 146, 16, () => { S.sel = i; }, () => { if (S.sel !== i) { S.sel = i; sfx.menu(); } });
-    if (sel) uiSel(15, y, 146, 16);
-    uiCell(18, y + 1.5, 13, { eq: t === cur }); wmIcon(t, 19.5, y + 3, 10, sel || t === cur ? 1 : 0.7);
-    text(wmName(t), 35, y + 7.6, 5.6, sel ? UIC.hi : t === cur ? UIC.gold : UIC.text, 'left', { weight: sel ? 600 : 500 });
-    text(WM_ROMAN[r - 1], 156, y + 7.6, 5.6, r > 1 ? UIC.gold : UIC.faint, 'right', { weight: 700 });
-    wmXpBar(35, y + 11, 121, t, 1.4);
+    const y = 48 + i * ph, sel = i === S.sel, r = masteryRank(t);
+    uiHit(15, y, 146, ph - 0.8, () => { S.sel = i; }, () => { if (S.sel !== i) { S.sel = i; sfx.menu(); } });
+    if (sel) uiSel(15, y, 146, ph - 0.8);
+    const cs = Math.max(9, 13 * k), fs = k < 1 ? 5 : 5.6;
+    uiCell(18, y + (ph - 0.8 - cs) / 2, cs, { eq: t === cur }); wmIcon(t, 19.5, y + (ph - 0.8 - cs) / 2 + 1.5, cs - 3, sel || t === cur ? 1 : 0.7);
+    text(wmName(t), 18 + cs + 4, y + 7.6 * k + (k < 1 ? 0.6 : 0), fs, sel ? UIC.hi : t === cur ? UIC.gold : UIC.text, 'left', { weight: sel ? 600 : 500 });
+    text(WM_ROMAN[r - 1], 156, y + 7.6 * k + (k < 1 ? 0.6 : 0), fs, r > 1 ? UIC.gold : UIC.faint, 'right', { weight: 700 });
+    wmXpBar(18 + cs + 4, y + ph - 3.2 * Math.max(k, 0.75), 138 - cs - 4, t, k < 1 ? 1 : 1.4);
   });
   const t = WTYPES[S.sel], I = WTYPE_INFO[t];
   panel(170, 30, 202, 172, 0.8);
@@ -553,8 +573,8 @@ function wmTrainingRows(R, head) {
     conf: () => { SAVE.weapons[SAVE.weapon] = ((SAVE.weapons[SAVE.weapon] || 0) + 1) % 6; trnApplyBuild(false); }, wpn: SAVE.weapon, desc: 'Tempering, +0 to +5 (◂ ▸).' });
   R.push({ label: 'Mastery rank', val: () => 'Rank ' + WM_ROMAN[masteryRank(wtype()) - 1], lr: d => { wmSetRank(wtype(), masteryRank(wtype()) + d); },
     conf: () => { wmSetRank(wtype(), masteryRank(wtype()) % 5 + 1); }, wpn: SAVE.weapon, desc: 'Rank I to V (◂ ▸): unlocks the moves of each rank for this weapon. Nothing flows back to your journey.' });
-  R.push({ label: 'Master every weapon', act: true, conf: () => { for (const t of WTYPES) wmSetRank(t, 5); toast('Every weapon at Mastery V', 2); }, desc: 'All nine weapons to Mastery V.' });
-  head('Weapon types', '9 types');
+  R.push({ label: 'Master every weapon', act: true, conf: () => { for (const t of WTYPES) wmSetRank(t, 5); toast('Every weapon at Mastery V', 2); }, desc: `All ${WTYPES.length} weapons to Mastery V.` });
+  head('Weapon types', `${WTYPES.length} types`);
   for (const t of WTYPES) {
     const id = WTYPE_INFO[t].weapon;
     R.push({ label: wmName(t), wpn: id, val: () => (SAVE.weapon === id ? '● ' : '') + 'Rank ' + WM_ROMAN[masteryRank(t) - 1], eq: () => SAVE.weapon === id,

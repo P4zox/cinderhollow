@@ -858,14 +858,22 @@ def pose(p):
     hy = p.get("head_dy", 0) + by
     hipB = (OX + 11 + bx, OY + 21 + by)
     hipF = (OX + 15 + bx, OY + 21 + by)
-    shoulder = (OX + 13 + bx, OY + 14 + by)
+    # v15 forward lean (px the shoulders sit ahead of the hips; 0 = upright, every tag but run): the torso row-shears
+    # about the belt, pauldron / head / cape / shoulders move rigidly with the row they sit on, the hips and legs stay.
+    ln = p.get("lean", 0)
+    lk = ln / 5.0                                   # shear per row above the belt (OY+19); the shoulder row is 5 up
+    lsh = int(round(lk * 5))
+    shoulder = (OX + 13 + bx + lsh, OY + 14 + by)
+    torso = draw_torso(OX + bx, OY + by)
+    if ln:
+        torso = shear_grid(torso, lk, OY + 19 + by, above_only=True)
     cels = {
-        "Cape": draw_cape(OY + 10 + by, OX + 8 + bx, p.get("flow", 0.3), by, flutter=p.get("flutter", 0)),
+        "Cape": draw_cape(OY + 10 + by, OX + 8 + bx + int(round(lk * 6)), p.get("flow", 0.3), by, flutter=p.get("flutter", 0)),
         "BackLeg": draw_leg(hipB, p.get("footB", (OX + 9, 39)), False, p.get("bendB", 1), p.get("leg", 5.2)),
-        "Torso": draw_torso(OX + bx, OY + by),
+        "Torso": torso,
         "FrontLeg": draw_leg(hipF, p.get("footF", (OX + 17, 39)), True, p.get("bendF", 1), p.get("leg", 5.2)),
-        "Pauldron": draw_pauldron(OX + bx, OY + by),
-        "Head": draw_helmet(OX + hx, OY + hy),
+        "Pauldron": draw_pauldron(OX + bx + int(round(lk * 6)), OY + by),
+        "Head": draw_helmet(OX + hx + int(round(lk * 8)), OY + hy),
     }
     if "hand" in p:
         hand = (p["hand"][0] + bx, p["hand"][1] + by)
@@ -877,7 +885,7 @@ def pose(p):
         if p.get("off_front"):   # palm flat on a wall ahead (wall cling): drawn over the body
             cels["Item"] = draw_offarm((OX + 12 + bx, OY + 14 + by), off, ramp=('4', '3', '2'), palm=True)
         else:
-            cels["OffArm"] = draw_offarm((OX + 11 + bx, OY + 14 + by), off)
+            cels["OffArm"] = draw_offarm((OX + 11 + bx + lsh, OY + 14 + by), off)
         if p.get("glow"):
             cels["Item"] = draw_glow(off, p["glow"])
     if "planted" in p:   # held when the hand rests on the hilt (rest/rise), free-standing in heal
@@ -887,7 +895,7 @@ def pose(p):
         cels["Item"] = draw_flask((p["hand"][0] + bx, p["hand"][1] + by))
     w = cels.get("Sword")
     if isinstance(w, Wpn):   # v8: what the class extras (shield / off-hand blade) need
-        w.bxy, w.cels = (bx, by), cels
+        w.bxy, w.cels = (bx + lk * 2.5 if ln else bx, by), cels   # slung shield / resting off-hand blade ride the lean
         if "off" in p and not p.get("off_front"):
             w.offp = (p["off"][0] + bx, p["off"][1] + by)
     return cels
@@ -933,6 +941,8 @@ def idle():
     return seq([(dict(dy=b, hand=(35, 27 + b), ang=-50 + 3 * b, flow=0.2 + 0.08 * i % 3, flutter=i // 2), 150)
                 for i, b in enumerate(bob)])
 
+RUN_LEAN = 2   # v15: shoulders 2 px ahead of the hips (head 3), see pose() "lean"
+
 def run():
     """A real run cycle (v14b). Each foot is planted for half the cycle and pushes straight back along the floor
     (front of the stride to the back), then lifts and swings forward through the air. The old cycle lifted the foot on
@@ -953,7 +963,7 @@ def run():
         fF = foot(ph, OX + 15)
         fB = foot(ph + 0.5, OX + 11)
         swing = -math.cos(2 * math.pi * ph) * 1.6     # the sword arm swings against the front leg
-        out.append((pose(dict(dx=1, dy=dy, head_dx=1, footF=fF, footB=fB, leg=5.7,
+        out.append((pose(dict(dx=1, dy=dy, head_dx=1, lean=RUN_LEAN, footF=fF, footB=fB, leg=5.7,
                               bendF=1, bendB=1,
                               hand=(31 + swing, 29 + dy * 0.5), ang=160 - swing * 6,
                               flow=1.1 + 0.25 * math.sin(ph * 4 * math.pi), flutter=i)), 45))
@@ -5430,13 +5440,30 @@ for _grp in ("blade", "heavy", "guard", "dual", "reach"):
     except Exception as _e:  # noqa: BLE001
         print("WARNING: player_v14_%s skipped: %r" % (_grp, _e), file=sys.stderr)
 
+# v15: five new weapon types (docs/v15/platform.md). art/player_v15_weapons.py adds their weapons (wpn_gravegrinder,
+# wpn_ashstring, wpn_penitent_knuckles, wpn_requiem_scythe, wpn_dirge_bell) to WPN / SMEAR / WPN_IDS and maps the
+# prefixes sx_ bw_ ft_ sc_ wb_ in MOVE_CLASS; then one module per type (art/player_v15_<type>.py, the v13 register(G)
+# contract) in a fixed order after V14. A module that fails is skipped with a warning.
+V15_MOVES = []
+try:
+    import player_v15_weapons as _v15w  # noqa: E402
+    _v15w.install(sys.modules[__name__])
+except Exception as _e:  # noqa: BLE001
+    print("WARNING: player_v15_weapons skipped: %r" % (_e,), file=sys.stderr)
+for _grp in ("saxe", "bow", "fist", "scythe", "bell"):
+    try:
+        _m = __import__("player_v15_" + _grp)
+        V15_MOVES += _v13_take(_m.register(sys.modules[__name__]))
+    except Exception as _e:  # noqa: BLE001
+        print("WARNING: player_v15_%s skipped: %r" % (_grp, _e), file=sys.stderr)
+
 ANIMS = [("idle", idle), ("run", run), ("jump_up", jump_up), ("jump_fall", jump_fall), ("land", land),
          ("roll", roll), ("attack1", attack1), ("attack2", attack2), ("attack3", attack3), ("heavy", heavy),
          ("hurt", hurt), ("heal", heal), ("death", death),
          # v3 additions (appended; the frames above keep their indices)
          ("attack_up", attack_up), ("attack_down", attack_down), ("air_attack", air_attack), ("cast", cast),
          ("parry", parry), ("riposte", riposte), ("wall_slide", wall_slide), ("double_jump", double_jump),
-         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS + V13_MOVES + V14_MOVES   # v4 movesets after frame 124, v5 arts after 252,
+         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS + V13_MOVES + V14_MOVES + V15_MOVES   # v4 movesets after frame 124, v5 arts after 252,
                                                             # v7 traversal after 308, v8 classes/techniques after 329
 
 # v10 polish: these tags ease back toward the idle pose at the end (last frame split; active frames and total time unchanged)
