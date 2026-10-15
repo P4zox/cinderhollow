@@ -466,13 +466,45 @@ function renderWChange(M) {
 }
 
 // ================================================================== Esc › Equipment › Weapon: the mastery screen (29_ui2.js opens it)
-function wmScreenOpen(M) { M.mastery = { sel: Math.max(0, WTYPES.indexOf(wtype())) }; sfx.menu(); }
+function wmScreenOpen(M) { M.mastery = { sel: Math.max(0, WTYPES.indexOf(wtype())), list: false, row: 0, top: 0 }; sfx.menu(); }
+// the weapon's full command list (each type's `combos` in 76_mech_*.js; the unlocks if a type has none)
+function wmMoveList(type) {
+  try { const T = typeof MV !== 'undefined' && MV.types[type]; if (T && Array.isArray(T.combos) && T.combos.length) return T.combos.map(c => ({ rank: +c.rank || 1, name: c.name, input: c.input || '–', desc: c.desc || '' })); } catch (e) {}
+  return wmUnlocks(type);
+}
 function wmScreenInput(M, a) {
   const S = M.mastery, n = WTYPES.length;
-  if (['pause', 'back', 'heavy', 'roll'].includes(a)) { M.mastery = null; sfx.menu(); return; }
+  if (['pause', 'back', 'heavy', 'roll'].includes(a)) { if (S.list) { S.list = false; sfx.menu(); return; } M.mastery = null; sfx.menu(); return; }
+  if (S.list) {   // the move list: ↑↓ move, ←→ weapon
+    const L = wmMoveList(WTYPES[S.sel]);
+    if (a === 'up') { S.row = (S.row + L.length - 1) % L.length; sfx.menu(); }
+    else if (a === 'down') { S.row = (S.row + 1) % L.length; sfx.menu(); }
+    else if (a === 'left' || a === 'right') { S.sel = (S.sel + (a === 'left' ? n - 1 : 1)) % n; S.row = 0; S.top = 0; sfx.menu(); }
+    else if (['confirm', 'interact', 'attack', 'jump'].includes(a)) { S.list = false; sfx.menu(); }
+    return;
+  }
   if (a === 'up' || a === 'left') { S.sel = (S.sel + n - 1) % n; sfx.menu(); }
   else if (a === 'down' || a === 'right') { S.sel = (S.sel + 1) % n; sfx.menu(); }
-  else if (['confirm', 'interact', 'attack', 'jump'].includes(a)) { sfx.deny(); toast('Change weapons by resting at a shrine', 2); }
+  else if (['confirm', 'interact', 'attack', 'jump'].includes(a)) { S.list = true; S.row = 0; S.top = 0; sfx.menu(); }
+}
+function renderMoveList(S, x, y, w, maxY) {
+  const t = WTYPES[S.sel], r = masteryRank(t), L = wmMoveList(t), rh = 7.4, rows = Math.max(1, Math.floor((maxY - y) / rh));
+  S.row = clamp(S.row || 0, 0, L.length - 1);
+  if (S.row < S.top) S.top = S.row; if (S.row >= S.top + rows) S.top = S.row - rows + 1; S.top = clamp(S.top, 0, Math.max(0, L.length - rows));
+  for (let i = S.top; i < Math.min(L.length, S.top + rows); i++) {
+    const m = L[i], yy = y + (i - S.top) * rh, sel = i === S.row, got = r >= m.rank;
+    uiHit(x - 2, yy - 5.6, w + 4, rh, () => { S.row = i; }, () => { if (S.row !== i) { S.row = i; sfx.menu(); } });
+    if (sel) uiSel(x - 2, yy - 5.6, w + 4, rh);
+    if (m.rank > 1) text(WM_ROMAN[m.rank - 1], x + 1, yy, 4, got ? UIC.gold : UIC.faint, 'left', { weight: 700 });
+    text(m.name, x + 9, yy, 5, sel ? UIC.hi : got ? UIC.text : UIC.faint, 'left', { weight: sel ? 600 : 500 });
+    const inp = wmInput(m.input), room = w - 11 - textW(m.name, 5, 600) - 4;
+    text(inp, x + w, yy, uiFit(inp, room, 4.6, 3.4, 500), got ? UIC.gold : UIC.faint, 'right', { weight: 500 });
+  }
+  if (L.length > rows) { const f = S.top / Math.max(1, L.length - rows); uiRect(x + w + 3, y - 5, 1, rows * rh, '#221c16'); uiRect(x + w + 3, y - 5 + f * (rows * rh - 8), 1, 8, UIC.gold); }
+  const m = L[S.row]; if (!m) return;
+  const dy = maxY + 4; uiFade(x, x + w, dy - 4, UI_RGB.accent, 0.4);
+  const ls = wrap((r >= m.rank ? '' : `Unlocks at Mastery ${WM_ROMAN[m.rank - 1]}. `) + m.desc, w, 4.6);
+  ls.slice(0, 2).forEach((l, i) => text(l, x, dy + 3 + i * 5.8, 4.6, r >= m.rank ? UIC.body : UIC.dim, 'left', { weight: 400 }));
 }
 function renderMasteryScreen(M) {
   const S = M.mastery, cur = wtype();
@@ -495,13 +527,22 @@ function renderMasteryScreen(M) {
   uiCell(x, 39, 26, { eq: t === cur }); wmIcon(t, x + 2, 41, 22);
   text(I.name, x + 33, 51, 7.6, UIC.gold, 'left');
   text(`${WEAPONS[I.weapon].name}${t === cur ? '  ·  in hand' : ''}`, x + 33, 60, 5, t === cur ? UIC.gold : UIC.muted, 'left', { weight: 500 });
+  { const lab = S.list ? '◂ MASTERY' : 'MOVE LIST ▸', lw = textW(lab, 4.4, 600) + 6;
+    uiHit(x + w - lw, 35, lw, 9, null, () => { S.list = !S.list; S.row = 0; S.top = 0; sfx.menu(); });
+    uiRect(x + w - lw, 35, lw, 9, '#2a2016', 0.9); text(lab, x + w - 3, 41.4, 4.4, UIC.gold, 'right', { weight: 600, spacing: 0.6 }); }
   let y = 76;
+  if (S.list) {
+    uiHead('Move list', x, y - 4, w); text(`${wmMoveList(t).length} moves`, x + w, y - 4, 4.2, UIC.faint, 'right', { weight: 500 });
+    renderMoveList(S, x, y + 6, w - 4, 182);
+    uiFooter([['↑↓', 'move'], ['←→', 'type'], ['Esc', 'back']]);
+    return;
+  }
   y = wmRankBlock(t, x, y, w);
   y += 2; uiHead('Moves it teaches', x, y, w); y += 9;
   uiDiamond(x + 1.6, y - 1.7, 1.5, UIC.gold); text('I', x + 6, y, 4.3, UIC.gold, 'left', { weight: 700 }); text(`The full moveset: ${WTYPE_INFO[t].mech.toLowerCase()}`, x + 17, y, 5, UIC.hi, 'left', { weight: 600 });
   y += 4 + 2.4 + 3;
   wmUnlockRows(t, x, y, w, 194, { size: 5 });
-  uiFooter([['↑↓', 'type'], ['Esc', 'back']]);
+  uiFooter([['↑↓', 'type'], ['Enter', 'move list'], ['Esc', 'back']]);
 }
 
 // ================================================================== Training Grounds: pick any type, set its mastery (65_training.js)
