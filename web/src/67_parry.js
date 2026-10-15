@@ -77,7 +77,7 @@ function parryRecoil(t) {
 function parryEndAttack(t) {   // back to a neutral beat: whatever swing or chain was running is over
   if (t.hitIds && t.hitIds.clear) t.hitIds.clear();
   if ('chain' in t) t.chain = 0;
-  if (t.state !== 'idle' && !NO_RECOIL.has(t.state) && t.anim && t.anim.sh && t.anim.sh.has && t.anim.sh.has('idle')) {
+  if (t.state !== 'idle' && !NO_RECOIL.has(t.state) && t.anim && t.anim.s && t.anim.s.has && t.anim.s.has('idle')) {
     t.state = 'idle'; t.anim.set('idle', true);
   }
   if ('t' in t) t.t = Math.max(0, Math.min(t.t || 0, 0.3));
