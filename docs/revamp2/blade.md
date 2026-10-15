@@ -93,3 +93,23 @@ Real-boss bot (40 s, own AI, rolls on wind-ups, real hits). The bot is crude, so
 | Spear J J J / GS J J J / SnS / Dual (others' builds) | 1.20 / 1.13 / 0.96 / 1.04 | 0.94 / 0.91 / 0.69 / 0.79 |
 
 The katana is no longer the best weapon on the dummy (Dual Demon is 3.85, the Longsword 2.74). Against bosses its Iai loop still leads the bot table by ~15-20%. That is the fastest-heavy identity: hits land inside openings, at the cost of 42 stamina per loop.
+
+## v14c: more J/K mixes (round 3)
+Six more combos, all at rank I, each with its own new animation tag. Every existing route still works: routes.js passes
+45/45, including checks that J J K, J J J I, hold K and drawn K are unchanged.
+
+| Weapon | Input | Move (tag) | Timing | Dmg | Poise | Stam | Identity / what it's for |
+|---|---|---|---|---|---|---|---|
+| LS | K J (also charged overhead → J) | Return slash (`ls_kj`) | 150 / 420 | 1.0 | 14 | 12 | The heavy that branches into lights. The blade bites the floor, the wrists turn and it snaps back up; then J J gives the poke and the crit. Teaches heavy → light. |
+| LS | K K | Crosswise strike (`ls_kk`, Zwerchhau) | 300 / 660 | 1.5 | 38 | 22 | The hilt rises over the head and the blade flips flat across the brow. A high box (−52..−12) for tall foes and low fliers. |
+| LS | J K K | Splitting cleave (`ls_jkk`) | 260 / 700 | 1.7 | 50 | 22 | From the lifting cleave's high finish, straight down into the floor (slam dust and shake). Launch, then smash. |
+| KT | J K | Kesa cut (`kt_kesa`) | 260 / 640 | 1.4 | 32 | 18 | A half step back into a high guard, then a shoulder-to-hip cleave on a long step. J after it returns to kt_2 and the flurry. (J K used to fall through to the rushing draw; a neutral K still rushes.) |
+| KT | J J J K | Helm splitter (`kt_kabuto`) | 320 / 760 | 1.6 | 50 | 20 | The flurry rises into jodan, holds a breath, then one vertical cut. It gives the low-stagger flurry a stagger ending, as an alternative to J J J I. |
+| KT | Iai → J → K | Thrust home (`kt_tsuki`) | 160 / 640 | 1.1 | 22 | 14 | A lunging straight thrust (reach 56), a chiburi flick, sheathed: K next is an Iai. That makes draw, return, thrust, draw. |
+
+Engine: none. Fix: the heavy only goes into the charge stance if K has stayed **held since the press**, so a fast second K
+(at 150-230 ms) becomes the K K crosswise strike instead of a charge. The routes check K K at a 170 ms gap.
+
+Bench (dmg/s on the dummy, infinite stamina): LS K J J J 2.51, K K loop 2.26, J K K 2.24. KT J K J J 2.07, J J J K 2.06,
+Iai J K loop 2.56. All are below the main loops (LS J J J J 2.74, KT K → K 2.62); they are alternatives for stagger, reach
+and rhythm, not better damage. Real-boss bot: KT J J J K 1.16 / 0.78 (Gravetusk / Omen), LS K J J J 1.14 / 0.77.

@@ -62,10 +62,13 @@ mvRegister('longsword', {
     { rank: 1, name: 'Horizontal slash', input: 'J J K', desc: 'A wide flat sweep across the front for crowds.' },
     { rank: 1, name: 'Heavy poke', input: 'J J J K', desc: 'A long two-handed thrust to punish from range.' },
     { rank: 1, name: 'Overhead slash', input: 'K', desc: 'The simple heavy.' },
+    { rank: 1, name: 'Return slash', input: 'K J', desc: 'The blade snaps back up off the floor. J J after it: poke, crit.' },
+    { rank: 1, name: 'Crosswise strike', input: 'K K', desc: 'Hands flip overhead: a flat cut at head height for tall foes.' },
+    { rank: 1, name: 'Splitting cleave', input: 'J K K', desc: 'Lift the foe, then bring the blade straight down into the floor.' },
     { rank: 1, name: 'Charged overhead', input: 'hold K', desc: 'Release when the blade flashes: 2.4 dmg, breaks stance. Turnable.' },
     { rank: 1, name: 'Riposte', input: 'I (parry) → J', desc: 'After a parry: a lunging 2.2 counter.' },
     { rank: 1, name: 'Quick slash', input: 'L → J', desc: 'A rising cut straight out of the roll.' },
-    { rank: 1, name: 'Wheeling cut', input: 'L → K', desc: 'Roll through, then turn on the foe with a wide cut (faces the nearest).' },
+    { rank: 1, name: 'Wheeling cut', input: 'L → K', desc: 'Roll through, then turn on the nearest foe with a wide cut.' },
     { rank: 1, name: 'Up slash', input: '↑J', desc: 'A rising overhead cut for fliers.' },
     { rank: 1, name: 'Falling crescent', input: 'air J J', desc: 'A second air cut: a big crescent from overhead down past the feet.' },
     { rank: 1, name: 'Plunge stab', input: 'air ↓J', desc: 'Pogo off foes and spikes.' },
@@ -111,8 +114,11 @@ mvRegister('longsword', {
       },
     } },
   heavy: { tags: ['heavy'], kind: 'heavy', dmg: 1.6, poise: 45, stam: 24, wind: 380, total: 700, lunge: 20, fx: 'heavy',
-    // still holding K 150 ms in (any frame up to 230 ms, so a slow frame can't miss it): the charge stance
-    on: { update(dt, A) { if (P.mvT >= 150 && P.mvT < 230 && held.has('heavy') && !P.mvO.noHold) mvStart('ls_kc_hold', { cost: 0 }); } } },
+    next: { J: 'ls_kj', K: 'ls_kk' },
+    // K still held since the press, 150 ms in (any frame up to 230 ms, so a slow frame can't miss it): the charge stance.
+    // Once K has come up, a second press is the K K follow-up, never a charge.
+    on: { start() { P.lsKUp = !held.has('heavy'); },
+      update(dt, A) { if (!held.has('heavy')) P.lsKUp = true; if (P.mvT >= 150 && P.mvT < 230 && !P.lsKUp && !P.mvO.noHold) mvStart('ls_kc_hold', { cost: 0 }); } } },
   ls_kc_hold: { tags: ['ls_kc_hold', 'heavy'], kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9,
     on: { update(dt, A, ax) {
       P.vx *= Math.pow(0.05, dt); bladeTurnHold(ax);
@@ -121,7 +127,7 @@ mvRegister('longsword', {
       if (Math.random() < 0.4) particles.push({ x: P.x + rand(-10, 10), y: P.y - rand(0, 30), vx: 0, vy: -rand(20, 50), life: 0.4, kind: 'gold' });
       if (!held.has('heavy') || P.mvT > 1800) { const f = P.lsFull; P.lsFull = false; if (f) mvStart('ls_kc', { cost: 6, charged: true }); else mvStart('heavy', { cost: 0, t0: 150, noHold: true }); return 'stop'; }
     }, start() { P.lsFull = false; } } },
-  ls_kc: { tags: ['ls_kc', 'heavy'], kind: 'heavy', dmg: 2.4, poise: 70, stam: 30, wind: 380, total: 650, fin: true, lunge: 24, fx: 'heavy' },
+  ls_kc: { tags: ['ls_kc', 'heavy'], kind: 'heavy', dmg: 2.4, poise: 70, stam: 30, wind: 380, total: 650, fin: true, lunge: 24, fx: 'heavy', next: { J: 'ls_kj' } },
   ls_jjk: { tags: ['ls_jjk', 'heavy'], kind: 'heavy', dmg: 1.7, poise: 35, stam: 22, wind: 330, total: 640, box: [-16, 46, -46, 0], fin: true, fx: 'heavy', next: { J: '@J' } },
   ls_jjjk: { tags: ['ls_jjjk', 'attack3'], kind: 'heavy', dmg: 1.9, poise: 38, stam: 24, wind: 350, total: 680, lunge: 30, reach: 58, fin: true, fx: 'slash3',
     on: { update() {   // J J J -> K pressed late in the poke and kept held: it becomes the pommel strike (IV), up to 230 ms in
@@ -144,7 +150,15 @@ mvRegister('longsword', {
   // ---- v14 combos
   // J K: lifting cleave -- a low-to-high two-handed heave; pops light foes into the air; J after it continues with the poke
   ls_jk: { tags: ['ls_jk', 'attack2'], kind: 'heavy', dmg: 1.4, poise: 28, stam: 18, wind: 260, total: 600, lunge: 12, launch: 170, ys: [-50, 0], fx: 'slash_up',
-    next: { J: 'attack3' } },
+    next: { J: 'attack3', K: 'ls_jkk' } },
+  // ---- v14c J/K mixes
+  // K -> J (also charged overhead -> J): return slash -- the blade bites the floor, the wrists turn and it snaps back up;
+  // a heavy that branches into the light chain (K J J J = overhead, return, poke, critical)
+  ls_kj: { tags: ['ls_kj', 'attack2'], dmg: 1.0, poise: 14, stam: 12, wind: 150, total: 420, lunge: 10, fx: 'slash2', next: { J: 'attack3' } },
+  // K K: crosswise strike (Zwerchhau) -- hands flip over the head, the blade crosses flat at head height: tall foes, fliers close in
+  ls_kk: { tags: ['ls_kk', 'heavy'], kind: 'heavy', dmg: 1.5, poise: 38, stam: 22, wind: 300, total: 660, lunge: 12, reach: 46, ys: [-52, -12], fin: true, fx: 'heavy' },
+  // J K K: splitting cleave -- from the lifting cleave's high finish straight down into the floor (launch, then smash)
+  ls_jkk: { tags: ['ls_jkk', 'heavy'], kind: 'heavy', dmg: 1.7, poise: 50, stam: 22, wind: 260, total: 700, lunge: 10, slam: true, fin: true, fx: 'heavy' },
   // L -> K: wheeling cut -- out of the roll, pivot to the nearest foe (you rolled through it) and cut wide
   ls_rollk: { tags: ['ls_rollk', 'heavy'], kind: 'heavy', dmg: 1.5, poise: 32, stam: 18, wind: 240, total: 600, lunge: 14, lungeLead: 240, back: 8, fin: true, fx: 'heavy',
     on: { start() { const t = bladeNearest(100); const ax = inputX(); if (t) P.face = t.x > P.x ? 1 : -1; else if (ax) P.face = ax; } } },
@@ -237,11 +251,14 @@ mvRegister('katana', {
   combos: [
     { rank: 1, name: 'Light chain', input: 'J J J', desc: 'Quick cut, return cut, then a triple flurry.' },
     { rank: 1, name: 'Flurry sheathe', input: 'J J J → I', desc: 'Slide the blade home straight out of the flurry.' },
-    { rank: 1, name: 'Crescent sheathe', input: 'J J K', desc: 'A wide turning cut whose follow-through sheathes you: K next is an Iai.' },
+    { rank: 1, name: 'Helm splitter', input: 'J J J K', desc: 'End the flurry with one raised vertical cut: the stagger it lacks.' },
+    { rank: 1, name: 'Kesa cut', input: 'J K', desc: 'A stepping shoulder-to-hip cleave. J after it: back to the chain.' },
+    { rank: 1, name: 'Crescent sheathe', input: 'J J K', desc: 'A wide turning cut that ends sheathed: K next is an Iai.' },
     { rank: 1, name: 'Sheathe', input: 'I', desc: 'Sheathe the blade (70% walk). Everything from the sheathe is a draw.' },
     { rank: 1, name: 'Draw cut', input: 'J (sheathed)', desc: 'A quick low draw-cut from the hip that flows into the chain.' },
     { rank: 1, name: 'Iai draw', input: 'K (sheathed)', desc: 'The fastest heavy in the game: 2.2 dmg.' },
     { rank: 1, name: 'Swallow return', input: 'Iai → J', desc: 'A reversed rising cut snapped back after the Iai. I: sheathe again.' },
+    { rank: 1, name: 'Thrust home', input: 'Iai → J → K', desc: 'A lunging thrust, then the blade is sheathed: K next is an Iai.' },
     { rank: 1, name: 'Focus draw', input: 'hold K (sheathed)', desc: 'Hold 0.4 s, release: a dash-through cut, briefly invulnerable.' },
     { rank: 1, name: 'Iai parry', input: 'I (sheathed, timed)', desc: 'Just before a blow lands: negate it and counter-cut (2.4).' },
     { rank: 1, name: 'Rushing draw', input: 'K (drawn)', desc: 'Dash in with a rising cut and sheathe again: K → K loops.' },
@@ -256,10 +273,10 @@ mvRegister('katana', {
     { rank: 5, name: 'Moonlit iai', input: 'perfect Iai parry → K', desc: 'A parry in the first 60 ms: time slows, your next Iai deals 3.0.' },
   ],
 }, {
-  kt_1: { tags: ['kt_1'], dmg: 0.9, poise: 10, stam: 10, wind: 140, total: 380, step: 0, fx: 'slash2', next: { J: 'kt_2' } },
+  kt_1: { tags: ['kt_1'], dmg: 0.9, poise: 10, stam: 10, wind: 140, total: 380, step: 0, fx: 'slash2', next: { J: 'kt_2', K: 'kt_kesa' } },
   kt_2: { tags: ['kt_2'], dmg: 0.9, poise: 10, stam: 10, wind: 140, total: 380, step: 1, fx: 'slash', next: { J: 'kt_3', K: 'kt_jjk' } },
   kt_3: { tags: ['kt_flurry', 'kt_3'], hits: [0.45, 0.45, 0.45], gap: 100, poise: 18, stam: 16, wind: 200, total: 680, step: 2, fin: true, fx: 'slash3', fxEach: true,
-    next: { I: 'kt_fsheathe' },
+    next: { I: 'kt_fsheathe', K: 'kt_kabuto' },
     on: { start() { P.ktFlurry = []; }, hit(t) { if (!t.prop) P.ktFlurry.push({ t, at: P.clk }); } } },
   kt_fsheathe: { tags: ['kt_sheathe', 'parry'], noHit: true, dmg: 0, poise: 0, stam: 4, wind: 250, total: 250,
     on: {
@@ -312,7 +329,15 @@ mvRegister('katana', {
   kt_jjk: { tags: ['kt_jjk', 'kt_3'], kind: 'heavy', dmg: 1.3, poise: 26, stam: 16, wind: 240, total: 660, lunge: 10, back: 12, fx: 'slash3', next: { K: '@K' },
     on: { end() { ktSheathe(true); } } },
   // Iai -> J: swallow return -- the blade snaps back the way it came in a reversed rising cut; I after it sheathes at once
-  kt_tsubame: { tags: ['kt_tsubame', 'kt_2'], dmg: 1.1, poise: 14, stam: 10, wind: 100, total: 480, fin: true, ys: [-44, -2], fx: 'slash', next: { I: 'kt_fsheathe' } },
+  kt_tsubame: { tags: ['kt_tsubame', 'kt_2'], dmg: 1.1, poise: 14, stam: 10, wind: 100, total: 480, fin: true, ys: [-44, -2], fx: 'slash', next: { I: 'kt_fsheathe', K: 'kt_tsuki' } },
+  // ---- v14c J/K mixes
+  // J K: kesa cut -- a stepping diagonal cleave from the shoulder to the hip; a heavy that hands back to the chain (J: kt_2)
+  kt_kesa: { tags: ['kt_kesa', 'kt_2'], kind: 'heavy', dmg: 1.4, poise: 32, stam: 18, wind: 260, total: 640, lunge: 14, ys: [-44, 0], fx: 'slash3', next: { J: 'kt_2' } },
+  // J J J K: helm splitter (kabuto-wari) -- the flurry ends in a raised jodan and one vertical cut: the stagger the flurry lacks
+  kt_kabuto: { tags: ['kt_kabuto', 'kt_heavy'], kind: 'heavy', dmg: 1.6, poise: 50, stam: 20, wind: 320, total: 760, lunge: 10, fin: true, fx: 'slash3' },
+  // Iai J K: thrust home (tsuki) -- a lunging straight thrust, then the blade is flicked clean and sheathed: K next is an Iai
+  kt_tsuki: { tags: ['kt_tsuki', 'kt_stepcut'], kind: 'heavy', dmg: 1.1, poise: 22, stam: 14, wind: 160, total: 640, lunge: 10, lungeLead: 160, reach: 56, back: 8, ys: [-30, -6], fx: 'slash3',
+    next: { K: '@K' }, on: { end() { ktSheathe(true); } } },
   // II: focus draw -> K: turning draw -- whirl round to the foe you just passed (else back the way you came), cut, sheathe
   kt_turn: { tags: ['kt_turn', 'kt_iai'], rank: 2, kind: 'heavy', dmg: 1.6, poise: 35, stam: 16, wind: 160, total: 620, lunge: 16, lungeLead: 160, fin: true, fx: 'slash3',
     on: { start() { const t = bladeNearest(120); P.face = t ? (t.x > P.x ? 1 : -1) : -(P.ktFocusDir || P.face); }, end() { ktSheathe(true); } } },

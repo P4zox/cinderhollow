@@ -6,6 +6,8 @@ Longsword (ls_, two hands on the hilt): ls_jk lifting cleave (J K), ls_rollk whe
 crescent (air J J), ls_wheel wheel slash (J J (beat) J, two hits: behind, then in front).
 Katana (kt_): kt_draw draw cut (J while sheathed), kt_jjk crescent sheathe (J J K, ends sheathed), kt_tsubame swallow
 return (Iai -> J), kt_turn turning draw (focus draw -> K, starts facing away, ends sheathed).
+v14c J/K mixes: ls_kj return slash (K J), ls_kk crosswise strike (K K), ls_jkk splitting cleave (J K K); kt_kesa kesa cut
+(J K), kt_kabuto helm splitter (J J J K), kt_tsuki thrust home (Iai J K, ends sheathed).
 
 Every attack: anticipation -> smear -> impact -> follow-through -> settle, timed to its move row (wind-up / total) in
 web/src/76_mech_blade.js by tm() (frames before the hit frame = wind-up, all = total). `python3 art/player_v14_blade.py`
@@ -95,6 +97,50 @@ def ls_wheel():  # wheel slash: coil, spin on the spot -- the blade passes behin
           (dict(dx=1, hand=(35, 25), ang=-52, flow=0.3, flutter=7), 110)]
     return G.mseq(tm(fr, 200, 620, 2), grip=3.0)
 
+# ---- v14c J/K mixes
+def ls_kj():  # return slash (K -> J): the overhead has bitten the floor; the wrists turn under and the edge snaps back up
+    OX, FF = G.OX, G.FF
+    fr = [(dict(dx=2, dy=2, hand=(37, 31), ang=60, footF=(FF[0] + 2, 39), flow=0.4), 60),
+          (dict(dx=1, dy=3, hand=(35, 32), ang=100, footB=(OX + 6, 39), footF=(FF[0] + 2, 39), flow=0.6, flutter=1,
+                fx=[("glint", "tip"), ("dust", 44, 2)]), 90),
+          (dict(dx=3, dy=1, hand=(40, 22), ang=-32, footB=(OX + 8, 39), footF=(FF[0] + 3, 39), flow=1.3, flutter=2,
+                fx=[G.sw(w=0.5)]), 45),
+          (dict(dx=2, dy=-1, hand=(37, 13), ang=-86, footB=(OX + 9, 38), footF=(FF[0] + 3, 39), flow=1.1, flutter=3,
+                fx=[G.sw(w=0.4)]), 60),
+          (dict(dx=1, hand=(34, 13), ang=-108, footF=(FF[0] + 2, 39), flow=0.6, flutter=4), 120),
+          (dict(dx=1, hand=(35, 24), ang=-58, flow=0.3, flutter=5), 85)]
+    return G.mseq(tm(fr, 150, 420, 2), grip=3.0)
+
+
+def ls_kk():  # crosswise strike (K K, Zwerchhau): the hilt rises over the head, hands crossed, the blade flips flat across the brow
+    OX, FF = G.OX, G.FF
+    fr = [(dict(dx=1, dy=2, hand=(35, 26), ang=-40, flow=0.4), 70),
+          (dict(dx=-1, dy=0, head_dx=-1, hand=(30, 13), ang=-150, footB=(OX + 6, 39), flow=0.4, flutter=1), 110),
+          (dict(dx=-1, dy=-1, head_dx=-1, hand=(31, 10), ang=176, footB=(OX + 6, 38), footF=(FF[0] + 1, 39), flow=0.3, flutter=2,
+                fx=[("glint", "tip")]), 120),
+          (dict(dx=3, dy=-1, hand=(39, 12), ang=-2, footB=(OX + 9, 38), footF=(FF[0] + 4, 39), flow=1.5, flutter=3,
+                fx=[("arc", (31, 12), 176, -2, dict(sq=0.32, w=0.5)), ("speed", (18, 12), 3, 10)]), 45),
+          (dict(dx=3, dy=0, hand=(40, 14), ang=22, footB=(OX + 9, 39), footF=(FF[0] + 4, 39), flow=1.2, flutter=4,
+                fx=[G.sw(w=0.4)]), 60),
+          (dict(dx=2, dy=1, hand=(38, 18), ang=38, footF=(FF[0] + 3, 39), flow=0.7, flutter=5), 170),
+          (dict(dx=1, hand=(35, 25), ang=-30, flow=0.3, flutter=6), 130)]
+    return G.mseq(tm(fr, 300, 660, 3), grip=3.0)
+
+
+def ls_jkk():  # splitting cleave (J K K): up on the toes from the lift, the blade overhead, then all of it straight into the floor
+    OX, FF = G.OX, G.FF
+    fr = [(dict(dx=1, dy=-1, hand=(32, 11), ang=-118, footB=(OX + 9, 38), footF=(FF[0] + 2, 39), flow=0.6), 80),
+          (dict(dx=0, dy=-2, head_dx=-1, hand=(29, 9), ang=-152, footB=(OX + 9, 37), footF=(FF[0] + 2, 38), flow=0.4, flutter=1,
+                fx=[("glint", "tip")]), 120),
+          (dict(dx=2, dy=0, hand=(35, 13), ang=-62, footF=(FF[0] + 3, 39), flow=1.0, flutter=2, fx=[G.sw(w=0.4)]), 60),
+          (dict(dx=3, dy=4, head_dy=1, hand=(38, 29), ang=56, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=1.4, flutter=3,
+                fx=[G.sw(w=0.6), ("dust", 50, 7), ("flare", (50, 37), 6)]), 50),
+          (dict(dx=3, dy=4, head_dy=1, hand=(38, 29), ang=44, footB=(OX + 7, 39), footF=(FF[0] + 4, 39), flow=0.7, flutter=4,
+                fx=[("dust", 51, 4)]), 220),
+          (dict(dx=2, dy=3, hand=(37, 28), ang=34, footF=(FF[0] + 3, 39), flow=0.4, flutter=5), 150),
+          (dict(dx=1, dy=1, hand=(35, 26), ang=-20, flow=0.3, flutter=6), 120)]
+    return G.mseq(tm(fr, 260, 700, 3), grip=3.0)
+
 
 # =================================================================================================== KATANA
 SHEATHED = dict(hand=(30, 29), ang=168, off=(32, 28), sheath=True)   # (as player_v13_a: hand on the hilt at the left hip)
@@ -159,6 +205,50 @@ def kt_turn():  # turning draw: you stand past the foe, blade out behind; whirl 
           (dict(dy=1, flow=0.3, flutter=6, fx=[("glint", (32, 30))], **SHEATHED), 155)]
     return G.mseq(tm(fr, 160, 620, 2))
 
+# ---- v14c J/K mixes
+def kt_kesa():  # kesa cut (J K): a half step back into a high guard over the right shoulder, then shoulder-to-hip on a long step
+    OX, FF = G.OX, G.FF
+    fr = [(dict(dx=0, dy=1, hand=(32, 18), ang=-120, flow=0.4), 70),
+          (dict(dx=-2, dy=2, head_dx=-1, hand=(29, 13), ang=-148, footB=(OX + 5, 39), footF=(FF[0] + 1, 39), flow=0.3, flutter=1,
+                fx=[("glint", "tip")]), 130),
+          (dict(dx=1, dy=1, hand=(35, 16), ang=-62, footF=(FF[0] + 3, 39), flow=1.1, flutter=2, fx=[G.sw(w=0.35)]), 50),
+          (dict(dx=4, dy=3, hand=(40, 27), ang=34, footB=(OX + 9, 39), footF=(OX + 27, 39), flow=1.6, flutter=3,
+                fx=[G.sw(w=0.5), ("flare", "tip", 4)]), 45),
+          (dict(dx=4, dy=3, head_dy=1, hand=(38, 29), ang=46, footB=(OX + 9, 39), footF=(OX + 27, 39), flow=1.0, flutter=4,
+                fx=[G.sw(w=0.3)]), 70),
+          (dict(dx=3, dy=3, hand=(37, 29), ang=48, footF=(OX + 25, 39), flow=0.5, flutter=5), 160),
+          (dict(dx=1, dy=1, hand=(35, 26), ang=-40, flow=0.3, flutter=6), 120)]
+    return G.mseq(tm(fr, 260, 640, 3), grip=G.GRIP_KATANA)
+
+
+def kt_kabuto():  # helm splitter (J J J K): out of the flurry the blade rises straight up into jodan, a breath, one vertical cut
+    OX, FF = G.OX, G.FF
+    fr = [(dict(dx=0, dy=0, hand=(33, 13), ang=-96, flow=0.5), 80),
+          (dict(dx=-1, dy=-1, hand=(32, 9), ang=-100, footB=(OX + 7, 38), flow=0.3, flutter=1, fx=[("glint", "tip")]), 150),
+          (dict(dx=1, dy=0, hand=(35, 12), ang=-58, footF=(FF[0] + 2, 39), flow=1.0, flutter=2, fx=[G.sw(w=0.35)]), 50),
+          (dict(dx=3, dy=3, hand=(39, 27), ang=48, footB=(OX + 8, 39), footF=(FF[0] + 4, 39), flow=1.5, flutter=3,
+                fx=[G.sw(w=0.55), ("flare", (47, 31), 5)]), 45),
+          (dict(dx=3, dy=3, head_dy=1, hand=(38, 28), ang=42, footB=(OX + 8, 39), footF=(FF[0] + 4, 39), flow=0.8, flutter=4,
+                fx=[("dust", 49, 3)]), 230),
+          (dict(dx=2, dy=2, hand=(37, 27), ang=30, footF=(FF[0] + 2, 39), flow=0.4, flutter=5), 140),
+          (dict(dx=1, hand=(35, 26), ang=-40, flow=0.3, flutter=6), 120)]
+    return G.mseq(tm(fr, 320, 760, 3), grip=G.GRIP_KATANA)
+
+
+def kt_tsuki():  # thrust home (Iai J K): the blade drawn back level at the hip, one lunging thrust, a chiburi flick, sheathed
+    OX, FF = G.OX, G.FF
+    fr = [(dict(dx=-1, dy=2, hand=(29, 26), ang=-4, off=(26, 27), footB=(OX + 6, 39), flow=0.4), 70),
+          (dict(dx=-2, dy=3, head_dx=-1, hand=(27, 27), ang=-2, off=(24, 28), footB=(OX + 5, 39), footF=(FF[0] + 1, 39), flow=0.3,
+                flutter=1, fx=[("glint", "tip")]), 90),
+          (dict(dx=4, dy=2, hand=(43, 25), ang=-1, off=(38, 26), footB=(OX + 9, 39), footF=(OX + 27, 39), flow=1.6, flutter=2,
+                fx=[("streak", 20)]), 45),
+          (dict(dx=5, dy=2, hand=(44, 25), ang=0, off=(39, 26), footB=(OX + 10, 39), footF=(OX + 28, 39), flow=1.2, flutter=3,
+                fx=[("streak", 8), ("flare", "tip", 4)]), 80),
+          (dict(dx=3, dy=2, hand=(40, 28), ang=34, off=(29, 27), footF=(OX + 25, 39), flow=0.7, flutter=4, fx=[G.sw(w=0.2)]), 110),
+          (dict(dx=2, dy=2, hand=(33, 24), ang=-176, off=(31, 27), footF=(OX + 23, 39), flow=0.4, flutter=5), 85),
+          (dict(dx=1, dy=1, flow=0.3, flutter=6, fx=[("glint", (32, 30))], footF=(OX + 21, 39), **SHEATHED), 120)]
+    return G.mseq(tm(fr, 160, 640, 2))
+
 
 # =================================================================================================== registry
 def register(g):
@@ -183,6 +273,13 @@ def register(g):
     add("kt_jjk", kt_jjk, 240, 660, A(3, 4), settle=False, x0=-6)
     add("kt_tsubame", kt_tsubame, 100, 480, A(2, 3), up=True, x0=-2)
     add("kt_turn", kt_turn, 160, 620, A(2, 3), settle=False, x0=-2)
+    # v14c J/K mixes
+    add("ls_kj", ls_kj, 150, 420, A(2, 3), up=True, x0=-2)
+    add("ls_kk", ls_kk, 300, 660, A(3, 4), x0=-4)
+    add("ls_jkk", ls_jkk, 260, 700, A(3, 4))
+    add("kt_kesa", kt_kesa, 260, 640, A(3, 4), x0=-2)
+    add("kt_kabuto", kt_kabuto, 320, 760, A(3, 4))
+    add("kt_tsuki", kt_tsuki, 160, 640, A(2, 3), settle=False, x0=0)
     return E
 
 
