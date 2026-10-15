@@ -37,11 +37,14 @@ T('LS V: ember edge -- a perfectly timed 4th J adds a burning 1.2 hit', ember.le
 setup('katana', 1); E('P.sheathed = true'); W().down('right'); W().frame(40); const v1 = Math.abs(P().vx); W().up('right'); W().frame(20);
 setup('katana', 2); E('P.sheathed = true'); W().down('right'); W().frame(40); const v2 = Math.abs(P().vx); W().up('right');
 T('KT: sheathed walk at 70% (II: full speed)', Math.abs(v1 / 122 - 0.7) < 0.05 && Math.abs(v2 / 122 - 1) < 0.05, `${(v1 / 122).toFixed(2)} / ${(v2 / 122).toFixed(2)}`);
-setup('katana', 1); E('P.sheathed = true'); W().tap('parry'); W().frame(4); const hk0 = P().hp, gk = E('MV.gains || 0'); hurt(30); W().frame(1);
-T('KT: Iai parry (I sheathed, hit in the 150 ms window) negates and counter-cuts', P().hp === hk0 && st() === 'kt_iaicut' && E('MV.gains') > gk, `hp ${hk0}->${P().hp} ${st()}`);
+setup('katana', 1); E('P.sheathed = true'); W().tap('parry'); W().frame(4); const hk0 = P().hp, gk = E('MV.gains || 0'); hurt(30, { parryable: true }); W().frame(1);
+T('KT: Iai parry (I sheathed, parryable hit in the 150 ms window) negates and counter-cuts', P().hp === hk0 && st() === 'kt_iaicut' && E('MV.gains') > gk, `hp ${hk0}->${P().hp} ${st()}`);
+// v15 (balance): a blow that can't be parried is only turned aside: stamina like a shield block, no counter-cut
+setup('katana', 1); E('P.sheathed = true'); W().tap('parry'); W().frame(4); const hk2 = P().hp, ks2 = P().st, gk2 = E('MV.gains || 0'); hurt(30); const kst2 = st(); W().frame(1);
+T('KT v15: an unparryable blow in the Iai window is deflected for stamina, no counter-cut', P().hp === hk2 && kst2 !== 'kt_iaicut' && Math.abs(ks2 - P().st - (6 + 30 * 0.8) * E('mvGuardScale()')) < 1.5 && E('MV.gains || 0') === gk2, `hp ${hk2}->${P().hp} ${kst2} stam ${(ks2 - P().st).toFixed(1)}`);
 setup('katana', 1); E('P.sheathed = true'); W().tap('parry'); W().frame(12); const hk1 = P().hp; hurt(30); W().frame(1);
 T('KT: a blow after the 150 ms window is not parried', P().hp < hk1, `hp ${hk1}->${P().hp}`);
-setup('katana', 5); E('window.__wm.follow = 26; P.sheathed = true'); W().tap('parry'); W().frame(2); hurt(30); W().frame(60); /* v14: K is only kept in a finisher's last 120 ms */ const ml = E('P.moonlit');
+setup('katana', 5); E('window.__wm.follow = 26; P.sheathed = true'); W().tap('parry'); W().frame(2); hurt(30, { parryable: true }); W().frame(60); /* v14: K is only kept in a finisher's last 120 ms */ const ml = E('P.moonlit');
 E('P.sheathed = true'); E("window.__wm.log = []"); W().tap('heavy'); W().frame(30); const mi = W().log.filter(h => h.st === 'kt_iai').map(h => (h.dmg / h.light).toFixed(2));
 T('KT V: a perfect Iai parry readies the moonlit Iai (3.0)', ml && mi.length && Math.abs(mi[0] - 3.0) < 0.15, `moonlit ${ml} iai ${mi}`);
 setup('katana', 1); W().tap('roll'); W().frame(8); const hs0 = P().hp; hurt(20); const hs1 = P().hp; W().frame(30); W().tap('roll'); W().frame(13); hurt(20);
@@ -51,11 +54,11 @@ const echo = W().log.filter(h => h.melee).map(h => (h.dmg / h.light).toFixed(2))
 T('KT IV: thousand cuts -- each flurry hit echoes (+0.3 x3)', echo.filter(x => Math.abs(x - 0.3) < 0.03).length === 3 && E('P.sheathed'), echo.join('/'));
 // ---- Greatsword
 setup('greatsword'); W().down('heavy'); W().frame(20); const gh0 = P().hp; hurt(Math.round(E('D.maxHp') * 0.2)); const gst = st(); const gdl = gh0 - P().hp; W().up('heavy'); W().frame(60);
-T('GS: charging is flinch-proof under 30% max HP, damage x0.8', gst === 'gs_charge' && Math.abs(gdl / (E('D.maxHp') * 0.2) - 0.8) < 0.06, `${gst} took ${gdl}`);
+T('GS: charging is flinch-proof under 30% max HP, damage x0.7 (v15, was x0.8)', gst === 'gs_charge' && Math.abs(gdl / (E('D.maxHp') * 0.2) - 0.7) < 0.06, `${gst} took ${gdl}`);
 setup('greatsword'); W().down('heavy'); W().frame(20); hurt(Math.round(E('D.maxHp') * 0.4)); const gst2 = st(); W().up('heavy'); W().frame(60);
 T('GS: a blow over 30% max HP still flinches the charge', gst2 === 'hurt', gst2);
 setup('greatsword'); W().down('parry'); W().frame(4); const gb0 = P().hp, gs0 = P().st; hurt(40); const gbl = gb0 - P().hp, gsl = gs0 - P().st; W().up('parry'); W().frame(10);
-T('GS: blade guard -- 1.2 x dmg stamina, 25% chip', Math.abs(gsl - 48) < 2 && Math.abs(gbl - 10) <= 1, `stam ${gsl.toFixed(1)} chip ${gbl}`);
+T('GS: blade guard -- 1.2 x dmg stamina (x v15 guard scale), 25% chip', Math.abs(gsl - 48 * E('mvGuardScale()')) < 2 && Math.abs(gbl - 10) <= 1, `stam ${gsl.toFixed(1)} chip ${gbl}`);
 setup('greatsword', 2); W().down('heavy'); W().frame(36); W().tap('roll'); W().frame(2); const tk = st(); W().frame(30); const back = st(), bank = E('P.gsMs'); W().up('heavy'); W().frame(60);
 T('GS II: shoulder tackle out of a charge keeps the charge', tk === 'gs_tackle' && back === 'gs_charge' && bank > 600, `${tk} -> ${back} ${Math.round(bank)} ms`);
 setup('greatsword', 1); W().down('heavy'); W().frame(36); W().tap('roll'); W().frame(2); const tk1 = st(); W().up('heavy'); W().frame(60);
@@ -73,7 +76,7 @@ setup('maul', 5); W().down('heavy'); W().frame(90); const eq = E('MV.last'); W()
 T('ML V: earthshaker -- level 3 held still for 1.4 s (v14 wave 1.0)', eq === 'ml_quake' && W().log.some(h => Math.abs(h.dmg / h.light - 1.0) < 0.1), eq + ' ' + W().log.map(h => (h.dmg / h.light).toFixed(2)).join('/'));
 // ---- Sword & Shield
 setup('sns'); W().down('parry'); W().frame(20); const sb0 = P().hp, ss0 = P().st; hurt(30); W().frame(2); W().up('parry');
-T('SnS: block -- 6 + 0.8 x dmg stamina, no chip', P().hp === sb0 && Math.abs(ss0 - P().st - 30) < 1, `hp ${sb0 - P().hp} stam ${(ss0 - P().st).toFixed(1)}`);
+T('SnS: block -- 6 + 0.8 x dmg stamina (x v15 guard scale), no chip', P().hp === sb0 && Math.abs(ss0 - P().st - 30 * E('mvGuardScale()')) < 1, `hp ${sb0 - P().hp} stam ${(ss0 - P().st).toFixed(1)}`);
 setup('sns'); W().tap('parry'); W().frame(8); hurt(30, { parryable: true }); const sp1 = E('P.parried');
 setup('sns'); W().tap('parry'); W().frame(12); hurt(30, { parryable: true }); const sp2 = E('P.parried');
 T('SnS: parry window 170 ms', sp1 === true && sp2 !== true, `${sp1} ${sp2}`);
@@ -109,7 +112,7 @@ setup('dual'); E('P.st = 60; window.__wm.follow = 20'); W().tap('roll'); W().fra
 T('DB: L (perfect) -> J = counter flurry, at once', cf === 'tw_cflurry', cf);
 // ---- Spear
 setup('spear'); W().down('parry'); W().frame(10); const pb0 = P().hp, ps0 = P().st, px0 = P().x; hurt(Math.round(E('D.maxHp') * 0.4)); W().frame(14); const chip = pb0 - P().hp, pst = ps0 - P().st, push = px0 - P().x;
-T('SP: heavy guard -- 5 + 0.5 x dmg, big hits chip 10%, hard pushback', Math.abs(pst - (5 + 0.5 * E('D.maxHp') * 0.4)) < 1.5 && Math.abs(chip - E('D.maxHp') * 0.04) <= 1 && push > 6, `stam ${pst.toFixed(1)} chip ${chip} push ${push.toFixed(1)}`);
+T('SP: heavy guard -- 5 + 0.5 x dmg (x v15 guard scale), big hits chip 10%, hard pushback', Math.abs(pst - (5 + 0.5 * E('D.maxHp') * 0.4) * E('mvGuardScale()')) < 1.5 && Math.abs(chip - E('D.maxHp') * 0.04) <= 1 && push > 6, `stam ${pst.toFixed(1)} chip ${chip} push ${push.toFixed(1)}`);
 W().down('right'); W().frame(20); const gw = Math.abs(P().vx); W().up('right'); W().up('parry');
 T('SP: walk slowly while guarding', gw > 20 && gw < 60 && (st() === 'guard' || st() === 'block'), `${gw.toFixed(0)} ${st()}`);
 setup('spear', 4); W().down('parry'); W().frame(10); W().tap('heavy'); W().frame(2); const pp0 = P().hp, px1 = P().x; hurt(Math.round(E('D.maxHp') * 0.4)); W().frame(6);

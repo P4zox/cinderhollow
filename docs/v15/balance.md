@@ -246,3 +246,119 @@ problem.
   python3 tools/shots/v15/balance/bosscurve.py /tmp/m
   SHOT_HTML=web/dist/v15_balance.html sh tools/shots/wm/run.sh tools/shots/v15/balance/skills_test.js /tmp/sk
   ```
+
+## Phase 2a: the nine types against bosses
+
+**Ask:**
+- Bring the Dual Blades and Katana down toward the pack and the Greatsword up.
+- Target: every type's boss time to kill within about ±15% of the average at the expected build, each keeping its
+  identity.
+- The Katana's Iai parry should no longer fully negate blows that can't be parried.
+- Guard costs should stop getting worse over the journey.
+- Make stagger-based nodes worth having for the Whip and Spear.
+
+### Bench changes (how each type is played)
+
+Each type is now benched on its best route at the expected build:
+
+- **Katana:** K -> K Iai loop.
+- **Greatsword:** level-3 charge (1.2 s hold).
+- **Sword & Shield:** J J K.
+- **Whip:** tipped K.
+- **The other five:** the light chain.
+
+The Whip now keeps 40 px from the boss's edge. At 50 px the bot sat in a dead zone: too far for the handle, too close
+for the tip (the J chain landed 0.0 staggers a fight). Whip results swing a lot with spacing (time to kill 84-127 s on
+the same bosses at 40 vs 50 px), so its "before" number below is pessimistic. Much of its gap was the bot, not the
+weapon.
+
+Matrices: 25 bosses x 9 types x 3 seeds.
+
+### Changes
+
+| Change | File | Effect |
+|---|---|---|
+| **Katana Iai vs. unparryable blows.** A parryable blow (anything `opt.parryable`, plus 67's `PARRY_MELEE` list) is still negated and counter-cut. Anything else is only turned aside by the scabbard: it costs stamina like a shield block (6 + 0.8 x dmg, guard-scaled), there is no counter-cut, no mastery XP and no Deflect. Without the stamina, the blow lands. | `76_mech_blade.js` | Picked over "chip damage" because it reads like the shield block it imitates. The Katana now pays for turtling: damage taken goes 0.91 -> 1.44 of the field, and Iai counters drop from 10-36 a fight to the parryable blows only. |
+| **Greatsword weight.** Every striking move is hyper-armoured against blows under 35% of max HP and takes 40% less damage while it swings. A held charge takes x0.7 (was x0.8). | `76_mech_heavy.js` | Speed is unchanged. Time to kill 1.30 -> 0.99 of the field; damage taken 1.65 -> 1.26 (most of what's left lands while holding a 1.2 s charge, which the bot always does). |
+| **Guard cost scales with level.** Block costs (Sword & Shield, Spear, Greatsword, and the Iai's scabbard turn) are multiplied by 210 / the HP a typical build of your level has (by level, not by your Vigor, so stacking Vigor doesn't make blocks free). Never dearer than before. | `76_mech_guard.js` (`mvGuardScale`), `76_mech_heavy.js` | Full-bar blocks of a typical late blow (18% of max HP), stage 1 -> stage 13: Sword & Shield 2.8 -> 3.9 (was 2.8 -> 1.8); Greatsword 2.3 -> 2.8 (was 2.3 -> 1.3); Spear 4.3 -> 6.1 (was 4.3 -> 2.7). Endurance now pays off. |
+| **Spear poise +40%** on every strike. | `76_mech_guard.js` | Staggers per fight 0.7 -> 1.3. |
+| **Whip tip hits deal x1.6 poise** (`WH_TIP_POISE`). | `76_mech_reach.js` | Staggers per fight 1.9 -> 2.0 on its K route (0.0 -> tip-dependent on the J chain); spacing for the tip now also breaks stances. |
+| **Executioner also covers counters** (any `counter` move: riposte, Iai cut, shield / spear / Greatsword / Maul counters): +30% damage and +30 stamina, as for critical hits. | `57_skills.js` | Node value -1% -> -3% time to kill (Katana -13%, Sword & Shield -8%, Longsword -6%). The Whip and Spear benefit through their new staggers (crits), not counters. |
+| **Attack rating per type** (`WM_AR_TUNE`, a factor on the base 42). The move tables are untouched, so every route and bench in AR units reads the same. | `74_arsenal9.js` | Factors: Dual 0.60, Katana 0.80, Maul 0.95, Longsword 1, Greatsword 1, Whip 1.10, Spear 1.24, Staff 1.18, Sword & Shield 1.18. |
+
+### Before -> after
+
+Relative to the average of the nine types; geometric mean over 25 bosses; 1.00 is the average.
+
+| Type | Time to kill (relative) | Damage taken (relative) | Staggers per fight |
+|---|---|---|---|
+| Dual Blades | 0.62 -> **0.87** | 0.71 -> 0.97 | 0.2 -> 0.2 |
+| Katana | 0.60 -> **0.90** | 0.91 -> 1.44 | 2.7 -> 3.0 |
+| Longsword | 0.96 -> 1.01 | 1.00 -> 1.04 | 3.5 -> 3.6 |
+| Maul | 0.85 -> 0.97 | 0.93 -> 1.03 | 3.6 -> 3.7 |
+| Greatsword | 1.30 -> **0.99** | 1.65 -> 1.26 | 2.3 -> 2.5 |
+| Sword & Shield | 1.23 -> 1.10 | 1.19 -> 1.02 | 3.7 -> 3.9 |
+| Spear | 1.30 -> 1.10 | 0.79 -> 0.65 | 0.7 -> 1.3 |
+| Staff | 1.19 -> 1.08 | 1.02 -> 0.90 | 1.1 -> 0.8 |
+| Whip | 1.32* -> 1.00 | 1.07 -> 0.89 | 1.9 -> 2.0 |
+
+\* Bot at 50 px; see the bench note above.
+
+**Every type now lands within 0.87-1.10 of the average time to kill** (target ±15%). The fastest type per boss is now
+spread across five types (Dual 7, Whip 6, Katana 5, Greatsword 4, Spear 3); before, it was only the Dual Blades or the Katana
+on 24 of 25 bosses.
+
+The identities still show in damage taken:
+- The Spear (0.65) and Staff (0.90) are the safe ones.
+- The Katana (1.44) and Greatsword (1.26) trade safety for their big hits.
+
+Files: `tools/shots/v15/balance/results/phase2a_rel_{before,after}.txt` and `phase2a_boss_curve.txt`.
+
+### Tests (all green)
+
+| Suite | Result |
+|---|---|
+| `tools/shots/v14/blade/routes.js` | 45/45 |
+| `tools/shots/v14/heavy/routes.js` | 56/56 |
+| `tools/shots/v14/guard/routes.js` | 48/48 |
+| `tools/shots/v14/dual/routes.js` | 34/34 |
+| `tools/shots/v14/reach/routes.js` | 54/54 |
+| `tools/shots/wm/mech.js` | 63/63 |
+| `tools/shots/v15/balance/skills_test.js` | 21/21 |
+
+**Expected numbers changed on purpose in `wm/mech.js`:**
+- The Iai parry test now uses a parryable blow.
+- A new test covers an unparryable blow: deflected for stamina, no counter-cut.
+- Greatsword, shield and spear guard costs are multiplied by `mvGuardScale()`.
+- The Greatsword charge damage factor is x0.7 (was x0.8).
+
+`skills_test.js` (my file): its Deflect check now uses a parryable blow.
+
+Run them all with `sh tools/shots/v15/balance/routes_all.sh [outdir]`.
+
+### Bot profiles for the five new types (phase 2b)
+
+`PROF` and `ALT` in `bot_lib.js`. `iWhen` presses I in an opening.
+
+| Type | Main route | Defence | `ALT` route |
+|---|---|---|---|
+| Switch Axe | J chain | roll / sidestep | J J J J K K |
+| Bow | J volley chain | limb deflect (the type's own I, `def: 'tapI'`) | K held 850 ms |
+| Martial Arts | Swift J chain | slip step | J J I J J (a shift strike) |
+| Scythe | J chain | roll | K held 700 ms (Reap) |
+| Warbell | J J J | roll | J K J J |
+
+- **Switch Axe:** morphs (I) at a full gauge (`P.sxG >= 100`).
+- **Warbell:** Performs (I) with 2+ notes (`P.belNotes`).
+- A smoke run on Gravetusk with the in-progress movesets works for all five (dmg/s 0.83-1.28).
+- Their spacing (`de`) will need the same check as the Whip's once the movesets settle.
+
+### Notes for later
+
+- **The guard now gets slightly better late** (more blocks per bar as Endurance grows). If you want it exactly flat,
+  multiply `mvGuardScale()` by `103 / D.maxSt`.
+- **The Dual Blades' AR factor (0.60) is the biggest cut.** Their per-hit numbers on screen drop by 40%. Their dummy dps
+  (A12) in AR units is unchanged. Demon Mode isn't benched by the bot, so a skilled Demon player will still sit above
+  the pack.
+- **The ±15% band is measured by a crude bot.** Spacing-sensitive types (Whip, Spear) and the Greatsword's charge greed
+  are where it is least reliable.

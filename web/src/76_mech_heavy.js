@@ -87,10 +87,10 @@ mvRegister('greatsword', {
     return true;
   },
   blockPose() { setP('block', pHas('gs_guard') ? 'gs_guard' : 'parry', false); P.anim.i = Math.min(1, P.anim.n - 1); P.anim.speed = 0.6; },
-  guardCost(dmg) { return { cost: 1.2 * dmg * (charmOn('c_aegis') ? 0.7 : 1), chip: 0.25 * dmg, push: 150, counterT: 0.7 }; },
+  guardCost(dmg) { return { cost: 1.2 * dmg * mvGuardScale() * (charmOn('c_aegis') ? 0.7 : 1), chip: 0.25 * dmg, push: 150, counterT: 0.7 }; },
   hurt(c) {
     const A = ATK[P.state];
-    if (A && A.mv && A.mv.charge && c.dmg < D.maxHp * 0.3) { c.armor = true; c.dmg *= 0.8; }   // flinch-proof charge
+    if (A && A.mv && A.mv.charge && c.dmg < D.maxHp * 0.3) { c.armor = true; c.dmg *= 0.7; }   // flinch-proof charge (v15: x0.7, was x0.8 -- the bot took most of its hits holding a charge)
   },
   started() { hvStarted(); },
   tick() { hvTick(); },
@@ -190,6 +190,10 @@ mvRegister('greatsword', {
   gs_down: { tags: ['gs_down'], down: true, dmg: 1.1, poise: 45, stam: 12, wind: 150, total: 430, box: [-16, 18, -16, 26] },
 });
 
+// v15 (balance): the Greatsword's swings carry its weight. Every striking move is hyper-armoured against blows under 35% of
+// max HP and takes 40% less damage while it swings (charge stances already had their own armour). Real-boss bot: it was
+// the slowest killer and took the most damage (x1.57 the field) because every committed swing got punished.
+for (const d of Object.values(MV.defs)) if (d.type === 'greatsword' && !d.noHit && (d.dmg || d.hits || d.dmgFn) && d.armor === undefined) { d.armor = 0.35; d.dmgTaken = d.dmgTaken || 0.6; }
 // ---- both heavies: K held through the end of a swing starts the charge (the engine drops a K pressed early in a finisher)
 function hvStarted() { P.hvQ = null; P.hvPrevAt = P.hvMvAt ?? P.clk; P.hvMvAt = P.clk; }   // (a K pressed in the move before, still held, counts too)
 function hvTick() { const h = held.has('heavy'); if (h && !P.hvKWas) P.hvKAt = P.clk; P.hvKWas = h; }

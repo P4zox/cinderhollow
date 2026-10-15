@@ -1,4 +1,19 @@
 // ------------------------------------------------------------------ WM: Sword & Shield (A6) + Spear (A8)
+// v15 (balance): guard costs follow the blow's size against YOUR health. Boss blows grow with the journey (their damage is
+// scaled to keep pace with your HP) while stamina barely does, so a full bar held 2.8 typical boss blows at the start and
+// 1.8 at the end (the Greatsword 2.3 -> 1.3). Costs are now scaled by GUARD_REF_HP (the expected build's HP at the first
+// boss) over the HP a typical build of YOUR level has (69's stat order) -- by level, not by your Vigor, so pouring points
+// into Vigor doesn't make blocks free. A full bar blocks a late blow about as often as an early one; never dearer than before.
+const GUARD_REF_HP = 210, GUARD_LV = { L: -1, k: 1 };
+function mvGuardScale() {
+  if (typeof SAVE === 'undefined' || !SAVE || !SAVE.stats) return 1;
+  const L = levelOf(SAVE.stats); if (L === GUARD_LV.L) return GUARD_LV.k;
+  let v = BASE_STATS.vig; const order = ['vig', 'str', 'dex', 'end', 'vig', 'str', 'dex', 'mnd'];
+  for (let i = 0, n = L - levelOf(BASE_STATS); i < n; i++) if (order[i % order.length] === 'vig') v++;
+  const sv = softcap(v), hp = 60 + 10.5 * sv + 0.08 * sv * sv;
+  GUARD_LV.L = L; GUARD_LV.k = Math.min(1, GUARD_REF_HP / hp);
+  return GUARD_LV.k;
+}
 // v14 (guard pass, docs/revamp2/guard.md): perfect-rush timing fixed, parry window kept whole when you hold I, the
 // perfect-guard bonus expires; the spear's guard poke opens the guard for its thrust, the charge dash's finisher costs
 // stamina and needs a run, the charged counter needs a real 150 ms hold, hops keep you facing the foe. New combos:
@@ -24,7 +39,7 @@ mvRegister('sns', {
   guardK() { if (mvHas(3) && P.ground) return mvStart('sh_slam'); return false; },   // III: block -> K
   guardCost(dmg) {
     const perfect = mvHas(5) && P.clk - (P.guardT0 ?? -9) <= 0.1;
-    return { cost: perfect ? 0 : (6 + dmg * 0.8) * (charmOn('c_aegis') ? 0.7 : 1), chip: 0, push: perfect ? 20 : 70, counterT: 0.6, perfect };
+    return { cost: perfect ? 0 : (6 + dmg * 0.8) * mvGuardScale() * (charmOn('c_aegis') ? 0.7 : 1), chip: 0, push: perfect ? 20 : 70, counterT: 0.6, perfect };
   },
   blocked(dmg, dir, opt, G, id) {
     if (!G.perfect) return;
@@ -212,7 +227,7 @@ mvRegister('spear', {
   blockPose() { setP('block', pHas('sp_pguard') && P.spPower > 0 ? 'sp_pguard' : spGuardTag(false), false); if (!pHas('sp_guard')) { P.anim.i = 1; P.anim.speed = 0.6; } },
   guardCost(dmg) {
     const pw = P.spPower > 0;
-    return { cost: (5 + 0.5 * dmg) * (pw ? 1.5 : 1) * (charmOn('c_aegis') ? 0.7 : 1), chip: !pw && dmg > D.maxHp * 0.3 ? 0.1 * dmg : 0, push: pw ? 0 : 260, counterT: 0.5 };
+    return { cost: (5 + 0.5 * dmg) * mvGuardScale() * (pw ? 1.5 : 1) * (charmOn('c_aegis') ? 0.7 : 1), chip: !pw && dmg > D.maxHp * 0.3 ? 0.1 * dmg : 0, push: pw ? 0 : 260, counterT: 0.5 };
   },
   interrupted() { P.guardKind = null; P.spPower = 0; P.spHoldK = false; },
   render() {
@@ -338,3 +353,6 @@ mvRegister('spear', {
   sp_up: { tags: ['sp_up'], up: true, dmg: 1.1, poise: 20, stam: 12, wind: 180, total: 420 },
   sp_down: { tags: ['sp_down'], down: true, dmg: 0.9, poise: 14, stam: 10, wind: 100, total: 300 },
 });
+// v15 (balance): the walking wall leans on its thrusts: every spear strike carries 40% more poise (stance damage). Real-boss
+// bot: it broke a boss's stance 0.7 times a fight (the Maul 3.6), so Executioner and Riposte Mastery did nothing for it.
+for (const d of Object.values(MV.defs)) if (d.type === 'spear' && !d.noHit && (d.dmg || d.hits || d.dmgFn) && d.poise && !d._v15p) { d._v15p = 1; d.poise = Math.round(d.poise * 1.4); if (ATK[d.id]) ATK[d.id].poise = d.poise; }

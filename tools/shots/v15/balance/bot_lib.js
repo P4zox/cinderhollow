@@ -16,23 +16,30 @@ E(`(() => {
   performance.now = () => BB.ms;
   const frame = () => { BB.ms += 1000 / 60; update(1 / 60); if (state !== 'play' && state !== 'dead') { menu = null; dialog = null; try { state = 'play'; } catch (e) {} } };
   BB.frame = frame;
-  const KEY = { J: 'attack', K: 'heavy', I: 'parry', L: 'roll', jump: 'jump' };
+  const KEY = { J: 'attack', K: 'heavy', I: 'parry', L: 'roll', jump: 'jump' };   // route steps may use 'I' too (Martial Arts shift)
   const tap = a => { press(a); BB.rel.push(a); };
   // ---- per type: spacing (edge distance to keep), route, defence profile, defence window (ms)
   const PROF = {
     longsword: { de: 12, route: ['J','J','J','J'], def: 'roll+parry', win: 280 },
-    katana:    { de: 12, route: ['J','J','J'], def: 'iai', win: 150, sheathe: true },
-    greatsword:{ de: 12, route: ['J','J','J'], def: 'guard', win: 520 },
+    katana:    { de: 12, route: ['K'], main: ['J','J','J'], def: 'iai', win: 150, sheathe: true },
+    greatsword:{ de: 12, route: [{ b: 'K', hold: 1200 }], main: ['J','J','J'], def: 'guard', win: 520 },
     maul:      { de: 8,  route: ['J','J','J'], def: 'roll', win: 280 },
-    sns:       { de: 8,  route: ['J','J','J','J'], def: 'guard', win: 520 },
+    sns:       { de: 8,  route: ['J','J','K'], main: ['J','J','J','J'], def: 'guard', win: 520 },
     dual:      { de: 6,  route: ['J','J','J','J'], def: 'roll', win: 175 },
     spear:     { de: 28, route: ['J','J','J'], def: 'guard', win: 520 },
     staff:     { de: 12, route: ['J','J','J','J'], def: 'roll', win: 280 },
-    whip:      { de: 50, route: ['J','J','J'], def: 'roll', win: 280 },
+    whip:      { de: 40, route: ['K'], main: ['J','J','J'], def: 'roll', win: 280 },
+    // v15 new types (docs/WEAPON_REVAMP.md Part C) -- profiles ready for phase 2b; iWhen presses I in an opening when true
+    saxe:      { de: 12, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 220, iWhen: () => !P.sxAxe && (P.sxG || 0) >= 100 },
+    bow:       { de: 30, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'tapI', win: 150 },
+    fist:      { de: 4,  route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 180 },
+    scythe:    { de: 14, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 280 },
+    bell:      { de: 8,  route: ['J','J','J'], main: ['J','J','J'], def: 'roll', win: 260, iWhen: () => (P.belNotes || []).length >= 2 },
   };
   BB.PROF = PROF;
   const ALT = {   // signature routes (o.route = 'sig')
     katana: ['K'], greatsword: [{ b: 'K', hold: 1200 }], maul: [{ b: 'K', hold: 600 }], whip: ['K'], longsword: ['J','J','K'], sns: ['J','J','K'], dual: ['J','J','J','J'], spear: ['J','J','K'], staff: ['J','K'],
+    saxe: ['J','J','J','J','K','K'], bow: [{ b: 'K', hold: 850 }], fist: ['J','J','I','J','J'], scythe: [{ b: 'K', hold: 700 }], bell: ['J','K','J','J'],
   };
   BB.ALT = ALT;
   const CALM = new Set([...BREATH_CALM, 'stagger', 'prowl', 'fly', 'rest', 'wait', 'fight', 'parried']);
@@ -71,6 +78,7 @@ E(`(() => {
         F.blocks++; return;
       }
     }
+    if (pr.def === 'tapI' && mvT().onI) { setP('idle', 'idle', true); P.face = -away; buffered.set('parry', performance.now()); if (mvT().onI(-away)) { F.parryTry++; return; } }
     // roll away from the blow
     if (ATK[P.state]) mvInterrupted();
     setP('idle', 'idle', true); P.face = away; const rd = BB.F.rollToward ? -away : away; P.face = rd; mvDodge(mvT().dodge ? (typeof mvT().dodge === 'function' ? mvT().dodge(rd) : mvT().dodge) : MV_ROLL, rd); F.rolls++;
@@ -90,7 +98,8 @@ E(`(() => {
     held.clear(); clearBuffer();
     if (!trnSummonBoss(kind) || !boss) return { kind, type, err: 'nosummon' };
     refreshDerived(false); P.hp = D.maxHp; P.st = D.maxSt; P.fp = D.maxFp;
-    const pr = PROF[type], route = o.route === 'sig' ? ALT[type] : (o.routeList || pr.route);
+    const dmgBy = {}; for (const q of (boss.parts ? [boss, ...boss.parts] : [boss])) { if (!q || !q.hit || q._bbHit) continue; q._bbHit = 1; const _h = q.hit; q.hit = function (info, ...r) { const hp0 = this.hp; const res = _h.call(this, info, ...r); const d = Math.max(0, hp0 - this.hp); if (d > 0) { const k = info && info.dot ? 'dot' : P.state; dmgBy[k] = (dmgBy[k] || 0) + d; } return res; }; }
+    const pr = o.de !== undefined ? { ...PROF[type], de: o.de } : PROF[type], route = o.route === 'sig' ? ALT[type] : o.route === 'main' ? (pr.main || pr.route) : (o.routeList || pr.route);
     const win = pr.win, base = o.skill ?? 0.45;
     BB.log = [];
     const F = BB.F = { rollToward: !!o.rollToward, prof: pr, p: o.noDef ? 0 : Math.min(0.92, base + win / 700), seen: new Set(), iai: 0, parryTry: 0, rolls: 0, parries: 0, blocks: 0 };
@@ -120,6 +129,7 @@ E(`(() => {
       const free = freeNow(), inMove = !!ATK[P.state];
       if (holdLeft > 0 && --holdLeft === 0) release('heavy');
       // katana: sheathe whenever it's quiet
+      if (pr.iWhen && free && (calm || B.state === 'stagger') && edge <= pr.de + 14 && P.st > 10) { try { if (pr.iWhen()) tap('parry'); } catch (e) {} }
       if (pr.sheathe && !P.sheathed && free && P.st > 20 && (!calm || edge > 40)) tap('parry');
       // guards: raise it while a blow is coming and we're close
       const guardType = pr.def === 'guard';
@@ -154,9 +164,9 @@ E(`(() => {
       }
       jumpCd--;
       if (o.trace && f % o.trace === 0) BB.log.push([(f/60).toFixed(1), 'P', Math.round(P.x), Math.round(P.y), P.state, 'st' + Math.round(P.st), '| B', st, Math.round(tb.x), Math.round(tb.y), 'hb', Math.round(hb.x0) + '-' + Math.round(hb.x1), 'y' + Math.round(hb.y0) + '-' + Math.round(hb.y1), 'edge', Math.round(edge), calm ? 'CALM' : 'ATK', 'hp', Math.round(B.hp)].join(' '));
-      const hpB = P.hp;
+      const hpB = P.hp, pst0 = P.state;
       frame();
-      if (P.hp < hpB) { const d = hpB - P.hp; lost += d; hits++; maxHit = Math.max(maxHit, d); const an = (tb.atk || B.atk || '-') + '/' + (tb.state || B.state); byAtk[an] = (byAtk[an] || 0) + d / D.maxHp; if (d > D.maxHp * 0.35) bigHits.push(an + ' ' + (d / D.maxHp).toFixed(2)); }
+      if (P.hp < hpB) { const d = hpB - P.hp; lost += d; hits++; maxHit = Math.max(maxHit, d); const an = o.byP ? 'P:' + pst0 : (tb.atk || B.atk || '-') + '/' + (tb.state || B.state); byAtk[an] = (byAtk[an] || 0) + d / D.maxHp; if (d > D.maxHp * 0.35) bigHits.push(an + ' ' + (d / D.maxHp).toFixed(2)); }
       if (P.state === 'dead' || P.hp <= 0) { oneShots++; P.state = 'idle'; P.anim.set('idle', true); P.deadT = 0; P.hp = D.maxHp; }
       if (!o.hpReal) P.hp = D.maxHp;
       else if (P.hp < D.maxHp * 0.25) { P.hp = Math.min(D.maxHp, P.hp + D.maxHp * 0.5); flasksUsed++; }   // a flask (the bot drinks below 25%)
@@ -171,7 +181,7 @@ E(`(() => {
       dps: firstHp ? +((firstHp - hpNow) / secs / D.light).toFixed(2) : 0,
       taken: +(lost / D.maxHp).toFixed(2), flasks: +(lost / flask).toFixed(1), hits, maxHit: +(maxHit / D.maxHp).toFixed(2), oneShots, flasksUsed,
       staggers: B ? (B.staggers || 0) + (B.parts ? B.parts.reduce((a, q) => a + (q.staggers || 0), 0) : 0) : 0,
-      parries: F.parries, iai: F.iai, rolls: F.rolls, parryTry: F.parryTry, blocks: F.blocks, light: Math.round(D.light), maxHp: D.maxHp, bossMax: firstHp, phases: [...phases].join('/'), byAtk: Object.entries(byAtk).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => k + ' ' + v.toFixed(2)).join(', '), bigHits: bigHits.slice(0, 6).join(', ') };
+      parries: F.parries, iai: F.iai, rolls: F.rolls, parryTry: F.parryTry, blocks: F.blocks, light: Math.round(D.light), maxHp: D.maxHp, bossMax: firstHp, phases: [...phases].join('/'), dmgBy: Object.entries(dmgBy).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => k + ' ' + Math.round(v / D.light)).join(', '), byAtk: Object.entries(byAtk).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => k + ' ' + v.toFixed(2)).join(', '), bigHits: bigHits.slice(0, 6).join(', ') };
     trnClear(); for (let i = 0; i < 3; i++) frame();
     return res;
   };

@@ -33,7 +33,7 @@ const SK_BRANCH_NODES = {
     ['f1b', 'flowing_form', 'Flowing Form', 2, 'Each blow after the first in a combo costs 35% less stamina.', () => [['Follow-up stamina', 100, 65]]],
     ['c', 'charged_arts', 'Charged Arts', 2, 'Held heavy attacks charge 35% faster (every charge stance and charge level). A charged heavy looses a crescent of ash.', () => [['Charge time', 100, 65]]],
     ['s2', 'sunder', 'Sunder', 1, 'All your blows deal +25% stance damage: foes break open sooner.', () => [['Stance damage', 100, 125]]],
-    ['d', 'executioner', 'Executioner', 2, 'Critical hits (ripostes, backstabs, stagger crits) deal +30% and refund 30 stamina.', () => [['Critical damage', 100, 130]]],
+    ['d', 'executioner', 'Executioner', 2, 'Critical hits (ripostes on a broken stance) and counters (after a parry, guard, brace or Iai) deal +30% and refund 30 stamina.', () => [['Critical / counter damage', 100, 130]]],
     ['f2a', 'blade_dancer', 'Blade Dancer', 2, 'Light attacks swing 12% faster.', () => [['Light swing speed', 100, 112]]],
     ['f2b', 'crushing_weight', 'Crushing Weight', 2, 'Charged heavy attacks deal +20%, and blows can’t interrupt you while you charge or swing one.', () => [['Charged heavy', 100, 120]]],
     ['e', 'tireless', 'Tireless', 2, 'Light and heavy attacks cost 20% less stamina.', () => [['Attack stamina', 100, 80]]],
@@ -166,7 +166,7 @@ function skOnLearn(id, on) {
 // what a build adds up to, in plain words, for the summary panel
 const SK_SUM = {
   keen_edge: [['Melee damage', 12]], heavy_hand: [['Heavy damage', 15], ['Heavy stance damage', 25]], measured_cut: [['Opening move damage', 25]],
-  flowing_form: [['Follow-up stamina cost', -35]], charged_arts: [['Heavy charge time', -35]], fourth_strike: [['Finisher damage', 20], ['Finisher stance damage', 30]], lingering_flame: [['Melee after an art', 12]], sunder: [['Stance damage', 25]], executioner: [['Critical damage', 30]],
+  flowing_form: [['Follow-up stamina cost', -35]], charged_arts: [['Heavy charge time', -35]], fourth_strike: [['Finisher damage', 20], ['Finisher stance damage', 30]], lingering_flame: [['Melee after an art', 12]], sunder: [['Stance damage', 25]], executioner: [['Critical / counter damage', 30]],
   blade_dancer: [['Light swing speed', 12]], crushing_weight: [['Charged heavy damage', 20]], tireless: [['Attack stamina cost', -20]],
   kindled_mind: [['Spell damage', 15]], deep_well: [['Max FP', 15]], azure_thrift: [['Spell FP cost', -30]], quick_recall: [['Spell cooldowns', -30], ['Spell FP cost', -10]],
   overcharge: [['Spell damage', 20], ['Spell cooldowns', 35]], swift_incant: [['Cast speed', 25]], steady_cast: [['Damage taken while casting', -20]], resonance: [['Melee after a spell hit', 30]],
@@ -228,7 +228,7 @@ function skOutMul(kind, src) {
     if (has('evasive_strike') && P.skRollAtk === P.skMvN) m *= 1.15;
     if (has('fourth_strike') && A.mv && A.mv.fin) m *= 1.2;
   }
-  if (P.state === 'riposte') { if (has('executioner')) m *= 1.3; if (skillOn('m_dagger')) m *= 1.25; }
+  if (P.state === 'riposte' || (A && A.counter)) { if (has('executioner')) m *= 1.3; if (skillOn('m_dagger')) m *= 1.25; }   // v15: counters too (every type with a guard or parry has one)
   if (has('relentless')) m *= 1 + 0.05 * (P.skRel || 0);
   if (P.skResoT > time) m *= 1.3;
   if (P.skEmberN > 0) m *= 1.12;
@@ -372,6 +372,7 @@ function skNewMove(A, cost, prev, gap) {
   const chained = (!!ATK[prev] && !stance) || gap < 0.35, rolled = prev === 'roll' || (P.dgEnd && P.clk - P.dgEnd.t < 0.25);
   if (!chained && gap >= 0.8) P.skOpenN = P.skMvN;
   P.skRelT = time;   // Relentless: swinging keeps the chain alive
+  if (skL() && has('executioner') && A.counter) P.st = Math.min(D.maxSt, P.st + 30);   // v15: a counter refunds like a critical
   if (!skL() || !(cost > 0)) return;
   let refund = 0;
   if (has('tireless')) refund += 0.2;

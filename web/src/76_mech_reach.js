@@ -277,6 +277,9 @@ HOOKS.render.push(() => { for (const gl of ST_GALES) { const k = Math.min(1, gl.
 // v14c J/K mixes: J K tip flick (+15 crack), K -> J wrench (drags small foes in, 40 poise), J J J K cyclone (II).
 const WH_REACH = MV_SR * 2;   // 80 px
 const WH_TIP = 0.7;           // the tip zone: the last 30% of the reach
+// v15 (balance): a tip hit deals x1.6 poise. Real-boss bot: the whip staggered a boss 0.1 times a fight, so stagger-based
+// nodes (Executioner, Riposte Mastery) were dead weight for it; spacing for the tip now also breaks stances.
+const WH_TIP_POISE = 1.6;
 function whTip(c) {
   const d = c.d, hb = c.hb;
   if (!d.tip) return;
@@ -287,7 +290,7 @@ function whTip(c) {
     if (c.A.spin && side !== P.face) { dist = side > 0 ? hb.x0 - P.x : P.x - hb.x1; front = -c.A.reach[0]; }   // a spin's back lash has a tip too
     else { dist = P.face > 0 ? hb.x0 - P.x : P.x - hb.x1; front = c.A.reach[1]; }
   }
-  if (dist >= front * WH_TIP) { c.tip = true; c.mul *= 1.3; }
+  if (dist >= front * WH_TIP) { c.tip = true; c.mul *= 1.3; c.poise *= WH_TIP_POISE; }   // v15: the crack at the tip rattles a stance
   else if (d.tipOnly) c.skip = true;
 }
 function whTipFx(x, y, big) {   // the tip spark: a bright crack of light where the lash snaps

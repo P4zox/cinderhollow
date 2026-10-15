@@ -61,7 +61,7 @@ rec('charged_arts', R['charged_arts.gs-'] + ' -> ' + R['charged_arts.gs+'], pars
   for (const [ty, how] of [['katana', 'iai'], ['longsword', 'parry'], ['dual', 'pdodge']]) {
     W().reset(ty, 5); arena(); W().reset(ty, 5); setSk(['deflect']); E('P.st = 20; P.hp = D.maxHp * 0.5; P.skDefT = -9');
     const st0 = E('P.st'), hp0 = E('P.hp');
-    if (how === 'iai') E("P.sheathed = true; mvStart('kt_iaiw'); P.inv = 0; P.lastHit = null; hurtPlayer(20, -1, 'dfl1', { src: null })");
+    if (how === 'iai') E("P.sheathed = true; mvStart('kt_iaiw'); P.inv = 0; P.lastHit = null; hurtPlayer(20, -1, 'dfl1', { src: null, parryable: true })");
     if (how === 'parry') E("startParry(); P.inv = 0; P.lastHit = null; hurtPlayer(20, -P.face, 'dfl2', { parryable: true })");
     if (how === 'pdodge') E("mvGain('perfect dodge')");
     r.push(`${ty} ${how}: st ${st0.toFixed(0)}->${E('P.st').toFixed(0)} hp ${(E('P.hp') - hp0).toFixed(0)}`);

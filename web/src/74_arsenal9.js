@@ -58,6 +58,12 @@ for (const t of WTYPES) WTYPE_INFO[t].icon = 'w_' + WTYPE_INFO[t].weapon;
 const WEAPON_TYPE = {}; for (const t of WTYPES) WEAPON_TYPE[WTYPE_INFO[t].weapon] = t;
 // the art each weapon carries (the contract's locked defaults); WEAPONS re-keyed in type order so every list shows the nine alike
 for (const t of WTYPES) { const id = WTYPE_INFO[t].weapon, w = WEAPONS[id]; if (!w) continue; w.art = WTYPE_INFO[t].art; delete WEAPONS[id]; WEAPONS[id] = w; }
+// v15 balance (docs/v15/balance.md, Phase 2a): attack rating per type, as a factor on the weapon's base 42. Set from a scripted
+// bot fighting 25 bosses with every type at the expected build (tools/shots/v15/balance): fast types that land whole chains
+// inside every opening (Dual Blades, Katana) kill ~40% faster than the pack; the reach and guard types ~25% slower. The move
+// tables (multiples of AR) are untouched, so every route and bench in AR units reads the same. Types not listed stay at 1.
+const WM_AR_TUNE = { longsword: 1, katana: 0.8, greatsword: 1, maul: 0.95, sns: 1.18, dual: 0.6, spear: 1.24, staff: 1.18, whip: 1.1 };
+for (const [t, k] of Object.entries(WM_AR_TUNE)) { const w = WTYPE_INFO[t] && WEAPONS[WTYPE_INFO[t].weapon]; if (w && !w._v15ar) { w._v15ar = w.base; w.base = Math.round(w.base * k * 10) / 10; } }
 
 function wtype() { const t = typeof SAVE !== 'undefined' && SAVE && WEAPON_TYPE[SAVE.weapon]; return t || 'longsword'; }
 function wcls() { return wtype(); }   // the type id (contract §4); replaces 04_player.js's class lookup

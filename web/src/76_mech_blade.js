@@ -205,7 +205,20 @@ mvRegister('katana', {
   walkMul() { return P.sheathed && !mvHas(2) ? 0.7 : 1; },
   idleTag(want) { return P.sheathed ? (want === 'run' ? 'kt_sheathed_walk' : 'kt_sheathed_idle') : null; },
   hurt(c) {
-    // the Iai parry: any blow inside the 150 ms window is negated and answered by the counter-cut
+    // the Iai parry: a parryable blow inside the 150 ms window is negated and answered by the counter-cut.
+    // v15 (balance): a blow that can't be parried (grabs, slams, magic, projectiles, most boss blows not in 67's list) is
+    // only turned aside by the scabbard -- it costs stamina like a shield block (6 + 0.8 x dmg) and there is no counter-cut;
+    // without the stamina it lands. (The Iai used to negate and punish everything: 10-36 counters a boss fight.)
+    if (P.state === 'kt_iaiw' && P.mvT <= 150 && !c.negate && !(c.opt && c.opt.parryable)) {
+      const cost = (6 + c.dmg * 0.8) * (typeof mvGuardScale === 'function' ? mvGuardScale() : 1);
+      if (P.st < cost) return;
+      c.negate = true; spend(cost); P.stDelay = 0.8; P.ktDeflect = (P.ktDeflect || 0) + 1;
+      if (c.dir) { P.face = -c.dir; P.vx = c.dir * 90; }
+      sfx.block(); hitstop = Math.max(hitstop, 0.06); shake = Math.max(shake, 2);
+      spawnFx(fxOr('parry_spark', 'hit'), P.x + P.face * 12, P.y - 18, P.face);
+      mvSpark(P.x + P.face * 10, P.y - 18, 5, '235,240,255', 120);
+      return;
+    }
     if (P.state === 'kt_iaiw' && P.mvT <= 150 && !c.negate) {
       c.negate = true; mvGain('counter');
       const perfect = mvHas(5) && P.mvT <= 60;
@@ -260,7 +273,7 @@ mvRegister('katana', {
     { rank: 1, name: 'Swallow return', input: 'Iai → J', desc: 'A reversed rising cut snapped back after the Iai. I: sheathe again.' },
     { rank: 1, name: 'Thrust home', input: 'Iai → J → K', desc: 'A lunging thrust, then the blade is sheathed: K next is an Iai.' },
     { rank: 1, name: 'Focus draw', input: 'hold K (sheathed)', desc: 'Hold 0.4 s, release: a dash-through cut, briefly invulnerable.' },
-    { rank: 1, name: 'Iai parry', input: 'I (sheathed, timed)', desc: 'Just before a blow lands: negate it and counter-cut (2.4).' },
+    { rank: 1, name: 'Iai parry', input: 'I (sheathed, timed)', desc: 'Just before a parryable blow: negate it, counter-cut (2.4).' },
     { rank: 1, name: 'Rushing draw', input: 'K (drawn)', desc: 'Dash in with a rising cut and sheathe again: K → K loops.' },
     { rank: 1, name: 'Step cut', input: 'L → J', desc: 'A flat cut out of the sidestep.' },
     { rank: 1, name: 'Crescent', input: '↑J', desc: 'A rising crescent for fliers.' },
