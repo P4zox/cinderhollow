@@ -5,11 +5,11 @@
 // If WebGL is missing or the context is lost, the plain blit takes over and the shader rows say so.
 const GFX_DEFAULTS = { bright: 1, shaders: 0, tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0, rays: 1, mood: 1 };
 for (const [k, v] of Object.entries(GFX_DEFAULTS)) if (SETTINGS[k] === undefined) SETTINGS[k] = v;
-// v15: the new pipeline (soft shadows, light shafts, rim light, region mood) costs less than the old one, so shaders are
-// on by default on desktop -- and switched on once for existing players too (they can turn them off in Graphics)
-if (!SETTINGS.gfxV15) { SETTINGS.gfxV15 = 1; if (!(typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches)) SETTINGS.shaders = 1; }
-// shaders are opt-in now: switch them off once for saves from when they were on by default, then respect the player's choice
+// (pre-v15) shaders were opt-in: switch them off once for saves from when they were on by default, then respect the player's choice
 if ((SETTINGS.gfxv || 0) < 2) { SETTINGS.shaders = 0; SETTINGS.gfxv = 2; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} }
+// v15 (runs after the old opt-in switch, so it wins on fresh profiles too): the new pipeline (soft shadows, light shafts, rim light, region mood) costs less than the old one, so shaders are
+// on by default on desktop -- and switched on once for existing players too (they can turn them off in Graphics)
+if (!SETTINGS.gfxV15) { SETTINGS.gfxV15 = 1; if (!(typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches)) SETTINGS.shaders = 1; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} }
 const GFX_KEYS = ['tex', 'bloom', 'vig', 'scan', 'grain', 'ca', 'grade'];
 const GFX_PRESETS = [
   ['Cinematic', { tex: 0, bloom: 1, vig: 1, scan: 0, grain: 0, ca: 0, grade: 0 }],
