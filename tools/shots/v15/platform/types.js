@@ -20,7 +20,7 @@ for (const t of NEW) {
   ok(E('SAVE.art') === I.art && !!E(`ARTS['${I.art}']`), `${t}: art locked to ${I.art}`);
   ok(E(`sheet('wpn_${id}').ok`) && E(`sheet('wpn_${id}').frames.length`) === E(`sheet('player').frames.length`), `${t}: overlay wpn_${id} matches the player sheet frame for frame`);
   ok(E(`ICON_SHEETS.some(n => sheet(n).ok && sheet(n).has('w_${id}'))`), `${t}: icon w_${id}`);
-  ok(E(`ITEMS['w:${id}'] && ITEMS['w:${id}'].weapon`) === id && E(`WEAPONS['${id}'].base`) === 42, `${t}: WEAPONS + ITEMS entry, base 42`);
+  ok(E(`ITEMS['w:${id}'] && ITEMS['w:${id}'].weapon`) === id && Math.abs(E(`WEAPONS['${id}'].base`) / 42 - 1) <= 0.3, `${t}: WEAPONS + ITEMS entry, base 42 x its balance factor (${E(`WEAPONS['${id}'].base`)})`);
   ok(I.diff >= 1 && I.diff <= 5 && I.name && I.desc && I.str && I.weak && I.mech && I.short, `${t}: info complete (${I.name}, ${'★'.repeat(I.diff)})`);
   ok(E(`sheet('player').has(wmFirstTag('${t}'))`), `${t}: the select / shrine preview plays ${E(`wmFirstTag('${t}')`)}`);
   // the table: T's move ids, string routes and tags all resolve
