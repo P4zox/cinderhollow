@@ -14,6 +14,7 @@ tables here with it.
   - A2–A10. The nine weapons
   - A11. Weapon Mastery
   - A12. Balance comparison
+  - A13. Move lists (every weapon's full command list, as in the game)
 - **Part B: Build plan**
 
 ---
@@ -893,6 +894,261 @@ Two types sit lower on paper by design: the **Greatsword** (1.83 on lights; its 
 boss opening, flinch-proof charging and stance damage) and the **Whip untipped** (1.93; it's built around the tip).
 The safer the weapon (Sword & Shield, Spear), the lower its burst. These numbers are still targets to re-check: Part B's
 benchmark re-measures every type against real bosses (openings, stamina, rolls) and tunes them to within ±10%.
+
+<!-- MOVELIST:BEGIN -->
+## A13. Move lists (every weapon, as in the game)
+
+The full command list of each weapon, 194 moves in all, exactly as the in-game **Move List** shows it (Esc → weapon mastery → Enter, or the MOVE LIST button). **Rank** is the Weapon Mastery rank that unlocks the move (I = available from the start). Inputs: **J** light, **K** heavy, **I** block / parry / special, **L** roll / step, **↑ / ↓** held, **air** = while airborne, **hold** = keep the button down, **(pause)** = wait a beat before the last press, **→** = right after the previous move. This section is generated from the code by `tools/movelist_doc.py`; the tables in A2–A10 have the timings and numbers.
+
+### Longsword — 21 moves (16 from the start)
+*Ashen Longsword* · default art **Ashen Crescent** · mechanic: Parry and riposte
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Light chain | J J J J | Downward, rising, poke, then the critical slash (commits). |
+| I | Lifting cleave | J K | A low-to-high heave that pops light foes up. J after it: the poke. |
+| I | Horizontal slash | J J K | A wide flat sweep across the front for crowds. |
+| I | Heavy poke | J J J K | A long two-handed thrust to punish from range. |
+| I | Overhead slash | K | The simple heavy. |
+| I | Return slash | K J | The blade snaps back up off the floor. J J after it: poke, crit. |
+| I | Crosswise strike | K K | Hands flip overhead: a flat cut at head height for tall foes. |
+| I | Splitting cleave | J K K | Lift the foe, then bring the blade straight down into the floor. |
+| I | Charged overhead | hold K | Release when the blade flashes: 2.4 dmg, breaks stance. Turnable. |
+| I | Riposte | I (parry) → J | After a parry: a lunging 2.2 counter. |
+| I | Quick slash | L → J | A rising cut straight out of the roll. |
+| I | Wheeling cut | L → K | Roll through, then turn on the nearest foe with a wide cut. |
+| I | Up slash | ↑J | A rising overhead cut for fliers. |
+| I | Falling crescent | air J J | A second air cut: a big crescent from overhead down past the feet. |
+| I | Plunge stab | air ↓J | Pogo off foes and spikes. |
+| I | Plunge | air K | A falling slam. |
+| II | Step slash | L forward → J | The roll becomes a gliding cut: stay in close. |
+| II | Wheel slash | J J (beat) J | Wait a beat after the 2nd cut: a turn that cuts both sides. J: crit. |
+| III | Foresight cut | I → K | A short stance: a blow in it is negated and answered with a 2.8 cut. |
+| IV | Pommel strike | J J J → hold K | Hold K ~0.2 s after the poke: a pommel bash with huge poise. |
+| V | Ember edge | J J J ·J (on the flash) | Press the 4th J as the poke flashes: a burning follow-up (+1.2). |
+
+### Katana — 22 moves (18 from the start)
+*Duskveil* · default art **Moonwave** · mechanic: The sheathe and the Iai draw
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Light chain | J J J | Quick cut, return cut, then a triple flurry. |
+| I | Flurry sheathe | J J J → I | Slide the blade home straight out of the flurry. |
+| I | Helm splitter | J J J K | End the flurry with one raised vertical cut: the stagger it lacks. |
+| I | Kesa cut | J K | A stepping shoulder-to-hip cleave. J after it: back to the chain. |
+| I | Crescent sheathe | J J K | A wide turning cut that ends sheathed: K next is an Iai. |
+| I | Sheathe | I | Sheathe the blade (70% walk). Everything from the sheathe is a draw. |
+| I | Draw cut | J (sheathed) | A quick low draw-cut from the hip that flows into the chain. |
+| I | Iai draw | K (sheathed) | The fastest heavy in the game: 2.2 dmg. |
+| I | Swallow return | Iai → J | A reversed rising cut snapped back after the Iai. I: sheathe again. |
+| I | Thrust home | Iai → J → K | A lunging thrust, then the blade is sheathed: K next is an Iai. |
+| I | Focus draw | hold K (sheathed) | Hold 0.4 s, release: a dash-through cut, briefly invulnerable. |
+| I | Iai parry | I (sheathed, timed) | Just before a blow lands: negate it and counter-cut (2.4). |
+| I | Rushing draw | K (drawn) | Dash in with a rising cut and sheathe again: K → K loops. |
+| I | Step cut | L → J | A flat cut out of the sidestep. |
+| I | Crescent | ↑J | A rising crescent for fliers. |
+| I | Air draw | air J | An iaido draw in the air. |
+| I | Needle stab | air ↓J | Pogo off foes and spikes. |
+| I | Falling draw | air K | A plunge. |
+| II | Turning draw | focus draw → K | You dashed through: whirl round, cut back, sheathe. |
+| III | Flash step | L (sheathed) | An invulnerable blink that keeps the sheathe; K out of it is an Iai. |
+| IV | Thousand cuts | J J J → I | The flurry sheathe makes every flurry hit echo (+0.3 each). |
+| V | Moonlit iai | perfect Iai parry → K | A parry in the first 60 ms: time slows, your next Iai deals 3.0. |
+
+### Greatsword — 21 moves (15 from the start)
+*Gravecleaver* · default art **Storm Leap** · mechanic: Charge levels
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Light chain | J J J | Overhead hack, wide sweep, rising spin that lifts small foes. |
+| I | Hilt bash | J → K  /  J J → K | A pommel shove. Keep K held: the charge goes on from level 2. |
+| I | Momentum cleave | J J J → K | The spin rolls on into a full overhead cleave (2.6). |
+| I | Turning sweep | J → K → J | Off the hilt bash, the body wheels round in a flat sweep (2.0). |
+| I | Charged slash | hold K | Release on a pip: 2.0 / 2.85 / 3.9. Past 1.4 s it overcharges. |
+| I | Upheaval | charged slash → J | Wrench the buried blade up out of the floor (1.8, lifts). J: spin. |
+| I | Strong charged slash | charged slash → hold K | The same levels, ×1.25. |
+| I | Keep charging | hold K through a swing | Keep K held as a swing ends and the next charge starts at once. |
+| I | Blade guard | hold I | Block frontal blows: stamina and 25% chip, no parry. |
+| I | Retort | block a blow → J | Within 0.7 s of a block: the blade torn up out of the floor (1.8). |
+| I | Rolling heavy | L → hold K | A charged slash out of the roll, 200 ms already banked. |
+| I | Great arc | ↑J | One arc from the floor to the sky, for fliers. |
+| I | Air cleave | air J | Hangs a beat at the top, then cleaves down. |
+| I | Two-handed plunge | air ↓J | Pogo off foes and spikes (wide). |
+| I | Earth plunge | air K | A falling slam. |
+| II | Shoulder tackle | hold K → L | Once per charge: shoulder through a blow and keep charging. |
+| II | Earthsplitter | J J J → K → K | Plough the buried blade forward and rip it out level (2.4). |
+| III | True charged slash | strong slash → hold K | A rising backhand, then 4.9 at full charge. |
+| III | Leaping wide slash | hold K → L → J | Tackle, then cash the charge in at once with a bounding sweep. |
+| IV | Guard tackle | block → K | Shoulder out of the guard into a level 2 charge. |
+| V | Wrath | hold K past level 3 | A red fourth level (1.4-2.1 s): 4.5 and a small flame burst. |
+
+### Maul — 22 moves (15 from the start)
+*Cinder Maul* · default art **Tolling Blow** · mechanic: Walk-charge and stun
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Light chain | J J J | Two overhead smashes, then a golf-swing upswing that lifts small foes. |
+| I | Side blow | J → K  /  J J → K (tap) | A flat hook that knocks small foes aside. J after it: the upswing. |
+| I | Walk-charge | hold K | Walk at 60% while charging. Release: upswing / double / big smash. |
+| I | Hammer drop | K (upswing) → J | The raised hammer comes straight down (1.4). J again: the upswing. |
+| I | Spinning bludgeon | hold K 1.4 s (moving) | Up to 4 spins (0.5 each); let go for the 2.0 spin finisher. |
+| I | Haft jab | hold K → J | Once per charge: a lunging jab (0.7) that keeps the charge going. |
+| I | Keep charging | hold K through a swing | Keep K held as a swing ends and the walk-charge starts at once. |
+| I | Brace | I | 0.6 s: blows can't flinch you and do half damage. |
+| I | Payback | brace a blow → K | The braced head torn up into an uppercut (2.0, stuns ×2). |
+| I | Rolling swing | L → J | A low-to-high sweep out of the roll. |
+| I | Rolling charge | L → hold K | Come out of the roll already charging. |
+| I | Rising hammer | ↑J | An upward blow for fliers. |
+| I | Hammer spin | air J | A spinning blow in the air. |
+| I | Ground pound | air ↓J | Pogo with a big bounce. |
+| I | Meteor plunge | air K | A falling slam with a small shockwave. |
+| II | Charge step | hold K → L | Roll without losing the charge. |
+| II | Third pound | double smash → K | A hop and a third blow into the same spot (1.6). |
+| II | Backswing slam | J → K → K | Off the side blow, all the way round into an overhead slam (2.0). |
+| III | Big Bang | J J J → K K K K | Hook, backhand, uppercut, then a leaping 3.0 that stuns ×2. |
+| IV | Steered spin | spin + ← / → | Steer the spinning bludgeon; each spin deals 0.6. |
+| IV | Hammer spike | air J J | Spike small foes into the ground and bounce off. |
+| V | Earthshaker | hold K 1.4 s, standing still | Slam the overcharge down: a shockwave both ways (1.0, stuns). |
+
+### Sword & Shield — 22 moves (17 from the start)
+*Knight’s Sword and Shield* · default art **Aegis** · mechanic: Full guard, parry and backhop
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Quick slash chain | J J J J | Three fast cuts and a reeling shield-bash finisher. |
+| I | Shield jab | J K | A quick shield punch (28 poise); J carries on into the 3rd cut. |
+| I | Rim upper | J J J K | The shield rim driven up through the foe: launches small foes. |
+| I | Backhand rim bash | J K K | Jab, then the shield flung out edge-first: two bashes, 78 poise. |
+| II | Aegis plant | J J J J K | Plant the shield after the finisher: staggers both sides. |
+| II | Wheel cut | J J (pause) J | Wait a beat after the 2nd cut: a full turn, hits both sides. |
+| II | Perfect rush | J J K on the flash | Press each on the light flash: 0.85, 1.1, then a 1.8 bash. |
+| I | Shield bash | K | Drive the shield forward: 60 poise, small foes reel. |
+| I | Under-rim cut | K J | A low cut after the bash; J J go on to the 3rd cut and finisher. |
+| I | Shield hammer | K K | The shield raised overhead and its rim hammered down: 120 poise. |
+| I | Charged shield rush | hold K | Dash 70 px behind the shield; light hits do not stop it. |
+| I | Block / parry | I (hold / tap) | Hold to block anything frontal; tap to parry (170 ms). |
+| I | Guard counter | block or parry → J | A heavy thrust over the rim, 1.9. |
+| III | Shield slam | block → K | The shield brought down like a gate: 110 poise. |
+| V | Perfect guard | I just before a blow | Within 100 ms: free block, projectiles fly back, counter +50%. |
+| I | Backhop | L | A short hop back, 0.14 s invulnerable. |
+| I | Leaping slash | L → J | Spring forward off the backhop with an overhead cut. |
+| I | Shield charge | L → K | Land from the backhop and drive back in behind the shield. |
+| I | Air slash | air J | A low cut beneath the raised shield. |
+| I | Shield uppercut | ↑J | The shield punched overhead: for fliers. |
+| I | Shield surf | air ↓J | Ride the shield down: the widest pogo. |
+| I | Falling slash | air K | The plunge (IV: the falling bash, 1.6). |
+
+### Dual Blades — 24 moves (19 from the start)
+*Twinfangs* · default art **Twin Tempest** · mechanic: Demon Mode and the perfect dodge
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Twin slashes | J J J J | Two double slashes, a rising cross, then a spinning finisher. |
+| I | Fang barrage | J J (pause) J | Wait a beat after the 2nd slash: five quick alternating stabs. J: spin |
+| I | Skyward fangs | J J J K | A rising double cut that carries you up, popping light foes. J: air J |
+| I | Hooking cross | J J K | Low hooks in from both sides; reels light foes. J: rising cross |
+| I | Lunge | K | Dash in and open the blades in an X. |
+| I | Spiral pursuit | K J | A drifting corkscrew of four cuts round you. J: back into the chain. |
+| I | Fang pounce | K K | Hop off the lunge and chop both blades down together: stagger. |
+| I | Demon Mode | I (tap) | Toggle: drains stamina, 20% faster swings, attacks cost half. No block |
+| I | Demon chain | Demon: J ×6 | The chain runs on: a downward cut, then a spin with an upward rip. |
+| I | Demon flurry | Demon: K | Six alternating cuts, advancing. Hits fill the demon gauge. |
+| I | Blade Dance | Archdemon: hold K | Eight cuts and a crossed X (4.2). Light armour. Empties the gauge. |
+| I | Perfect dodge | L just before a blow | Roll ≤0.1 s (demon dash ≤0.175 s) before a hit: +25 stam, +10% speed. |
+| I | Counter flurry | L (perfect) → J | Straight out of a perfect dodge: three cuts at once. |
+| I | Dash slash | L → J | Spring out of the roll and cut through. J: back into the chain. |
+| I | Scissor up-cut | ↑J | Both blades scissored up past the head, for fliers. |
+| I | Twin spin | air J | Both blades brought through at once: an X opens in front. |
+| I | Crossfall | air J J | After the twin spin: a crossed dive to the floor, 2 hits. |
+| I | Drill | air ↓J | Blades crossed under the feet, twisting: pogo off foes. |
+| I | Twin plunge | air K | A falling slam. |
+| II | Dash-through cut | demon dash → J | Cut straight through out of the dash. x1.5 after a perfect dodge. |
+| II | Bloodwheel | Demon: K J | Out of the flurry, a somersault of crimson cuts. J: demon chain 5. |
+| II | Rending cyclone | Demon: J ×6 → K | Two crimson spins and a leaping cross-cut: the demon chain finisher. |
+| III | Blade Dance II | Archdemon: hold K | Three more cuts and a bigger cross-cut finisher. |
+| III | Reversal cut | L → K | Turn out of the roll with a rising double cut. Perfect: silver, x1.5. |
+
+### Spear — 22 moves (17 from the start)
+*Rootspear* · default art **Thunder Lunge** · mechanic: Heavy guard, hop and charge dash
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Poke chain | J J J | Three long pokes (1.5x sword reach), the last an overhead sweep. |
+| I | Twin thrust | J K | A poke at the knee, then the chest; J goes on to the sweep. |
+| I | Recoil thrust | J J K | Step back while thrusting: hit and keep your distance. |
+| I | Impaling drive | J J J K | Thrust it home, then twist and drive it deeper: 2 hits. |
+| II | Wheeling haft | J J (pause) J | Wait a beat after the 2nd poke: spin the haft, hits both sides. |
+| I | High thrust | K | An upward lunge: for fliers and tall foes. |
+| I | Falling haft | K J | Raise the spear and chop the haft down in front. |
+| II | Sky rake | K K | A second, steeper high thrust that lifts small foes. |
+| I | Charge dash | hold K (moving) | Run with the spear levelled; let go of K for the finishing thrust. |
+| I | Heavy guard | I (hold) | Blocks anything frontal; walk slowly behind it. Big hits chip 10%. |
+| I | Guard poke | I + J | A short thrust from the guard; the guard is back after it. |
+| I | Counter-thrust | block → K | Within 0.5 s of a block: a 2.0 lunge out of the guard. |
+| III | Charged counter | block → hold K | Keep K held 150 ms: a 3.0 piercing lunge, 90 poise. |
+| III | Rising sweep | counter-thrust → J | Sweep the haft up overhead after the counter: launches. |
+| IV | Power guard | I + K | 1 s with no pushback or chip; blocks cost x1.5. |
+| I | Hop | L | A short hop that keeps you facing the foe; chain 2 (II: 3). |
+| I | Hop poke | L → J | Pokes on from where the chain left off. |
+| I | Hop lunge | L → K | Off the hop, a long low lunge at full stretch. |
+| I | Jump thrust dive | air J (rising) | Attack while rising after a jump: dive down the spear. |
+| I | Sky thrust | ↑J | Straight up at the sky: for fliers. |
+| I | Tip-first strike | air ↓J | Ride the spear tip down: the pogo. |
+| I | Lance plunge | air K | The plunge. |
+
+### Staff — 20 moves (15 from the start)
+*Pilgrim’s Quarterstaff* · default art **Whirlwind** · mechanic: Vault and momentum
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Strike · Butt strike · Low sweep · Overhead | J J J J | Both ends: every step also hits just behind you. The sweep trips. |
+| I | Pole launcher | J J K | Upswing that launches small foes and carries you into the air. |
+| I | Back vault | J K | Flip back over the planted staff, kicking up through the foe. |
+| I | Spin | K | Two full turns at the waist, front and back. 24 stamina. |
+| I | Spin vault | K → J | Ride the spin up and over: the staff comes down from above. |
+| I | Vault | I | Spring off the staff, up and forward. Invulnerable at the start. |
+| I | Vault kick | I → J | A flying kick off the planted staff at the top of the vault. |
+| I | Vault spin | I → K | The aerial spin straight out of the vault. |
+| I | Low sweep | L → J | Out of a roll: a spinning sweep at the ankles, both sides. |
+| I | Aerial strike | air J | An air wheel. Each air hit adds a momentum stack (+8%, max 3). |
+| I | Cartwheel | air J J | Turn over the staff: the butt behind you, then the head in front. |
+| I | Aerial spin | air K | A gliding spin round the waist, front and back. |
+| I | Comet | air K → J | Dive staff-first to the floor; spends momentum: +25% per stack. |
+| I | Rising twirl | ↑J | The staff wheels overhead: for fliers. |
+| I | Dive kick | air ↓J | Pogo off a foe. The first bounce of a jump refunds an air attack. |
+| II | Roll vault | L → I | Vault straight out of a roll. |
+| II | Pole drop | air ↓J → K | Off the dive kick, drop on the staff point: a shock on both sides. |
+| III | Spin finisher | air K → K | A second, wider aerial spin ending in a chop. |
+| IV | Double vault | I in the air near a foe | Vault off its head (cancels an air move); refunds the air attacks. |
+| V | Gale | K with 3 momentum | Spend the momentum: a slow tornado strikes 3 times. |
+
+### Whip — 20 moves (14 from the start)
+*Headsman’s Chain* · default art **Lash** · mechanic: Tip crack and grapple
+
+| Rank | Move | Input | What it does |
+|---|---|---|---|
+| I | Lash · Lash II · Whirl lash | J J J | Twice sword reach. The last 30% of the lash is the tip: ×1.3. |
+| I | Trip lash | J J K | A low crack along the floor. Tipped, it trips small foes. |
+| I | Tip flick | J K | A fast wrist-snap, tip only: little damage, +15 crack. |
+| I | Heavy crack | K | Fling the chain straight out. A tip hit fills the crack meter. |
+| I | Wrench | K → J | Haul on the chain at the tip: drags small foes in, 40 poise. |
+| I | Overhead crack | hold K | Whirl it overhead, release at full: 2.4× sword reach. |
+| I | Thunderclap | K at 100 crack | 2.5 (3.25 at the tip), 90 poise, a blast and a stagger. |
+| I | Grapple | I | Small foes are reeled in; large foes and hook rings pull you. 2 s. |
+| I | Retreat lash | L → J | Back off 40 px and crack forward: the tip lands where you were. |
+| I | Coil spin | L → K | Out of a roll, the chain whirls round you: small foes go to the tip. |
+| I | Circular lash | air J | A full circle round the body, front and back. |
+| I | Skyfall crack | air J J | From the circle, a long crack down to the floor ahead. |
+| I | Vertical crack | ↑J | The tip cracks straight overhead: for fliers. |
+| I | Down crack | air ↓J | Pogo off a foe on a long box below. |
+| II | Snap counter | I just before a hit | Negate it and lash the attacker out of its move. 6 stamina. |
+| II | Reel kick | grapple → J | Kick the foe you reeled in back out to the tip. |
+| II | Cyclone | J J J K | Two full-length cracks, ahead then behind: a tip on both sides. |
+| III | Grapple slam | grapple → K | Haul the catch overhead and slam it: 1.6 dmg, stunned. |
+| IV | Double crack | K → K | A rising backhand into a second, harder crack. |
+| V | Thousand lashes | hold J | Keep J held through the lash: 8 tip-only cracks. |
+
+<!-- MOVELIST:END -->
 
 ---
 # Part B — Build plan
