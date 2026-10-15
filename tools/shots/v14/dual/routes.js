@@ -69,6 +69,19 @@ setup(); W().tap('roll'); W().frame(3); E(`hurtPlayer(20, -1, 'cf1', { src: enem
 T('L (perfect) -> J = counter flurry, at once', st() === 'tw_cflurry', st());
 setup(); { const s = play(['L', 'w16', 'J', 'w8', 'J']); T('L -> J dash slash -> J -> tw_2', s.includes('tw_dashslash') && s.includes('tw_2'), s.join(' ')); }
 
+// ---- v14c: J/K mixes
+setup(); { const s = play(['K', 'w14', 'J', 'w20', 'J', 'w14', 'J']); T('K -> J spiral pursuit (4 hits) -> J rising cross -> J spin', s.join(' ').includes('tw_heavy tw_spiral tw_3 tw_4') && hitsOf('tw_spiral').length === 4, s.join(' ') + ' | ' + hitsOf('tw_spiral').join('/')); }
+setup(); { const s = play(['K', 'w14', 'K']); T('K -> K fang pounce (1.3, lands planted)', s.join(' ').includes('tw_heavy tw_pounce') && hitsOf('tw_pounce').join('/') === '1.3' && E('P.ground'), s.join(' ') + ' | ' + hitsOf('tw_pounce').join('/')); }
+setup(); { const s = play(['J', 'w13', 'J', 'w13', 'K', 'w16', 'J', 'w13', 'K']); T('J J K hooking cross (2 hits) -> J rising cross -> K skyward fangs', s.join(' ').includes('tw_1 tw_2 tw_hook tw_3 tw_skyward') && hitsOf('tw_hook').length === 2, s.join(' ') + ' | ' + hitsOf('tw_hook').join('/')); }
+for (const rank of [1, 2]) {
+  setup(rank); E('P.demon = true');
+  const s = play(['K', 'w30', 'J', 'w16', 'J', 'w12', 'J']);
+  if (rank === 2) T('R2 Demon K -> J bloodwheel (3 hits) -> J demon chain 5 -> J 6', s.join(' ').includes('tw_dflurry tw_bwheel tw_d5 tw_d6') && hitsOf('tw_bwheel').length === 3 && E('P.ground'), s.join(' ') + ' | ' + hitsOf('tw_bwheel').join('/'));
+  else T('R1 Demon K -> J: no bloodwheel below II', s.includes('tw_dflurry') && !s.includes('tw_bwheel'), s.join(' '));
+}
+setup(); { const s = play(['K', 'w40', 'w20', 'J']); T('K, then J well after the lunge ended: a fresh chain (tw_1)', s.includes('tw_heavy') && s.includes('tw_1') && !s.includes('tw_spiral'), s.join(' ')); }
+setup(); { const s = play(['J', 'w13', 'J', 'w13', 'J', 'w13', 'J']); T('J J J J still the plain chain (no hook)', s.join(' ').includes('tw_1 tw_2 tw_3 tw_4') && !s.includes('tw_hook'), s.join(' ')); }
+
 // ---- v14 rule changes
 // demon chain damage
 setup(); E('P.demon = true'); play(['J', 'w11', 'J', 'w11', 'J', 'w11', 'J', 'w20', 'J', 'w11', 'J']);

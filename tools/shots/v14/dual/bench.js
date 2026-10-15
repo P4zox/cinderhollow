@@ -74,6 +74,12 @@ const SCRIPTED = [
   ['L -> K loop  (rank I: roll -> lunge)', 1, '', ['L', 12, 'K', 'e']],
   ['L (perfect) -> J loop  (counter flurry)', 1, '', ['L', 3, 'pd', 'J', 'e']],
   ['L (perfect) -> K loop  (silver reversal, III)', 3, '', ['L', 3, 'pd', 'K', 'e']],
+  // v14c
+  ['K J J J  (lunge -> spiral pursuit -> rising cross -> spin)', 1, '', ['K', 'q', 'J', 'q', 'J', 'q', 'J', 'e']],
+  ['K K  (lunge -> fang pounce)', 1, '', ['K', 'q', 'K', 'e']],
+  ['J J K J J  (hooking cross -> rising cross -> spin)', 1, '', ['J', 'q', 'J', 'q', 'K', 'q', 'J', 'q', 'J', 'e']],
+  ['Demon K J J J K  (flurry -> bloodwheel -> chain 5, 6 -> cyclone, II)', 2, 'P.demon = true', ['K', 'q', 'J', 'q', 'J', 'q', 'J', 'q', 'K', 'e']],
+  ['Demon K loop (reference)', 1, 'P.demon = true', ['K', 'e']],
 ];
 out.scripted = [];
 for (const [name, rank, pre, seq] of SCRIPTED) {

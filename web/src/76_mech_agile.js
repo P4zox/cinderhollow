@@ -112,6 +112,7 @@ mvRegister('dual', {
   },
   unlocks: [
     { rank: 2, id: 'tw_dthrough', name: 'Dash-through cut', input: 'demon dash → J', desc: 'Cut through the foe out of the dash: 1.0 dmg, 15 poise. After a perfect dodge it deals 1.5.' },
+    { rank: 2, id: 'tw_bwheel', name: 'Bloodwheel', input: 'Demon: K → J', desc: 'Somersault out of the demon flurry with three crimson cuts; J carries on into the demon chain.' },
     { rank: 2, id: 'tw_dfin', name: 'Rending cyclone', input: 'Demon: J ×6 → K', desc: 'Close the demon chain: two crimson spins and a leaping cross-cut (40 poise).' },
     { rank: 3, id: 'tw_dance2', name: 'Blade Dance II', input: 'hold K (Archdemon)', desc: 'Three more hits and a cross-cut finisher (+1.5).' },
     { rank: 3, id: 'tw_reversal', name: 'Reversal cut', input: 'L → K', desc: 'Turn out of the roll with a rising double cut. After a perfect dodge: silver, x1.5, big poise.' },
@@ -120,10 +121,13 @@ mvRegister('dual', {
   ],
   combos: [
     { rank: 1, name: 'Twin slashes', input: 'J J J J', desc: 'Two double slashes, a rising cross, then a spinning finisher.' },
-    { rank: 1, name: 'Fang barrage', input: 'J J (pause) J', desc: 'Wait a beat after the 2nd slash: five quick alternating stabs. J: spin.' },
-    { rank: 1, name: 'Skyward fangs', input: 'J J J K', desc: 'A rising double cut that carries you up (pops light foes). J: air string.' },
+    { rank: 1, name: 'Fang barrage', input: 'J J (pause) J', desc: 'Wait a beat after the 2nd slash: five quick alternating stabs. J: spin' },
+    { rank: 1, name: 'Skyward fangs', input: 'J J J K', desc: 'A rising double cut that carries you up, popping light foes. J: air J' },
+    { rank: 1, name: 'Hooking cross', input: 'J J K', desc: 'Low hooks in from both sides; reels light foes. J: rising cross' },
     { rank: 1, name: 'Lunge', input: 'K', desc: 'Dash in and open the blades in an X.' },
-    { rank: 1, name: 'Demon Mode', input: 'I (tap)', desc: 'Toggle. Drains stamina, swings 20% faster, attacks cost half. No block.' },
+    { rank: 1, name: 'Spiral pursuit', input: 'K J', desc: 'A drifting corkscrew of four cuts round you. J: back into the chain.' },
+    { rank: 1, name: 'Fang pounce', input: 'K K', desc: 'Hop off the lunge and chop both blades down together: stagger.' },
+    { rank: 1, name: 'Demon Mode', input: 'I (tap)', desc: 'Toggle: drains stamina, 20% faster swings, attacks cost half. No block' },
     { rank: 1, name: 'Demon chain', input: 'Demon: J ×6', desc: 'The chain runs on: a downward cut, then a spin with an upward rip.' },
     { rank: 1, name: 'Demon flurry', input: 'Demon: K', desc: 'Six alternating cuts, advancing. Hits fill the demon gauge.' },
     { rank: 1, name: 'Blade Dance', input: 'Archdemon: hold K', desc: 'Eight cuts and a crossed X (4.2). Light armour. Empties the gauge.' },
@@ -136,21 +140,23 @@ mvRegister('dual', {
     { rank: 1, name: 'Drill', input: 'air ↓J', desc: 'Blades crossed under the feet, twisting: pogo off foes.' },
     { rank: 1, name: 'Twin plunge', input: 'air K', desc: 'A falling slam.' },
     { rank: 2, name: 'Dash-through cut', input: 'demon dash → J', desc: 'Cut straight through out of the dash. x1.5 after a perfect dodge.' },
+    { rank: 2, name: 'Bloodwheel', input: 'Demon: K J', desc: 'Out of the flurry, a somersault of crimson cuts. J: demon chain 5.' },
     { rank: 2, name: 'Rending cyclone', input: 'Demon: J ×6 → K', desc: 'Two crimson spins and a leaping cross-cut: the demon chain finisher.' },
     { rank: 3, name: 'Blade Dance II', input: 'Archdemon: hold K', desc: 'Three more cuts and a bigger cross-cut finisher.' },
     { rank: 3, name: 'Reversal cut', input: 'L → K', desc: 'Turn out of the roll with a rising double cut. Perfect: silver, x1.5.' },
   ],
 }, {
   tw_1: { tags: ['tw_1'], hits: [0.45, 0.45], gap: 60, poise: 6, stam: 8, wind: 100, total: 300, step: 0, fx: 'slash', next: { J: 'tw_2' } },
-  tw_2: { tags: ['tw_2'], hits: [0.45, 0.45], gap: 60, poise: 6, stam: 8, wind: 100, total: 300, step: 1, fx: 'slash2', next: { J: 'tw_3' } },
+  tw_2: { tags: ['tw_2'], hits: [0.45, 0.45], gap: 60, poise: 6, stam: 8, wind: 100, total: 300, step: 1, fx: 'slash2', next: { J: 'tw_3', K: 'tw_hook' } },
   tw_3: { tags: ['tw_3'], hits: [0.5, 0.5], gap: 60, poise: 8, stam: 9, wind: 110, total: 300, step: 2, fx: 'slash_up', next: { J: 'tw_4', K: 'tw_skyward' } },
   tw_4: { tags: ['tw_4'], dmg: 1.2, poise: 20, stam: 12, wind: 220, total: 520, step: 3, fin: true, spin: true, next: { J: () => (P.demon ? 'tw_d5' : '@J') } },
   // v14: 2 x 0.35 / 3 x 0.3 (were 2 x 0.5 / 3 x 0.45): Demon J x6 = 5.6 over 1.98 s / 1.2 = 3.4 dmg/s, the plan
   tw_d5: { tags: ['tw_d5', 'tw_1'], hits: [0.35, 0.35], gap: 60, poise: 8, stam: 8, wind: 100, total: 280, step: 4, can: () => P.demon, fx: 'slash', next: { J: 'tw_d6' } },
   tw_d6: { tags: ['tw_d6', 'tw_5'], hits: [0.3, 0.3, 0.3], gap: 55, poise: 10, stam: 10, wind: 100, total: 280, step: 5, fin: true, can: () => P.demon, fx: 'slash3',
     next: { K: () => (P.demon && mvHas(2) ? 'tw_dfin' : '@K') } },
-  tw_heavy: { tags: ['tw_heavy'], kind: 'heavy', dmg: 1.1, poise: 15, stam: 12, wind: 200, total: 480, lunge: 60, fx: 'slash3' },
-  tw_dflurry: { tags: ['tw_dflurry', 'tw_heavy'], kind: 'heavy', hits: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3], gap: 100, poise: 30, stam: 16, wind: 150, total: 800, fin: true, fx: 'slash', fxEach: true, lunge: 20 },
+  tw_heavy: { tags: ['tw_heavy'], kind: 'heavy', dmg: 1.1, poise: 15, stam: 12, wind: 200, total: 480, lunge: 60, fx: 'slash3', next: { J: 'tw_spiral', K: 'tw_pounce' } },
+  tw_dflurry: { tags: ['tw_dflurry', 'tw_heavy'], kind: 'heavy', hits: [0.3, 0.3, 0.3, 0.3, 0.3, 0.3], gap: 100, poise: 30, stam: 16, wind: 150, total: 800, fin: true, fx: 'slash', fxEach: true, lunge: 20,
+    next: { J: () => (P.demon && mvHas(2) ? 'tw_bwheel' : '@J') } },
   tw_khold: { tags: ['tw_heavy'], kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9,
     on: { update(dt) {
       P.vx *= Math.pow(0.05, dt);
@@ -184,6 +190,24 @@ mvRegister('dual', {
       P.vy = 400; P.vx = P.face * 95;
     },
     on: { start() { P.twLanded = false; } } },
+  // ---- v14c: J/K mixes
+  // K -> J: out of the lunge, a corkscrew -- two turns with the blades held out like a wheel, drifting forward (4 hits,
+  // both sides); J after it rejoins the chain at the rising cross
+  tw_spiral: { tags: ['tw_spiral', 'tw_4'], hits: [0.25, 0.25, 0.25, 0.35], gap: 75, poise: 12, stam: 10, wind: 120, total: 480, spin: true, lunge: 24, fx: 'slash', fxEach: true,
+    next: { J: 'tw_3' } },
+  // K -> K: hop off the lunge with both blades raised and chop them down together (one heavy hit, stagger)
+  tw_pounce: { tags: ['tw_pounce', 'tw_5'], kind: 'heavy', dmg: 1.3, poise: 35, stam: 14, wind: 230, total: 600, lunge: 30, lungeLead: 200, airOk: true, fx: 'slash3',
+    on: { start() { if (P.ground) { P.vy = -130; P.ground = false; } }, update() { if (P.mvT >= 175 && !P.ground) P.vy = Math.max(P.vy, 420); },   // drop onto the chop
+      swing() { shake = Math.max(shake, 3); spawnFx('dust', P.x + P.face * 16, P.y, P.face); } } },
+  // J J -> K: sink into a wide stance and hook both blades in from the outside at knee height, crossing (reels light
+  // foes); J after it: the rising cross, K: skyward fangs -- J J K J K flows into the air string
+  tw_hook: { tags: ['tw_hook', 'tw_3'], kind: 'heavy', hits: [0.45, 0.55], gap: 80, poise: 20, stam: 11, wind: 140, total: 440, step: 2, reel: true, lunge: 12, fx: 'slash2',
+    next: { J: 'tw_3' } },
+  // Demon K -> J (II): out of the demon flurry, a somersault -- both blades wheel overhead and down in front twice --
+  // then J carries on into the demon chain (hit 5)
+  tw_bwheel: { tags: ['tw_bwheel', 'tw_d6'], rank: 2, hits: [0.3, 0.3, 0.3], gap: 90, poise: 15, stam: 10, wind: 120, total: 440, airOk: true, lunge: 20, lungeLead: 160, fx: 'slash3', fxEach: true,
+    can: () => P.demon, on: { start() { if (P.ground) { P.vy = -150; P.ground = false; } }, update() { if (P.mvT >= 260 && !P.ground) P.vy = Math.max(P.vy, 380); } },   // land on the 3rd cut
+    next: { J: 'tw_d5' } },
   // Demon J x6 -> K (II): two crimson spins and a leaping crossed cut; closes the demon chain with stagger
   tw_dfin: { tags: ['tw_dfin', 'tw_d6', 'tw_5'], kind: 'heavy', rank: 2, hits: [0.3, 0.3, 0.3, 0.8], gap: 85, poise: 40, stam: 14, wind: 150, total: 640, fin: true, spin: true, lunge: 18, fx: 'slash', fxEach: true,
     can: () => P.demon, on: { hitStart(k) { if (k === 3) { shake = Math.max(shake, 4); flashScreen = Math.max(flashScreen, 0.05); } } } },

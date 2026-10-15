@@ -141,3 +141,57 @@ The `tw_dthrough` row lists a `tw_dthrough` tag first; it falls back to `tw_dash
   `dual demon J w4 … -> tw_d5`.
 
 **`tools/shots/wm/mech.js`:** the DB checks all still pass.
+
+## v14c: J/K mixes
+
+The user asked for "more j and k combo or k and j combos". The Dual Blades answer is to keep the blades moving.
+
+- **Normal mode:**
+  - Every heavy branches into a light or a second heavy.
+  - The light chain gets a heavy branch at step 2.
+- **Demon Mode:** the flurry flows on into the demon chain.
+
+**How these differ from the other weapons**
+- **Katana:** single, deliberate cuts.
+- **Longsword:** wide sweeps.
+- **Dual Blades:** multi-hit spins, hops and hooks that hand you straight back into the chain.
+
+Every new route lands below the main chain's dmg/s. Each one trades damage for something else (stagger, reel, crowd
+cover, flow).
+
+| Input | Name | Rank | Time | Dmg | Poise | Stam | What it's for |
+|---|---|---|---|---|---|---|---|
+| K J | **Spiral pursuit** | I | 120 / 480 | 3 × 0.25 + 0.35 = 1.1 | 12 | 10 | Out of the lunge: a drifting corkscrew, two turns, blades out like a wheel. Hits both sides (crowds, a foe that slipped behind); 24 px drift. J rejoins the chain at the rising cross. |
+| K K | **Fang pounce** | I | 230 / 600 | 1.3 | 35 | 14 | Hop off the lunge (about 14 px), blades thrown back, chop both down together as you land. The weapon's stagger tool (35 poise in one hit, vs 6-8 for a light). |
+| J J K | **Hooking cross** | I | 140 / 440 | 0.45 + 0.55 | 20 | 11 | Wide, low stance, both blades hooked in at the knees from either side, crossing. Reels non-elite foes, so the rest of the string connects. J: rising cross. J J K J K flows into skyward fangs and the air string. |
+| Demon: K J | **Bloodwheel** | II | 120 / 440 | 3 × 0.3 | 15 | 10 (5 in Demon) | Out of the demon flurry: a somersault, both blades wheeling over the head and down in front, landing on the 3rd cut. J carries on into demon chain hits 5 and 6 (then K: rending cyclone). Below rank II, J pressed during the flurry is dropped as before (the flurry is a finisher). |
+
+**Notes**
+- **Changed behaviour:** K followed by J or K now takes the new branches. Before, it restarted the light chain or did a
+  second lunge.
+- **Still unchanged:** a J pressed after the lunge's 0.3 s chain window still starts a fresh chain, and J J J J is still
+  the plain chain (both tested).
+- **Hops:** the hops are scripted to land on the hit. The pounce drops at 175 ms and chops at 233 ms; the bloodwheel
+  lands at 300 ms on its 3rd cut. They never leave you floating, and neither counts as an air attack.
+- **Art:** each move has its own tag in `art/player_v14_dual.py` (`tw_spiral`, `tw_pounce`, `tw_hook`, `tw_bwheel`), with
+  `active` and `hits` set, so each has a hit box:
+  - `tw_spiral` hits both sides, ±33 px.
+  - `tw_pounce` hits `[0,-36,30,0]`.
+  - `tw_hook` hits `[-2,-24,28,0]` (low).
+  - `tw_bwheel` hits `[0,-40,31,0]`.
+- **Spin smears:** `tw_spiral` and `tw_dfin` now use `arc` smears; the `ring` fx barely showed.
+- **Move list and unlocks:** `combos` now lists 24 entries, every desc 70 characters or fewer. `unlocks` gains Bloodwheel
+  (II).
+
+**Bench** (same driver as the "J J J J = 2.79" reference; dummy, infinite stamina)
+
+| Route | dmg/s |
+|---|---|
+| K J J J (lunge → spiral → rising cross → spin) | 2.44 |
+| K K (lunge → pounce) | 2.22 |
+| J J K J J (hooking cross → rising cross → spin) | 2.65 |
+| Demon K J J J K (flurry → bloodwheel → chain 5, 6 → cyclone) | 2.92 (Demon J ×6 = 3.39, Demon K loop = 2.61) |
+| Table bench, unchanged | J J J J 2.81 · Demon ×6 3.42 · with the dodge buff 3.66 |
+
+**Tests:** `routes.js` gains 7 checks (every v14c route from real inputs, plus "nothing old broke"), 34 in total, all
+passing. `shots.js` adds in-game snapshots of the four new moves (`out/montage_v14c.png`).

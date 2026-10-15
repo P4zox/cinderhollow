@@ -12,4 +12,8 @@ out.skyward = await go('tw_skyward', 1, '', ['attack', 14, 'attack', 14, 'attack
 out.crossfall = await go('tw_crossfall', 1, '', ['jump', 'attack', 10, 'attack'], 'tw_crossfall', 9);
 out.dfin = await go('tw_dfin', 2, 'P.demon = true', ['attack', 11, 'attack', 11, 'attack', 11, 'attack', 20, 'attack', 11, 'attack', 8, 'heavy'], 'tw_dfin', 20);
 out.reversal = await go('tw_reversal', 3, '', ['roll', 12, 'heavy'], 'tw_reversal', 7);
+out.spiral = await go('tw_spiral', 1, '', ['heavy', 14, 'attack'], 'tw_spiral', 9);
+out.pounce = await go('tw_pounce', 1, '', ['heavy', 14, 'heavy'], 'tw_pounce', 15);
+out.hook = await go('tw_hook', 1, '', ['attack', 13, 'attack', 13, 'heavy'], 'tw_hook', 10);
+out.bwheel = await go('tw_bwheel', 2, 'P.demon = true', ['heavy', 30, 'attack'], 'tw_bwheel', 8);
 return out;
