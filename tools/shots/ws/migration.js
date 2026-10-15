@@ -25,7 +25,7 @@ ok(Object.keys(S.weapons).length === 14, 'fourteen weapons in the save (v15)');
 ok(S.weapon === 'longsword', 'First Ember (mirror) in hand -> the Longsword');
 ok(S.weapons.longsword === 3, 'longsword level = best of longsword 1 / kalden 3 / first_ember 2 -> 3');
 ok(S.weapons.twinfangs === 4, 'dual = best of dagger 2 / pagecutter 4 / twinfangs 1 -> 4');
-ok(S.weapons.greatsword === 3, 'greatsword = best of greatsword 0 / briar_scythe 3 -> 3');
+ok(S.weapons.requiem_scythe === 3 && S.weapons.greatsword === 0, 'v15: briar_scythe +3 -> the Scythe (requiem_scythe +3); greatsword stays 0');
 ok(S.weapons.maul === 5, 'maul = best of colossus 5 / bell 2 / maul 1 -> 5');
 ok(S.weapons.knight_shield === 4, 'sns = best of twinborne 4 / bulwark 2 -> 4');
 ok(S.weapons.spear === 3 && S.weapons.headsman_chain === 0 && S.weapons.quarterstaff === 1 && S.weapons.katana === 0, 'spear 3, whip 0, staff 1, katana 0 (not owned)');

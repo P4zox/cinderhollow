@@ -27,11 +27,11 @@ ok(E('D.wid') === 'gravegrinder' && E("JSON.parse(localStorage.getItem('cinderho
 const bad = { ...JSON.parse(localStorage.getItem('cinderhollow_save_v1')), weapon: 'no_such_weapon' };
 localStorage.setItem('cinderhollow_save_v1', JSON.stringify(bad)); G.continueGame(); G.step(10);
 ok(G.SAVE.weapon === 'longsword', 'an unknown weapon id in a save falls back to the Longsword: ' + G.SAVE.weapon);
-// (c) a pre-revamp save (no wv) still migrates; old scythes still become the Greatsword (contract §5; see platform.md)
+// (c) a pre-revamp save (no wv) still migrates; the old scythes (antler / briar / crimson) now become the Scythe (lead, b13c7f3)
 const old = { ...base, weapon: 'briar_scythe', weapons: { longsword: 1, briar_scythe: 3, antler_scythe: 1 }, arts: ['crescent', 'reap'], art: 'reap' };
 delete old.wv; delete old.mastery; delete old.masteryBoss;
 localStorage.setItem('cinderhollow_save_v1', JSON.stringify(old)); G.continueGame(); G.step(20); S = G.SAVE;
-ok(S.wv === 9 && Object.keys(S.weapons).length === 14 && S.weapon === 'greatsword' && S.weapons.greatsword === 3, `pre-revamp save migrates: ${S.weapon} +${S.weapons.greatsword}, ${Object.keys(S.weapons).length} weapons`);
+ok(S.wv === 9 && Object.keys(S.weapons).length === 14 && S.weapon === 'requiem_scythe' && S.weapons.requiem_scythe === 3 && S.weapons.greatsword === 0, `pre-revamp save migrates: ${S.weapon} +${S.weapons[S.weapon]}, greatsword +${S.weapons.greatsword}, ${Object.keys(S.weapons).length} weapons`);
 // (d) New Game+ keeps every type's mastery
 E("SAVE.mastery.scythe = 900; SAVE.mastery.fist = 4000; saveGame()");
 let ngp = 'n/a';
