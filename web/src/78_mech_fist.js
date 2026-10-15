@@ -354,3 +354,7 @@ for (const d of Object.values(MV.defs)) {
   if (d.type !== 'fist' || !d.style || d.shiftStrike || d.loop || d.air || d.airCount || d.down || ['ft_tempest', 'ft_release', 'ft_ember'].includes(d.id)) continue;
   d.shift = d.style === 'swift' ? 'ft_fstar' : 'ft_wind';
 }
+
+// v15 balance (docs/v15/balance.md, Phase 2b): attack factor for this type (74_arsenal9.js WM_AR_TUNE). The real-boss bot had
+// Martial Arts (shift-strike route) 16% faster than the 14-type average.
+if (typeof WM_AR_TUNE !== "undefined") { WM_AR_TUNE.fist = 0.92; wmApplyArTune(); }

@@ -107,8 +107,12 @@ for (const r of [1, 4]) {
 
 // ---- I: limb deflect -> counter shot
 go(1, 30); W().tap('parry', 2); W().frame(2);
-const neg = E("hurtPlayer(20, -1, 'bwtest', {})"), cst = E('P.state'); W().frame(40);
-ok(!neg && cst === 'bw_counter' && L().some(h => h.id === 'bw_counter' && Math.abs(h.dmg - 1.6) < 0.1), `I: a blow in the window is turned (${neg === false}), counter shot 1.6 (${cst}; ${f2(sumOf('bw_counter'))})`);
+const neg = E("hurtPlayer(20, -1, 'bwtest', { parryable: true })"), cst = E('P.state'); W().frame(40);
+ok(!neg && cst === 'bw_counter' && L().some(h => h.id === 'bw_counter' && Math.abs(h.dmg - 1.6) < 0.1), `I: a parryable blow in the window is turned (${neg === false}), counter shot 1.6 (${cst}; ${f2(sumOf('bw_counter'))})`);
+// v15 balance: an unparryable blow is only turned aside (block-cost stamina, no counter shot)
+go(1, 30); W().tap('parry', 2); W().frame(2); const stD = E('P.st'), hpD = E('P.hp');
+const neg2 = E("hurtPlayer(20, -1, 'bwtest3', {})"), cst2 = E('P.state'); W().frame(4);
+ok(!neg2 && E('P.hp') === hpD && cst2 !== 'bw_counter' && stD - E('P.st') > 5, `I: an unparryable blow is turned aside for stamina, no counter (${cst2}, stam -${f2(stD - E('P.st'))})`);
 go(1, 30); W().tap('parry', 2); W().frame(14); const hp0 = E('P.hp'); E("hurtPlayer(20, -1, 'bwtest2', {})"); W().frame(30);
 ok(E('P.hp') < hp0, 'a blow after the 150 ms window lands');
 

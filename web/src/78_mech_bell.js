@@ -389,3 +389,7 @@ function belImpact(dx, big) {
   addLight(x, P.y - 6, big ? 34 : 20, '255,206,140', big ? 0.9 : 0.5);
   if (big) shake = Math.max(shake, 5);
 }
+
+// v15 balance (docs/v15/balance.md, Phase 2b): attack factor for this type (74_arsenal9.js WM_AR_TUNE). The real-boss bot had
+// the Warbell 14% slower than the 14-type average (J J J with a Perform every few notes).
+if (typeof WM_AR_TUNE !== "undefined") { WM_AR_TUNE.bell = 1.12; wmApplyArTune(); }

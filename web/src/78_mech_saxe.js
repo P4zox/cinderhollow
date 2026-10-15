@@ -219,7 +219,8 @@ mvRegister('saxe', {
   sx_twist: { ...SX_BLADE, tags: ['sx_twist', 'sx_heavy'], kind: 'heavy', hits: [0.7, 0.7], gap: 150, poise: 30, stam: 16, wind: 200, total: 640, fin: true, reach: 40, sxGain: 0, next: { I: '@I' },
     on: { end() { if (P.sxGot && P.sxGot.size >= 2) sxGainG(SX.twist, 'twist'); }, hitStart() { noise(0.08, 900, 2, 0.05, 'bandpass'); } } },
   sx_hook: { ...SX_BLADE, tags: ['sx_hook', 'gs_up'], kind: 'heavy', dmg: 1.2, poise: 34, stam: 14, wind: 220, total: 620, launch: 220, lunge: 12, sxGain: () => (P.mvO.perfect ? SX.beat : SX.hit), next: { J: 'sx_2', I: '@I' } },
-  sx_hone: { tags: ['sx_hone', 'gs_charge_hold'], kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9, can: sxBladeOk,
+  sx_hone: { tags: ['sx_hone', 'gs_charge_hold'], kind: 'heavy', loop: true, noHit: true, noSkillCharge: true,   // v15 balance: Charged Arts never speeds the Hone (the gauge stays hard to earn)
+    dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9, can: sxBladeOk,
     on: {
       start() { P.sxHoneT = 0; noise(0.25, 1800, 2, 0.04, 'bandpass'); },
       update(dt, A, ax) {

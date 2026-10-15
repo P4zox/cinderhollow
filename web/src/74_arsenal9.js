@@ -62,8 +62,10 @@ for (const t of WTYPES) { const id = WTYPE_INFO[t].weapon, w = WEAPONS[id]; if (
 // bot fighting 25 bosses with every type at the expected build (tools/shots/v15/balance): fast types that land whole chains
 // inside every opening (Dual Blades, Katana) kill ~40% faster than the pack; the reach and guard types ~25% slower. The move
 // tables (multiples of AR) are untouched, so every route and bench in AR units reads the same. Types not listed stay at 1.
-const WM_AR_TUNE = { longsword: 1, katana: 0.8, greatsword: 1, maul: 0.95, sns: 1.18, dual: 0.6, spear: 1.24, staff: 1.18, whip: 1.1 };
-for (const [t, k] of Object.entries(WM_AR_TUNE)) { const w = WTYPE_INFO[t] && WEAPONS[WTYPE_INFO[t].weapon]; if (w && !w._v15ar) { w._v15ar = w.base; w.base = Math.round(w.base * k * 10) / 10; } }
+const WM_AR_TUNE = { longsword: 1, katana: 0.8, greatsword: 1, maul: 0.95, sns: 1.18, dual: 0.6, spear: 1.24, staff: 1.25, whip: 1.1 };
+// (the v15 types register later, in 77/78: each 78_mech_<type>.js sets WM_AR_TUNE[type] and calls wmApplyArTune() again)
+function wmApplyArTune() { for (const [t, k] of Object.entries(WM_AR_TUNE)) { const w = WTYPE_INFO[t] && WEAPONS[WTYPE_INFO[t].weapon]; if (w && w._v15ar === undefined) { w._v15ar = w.base; w.base = Math.round(w.base * k * 10) / 10; } } }
+wmApplyArTune();
 
 function wtype() { const t = typeof SAVE !== 'undefined' && SAVE && WEAPON_TYPE[SAVE.weapon]; return t || 'longsword'; }
 function wcls() { return wtype(); }   // the type id (contract §4); replaces 04_player.js's class lookup

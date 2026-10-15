@@ -100,7 +100,7 @@ function bwArrowHit(pr, t, hb) {
   const y = clamp(pr.y, hb.y0 + 2, hb.y1 - 2), x = clamp(pr.x, hb.x0 + 2, hb.x1 - 2);
   let poise = (b.poise || 0) * (typeof skPoiseMul === 'function' ? skPoiseMul(A) : 1);
   poise = mvPoiseFor(t, poise, A, y);
-  const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise, dir: b.face, kind: heavy ? 'heavy' : 'light', charged: heavy && b.lv >= 2, bleed: bleedAmt(heavy) * (b.bleedK ?? 1), fire, rotDot: !!W.rot,
+  const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise, dir: b.face, kind: heavy ? 'heavy' : 'light', charged: heavy && b.lv >= 2, bleed: (typeof skBleedUnits === 'function' ? skBleedUnits(heavy, b.mul * k) : bleedAmt(heavy)) * (b.bleedK ?? 1), fire, rotDot: !!W.rot,
     x, y, melee: true, big: heavy || b.lv >= 3 || !!b.big, arrow: true };
   t.hit(info);
   BW.log.push({ id: A.mv && A.mv.id, mul: b.mul, k, d: Math.round(d), lv: b.lv, dmg: info.dmg / D.light }); if (BW.log.length > (BW.cap || 60)) BW.log.shift();   // (tests read it)
@@ -326,7 +326,18 @@ mvRegister('bow', {
     if (!A.mv.draw) { P.bwIdle = 0; P.bwSteps = 0; }
   },
   hurt(c) {
-    // the limb deflect: a blow inside the first 150 ms is turned on the bow's limb, then the point-blank counter shot
+    // the limb deflect: a parryable blow inside the first 150 ms is turned on the bow's limb, then the point-blank counter shot.
+    // v15 balance (like the katana's Iai): a blow that can't be parried is only turned aside -- block-cost stamina
+    // (6 + 0.8 x dmg, guard-scaled), no counter shot; without the stamina it lands.
+    if (P.state === 'bw_deflect' && P.mvT <= 150 && !c.negate && !(c.opt && c.opt.parryable)) {
+      const cost = (6 + c.dmg * 0.8) * (typeof mvGuardScale === 'function' ? mvGuardScale() : 1);
+      if (P.st < cost) return;
+      c.negate = true; spend(cost); P.stDelay = 0.8;
+      if (c.dir) { P.face = -c.dir; P.vx = c.dir * 90; }
+      sfx.block(); hitstop = Math.max(hitstop, 0.06); shake = Math.max(shake, 2);
+      spawnFx(fxOr('parry_spark', 'hit'), P.x + P.face * 12, P.y - 22, P.face);
+      return;
+    }
     if (P.state === 'bw_deflect' && P.mvT <= 150 && !c.negate) {
       c.negate = true; mvGain('counter');
       if (c.dir) P.face = -c.dir;

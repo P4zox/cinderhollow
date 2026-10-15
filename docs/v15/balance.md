@@ -362,3 +362,110 @@ Run them all with `sh tools/shots/v15/balance/routes_all.sh [outdir]`.
   the pack.
 - **The ±15% band is measured by a crude bot.** Spacing-sensitive types (Whip, Spear) and the Greatsword's charge greed
   are where it is least reliable.
+
+## Phase 2b: all 14 types against bosses
+
+The five new movesets (`78_mech_{saxe,bow,fist,scythe,bell}.js`) are benched with the nine, using the same bot and
+build. Matrices are 25 bosses x 14 types x 3 seeds (the Warbell's final rerun used 4).
+
+### Bot profiles (real move ids)
+
+| Type | Spacing (edge) | Route | I in an opening | Defence |
+|---|---|---|---|---|
+| Switch Axe | 12 px | blade J J J J; axe J J J once morphed | **Morph only when the gauge has really filled** (`P.sxG >= 100`, unlocked). At rank III+, Full Release at a 40-52 gauge. | roll / axe sidestep |
+| Bow | 36 px (the sweet spot) | J J J J (levels 1 -> 3, pinning shot) | — | limb deflect (its own I) |
+| Martial Arts | 6 px | J I J J J (Swift jab -> Shift strike -> Iron chain; better than Swift J J J J at 1.25) | — | slip step |
+| Scythe | 16 px | J J J + hold K Reap | — | roll |
+| Warbell | 10 px | J J J | Perform at 3 notes | roll |
+
+The Switch Axe morphed in about 40% of fights. Its blade mode plays like a Longsword, and the axe phase lifts a fight
+when it comes. That's the hard-to-master shape that was asked for.
+
+### Changes
+
+| Change | File | Why |
+|---|---|---|
+| **Bow limb deflect = the Katana's Iai rule.** A parryable blow is turned and answered with the counter shot. An unparryable one costs block stamina (6 + 0.8 x dmg, guard-scaled), with no counter. | `78_mech_bow.js` | It negated everything and auto-countered. Counter shots were the bow's top damage source, so it was the fastest **and** safest type: time to kill 0.67, damage taken 0.65. After the fix: 0.95 / 0.95, with no AR change needed. |
+| **Martial Arts AR x0.92** (`WM_AR_TUNE.fist`, set in its own file) | `78_mech_fist.js` | Its best route (shift strikes) sat at 0.84-0.86. |
+| **Warbell AR x1.12** | `78_mech_bell.js` | 1.14-1.17 on J J J + Perform. |
+| **Staff AR x1.18 -> x1.25** | `74_arsenal9.js` | It drifted to 1.15-1.17 in the 14-type field. |
+| `wmApplyArTune()`: the AR table can now be extended by files that load after 74 | `74_arsenal9.js` | The v15 types register their weapons in 77. |
+| **Switch Axe Hone: `noSkillCharge: true`**, so Charged Arts never speeds the gauge's manual fill | `78_mech_saxe.js` | The gauge must stay hard to earn. The axe's chainsaw grind isn't a charge either (it doesn't match the stance rule). |
+| **Charged Arts** now also covers the bow's draw (`d.draw`) and the Iron fist hold (`ft_ichg`). Also matched by the stance rule: the Warbell's wind-up toll and the Scythe's charged crescent. | `57_skills.js` | They are held-K charges like the rest. Bow level 3 comes at 600 ms (was 934). |
+| **What counts as a striking move** is now "has damage" (`dmg` / `hits` / `dmgFn`) instead of "not `noHit`" | `57_skills.js` | Every bow shot is `noHit` (its arrows do the hitting). Before this, Blade Dancer never sped bow shots, and Measured Cut treated **every** shot as an opener (+25% on all arrows). Now a J J J volley's opener flags are true/false/false. Stances (Iai wait, foresight, sheathe, Demon toggle, charges) still have no damage and keep their windows. |
+| **Bloodthirst on arrows** uses each arrow's own multiplier (`skBleedUnits`) | `57_skills.js`, `78_mech_bow.js` | An arrow lands after its shot has ended, so it used to be read as a full light hit. A 0.4 arrow now gets 4.8 bleed, a level-3 power shot 24. |
+| **Bloodthirst adds half (+6 per light hit's worth) on a weapon that already bleeds** (Dual Blades 14, Katana 18, Scythe 10) | `57_skills.js` | With the native bleed it was the best 1-point node by far. Time to kill: Dual -26%, Katana -23%, Scythe -27%. Now -16%, -13%, -14% (all types -6%). |
+
+**Checked and fine:**
+- **Hundred fists:** `mvStrikeAt`, no bleed. Leech and Pyre Heart pay by damage, and Relentless and Spellblade once per
+  move, so the 15 hits a second don't multiply anything.
+- **Blade Dancer:**
+  - Swift jabs get +12% and the Hundred fists loop isn't sped up.
+  - The bow's quick shots get +12% and the limb deflect window is untouched.
+  - The +40% total cap holds.
+- **Deflect** on the bow pays only for a parryable blow.
+
+Test: `tools/shots/v15/balance/skills_new_test.js`, 6/6.
+
+### Before -> after (relative to the 14-type average; geometric mean over 25 bosses)
+
+| Type | Time to kill (relative) | Damage taken (relative) | Staggers per fight |
+|---|---|---|---|
+| Bow | **0.67 -> 0.95** | 0.65 -> 0.95 | 3.8 -> 3.6 |
+| Martial Arts | 0.86* -> 0.92 | 1.11* -> 1.21 | 2.3 -> 2.4 |
+| Warbell | 1.06-1.17 -> 1.04 | 1.13 -> 1.03 | 2.7 -> 2.5 |
+| Switch Axe | 0.99 -> 1.00 | 1.10 -> 1.11 | 0.7 |
+| Scythe | 1.06 -> 1.05 | 1.01 -> 0.93 | 0.8 |
+| Staff | 1.15 -> 1.04 | 0.91 -> 0.87 | 0.8 -> 0.7 |
+| Longsword / Maul / Greatsword | 1.02 / 0.98 / 0.98 -> 1.02 / 0.98 / 1.00 | — | — |
+| Dual / Katana / Whip | 0.88 / 0.89 / 0.97 -> 0.89 / 0.91 / 0.99 | — | — |
+| Sword & Shield / Spear | 1.11 / 1.11 -> 1.12 / 1.12 | — | — |
+
+\* Martial Arts on its shift route before the change; the Swift J chain alone was 1.25.
+
+**All 14 types now land within 0.89-1.12 of the average time to kill.** The full tables are in
+`tools/shots/v15/balance/results/phase2b_rel_{before,after}.txt` and `phase2b_boss_curve.txt`.
+
+The fastest type per boss (after) is spread over 8 types: Bow 8, Dual 5, Katana 5, Fist 2, Whip 2, Greatsword 1,
+Switch Axe 1, Staff 1.
+
+Identities in damage taken:
+- Spear (0.64), Whip (0.86), Staff (0.87) and Scythe (0.93) are the safe ones.
+- Katana (1.42), Greatsword (1.24) and Martial Arts (1.21) trade safety for their big hits.
+
+### Skill nodes across 14 types
+
+Bot sweep (`results/skills_phase2b.txt`): the time-to-kill / damage-taken change from one node, per type.
+
+- **Strongest:**
+  - Steadfast: -5% / -17% taken. Its hyper armour while attacking, in `04_player.js`, is the strongest defensive node;
+    unchanged, but flagged.
+  - Bloodthirst: -6% after the fix.
+  - Keen Edge: -8%.
+  - Blade Dancer: -5%, with Scythe -16% and Maul -11%.
+  - Relentless: -5%, with Longsword -13% and Bow -16%.
+- **Per-type standouts (all fine):**
+  - Finishing Blow: Greatsword -16%, Bow -14%, Katana -12%. Finishers are their main damage.
+  - Executioner: Katana -11%, Bow -9% (counters).
+  - Charged Arts: Greatsword -17%. The bot only holds K on the Greatsword and Scythe routes.
+- Nothing else is over -10% overall, and no node is dead on any type: every one shows a measured effect, or is verified
+  in `skills_test.js` / `skills_new_test.js` where the bot can't reach it.
+
+### Tests (all green)
+
+| Suite | Result |
+|---|---|
+| v14 `blade` / `heavy` / `guard` / `dual` / `reach` routes | 45 / 56 / 48 / 34 / 54 |
+| `wm/mech.js` | 63 |
+| v15 `saxe` / `bow` / `fist` / `scythe` / `bell` routes | 47 / 44 / 63 / 51 / 50 |
+| `skills_test.js` | 21 |
+| `skills_new_test.js` | 6 |
+
+**Expected values changed on purpose:**
+- `tools/shots/v15/bow/routes.js`: the limb-deflect test now uses a parryable blow, and a new test checks that an
+  unparryable blow is turned for stamina with no counter shot.
+- `tools/shots/v15/fist/routes.js`: the Ember palm tolerance goes from 0.05 to 0.08 AR. Its 3.0 hit now reads 3.06,
+  because the dummy's whole-number damage rounds differently at the new AR 38.6. This is a rounding change, not a damage
+  change.
+
+`routes_all.sh` now also runs the five v15 suites.

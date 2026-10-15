@@ -134,7 +134,7 @@ for (const r of [4, 3]) {
 go(5); W().dummy(24); for (let i = 0; i < 4; i++) { tap('J'); W().frame(8); } W().frame(60);
 ok(E('P.ftFlow') === 2, `four landed moves build 2 Flow (${E('P.ftFlow')})`);
 go(5); E('P.ftFlow = 5; P.ftFlowT = 6'); W().dummy(24); W().down('parry'); W().frame(20); W().up('parry'); W().frame(70);
-ok(sts().join() === 'ft_ember' && Math.abs(dmg('ft_ember') - 3) < 0.05 && E('P.ftFlow') < 1, `V: hold I at 5 Flow -> ember palm ${dmg('ft_ember')} (flow after ${E('P.ftFlow')})`);
+ok(sts().join() === 'ft_ember' && Math.abs(dmg('ft_ember') - 3) < 0.08 && E('P.ftFlow') < 1, `V: hold I at 5 Flow -> ember palm ${dmg('ft_ember')} (flow after ${E('P.ftFlow')})`);
 go(5); E('P.ftFlow = 5; P.ftFlowT = 6'); W().dummy(24); W().down('parry'); W().frame(3); W().up('parry'); W().frame(30);
 ok(sts().length === 0 && style() === 'iron' && E('P.ftFlow') === 5, `V: tap I at 5 Flow -> just the style change (style ${style()}, flow ${E('P.ftFlow')}, ${trail()}, hits: ${sts().join(' ')})`);
 go(4); E('P.ftFlow = 5; P.ftFlowT = 6'); W().dummy(24); W().down('parry'); W().frame(20); W().up('parry'); W().frame(70);

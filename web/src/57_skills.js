@@ -68,7 +68,7 @@ const SK_BRANCH_NODES = {
     ['k', 'shadowstep', 'Shadowstep', 4, 'KEYSTONE. Roll through an attack at the last moment and you step out behind the attacker.', () => [['Last-moment dodge', 'stay', 'behind']]],
   ],
   blood: [
-    ['a', 'bloodthirst', 'Bloodthirst', 1, 'Melee hits build Bleed by their damage (+12 for each light hit’s worth). A full bleed meter bursts for heavy damage.', () => [['Bleed per light hit', dOr(() => Math.round(D.W.bleed || 0)), dOr(() => Math.round((D.W.bleed || 0) + 12))]]],
+    ['a', 'bloodthirst', 'Bloodthirst', 1, 'Melee hits build Bleed by their damage (+12 for each light hit’s worth, +6 on a weapon that already bleeds). A full bleed meter bursts for heavy damage.', () => [['Bleed per light hit', dOr(() => Math.round(D.W.bleed || 0)), dOr(() => Math.round((D.W.bleed || 0) + (D.W.bleed ? 6 : 12)))]]],
     ['s1', 'open_wounds', 'Open Wounds', 1, 'Bleed buildup on foes fades 60% slower.', () => [['Bleed fade', 100, 40]]],
     ['b', 'hemorrhage', 'Hemorrhage', 1, 'Bleed bursts deal +35% damage.', () => [['Bleed burst', 100, 135]]],
     ['f1a', 'vein_burst', 'Vein Burst', 2, 'When a foe’s bleed bursts, foes near it take half the burst too.', () => [['Burst spread', 0, 50]]],
@@ -329,14 +329,17 @@ HOOKS.cast.push(() => { if (P) P.skCastT = time; });
 // Bloodthirst (v15): its bleed follows the hit's damage (12 per light hit's worth) -- a flat 16 per hit gave the Dual
 // Blades (12 hits a Demon chain) a burst every chain and the Greatsword almost none. The weapon's own bleed is unchanged.
 function skHitUnits() {   // the current hit of the current move, in light-hit units
+  if (P && P.skUnitsOv != null) return clamp(P.skUnitsOv, 0.25, 3);   // a projectile's own hit (the bow's arrows: skBleedUnits)
   const A = P && ATK[P.state]; if (!A || !A.mv) return 1;
   const d = A.mv, k = Math.max(0, P.mvHitK || 0);
   return clamp((d.hits ? d.hits[Math.min(k, d.hits.length - 1)] : d.dmgFn ? d.dmgFn() : A.mult || 1) * (P.mvMul || 1), 0.25, 3);
 }
+// a projectile that lands after its move has ended (the bow's arrows) passes its own multiplier
+function skBleedUnits(heavy, units) { P.skUnitsOv = units; try { return bleedAmt(heavy); } finally { P.skUnitsOv = null; } }
 { const _ba = bleedAmt; bleedAmt = function (heavy) {
   const b = _ba(heavy); if (!has('bloodthirst')) return b;
   const fang = charmOn('c_fang') ? 1.5 : 1, flat = 16 * (heavy ? 1.5 : 1) * fang;
-  return Math.max(0, b - flat) + 12 * skHitUnits() * fang;
+  return Math.max(0, b - flat) + (D.W.bleed ? 6 : 12) * skHitUnits() * fang;   // v15b: half on a weapon that already bleeds (Dual 14, Katana 18, Scythe 10): their -23..-27% made it the best 1-point node by far
 }; }
 { const _fm = flaskMul; flaskMul = function () { return _fm() * (has('blood_price') ? 0.85 : 1); }; }
 // Crimson Pact: one fewer crimson flask
@@ -368,7 +371,7 @@ const skSeen = new WeakMap();
 //   opener : the first move after 0.8 s without attacking (Measured Cut)
 function skNewMove(A, cost, prev, gap) {
   P.skMvN = (P.skMvN || 0) + 1;
-  const stance = ATK[prev] && ATK[prev].mv && ATK[prev].mv.noHit;   // out of a charge, a sheathe, an Iai wait: not a chain
+  const stance = ATK[prev] && ATK[prev].mv && !skStrikes(ATK[prev].mv);   // out of a charge, a sheathe, an Iai wait: not a chain
   const chained = (!!ATK[prev] && !stance) || gap < 0.35, rolled = prev === 'roll' || (P.dgEnd && P.clk - P.dgEnd.t < 0.25);
   if (!chained && gap >= 0.8) P.skOpenN = P.skMvN;
   P.skRelT = time;   // Relentless: swinging keeps the chain alive
@@ -389,8 +392,10 @@ function skNewMove(A, cost, prev, gap) {
 // attack speed (Blade Dancer, Frenzy): the move clock (75's mvSpeed) -- the old P.anim.speed nudge did nothing once moves
 // ran on their own clock. Added to the type's own speed (Demon Mode, the perfect-dodge buff), and everything together
 // tops out at +40%. Only moves that strike: stances (Iai, foresight, charges, guards) keep their windows.
+// a move that deals damage (its own hitbox, or arrows / waves it looses: the bow's shots are noHit but carry dmg)
+function skStrikes(d) { return !!(d && (d.dmg || d.hits || d.dmgFn)); }
 function skSpeedAdd(A) {
-  if (!skL() || !P || !A || !A.mv || A.mv.noHit || A.mv.loop) return 0;
+  if (!skL() || !P || !A || !A.mv || !skStrikes(A.mv) || A.mv.loop) return 0;
   let add = 0;
   if (has('blade_dancer') && A.kind === 'light') add += 0.12;
   if (has('frenzy') && P.hp < D.maxHp * 0.5) add += 0.12;
@@ -401,13 +406,13 @@ function skSpeedAdd(A) {
 // the katana's focus draw, the spear's counter wind-up) builds 1.55x as fast. Their clocks and timers all run on the dt
 // the stance is updated with, so the whole stance is simply run faster (overcharge limits scale with it).
 // (a move can opt out with noSkillCharge: true -- e.g. a charge meant to stay hard to build)
-const SK_CHARGE = d => !!d && !d.noSkillCharge && d.kind === 'heavy' && d.loop && d.noHit && (d.charge || /(_hold|charge|_cwind)$/.test(d.id));
+const SK_CHARGE = d => !!d && !d.noSkillCharge && d.kind === 'heavy' && d.loop && d.noHit && (d.charge || d.draw || /(_hold|charge|_cwind|_ichg)$/.test(d.id));   // v15b: + the bow's draw, the Iron fist
 { const _mu = mvUpdate; mvUpdate = function (dt, ...rest) { const A = ATK[P.state]; return _mu.call(this, A && has('charged_arts') && SK_CHARGE(A.mv) ? dt * 1.55 : dt, ...rest); }; }
 HOOKS.update.push(dt => {
   if (!P || !D || P.state === 'dead') { if (P) P.skRel = 0; return; }
   const st = P.state, A = ATK[st], L = skL();
   // new swing / art / roll / cast
-  if (A && !(A.mv && A.mv.noHit)) P.skAtkT = time;   // the last frame you were in a move that strikes (Measured Cut's "breath", the chain gap)
+  if (A && (!A.mv || skStrikes(A.mv))) P.skAtkT = time;   // the last frame you were in a move that strikes (a bow shot counts: its arrows strike) (Measured Cut's "breath", the chain gap)
   if (st === 'roll' && P.skPrev !== 'roll' && L) {
     if (has('featherfoot') && P.skFreeRollT > time) { P.st = Math.min(D.maxSt, P.st + (has('quickstep') ? 14 : 20)); P.skFreeRollT = 0; skSpark(P.x, P.y - 8, 6, 'gold', 40); }
   }

@@ -30,16 +30,16 @@ E(`(() => {
     staff:     { de: 12, route: ['J','J','J','J'], def: 'roll', win: 280 },
     whip:      { de: 40, route: ['K'], main: ['J','J','J'], def: 'roll', win: 280 },
     // v15 new types (docs/WEAPON_REVAMP.md Part C) -- profiles ready for phase 2b; iWhen presses I in an opening when true
-    saxe:      { de: 12, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 220, iWhen: () => !P.sxAxe && (P.sxG || 0) >= 100 },
-    bow:       { de: 30, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'tapI', win: 150 },
-    fist:      { de: 4,  route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 180 },
-    scythe:    { de: 14, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 280 },
-    bell:      { de: 8,  route: ['J','J','J'], main: ['J','J','J'], def: 'roll', win: 260, iWhen: () => (P.belNotes || []).length >= 2 },
+    saxe:      { de: 12, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 220, iWhen: () => (!P.sxAxe && (P.sxG || 0) >= 100) || (P.sxAxe && mvHas(3) && (P.sxG || 0) >= 40 && (P.sxG || 0) <= 52) },
+    bow:       { de: 36, route: ['J','J','J','J'], main: ['J','J','J','J'], def: 'tapI', win: 150 },
+    fist:      { de: 6,  route: ['J','I','J','J','J'], main: ['J','J','J','J'], def: 'roll', win: 180 },
+    scythe:    { de: 16, route: ['J','J','J',{ b: 'K', hold: 700 }], main: ['J','J','J','J'], def: 'roll', win: 280 },
+    bell:      { de: 10, route: ['J','J','J'], main: ['J','J','J'], def: 'roll', win: 260, iWhen: () => (P.belNotes || []).length >= 3 },
   };
   BB.PROF = PROF;
   const ALT = {   // signature routes (o.route = 'sig')
     katana: ['K'], greatsword: [{ b: 'K', hold: 1200 }], maul: [{ b: 'K', hold: 600 }], whip: ['K'], longsword: ['J','J','K'], sns: ['J','J','K'], dual: ['J','J','J','J'], spear: ['J','J','K'], staff: ['J','K'],
-    saxe: ['J','J','J','J','K','K'], bow: [{ b: 'K', hold: 850 }], fist: ['J','J','I','J','J'], scythe: [{ b: 'K', hold: 700 }], bell: ['J','K','J','J'],
+    saxe: ['J','K','K'], bow: ['J','J','J',{ b: 'K', hold: 500 }], fist: ['J','I','J','J','J'], scythe: ['J','J','J','J'], bell: ['K','K'],
   };
   BB.ALT = ALT;
   const CALM = new Set([...BREATH_CALM, 'stagger', 'prowl', 'fly', 'rest', 'wait', 'fight', 'parried']);
