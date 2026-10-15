@@ -14,7 +14,7 @@
 // back to level 2 (Mastery V, plain charge only: a fourth level, wrath, 1.4-2.1 s: 4.2 + a small flame burst). K within 0.5 s
 // of a charged slash: the strong charged slash (x1.25, +4 stam); Mastery III: K after that = the true charged slash (1.5 + 4.5).
 // Charging is flinch-proof against hits under 30% max HP (x0.8 damage). I = blade guard (1.2 x dmg stamina, 25% chip, no parry).
-const GS_LV = { dmg: [0, 1.8, 2.6, 3.6, 4.2], poise: [0, 50, 70, 95, 110], stam: [0, 28, 32, 36, 40] };
+const GS_LV = { dmg: [0, 2.0, 2.85, 3.9, 4.5], poise: [0, 50, 70, 95, 110], stam: [0, 28, 32, 36, 40] };
 const GS_MIN = 180, GS_OVER = 1400, GS_WRATH_OVER = 2100;
 function gsLevel(ms, wrath) {
   if (ms > GS_OVER) return wrath && ms <= GS_WRATH_OVER ? 4 : 2;
@@ -132,27 +132,27 @@ mvRegister('greatsword', {
     { rank: 5, name: 'Wrath', input: 'hold K past level 3', desc: 'A red fourth level (1.4-2.1 s): 4.2 and a small flame burst.' },
   ],
 }, {
-  gs_1: { tags: ['gs_1'], dmg: 1.3, poise: 32, stam: 20, wind: 280, total: 660, step: 0, fx: 'heavy', lunge: 14, next: { J: 'gs_2', K: 'gs_bash' } },
-  gs_2: { tags: ['gs_2'], dmg: 1.35, poise: 32, stam: 20, wind: 280, total: 660, step: 1, box: [-22, 44, -42, 0], fx: 'slash_up', next: { J: 'gs_3', K: 'gs_bash' } },
-  gs_3: { tags: ['gs_3'], dmg: 1.6, poise: 45, stam: 22, wind: 320, total: 740, step: 2, fin: true, launch: 180, fx: 'slash3', next: { K: 'gs_mcleave' } },
+  gs_1: { tags: ['gs_1'], dmg: 1.45, poise: 32, stam: 20, wind: 350, total: 820, step: 0, fx: 'heavy', lunge: 14, next: { J: 'gs_2', K: 'gs_bash' } },
+  gs_2: { tags: ['gs_2'], dmg: 1.5, poise: 32, stam: 20, wind: 350, total: 820, step: 1, box: [-22, 44, -42, 0], fx: 'slash_up', next: { J: 'gs_3', K: 'gs_bash' } },
+  gs_3: { tags: ['gs_3'], dmg: 1.8, poise: 45, stam: 22, wind: 400, total: 920, step: 2, fin: true, launch: 180, fx: 'slash3', next: { K: 'gs_mcleave' } },
   // J (J) -> K: a pommel shove; K still held as it ends = the charge goes on from 400 ms (level 2)
-  gs_bash: { tags: ['gs_bash', 'gs_tackle', 'gs_1'], kind: 'heavy', dmg: 0.8, poise: 45, stam: 12, wind: 180, total: 480, lunge: 10, fx: null,
+  gs_bash: { tags: ['gs_bash', 'gs_tackle', 'gs_1'], kind: 'heavy', dmg: 0.8, poise: 45, stam: 12, wind: 220, total: 580, lunge: 10, fx: null,
     on: { swing() { spawnFx(fxOr('parry_spark', 'hit'), P.x + P.face * 22, P.y - 21, P.face); },
           end() { if (held.has('heavy') && P.ground && P.st > 0) mvStart('gs_charge', { bank: 400 }); } } },
   // J J J -> K: the finisher's spin rolls on into a full overhead cleave
-  gs_mcleave: { tags: ['gs_mcleave', 'gs_heavy'], kind: 'heavy', dmg: 2.4, poise: 70, stam: 26, wind: 360, total: 820, fin: true, slam: true, lunge: 14, fx: 'heavy' },
+  gs_mcleave: { tags: ['gs_mcleave', 'gs_heavy'], kind: 'heavy', dmg: 2.6, poise: 70, stam: 26, wind: 430, total: 980, fin: true, slam: true, lunge: 14, fx: 'heavy' },
   // block a blow -> J (0.7 s): the blade torn up out of the floor
-  gs_retort: { tags: ['gs_retort', 'gs_up', 'gs_2'], kind: 'heavy', counter: true, dmg: 1.8, poise: 60, stam: 14, wind: 150, total: 560, fin: true, fx: 'slash_up', reach: 38 },
+  gs_retort: { tags: ['gs_retort', 'gs_up', 'gs_2'], kind: 'heavy', counter: true, dmg: 1.8, poise: 60, stam: 14, wind: 170, total: 640, fin: true, fx: 'slash_up', reach: 38 },
   gs_charge: gsChargeDef(['gs_charge_hold', 'gs_heavy'], 'gs_charged'),
-  gs_charged: gsReleaseDef(['gs_charged', 'gs_heavy'], () => 1, 0, 200, 500, { next: { K: 'gs_scharge' } }),
-  gs_wrath: gsReleaseDef(['gs_wrath', 'gs_charged', 'gs_heavy'], () => 1, 0, 220, 640, { rank: 5, next: { K: 'gs_scharge' } }),
-  gs_rollheavy: gsReleaseDef(['gs_rollheavy', 'gs_charged', 'gs_heavy'], () => 1, 0, 220, 600, { next: { K: 'gs_scharge' } }),
+  gs_charged: gsReleaseDef(['gs_charged', 'gs_heavy'], () => 1, 0, 250, 620, { next: { K: 'gs_scharge' } }),
+  gs_wrath: gsReleaseDef(['gs_wrath', 'gs_charged', 'gs_heavy'], () => 1, 0, 280, 800, { rank: 5, next: { K: 'gs_scharge' } }),
+  gs_rollheavy: gsReleaseDef(['gs_rollheavy', 'gs_charged', 'gs_heavy'], () => 1, 0, 280, 750, { next: { K: 'gs_scharge' } }),
   gs_scharge: gsChargeDef(['gs_charge_hold', 'gs_heavy'], 'gs_strong'),
-  gs_strong: gsReleaseDef(['gs_strong', 'gs_heavy'], () => 1.25, 4, 220, 560, { next: { K: q => (mvHas(3) ? 'gs_tcharge' : '@K') } }),
+  gs_strong: gsReleaseDef(['gs_strong', 'gs_heavy'], () => 1.25, 4, 280, 700, { next: { K: q => (mvHas(3) ? 'gs_tcharge' : '@K') } }),
   gs_tcharge: { ...gsChargeDef(['gs_charge_hold', 'gs_heavy'], 'gs_true1'), rank: 3 },
-  gs_true1: { tags: ['gs_true1', 'gs_heavy'], kind: 'heavy', rank: 3, dmg: 1.5, poise: 40, wind: 220, total: 420, fx: 'heavy', lunge: 20, stam: o => GS_LV.stam[o.lv || 1] + 8,
+  gs_true1: { tags: ['gs_true1', 'gs_heavy'], kind: 'heavy', rank: 3, dmg: 1.5, poise: 40, wind: 280, total: 520, fx: 'heavy', lunge: 20, stam: o => GS_LV.stam[o.lv || 1] + 8,
     on: { end() { const lv = P.mvLv; mvStart('gs_true2', { lv, cost: 0, charged: true }); } } },
-  gs_true2: { tags: ['gs_true2', 'gs_heavy'], kind: 'heavy', rank: 3, dmg: 4.5, poise: 95, stam: 0, wind: 250, total: 700, fin: true, slam: true, fx: 'heavy', lunge: 24,
+  gs_true2: { tags: ['gs_true2', 'gs_heavy'], kind: 'heavy', rank: 3, dmg: 4.5, poise: 95, stam: 0, wind: 310, total: 880, fin: true, slam: true, fx: 'heavy', lunge: 24,
     dmgFn: () => 4.5 * GS_LV.dmg[Math.min(3, P.mvLv || 3)] / 3.6, poiseFn: () => GS_LV.poise[Math.min(3, P.mvLv || 3)] * 1.2 },
   // II: L while charging, once per charge (the 2nd L is a plain roll). J during it (III): the leaping wide slash
   gs_tackle: { tags: ['gs_tackle', 'sh_heavy', 'gs_1'], rank: 2, dmg: 0.6, poise: 40, stam: 10, wind: 120, total: 300, lunge: 40, lungeLead: 120, armor: true, dmgTaken: 0.5, box: [-2, 26, -32, -2],
@@ -165,11 +165,11 @@ mvRegister('greatsword', {
         if (held.has('heavy')) mvStart(o.resume || 'gs_charge', { bank: o.bank, resumed: true });
         else mvStart(GS_CHARGES[o.resume] || 'gs_charged', { lv: gsLevel(o.bank || 0, P.gsWrath), charged: true });
       } } },
-  gs_leap: { tags: ['gs_leap', 'gs_3'], kind: 'heavy', rank: 3, dmg: 2.0, poise: 70, stam: 20, wind: 260, total: 700, fin: true, lunge: 24, dash: true, fx: 'slash3', back: 14,
+  gs_leap: { tags: ['gs_leap', 'gs_3'], kind: 'heavy', rank: 3, dmg: 2.0, poise: 70, stam: 20, wind: 310, total: 840, fin: true, lunge: 24, dash: true, fx: 'slash3', back: 14,
     dmgFn: () => 1.6 + 0.4 * (P.mvLv || 1) },
-  gs_air: { tags: ['gs_air'], air: true, hang: true, dmg: 1.3, poise: 40, stam: 16, wind: 220, total: 560 },
-  gs_up: { tags: ['gs_up'], up: true, dmg: 1.2, poise: 35, stam: 16, wind: 240, total: 560 },
-  gs_down: { tags: ['gs_down'], down: true, dmg: 1.1, poise: 45, stam: 12, wind: 140, total: 390, box: [-16, 18, -16, 26] },
+  gs_air: { tags: ['gs_air'], air: true, hang: true, dmg: 1.45, poise: 40, stam: 16, wind: 250, total: 640 },
+  gs_up: { tags: ['gs_up'], up: true, dmg: 1.3, poise: 35, stam: 16, wind: 280, total: 640 },
+  gs_down: { tags: ['gs_down'], down: true, dmg: 1.1, poise: 45, stam: 12, wind: 150, total: 430, box: [-16, 18, -16, 26] },
 });
 
 // ---- both heavies: K held through the end of a swing starts the charge (the engine drops a K pressed early in a finisher)

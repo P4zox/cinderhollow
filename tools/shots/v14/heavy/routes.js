@@ -37,9 +37,9 @@ const ev = (r) => r.tl + ' || ' + r.hits.split(' | ').filter(h => !/ 0\.\d+\/0@/
 let r;
 // ---------------- Greatsword: new combos
 r = play('greatsword', 1, ['J', 'w10', 'K']); T('GS J -> K: hilt bash (tap: no charge)', has(r, 'gs_bash') && hit(r, 'gs_bash')[0] > 0.7 && !has(r, 'gs_charge'), ev(r));
-r = play('greatsword', 1, ['J', 'w10', 'hK1200']); T('GS J -> hold K: bash, then the charge goes on from level 2', has(r, 'gs_bash') && /gs_charged:[23]/.test(r.tl), ev(r));
-r = play('greatsword', 1, ['J', 'w30', 'J', 'w10', 'hK1200']); T('GS J J -> hold K: bash -> charge', has(r, 'gs_bash') && /gs_charge@/.test(r.tl), ev(r));
-r = play('greatsword', 1, ['J', 'w30', 'J', 'w30', 'J', 'w10', 'K']); T('GS J J J -> K: momentum cleave 2.4', Math.abs((hit(r, 'gs_mcleave')[0] || 0) - 2.4) < 0.1, ev(r));
+r = play('greatsword', 1, ['J', 'w10', 'hK1600']); T('GS J -> hold K: bash, then the charge goes on from level 2', has(r, 'gs_bash') && /gs_charged:[23]/.test(r.tl), ev(r));
+r = play('greatsword', 1, ['J', 'w30', 'J', 'w10', 'hK2000']); T('GS J J -> hold K: bash -> charge', has(r, 'gs_bash') && /gs_charge@/.test(r.tl), ev(r));
+r = play('greatsword', 1, ['J', 'w30', 'J', 'w30', 'J', 'w10', 'K'], { tail: 150 }); T('GS J J J -> K: momentum cleave 2.6', Math.abs((hit(r, 'gs_mcleave')[0] || 0) - 2.6) < 0.1, ev(r));
 r = play('greatsword', 1, ['dI', 'w10', 'E:hurtPlayer(40, -1, 991, {})', 'w10', 'J', 'uI']); T('GS block a blow -> J: retort 1.8', Math.abs((hit(r, 'gs_retort')[0] || 0) - 1.8) < 0.1, ev(r));
 r = play('greatsword', 1, ['dI', 'w10', 'E:hurtPlayer(40, -1, 992, {})', 'w10', 'uI', 'w10', 'J']); T('GS block, let go, J inside 0.7 s: retort', has(r, 'gs_retort'), ev(r));
 r = play('greatsword', 1, ['dI', 'w20', 'J', 'uI']); T('GS guard -> J with nothing blocked: the plain light', has(r, 'gs_1') && !has(r, 'gs_retort'), ev(r));
@@ -49,8 +49,8 @@ r = play('greatsword', 2, ['dK', 'w55', 'L', 'w5', 'J', 'w20', 'uK']); T('GS II:
 r = play('greatsword', 1, ['K']); T('GS K tap: the heave takes 180 ms before the swing', /gs_charged:1@(1[6-9]\d|2\d\d)/.test(r.tl), r.tl);
 r = play('greatsword', 1, ['hK1350']); T('GS lv3 holds to 1.4 s (was 1.3)', /gs_charged:3/.test(r.tl), r.tl);
 r = play('greatsword', 1, ['hK1500']); T('GS past 1.4 s: overcharged to level 2', /gs_charged:2/.test(r.tl), r.tl);
-r = play('greatsword', 1, ['hK1000', 'w5', 'hK1300', 'w10', 'hK1200']); T('GS hold K through the strong slash (rank I): the next charge starts', /gs_strong:3@\d+ gs_charge@/.test(r.tl), r.tl);
-r = play('greatsword', 1, ['J', 'w30', 'J', 'w30', 'J', 'w10', 'K', 'w20', 'hK1800']); T('GS hold K through the momentum cleave: the charge starts', /gs_mcleave@\d+ gs_charge@/.test(r.tl), r.tl);
+r = play('greatsword', 1, ['hK1000', 'w5', 'hK1600', 'w10', 'hK1400']); T('GS hold K through the strong slash (rank I): the next charge starts', /gs_strong:3@\d+ gs_charge@/.test(r.tl), r.tl);
+r = play('greatsword', 1, ['J', 'w30', 'J', 'w30', 'J', 'w10', 'K', 'w45', 'hK2400']); T('GS hold K through the momentum cleave: the charge starts', /gs_mcleave@\d+ gs_charge@/.test(r.tl), r.tl);
 r = play('greatsword', 1, ['K', 'w6', 'K', 'w6', 'K', 'w6', 'K', 'w6', 'K', 'w6', 'K']); T('GS K mash stops after the strong slash', !/gs_strong.*gs_charge/.test(r.tl), r.tl);
 r = play('greatsword', 2, ['dK', 'w20', 'L', 'w20', 'L', 'w40', 'uK']); T('GS II: one tackle per charge (the 2nd L rolls)', (r.tl.match(/gs_tackle/g) || []).length === 1 && has(r, 'roll'), r.tl);
 r = play('greatsword', 5, ['hK1600']); T('GS V: wrath at 1.6 s', /gs_wrath:4/.test(r.tl), r.tl);

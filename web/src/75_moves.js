@@ -134,6 +134,11 @@ function mvNeutral(ax) {
     if (held.has('up') && T.up) return mvStart(T.up) || true;
     if (air) {
       if (held.has('down') && T.down) return mvStart(T.down) || true;
+      if (P.mvChain && P.clk - P.mvChain.t < 0.3 && ATK[P.mvChain.id] && !ATK[P.mvChain.id].mv.fin) {   // air J J: a press just after the 1st air swing still continues its string
+        const c = P.mvChain, A = ATK[c.id]; P.mvChain = null;
+        const q = { b: 'J', t: A.mv.total + (P.clk - c.t) * 1000, at: P.clk, after: (P.clk - c.t) * 1000 }, nx = mvNext(A, q);
+        if (nx && typeof nx === 'string' && nx[0] !== '@' && mvStart(nx, { perfect: mvPerfect(q, A) })) return true;
+      }
       if (T.airRise && P.vy < -30 && T.airRise()) return true;
       return mvStart(T.air) || true;
     }
