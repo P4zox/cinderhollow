@@ -30,13 +30,23 @@ for (const k of ['hound', 'twins', 'sentinels']) {
   const got = E(`!!SAVE.cores['${k}']`), flag = E(`!!SAVE.flags['boss:${k}']`);
   T(`${k}: first kill drops its Core (${res})`, !had && got && flag, `core ${got}, flag ${flag}`);
   T(`${k}: the boss's own cinders still pay out`, E('SAVE.cinders') > c0, `${c0} -> ${E('SAVE.cinders')}`);
-  if (k === 'hound') { await sleep(2600 + E('BOSS_INFO.hound.reward.length') * 2400 + 900); step(2); T('hound: the reward caches still convert (Emberstones)', E('SAVE.inv.emberstone || 0') > em0, `${em0} -> ${E('SAVE.inv.emberstone || 0')}`);
-    T('hound: the Core banner shows', E('bannerMsg && bannerMsg.title') === E("CORES.hound.name"), String(E('bannerMsg && bannerMsg.title'))); }
+  if (k === 'hound' || k === 'twins') {   // the Core banner: game time, right after the boss's own item banners
+    const n = E(`BOSS_INFO['${k}'].reward.length`), seen = []; let shown = null;
+    for (let i = 0; i < 300 && shown === null; i++) { await sleep(50); step(3); const ti = E('bannerMsg && bannerMsg.title'); if (ti && seen[seen.length - 1] !== ti) seen.push(ti); if (ti === E(`CORES['${k}'].name`)) shown = E('CR.bannerAt'); }
+    const items = seen.filter(t => !/Mastery/.test(t));   // (a Mastery rank-up banner may slip in between)
+    T(`${k}: the Core banner follows all ${n} item banners`, shown !== null && items.length === n + 1 && items[n] === E(`CORES['${k}'].name`), seen.join(' > '));
+    T(`${k}: ...after every item was granted, ~2.2 s after the last one`, shown !== null && E('CR.bannerPend') === 0 && E('CR.bannerSince') < 3.5, `pend ${E('CR.bannerPend')}, ${(E('CR.bannerSince') || 0).toFixed(2)} s after the last item`);
+    if (k === 'hound') T('hound: the reward caches still convert (Emberstones)', E('SAVE.inv.emberstone || 0') > em0, `${em0} -> ${E('SAVE.inv.emberstone || 0')}`); }
   // a second kill of the same boss never duplicates it (forced through rewards())
   E(`(() => { const n = Object.keys(SAVE.cores).length; BossBase.prototype.rewards.call({ kind: '${k}', x: P.x, y: P.y }); window.__crN = [n, Object.keys(SAVE.cores).length]; })()`);
   const nn = E('window.__crN'); T(`${k}: a repeat kill gives no second Core`, nn[0] === nn[1], nn.join(' -> '));
   T(`${k}: the effigy rises once the fight is over`, (step(300), E(`props.some(p => p.type === 'cr_effigy' && p.kind === '${k}')`)));
 }
+// a pause holds the Core banner (it runs on game time, never on the wall clock)
+{ E(`bannerMsg = null; CR.bq = { kind: 'hound', pend: [], wait: 0.5, t: 0 }; state = 'menu'; menu = { screen: 'pause', tab: 0, sel: 0 }`);
+  await sleep(1500); for (let i = 0; i < 60; i++) G.step(1);
+  const held = E('!!CR.bq && !(bannerMsg && bannerMsg.title === CORES.hound.name)'); E('menu = null; state = "play"; bannerMsg = null'); step(60);
+  T('a pause holds the Core banner; play releases it', held && E('!CR.bq && bannerMsg && bannerMsg.title') === E('CORES.hound.name'), String(held)); E('bannerMsg = null'); }
 // a save written DURING the rematch rebuild (an enter hook that saves) still holds the boss flag
 { const [rm, tx, ty] = home('hound'); G.tp(rm, tx, ty); step(80);
   const r = E(`(() => { window.__crSaved = null; const h = () => { saveGame(); window.__crSaved = JSON.parse(localStorage.getItem(SAVE_KEY)).flags['boss:hound']; }; HOOKS.enter.push(h);

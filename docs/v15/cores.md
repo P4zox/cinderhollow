@@ -7,8 +7,10 @@ Tests: `tools/shots/v15/cores/` (bench, flow, rematch, visuals, showcase). Build
 
 * Every one of the 32 bosses (`BOSS_STAGE` in 69_adaptive.js) has a Core (`CORES` table below). The first kill adds it to
   `SAVE.cores` on top of the boss's own rewards: 74_arsenal9's conversion of boss weapons into Emberstones + cinders is
-  untouched (BossBase.prototype.rewards is wrapped; the original chain runs first). A banner names the Core after the boss's
-  own item banners (2.6 s + 2.4 s per reward item).
+  untouched (BossBase.prototype.rewards is wrapped; the original chain runs first). A banner names the Core right after
+  the boss's own item banners: it is queued on **game time** (held by pauses and menus, never by the wall clock) and shows
+  once every reward item has been granted (grantItem is counted) and the last item banner has been up 2.2 s (a 30 s play-time
+  fallback if a reward never arrives). Kalden: ~9.6 s after the kill instead of ~12.8 s.
 * **Decision: one Core per boss for the whole save lineage.** New Game+ keeps every Core and every enchant (the same rule as
   Weapon Mastery); killing the boss again in NG+ does not give a second one. Reason: a Core can sit in one weapon at a time,
   so where you set it is the choice; duplicates would let every weapon carry the best Core and remove that choice.
@@ -102,12 +104,24 @@ two doses, debuffs refresh, the chord is additive and capped, marks are one per 
 * **Tip ribbon, impact sparks, charged flare**: `feelElement` (61_feel.js) is wrapped: during an enchanted move it returns the
   Core's element (glow colour, light rgb, particle kind), so the ribbon, the element burst and its light take the colour.
   Ordinary blows keep the weapon's own look (tested: no tint before the finisher).
+* **The blade light on every type (v15 fix)**: the old slash tint only showed where a move spawns a slash sprite, so the
+  five v15 types (Switch Axe, Martial Arts, Warbell, Bow have none; the Scythe's smear is baked into its frames) only got
+  the ribbon. Now, generically, while an enchanted move swings (from ~100 ms before its first hit to ~190 ms after its last,
+  ramped in and out) the weapon overlay itself (`sheet('wpn_' + SAVE.weapon)` at `P.anim.frame`, so the Switch Axe's axe
+  form via its sheet() redirect too) is laid over in the Core's colour on the glow layer (additive, alpha up to 0.5), leaves
+  a 0.13 s afterimage of the blade every frame it moves, and lights the tip (26 px) and the body (34 px). It reads on all 14
+  types; `out/type_<type>.png` is one mid-swing frame per type in Gravetusk's dark den.
+* **The v15 types' own effects**: Bow arrows loosed by an enchanted move carry a streak + head of light in the colour (light
+  shots don't); Warbell rings sent by an enchanted toll take the colour; the Scythe's (crescent / reap / soul), Martial Arts'
+  (knuckle) and Warbell's own lights are recoloured while an enchanted move plays (their `render` is wrapped and `addLight`
+  remapped for that call only). The Switch Axe's own lights only burn in its grind / axe states; its blade light is the
+  generic one. These files load after 77_cores.js, so the wrappers bind on the first frame (`crLate`).
 * **Idle**: an enchanted blade sheds a faint rising ember of its colour from its tip every 0.2-0.4 s and holds a soft light
   (16 px, 0.22) on the blade. No aura, no loop sound.
 * Proc effects are thin, glow-layer line work: the omen line and its pillar, a jagged storm arc between foes, the bell's
   expanding ring, a small dusk diamond above the marked foe, a falling star streak, Kalden's brief armour wash when a blow
   is shrugged off, the Scarab shell's faint light.
-* Shots: `out/show_finisher_overseer_*.png` (dark den, Forgefire), `out/finisher_*.png`, `out/idle_glow_*.png`, `out/proc_*.png`.
+* Shots: `out/type_*.png` (all 14 types), `out/type_bow_arrow.png`, `out/show_finisher_overseer_*.png` (dark den, Forgefire), `out/finisher_*.png`, `out/idle_glow_*.png`, `out/proc_*.png`.
 
 ## 5. Rekindle (boss rematch)
 
@@ -115,12 +129,16 @@ two doses, debuffs refresh, the chord is additive and capped, marks are one per 
   alive and the victory banner has gone, an ember effigy stands where the player enters the arena (`TRN_PSTART`, else a dozen
   tiles from the boss; moved to the nearest dry, standable tile clear of the fog gates: in the Drowned Choir's pool that is
   the doorway ledge). A slender iron stake in a scatter of ash with the boss's Core hovering in its cradle, glowing its
-  colour. Prompt: **"Rekindle <boss>"** (E). A short lore line and a choice: "Rekindle …" / "Let the ash lie".
+  colour. The spot also keeps clear of foes' spawn tiles (3 tiles) and of other props (the Ice Warden's effigy used to share
+  a tile with a candle). Prompt: **"Rekindle <boss>"** (E). A short lore line and a choice: "Rekindle …" / "Let the ash lie".
 * **The rematch**: `crRekindle` lifts `boss:<kind>` only for the synchronous `enterRoom` rebuild and restores it in a
   `finally`, so the boss's own spawn code, fog gates and arena machinery run exactly as at the first fight, and **every save
   (even one made mid-fight) still holds the flag**. Cut-scene flags are set, so the intro is the short roar + banner. The
   arena seals as before (tested: fog gates / walls on in 29 of 31; the open arenas, Vessel and Cindervane, never had fog).
   The Hollow Champion is pre-called (its banner gauntlet is skipped). Unlimited rematches.
+* **The rematch is the boss alone**: on Rekindle the room's ordinary foes (map / spawn-list enemies, keys `'<room>:…'`) are
+  removed until you leave (as the Champion's gauntlet start did; the demo had a rot crawler on the effigy and a grave knight
+  joining the fight in R4). What the boss summons is untouched. They are back the next time you enter.
 * **A rekindled kill** (`boss.rematch`): Weapon Mastery +150 (same as any repeat kill) and **10% of the boss's cinders**
   (through gainCinders, so NG+ / difficulty / Greed apply). No Core, no items, no flags, no ending: the Sovereign's
   `victoryBanner.ending` is stripped and the First Ember's epilogue timer / Venn's finale timer are cleared. The effigy
@@ -137,9 +155,10 @@ two doses, debuffs refresh, the chord is additive and capped, marks are one per 
 | File | Run | What |
 |---|---|---|
 | `bench.js` | `SHOT_HTML=web/dist/v15_cores.html sh tools/shots/wm/run.sh tools/shots/v15/cores/bench.js <out>` | the 32-row table above (small + great foe), budget gate ≤ 16%, light attacks never carry it (DoT and edge), Verdict / Last Flame / Unyielding exact multipliers, stance only on eligible moves, control resistance numbers, the Training row |
-| `flow.js` | `SHOT_HTML=… node tools/shots/shot.js tools/shots/v15/cores/flow.js <out>` | first-kill drops on Gravetusk, Twins and Sentinels; boss cinders and Emberstone conversion still pay; the banner; no duplicates; effigy appears; a save made during the rematch rebuild holds the flag; the Ashwright dialogue → "Enchant a weapon" → set / cost / remove / reset → leave, all by real inputs; one Core one weapon; inventory category; save/load; Continue; NG+ keeps Cores and enchants; NG+ kill gives no duplicate |
-| `rematch.js` | `… node tools/shots/shot.js tools/shots/v15/cores/rematch.js <out>` (~6 min) | for all 31: first kill → Core → effigy → prompt → rekindle → boss back with `rematch` → mid-fight save holds the flag → kill → flags, Cores, items, ending unchanged, Mastery +150 (plus any adds' kill XP), 10% cinders, no ending dialogue → effigy returns. Death in a rematch (cinders kept, no remnant, boss stays down); a normal death still leaves a remnant; three Twins rematches in a row |
+| `flow.js` | `SHOT_HTML=… node tools/shots/shot.js tools/shots/v15/cores/flow.js <out>` | first-kill drops on Gravetusk, Twins and Sentinels; boss cinders and Emberstone conversion still pay; the Core banner comes after every item banner, ~2.2 s after the last, and a pause holds it; no duplicates; effigy appears; a save made during the rematch rebuild holds the flag; the Ashwright dialogue → "Enchant a weapon" → set / cost / remove / reset → leave, all by real inputs; one Core one weapon; inventory category; save/load; Continue; NG+ keeps Cores and enchants; NG+ kill gives no duplicate |
+| `rematch.js` | `… node tools/shots/shot.js tools/shots/v15/cores/rematch.js <out>` (~6 min) | for all 31: first kill → Core → effigy → **walk up with held arrows** → prompt → E → confirm → rekindle (the room's own foes gone) → boss back with `rematch` → mid-fight save holds the flag → kill → flags, Cores, items, ending unchanged, Mastery +150 (plus any adds' kill XP), 10% cinders, no ending dialogue → effigy returns. Death in a rematch (cinders kept, no remnant, boss stays down); a normal death still leaves a remnant; three Twins rematches in a row |
 | `visuals.js` | wm runner | slash tint and ribbon colour on finishers for 4 Cores, plain light hits, nothing tinted without a Core, idle ember, omen line + pillar, storm arc (second foe hit), bell ring, dusk sigil, starfall |
+| `types14.js` | shot.js | all 14 types in a dark arena: the first light attack carries nothing; an empowered move glows the Core's colour mid-swing (snapshot per type); bow: empowered arrows tinted, light arrows not; warbell rings tinted; scythe / fist lights recoloured |
 | `showcase.js` | shot.js | dark-arena snapshots: effigy, prompt, dialogue, rekindled banner, Forgefire / Stormcall finishers, idle blades |
 
 ## 7. Decisions for the owner
@@ -157,10 +176,15 @@ two doses, debuffs refresh, the chord is additive and capped, marks are one per 
   Training Grounds already guards its sandbox against it (65_training.js line ~288). Normal damage can't reach it.
 * Killing one Frostbound Twin during the 2.6 s opening guard leaves the survivor stuck in `absorb` (the guard pose overwrote
   the absorb animation), invulnerable. Same: unreachable with normal damage.
-* Bows (v15) only carry enchants on hits that go through the strike hooks (`playerStrike` / `mvStrikeAt`); arrow projectiles
-  that call `t.hit` directly get no proc.
+* Bow arrows run the strike hooks, so they get the procs and the colour, but not the edge (that lives in `mvHitCtx`, which
+  arrows don't use): a bow's enchant is worth a few % less than the table. Add it in bwArrowHit if wanted.
+* The demo walker's failed Rekindle at the Librarian (A3) and Ice Warden (HF4): reproduced the flow by a real walk-up from
+  both doors + E + menu confirm, after a real kill too; it works (rematch.js now walks up for every boss; 30 of 31 reached on
+  foot, the Choir's effigy is on the doorway ledge above its pool, which needs a jump the scripted walk doesn't make). The
+  only real defect found: the Ice Warden's effigy stood on a candle's tile; it now keeps clear of props. If the walker
+  stopped more than 16 px away it would see no prompt (the engine's interact range for props).
 
 ## Shared-file edits
 None. `web/src/77_cores.js` wraps: `mvStart`, `mvHitCtx`, `mvHurtPre`, `mvSpeed`, `mvDodge`, `mvUpdate` (75_moves.js),
 `hurtPlayer`, `finishDeath`, `startNGPlus`, `feelElement`, `spawnFx`, `icon`, `drawDetail`, `menuInput`, `renderMenu`,
-`npcScript`, `wmTrainingRows`, `saveGame` (only while a rematch arena is rebuilt), `BossBase.prototype.rewards`; pushes to `HOOKS.strike/update/render/enter` and `INV_CATS`.
+`npcScript`, `wmTrainingRows`, `saveGame` (only while a rematch arena is rebuilt), `grantItem` (counts reward grants for the Core banner), `BossBase.prototype.rewards`, and on the first frame `bwArrow`, `belRing` and `MV.types.{scythe,fist,saxe,bell}.render`; pushes to `HOOKS.strike/update/render/enter` and `INV_CATS`.

@@ -26,18 +26,25 @@ async function killBoss() {
   }
   return 'timeout';
 }
-const sum = [];
+const sum = [], WALK = {};
 async function rekindleHere(k) {
   for (let i = 0; i < 20 && !E(`props.some(p => p.type === 'cr_effigy' && p.kind === '${k}')`); i++) step(30);
   const pos = E(`(() => { const p = props.find(p => p.type === 'cr_effigy' && p.kind === '${k}'); return p ? [p.x, p.y] : null; })()`);
   if (!pos) return 'no effigy';
-  E(`P.x = ${pos[0]} + 4; P.y = ${pos[1]}; P.vx = 0; P.vy = 0; setP('idle', 'idle', true); P.ground = true;`); step(3);
+  // walk up to it (held arrow keys, as a player would); only if the walk can't get there, stand on it
+  let walked = false;
+  for (let i = 0; i < 700; i++) { const d = E('P.x') - pos[0]; if (Math.abs(d) < 6 && Math.abs(E('P.y') - pos[1]) < 20 && E('P.ground')) { walked = true; break; } G.step(1, [d < 0 ? 'right' : 'left']); }
+  WALK[k] = walked;
+  if (!walked) E(`P.x = ${pos[0]} + 4; P.y = ${pos[1]}; P.vx = 0; P.vy = 0; setP('idle', 'idle', true); P.ground = true;`);
+  step(6);
   const pr = E('nearbyPrompt()');
   if (!/^Rekindle /.test(pr || '')) return 'no prompt: ' + pr;
   step(1, ['interact']);
   for (let i = 0; i < 6 && !E('!!(dialog && dialog.steps[dialog.i] && dialog.steps[dialog.i].choice)'); i++) step(1, ['confirm']);
   step(1, ['confirm']); step(2);
-  return E(`boss && boss.kind === '${k}' && boss.rematch && REM.on && REM.on.kind === '${k}'`) ? 'ok' : `no boss (${E('boss && boss.kind')})`;
+  if (!E(`boss && boss.kind === '${k}' && boss.rematch && REM.on && REM.on.kind === '${k}'`)) return `no boss (${E('boss && boss.kind')})`;
+  const foes = E(`enemies.filter(e => typeof e.key === 'string' && e.key.startsWith(room.id + ':')).length`);
+  return foes ? `${foes} room foes still there` : 'ok';
 }
 let shots = 0;
 for (const k of KINDS) {
@@ -74,7 +81,7 @@ for (const k of KINDS) {
     if (flags0 !== flags1) { const a = JSON.parse(flags0), b = JSON.parse(flags1); sum.push(`${k} flag diff: ${Object.keys({ ...a, ...b }).filter(q => a[q] !== b[q]).join(',')}`); }
     const eff = E(`props.some(p => p.type === 'cr_effigy' && p.kind === '${k}')`);
     T(`${k}: the effigy returns after the rematch`, eff);
-    row.fog = fog; row.walls = dyn; sum.push(`${k}: first ${first}, rematch ${res}, fog ${fog}, walls ${dyn}`);
+    row.fog = fog; row.walls = dyn; sum.push(`${k}: first ${first}, rematch ${res}, fog ${fog}, walls ${dyn}, walked up ${WALK[k]}, room foes cleared ${E('REM.on ? REM.on.cleared : "-"')}`);
   } catch (e) { T(`${k}: no exceptions`, false, String(e).slice(0, 200)); unstick(); }
 }
 // ---- death in a rematch: nothing lost, back at the shrine, the boss stays defeated
@@ -100,4 +107,5 @@ for (const k of KINDS) {
 // ---- the story: the Ashwright's Core list, the map's boss marks and the Sovereign's ending
 T('after it all every rekindled boss still counts as defeated', KINDS.every(k => E(`SAVE.flags['boss:${k}'] === 1`)));
 T('no ending was chosen by any of it', !E('SAVE.ending'));
+T('the effigy was reached on foot (held arrows + E + confirm) in most arenas, incl. the Librarian and the Ice Warden', WALK.librarian !== false && WALK.ice_warden !== false && Object.values(WALK).filter(Boolean).length >= Object.keys(WALK).length - 4, Object.entries(WALK).filter(([k, v]) => !v).map(([k]) => k).join(',') || 'all walked');
 return { R, sum };

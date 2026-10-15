@@ -367,6 +367,91 @@ HOOKS.enter.push(() => { CR.vfx = []; CR.cd = {}; CR.curMv = null; });
   try { return _mu.apply(this, arguments); } finally { CR.tint = was; }
 }; }
 // an idle enchanted blade: a faint ember of its colour at the tip, and a breath of light
+// ---- the blade light (刀光) on EVERY weapon type: while an enchanted move swings, the weapon overlay itself (whatever the type
+// draws: blade, bow, bell, knuckles, the Switch Axe's axe form via its sheet() redirect) is laid over in the Core's colour
+// on the glow layer, leaves a short fading afterimage of the blade, and lights the tip. Ordinary moves never get it.
+CR.blade = []; CR.glowN = 0;
+function crColNow(c) { return CR.twinCur === false && c.col2 ? c.col2 : c.col; }
+function crSwingK(A) {   // 0..1: how strongly the blade glows at this point of the move (wind-up -> active hits -> recovery)
+  const d = A && A.mv; if (!d) return 0;
+  if (d.loop || d.animLoop) return 1;
+  const t = P.mvT || 0, R = A._r, n = d.n || 1, last = R && R.hitT ? R.hitT[R.hitT.length - 1] : d.wind + (n - 1) * (d.gap || 70);
+  const a0 = d.wind - 100, a1 = Math.min(d.total, last + 190);
+  if (t < a0 || t > a1) return 0;
+  return Math.min(clamp((t - a0) / 90, 0, 1), clamp((a1 - t) / 120, 0, 1));
+}
+function crWsheet() { const s = sheet('wpn_' + (SAVE.weapon || 'longsword')); return s && s.ok ? s : null; }
+HOOKS.update.push(dt => {
+  for (const b of CR.blade) b.life -= dt;
+  if (CR.blade.length) CR.blade = CR.blade.filter(b => b.life > 0);
+  if (!P || state !== 'play' || P.state === 'dead') return;
+  const c = crCur(), A = ATK[P.state];
+  if (!c || !crElig(A)) { CR.swingK = 0; return; }
+  const k = CR.swingK = crSwingK(A); if (k <= 0) return;
+  const ws = crWsheet(); if (!ws) return;
+  const L = CR.blade[CR.blade.length - 1];
+  if (!L || L.f !== P.anim.frame || Math.abs(L.x - P.x) > 3) CR.blade.push({ sh: ws, f: P.anim.frame, x: P.x, y: P.y, face: P.face, col: crColNow(c), life: 0.13, max: 0.13, k });
+  if (CR.blade.length > 10) CR.blade.shift();
+});
+HOOKS.render.push(() => {
+  if (!P || !SAVE || state === 'title') return;
+  const c = crCur(), A = ATK[P.state], k = c && crElig(A) && P.state !== 'dead' ? CR.swingK || 0 : 0;
+  if (!CR.blade.length && k <= 0) return;
+  const ws = crWsheet();
+  drawGlow(() => {
+    const o = g.globalCompositeOperation; g.globalCompositeOperation = 'lighter';
+    for (const b of CR.blade) drawSprite(b.sh, b.f, b.x, b.y, b.face, { alpha: 0.32 * b.k * (b.life / b.max), flash: 1, flashColor: b.col });
+    if (k > 0 && ws) drawSprite(ws, P.anim.frame, P.x, P.y, P.face, { alpha: 0.5 * k, flash: 1, flashColor: crColNow(c) });
+    g.globalCompositeOperation = o;
+  });
+  if (k > 0 && ws) {
+    CR.glowN++; CR.glowCol = crColNow(c);
+    const tp = typeof feelTip === 'function' && feelTip(ws, P.anim.frame, 'a');
+    const x = tp ? P.x + (ws.native === P.face ? tp.dx : -tp.dx) : P.x + P.face * 16, y = tp ? P.y + tp.dy : P.y - 20;
+    addLight(x, y, 26, crRGB(crColNow(c)), 0.55 * k); addLight(P.x + P.face * 8, P.y - 18, 34, crRGB(crColNow(c)), 0.25 * k);
+  }
+  // the bow's empowered arrows: a streak and a head of light in the Core's colour over its own
+  if (typeof BW !== 'undefined' && BW.arrows && BW.arrows.length) drawGlow(() => {
+    const o = g.globalCompositeOperation; g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (const pr of BW.arrows) {
+      if (!pr.crCol || pr.delay > 0 || pr.life <= 0) continue;
+      const rgb = crRGB(pr.crCol), tr = pr.bw && pr.bw.trail || [];
+      for (let i = 1; i < tr.length; i++) { const q = i / tr.length; g.strokeStyle = `rgba(${rgb},${0.55 * q})`; g.lineWidth = 1; g.beginPath(); g.moveTo(tr[i - 1].x, tr[i - 1].y); g.lineTo(tr[i].x, tr[i].y); g.stroke(); }
+      g.fillStyle = `rgba(${rgb},0.9)`; g.fillRect(Math.round(pr.x) - 1, Math.round(pr.y) - 1, 2, 2);
+      addLight(pr.x, pr.y, 18, rgb, 0.6); CR.arrowN = (CR.arrowN || 0) + 1;
+    }
+    g.globalCompositeOperation = o;
+  });
+});
+// the five v15 types' own effects (their files load after this one: bound on the first frame)
+let crLateDone = false;
+function crLate() {
+  if (crLateDone) return; crLateDone = true;
+  // bow: an arrow loosed by an enchanted move carries the colour
+  if (typeof bwArrow === 'function') { const _bw = bwArrow; bwArrow = function (o) {
+    const pr = _bw.apply(this, arguments), c = crCur(), A = pr && pr.bw && pr.bw.A;
+    if (pr && c && crElig(A)) pr.crCol = crColNow(c); else CR.arrowPlainN = (CR.arrowPlainN || 0) + 1;
+    return pr;
+  }; }
+  // warbell: the rings an enchanted toll sends out take the colour
+  if (typeof belRing === 'function') { const _br = belRing; belRing = function (x, y, r1, rgb, ...rest) {
+    const c = crCur(); if (c && crElig(ATK[P.state])) { rgb = crRGB(crColNow(c)); CR.ringN = (CR.ringN || 0) + 1; }
+    return _br.call(this, x, y, r1, rgb, ...rest);
+  }; }
+  // scythe (crescent and reap lights, soul glow), martial arts (knuckle glow), switch axe (edge glow): their lights take the
+  // colour while an enchanted move plays
+  for (const ty of ['scythe', 'fist', 'saxe', 'bell']) {
+    const T = MV.types[ty]; if (!T || typeof T.render !== 'function' || T._crR) continue;
+    const _r = T.render; T._crR = true;
+    T.render = function (...a) {
+      const c = crCur(); if (!(c && crElig(ATK[P.state]))) return _r.apply(this, a);
+      const _al = addLight, rgb = crRGB(crColNow(c));
+      addLight = (x, y, r, color, k, o) => { CR.lightN = (CR.lightN || 0) + 1; return _al(x, y, r, rgb, k, o); };
+      try { return _r.apply(this, a); } finally { addLight = _al; }
+    };
+  }
+}
+HOOKS.update.push(crLate); HOOKS.render.push(crLate);
 CR.idleT = 0;
 HOOKS.update.push(dt => {
   if (!P || state !== 'play' || P.state === 'dead') return;
@@ -445,11 +530,25 @@ function crIconCanvas(kind) {
   const kind = this.kind;
   if (CORES[kind] && !crOwned(kind)) {
     crStore().cores[kind] = 1; CR.log.push(['core', kind]); saveGame();
-    setTimeout(() => { const c = CORES[kind]; if (!c || !SAVE.cores || !SAVE.cores[kind]) return; banner(c.name, `${c.trait}: ${c.desc} The Ashwright can set it in a weapon.`, 'core_' + kind); if (sfx.pickup) sfx.pickup(); }, 2600 + n * 2400 + 600);
+    // its banner follows the boss's own item banners (those are granted by the boss's timers): game time, held by pauses
+    CR.bq = { kind, pend: (B && Array.isArray(B.reward) ? B.reward : []).slice(), wait: 1.6, t: 0 };
   }
   return r;
 }; }
 
+{ const _gi = grantItem; grantItem = function (id) { const Q = CR.bq; if (Q) { const i = Q.pend.indexOf(id); if (i >= 0) { Q.pend.splice(i, 1); Q.since = 0; } } return _gi.apply(this, arguments); }; }
+HOOKS.update.push(dt => {
+  const Q = CR.bq; if (!Q || state !== 'play') return;
+  Q.wait -= dt; Q.t += dt; if (Q.since !== undefined) Q.since += dt;
+  if (Q.wait > 0) return;
+  const itemsDone = !Q.pend.length || Q.t > 30;   // (30 s of play: a reward that never came)
+  const free = !bannerMsg || bannerMsg.t > 2.2;    // the item banner before it has been read
+  if (!itemsDone || !free) return;
+  CR.bq = null;
+  const c = CORES[Q.kind]; if (!c || !SAVE.cores || !SAVE.cores[Q.kind]) return;
+  banner(c.name, `${c.trait}: ${c.desc} The Ashwright can set it in a weapon.`, 'core_' + Q.kind); if (sfx.pickup) sfx.pickup();
+  CR.bannerAt = Q.t; CR.bannerPend = Q.pend.length; CR.bannerSince = Q.since;
+});
 // ================================================================== inventory: Boss Cores
 function crEntry(kind) {
   const c = CORES[kind], where = crWhere(kind);
@@ -577,9 +676,15 @@ function crEffigySpot(B, def) {
   const cell = (x, y) => (def.map[y] || '')[x] || '#';
   const ok = (x, y) => { const c = cellType(cell(x, y)), b = cellType(cell(x, y + 1)); if (isSolidT(c) || c === T_WATER || c === T_SPIKE || cell(x, y) === '"') return false;
     if (!(isSolidT(b) || b === T_PLAT)) return false; for (let k = 0; k < 5; k++) if (cell(x, y - k) === 'F' || cell(x, y + 1 - k) === 'F') return false; return true; };
-  if (!ok(tx, ty)) {
+  // ... and in the clear: no foe spawning within 3 tiles, no other prop (candle, candelabra, lantern ...) on its tile or the next
+  const EC = typeof ENEMY_CHARS !== 'undefined' ? ENEMY_CHARS : {}, PROPC = 'SNACEIRgOTkliLGu';
+  const foes = []; for (let y = 0; y < def.h; y++) for (let x = 0; x < def.w; x++) if (EC[cell(x, y)]) foes.push([x, y]);
+  for (const sp of def.spawns || []) if (sp.t === 'enemy') foes.push([sp.x, sp.y]);
+  const clear = (x, y) => !foes.some(([fx, fy]) => Math.abs(fx - x) <= 3 && Math.abs(fy - y) <= 3) && ![-1, 0, 1].some(d => PROPC.includes(cell(x + d, y)));
+  const good = (x, y) => ok(x, y) && clear(x, y);
+  if (!good(tx, ty)) {
     let best = null, bd = 1e9;
-    for (let y = 1; y < def.h - 1; y++) for (let x = 0; x < def.w; x++) if (ok(x, y)) { const d = Math.abs(x - tx) + 2 * Math.abs(y - ty); if (d < bd) { bd = d; best = [x, y]; } }
+    for (const strict of [true, false]) { for (let y = 1; y < def.h - 1; y++) for (let x = 0; x < def.w; x++) if (strict ? good(x, y) : ok(x, y)) { const d = Math.abs(x - tx) + 2 * Math.abs(y - ty); if (d < bd) { bd = d; best = [x, y]; } } if (best) break; }
     if (best) [tx, ty] = best;
   }
   return { x: tx * TILE + 8, y: (ty + 1) * TILE };
@@ -634,6 +739,10 @@ function crRekindle(kind) {
   const b = boss;
   if (!b || b.kind !== kind) { REM.on = null; toast('The ashes stay cold.', 2.4); return false; }
   b.rematch = true; if (b.parts) for (const q of b.parts) q.rematch = true;
+  // the rematch is the boss alone: the room's ordinary foes (map / spawn-list enemies, keyed '<room>:...') step aside until
+  // you leave (the champion's banner gauntlet clears them the same way); whatever the boss itself summons is untouched
+  const n0 = enemies.length; enemies = enemies.filter(e => !(typeof e.key === 'string' && e.key.startsWith(id + ':')));
+  REM.on.cleared = n0 - enemies.length;
   if (kind === 'champion') b.called = true;   // normally woken by the banner's gauntlet
   setP('idle', 'idle', true); P.vx = 0;
   flashScreen = Math.max(flashScreen || 0, 0.35); shake = Math.max(shake, 4); if (sfx.kindle) sfx.kindle();
