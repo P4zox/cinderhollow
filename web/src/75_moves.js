@@ -221,7 +221,12 @@ function mvUpdate(dt, ax, grav) {
   }
   else if (d.hang && t < W + 150) { P.vx *= Math.pow(0.02, dt); P.vy = Math.min(Math.max(P.vy, 0) + GRAV_DN * 0.2 * dt, 50); }   // hangs: the rise stops for the heave
   else if (d.down) { P.vx = approach(P.vx, ax * MAXV * 0.6, 500 * dt); grav(); }
-  else { if (P.mvLunge && t >= lw0 && t < lw1) P.vx = P.face * P.mvLunge / ((lw1 - lw0) / 1000) * spd; else P.vx = approach(P.vx, ax * MAXV * 0.8, 500 * dt); grav(); }
+  else {
+    if (P.mvLunge && t >= lw0 && t < lw1) P.vx = P.face * P.mvLunge / ((lw1 - lw0) / 1000) * spd; else P.vx = approach(P.vx, ax * MAXV * 0.8, 500 * dt); grav();
+    // the first air swing hangs you a moment (its fall capped at MV_AIR_HANG px/s), so even a short hop
+    // leaves time for the second press of an air J J string (the air limit still caps a jump at two)
+    if (d.id === (MV.types[d.type] || {}).air && t < d.total + 60 && P.vy > MV_AIR_HANG) P.vy = MV_AIR_HANG;
+  }
   // hits: hit k starts at wind + k * gap (each one a fresh pass over the targets)
   const n = d.n, gap = d.gap || 70, hitAt = k => (R.hitT ? R.hitT[k] : W + k * gap);
   for (let k = P.mvHitK + 1; k < n; k++) {
@@ -255,7 +260,7 @@ function mvSwing(A) {
 // button wait for the next moves and are judged there). On a finisher (or the last step of a chain), a press that would START A NEW chain only
 // latches in the move's last MV_QFIN ms: mashing through a finisher ends the combo there instead of rolling straight
 // into the next one. Earlier presses are dropped. Presses that continue the chain latch from 30 ms in, as before.
-const MV_QFIN = 120;
+const MV_QFIN = 120, MV_AIR_HANG = 40;
 function mvRouted(A, b) {   // does button b continue A's chain (vs falling back to a fresh neutral press)?
   const d = A.mv, r = d.next && d.next[b];
   if (!r) return false;
