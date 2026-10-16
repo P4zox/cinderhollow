@@ -519,7 +519,7 @@ class HearthkeeperBoss extends BossBase {
   body() { return this.hurtbox(); }
   draw() {
     if (this.hidden) return;
-    let opt = this.flash > 0 ? { flash: Math.min(0.55, this.flash * 0.6) } : this.state === 'stagger' ? { flash: 0.12 + 0.08 * Math.sin(time * 20), flashColor: '#e6e4f0' } : {};
+    let opt = this.flash > 0 ? { flash: Math.min(0.22, this.flash * 0.3), flashColor: '#b8b0a6' } : this.state === 'stagger' ? { flash: 0.12 + 0.08 * Math.sin(time * 20), flashColor: '#e6e4f0' } : {};
     if (this.darkT > 0) opt = { flash: 0.82, flashColor: '#07060a' };       // gone into the dark: only the coal shows
     drawSprite(this.sh, this.anim.frame, this.x, this.y, this.face, opt);
     this.drawHeat();
