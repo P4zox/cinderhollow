@@ -31,3 +31,4 @@ tools/shots/**/*.log
 art/bg_src/*/*_pass1.png
 art/bg_src/*/*_render.png
 art/bg_src/*/v1/
+art/bg_src/*/sweep/

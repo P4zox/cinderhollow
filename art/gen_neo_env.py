@@ -339,7 +339,7 @@ def build_far(frame, cyber=False):
     for y in range(BH):
         v = y / BH
         for x in range(BW):
-            n = vnoise(x, y, 64, 24, 3) * 0.12
+            n = vnoise(x, y, 64, 24, 3, period=BW // 64) * 0.12   # period: wraps at x=512 (v17 seam fix)
             if v < 0.55:
                 c = pick([NAVY[0], NAVY[1], NAVY[2], NAVY[3]], v * 1.1 + n, x, y)
             else:
@@ -348,7 +348,7 @@ def build_far(frame, cyber=False):
     # clouds lit magenta from below
     for y in range(8, 90):
         for x in range(BW):
-            cl = vnoise(x, y, 48, 10, 21) * 0.7 + vnoise(x, y, 16, 5, 22) * 0.3
+            cl = vnoise(x, y, BW / 11, 10, 21, period=11) * 0.7 + vnoise(x, y, 16, 5, 22, period=BW // 16) * 0.3   # tileable (was 48 px cells, no period: a hard seam)
             if cl > 0.62:
                 px[x, y] = pick([NAVY[2], NAVY[3], C("2a1a44"), C("40204e")], (cl - 0.62) * 3 + y / 200, x, y)
     # ---- the fossilised Pale Root: a colossal petrified trunk rising behind the city, its dead crown in the clouds

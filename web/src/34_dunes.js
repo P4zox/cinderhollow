@@ -78,13 +78,14 @@ const DU_OPEN = new Set(['DU1', 'DU2', 'DU3', 'DU4']);
 function duOpenBack(R) {
   const def = R.def, sh = tileSheet(def.biome), ctx = R.back.getContext('2d');
   ctx.clearRect(0, 0, R.pw, R.ph);
+  // the same per-tile alphas (0.85 by the rock, 0.35 a tile out, none beyond), but interpolated across the tiles (03_world.js
+  // drawSmoothVeil): stepped, they framed the window onto the desert as a hard box (v17 bg rollout C, asked for by agent B)
+  drawSmoothVeil(R, ctx, (x, y) => {
+    let d = 9;
+    for (let yy = -2; yy <= 2; yy++) for (let xx = -2; xx <= 2; xx++) { const q = tileAtR(R, x + xx, y + yy); if (isSolidT(q)) d = Math.min(d, Math.max(Math.abs(xx), Math.abs(yy))); }
+    return d === 0 ? 0.85 : d <= 1 ? 0.85 : d === 2 ? 0.35 : 0;
+  }, (x, y) => { const t = R.grid[y * R.w + x]; return !isSolidT(t) && t !== DU_T_SLOPE; });
   for (let y = 0; y < R.h; y++) for (let x = 0; x < R.w; x++) {
-    const t = R.grid[y * R.w + x];
-    if (!isSolidT(t) && t !== DU_T_SLOPE) {
-      let d = 9;
-      for (let yy = -2; yy <= 2; yy++) for (let xx = -2; xx <= 2; xx++) { const q = tileAtR(R, x + xx, y + yy); if (isSolidT(q)) d = Math.min(d, Math.max(Math.abs(xx), Math.abs(yy))); }
-      if (d <= 2) drawTile(ctx, sh, 38 + Math.floor(hash2(x, y) * 4), x * TILE, y * TILE, d <= 1 ? 0.85 : 0.35);
-    }
     const deco = { x: 42, r: 43, k: 44, b: 45 }[def.map[y][x]];
     if (deco !== undefined) drawTile(ctx, sh, deco, x * TILE, y * TILE);
   }

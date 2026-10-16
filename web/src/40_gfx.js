@@ -183,7 +183,7 @@ function gfxPass(P, src, dst, sw, sh, set) {   // one full-screen draw of progra
 // light-shaft sources for this frame: [x, y (uv, y up), strength, reach] + colour. Outdoor biomes get a sun / moon above the
 // view; the strongest big lights on screen bleed too. Slots fade in and out so a source never pops.
 const GFX_SUN = {   // biome: [uv x, uv y (1 = top edge), strength, colour, indoors too, threshold, far-layer sun {x, y, w} (px in bg_<b>_far)]
-  crown: [0.68, 1.35, 0.55, '255,246,226'], dunes: [0.6, 1.3, 0.6, '255,226,170', 0, 0.42, { x: 297, y: 34, w: 512 }],
+  crown: [0.68, 1.35, 0.55, '255,246,226'], dunes: [0.6, 1.3, 0.6, '255,226,170', 0, 0.42, { x: 294, y: 31, w: 512 }],
   ramparts: [0.3, 1.25, 0.5, '255,170,120', 0, 0.42, { x: 243, y: 111, w: 512 }],
   hoarfrost: [0.55, 1.3, 0.4, '210,232,255'], spire: [0.45, 1.3, 0.35, '200,214,255'], starfall: [0.62, 1.25, 0.32, '190,200,255'],
   lastfield: [0.7, 1.3, 0.5, '255,220,170'], neohallow: [0.5, 1.25, 0.25, '230,170,255'], crimson: [0.4, 1.25, 0.3, '255,150,150'],

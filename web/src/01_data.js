@@ -95,5 +95,16 @@ const AREAS = {
   cathedral: { name: 'The Sunken Cathedral', ambient: 0.55, amb: 'gold', tint: '#0e0c14', veil: [1, 0.8, 0.5, 0.28] },
   mire: { name: 'The Weeping Mire', ambient: 0.42, amb: 'spore', tint: '#0b120e' },
   crown: { name: 'The Pale Crown', ambient: 0.12, amb: 'petal', tint: '#cfd8e6' },
-  archives: { name: 'The Ashen Archives', ambient: 0.44, amb: 'gold', tint: '#0c0a12' },
+  archives: { name: 'The Ashen Archives', ambient: 0.44, amb: 'gold', tint: '#0c0a12', veil: [1, 0.8, 0.5, 0.28] },   // v17 bg rollout (A16/A2/A8 light column, asked for by agent A)
+};
+// v17 bg rollout: the smooth back-wall veil (see renderRoomLayers) for biomes whose AREAS entry lives in a later file.
+// [a1, a2, a3, aOpen] = the alpha one, two and three tiles from terrain and in open space. [1, .8, .5, .28] is the old
+// stepped veil, only interpolated (no hard 16 px boxes or wall-to-sky staircase); a lower aOpen also lets more backdrop through.
+const AREA_VEIL = {
+  threshold: [1, 0.8, 0.5, 0.28],   // CT1: the boxes in the broken arch's opening onto the ash-light
+  hermit: [1, 0.8, 0.5, 0.24],      // H2/H3: the window onto the dusk was a stepped box
+  ember: [1, 0.8, 0.5, 0.28],       // E5: the boxes around the openings onto the ember lake
+  dunes: [1, 0.8, 0.5, 0.28],       // DU1 (asked for by agent B)
+  necropolis: [1, 0.8, 0.5, 0.28],  // NV15 (asked for by agent B)
+  deep: [1, 0.8, 0.5, 0.28],        // D5/D11: the bright lava falls behind the stepped veil (asked for by agent A)
 };

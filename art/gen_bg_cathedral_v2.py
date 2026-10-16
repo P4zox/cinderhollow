@@ -22,7 +22,7 @@ TINT = '#0e0c14'
 
 # v1 ramps (env_bg.py N_AIR / N_LIGHT / N_GOLD) extended upward; plus a few muted stained-glass hues
 AIR = ['0a0b14', '0e1019', '12151f', '171b27', '1d222f', '232937', '2a3140', '32394a', '3b4356', '434c62', '4c566e', '56607a', '606b86', '6c7894', '7884a0']
-LIGHT = ['4c5670', '62708c', '7e8eaa', 'a0b0c8', 'c6d2e2', 'e6eef6']
+LIGHT = ['4c5670', '62708c', '7e8eaa', '8a9ab6', '96a6c0', 'a0b0c8', 'b2c0d4', 'c6d2e2', 'e6eef6']   # 8a9ab6, 96a6c0, b2c0d4: rollout C, finer steps in the rose halo (less dither)
 GOLD = ['3a2e1c', '5a4626', '7e6230', 'a8843e', 'd0aa56']
 GLASS = ['2e4a7a', '6a2a3a']
 FAR_PAL = [hexc(c) for c in AIR + LIGHT + GOLD + GLASS]
@@ -34,9 +34,10 @@ PROMPT_FAR = ('pixel art, dark fantasy, interior of a vast flooded gothic cathed
               'above three tall lancet windows, cold pale moonlight streaming in shafts, clustered stone piers and ribbed vaults, a shattered '
               'lancet window, still black water covering the nave floor with reflections, broken pews half sunk, side-scroller game background, '
               'muted desaturated slate blue palette with faint gold, atmospheric depth, haze, highly detailed')
-PROMPT_MID = ('pixel art, dark fantasy, gothic cathedral nave arcade, pointed stone arches on clustered pillars with carved capitals, '
-              'hanging bronze censers on long chains, broken wooden pews in water, isolated on a flat dark background, side-scroller game '
-              'background layer, dark slate blue stone with cold moonlit rim light, detailed')
+PROMPT_MID = ('pixel art, dark fantasy, gothic cathedral nave arcade, tall pointed stone arches with moulded orders and voussoirs on '
+              'clustered pillars with carved foliate capitals, hanging bronze censers with glowing coals on long chains, dark water weed '
+              'hanging from the arches, old water stains on the stone, broken wooden pews in water, isolated on a flat dark background, '
+              'side-scroller game background layer, dark slate blue stone with cold moonlit rim light, highly detailed')
 
 ROSE = (150, 44, 27)       # x, y, radius
 
@@ -139,8 +140,11 @@ def guide_far():
     return G
 
 
+WEEDS = []   # water-weed strands the mid guide hangs from the arches; the model drops them, so they are drawn at 1x after
+
+
 def guide_mid():
-    rng = np.random.default_rng(9)
+    rng = np.random.default_rng(9); WEEDS.clear()
     G = Guide(hexc('2a2e3a'), alpha=True)
     stone = hexc('4a5268'); lit = hexc('8a98b8')
     def pier(x, w, top, cap='foliate'):
@@ -159,17 +163,49 @@ def guide_mid():
             G.fill(G.mask_poly([(x - w / 2 - 3, top - 4), (x + w / 2 + 3, top - 4), (x + w / 2 + 1, top + 1), (x - w / 2 - 1, top + 1)]), hexc('5a6278'))
         elif cap == 'broken':
             G.fill(G.mask_poly([(x - w / 2, top), (x - w / 2 + 3, top - 6), (x, top - 2), (x + 3, top - 9), (x + w / 2, top - 3), (x + w / 2, top)]), stone)
+    def gothic(cx, half, spring, off, bottom, f=0.66, n=28):
+        """A true two-centred pointed arch (the shared arch_pts() head is elliptical, so it rendered round): arcs of radius
+        R = f * 2 * half centred on the springing line at cx -/+ (R - half); off grows/shrinks the ring concentrically."""
+        R = f * 2 * half; c = R - half; r = R + off
+        top = math.pi - math.acos(min(1.0, c / r))     # angle at which the left arc (centre cx + c) meets x = cx
+        pts = [(cx - (r - c), bottom)]
+        for i in range(n + 1):
+            a_ = math.pi - (math.pi - top) * i / n
+            pts.append((cx + c + r * math.cos(a_), spring - r * math.sin(a_)))
+        for (x, y) in reversed(pts[1:-1]):
+            pts.append((2 * cx - x, y))
+        pts.append((cx + (r - c), bottom))
+        return pts, spring - math.sqrt(max(0.0, r * r - c * c))
     def arch(x0, x1, spring, rise_k, thick, broken=None):
-        cx, half = (x0 + x1) / 2, (x1 - x0) / 2; apex = spring - half * rise_k
-        outer = arch_pts(cx, half + thick, spring, apex - thick * 1.1, spring + 1, n=40)
-        inner = arch_pts(cx, half, spring + 0.5, apex, spring + 40, n=40)
+        cx, half = (x0 + x1) / 2, (x1 - x0) / 2
+        f = 0.55 + 0.25 * min(1.0, max(0.0, rise_k - 0.9) / 0.2)
+        outer, _ = gothic(cx, half, spring, thick, spring + 1, f)
+        inner, apex = gothic(cx, half, spring + 0.5, 0, spring + 40, f)
         ring = np.clip(G.mask_poly(outer) - G.mask_poly(inner), 0, 1)
         if broken is not None:
             jag = broken + 5 * (tile_noise(WS, HS, 6, 6, 61, 1) - 0.5); ring = ring * (G.X < jag)
         G.fill(ring, stone)
-        mould = np.clip(G.mask_poly(arch_pts(cx, half + 2.2, spring, apex - 2.2, spring + 1, n=40)) - G.mask_poly(inner), 0, 1)
-        G.fill(mould * (ring > 0.5), lit, 0.75)                                      # moulded intrados catching moonlight
-        G.fill(np.clip(G.mask_poly(arch_pts(cx, half + thick - 1.5, spring, apex - thick * 1.1 + 1.5, spring + 1, n=40)) - G.mask_poly(arch_pts(cx, half + thick - 3, spring, apex - thick * 1.1 + 3, spring + 1, n=40)), 0, 1) * (ring > 0.5), hexc('2a3042'), 0.8)
+        # two orders: an inner order (lit, catching the moonlight) and an outer order with a hood moulding
+        o2 = np.clip(G.mask_poly(gothic(cx, half, spring, 4.5, spring + 1, f)[0]) - G.mask_poly(inner), 0, 1) * (ring > 0.5)
+        G.fill(o2, hexc('5a6480'))
+        G.fill(np.clip(G.mask_poly(gothic(cx, half, spring, 1.6, spring + 1, f)[0]) - G.mask_poly(inner), 0, 1) * (ring > 0.5), lit, 0.8)
+        G.fill(np.clip(G.mask_poly(gothic(cx, half, spring, 5.6, spring + 1, f)[0]) - G.mask_poly(gothic(cx, half, spring, 4.5, spring + 1, f)[0]), 0, 1) * (ring > 0.5), hexc('20242f'))
+        hood = np.clip(G.mask_poly(outer) - G.mask_poly(gothic(cx, half, spring, thick - 1.4, spring + 1, f)[0]), 0, 1) * (ring > 0.5)
+        G.fill(hood, hexc('6a7490'))
+        # voussoir joints across the outer order
+        dx = G.wdx(cx); ang = np.arctan2(-(G.Y - spring), dx)
+        jt = (np.abs(((ang / (math.pi / 26)) % 1) - 0.5) > 0.44) * ring * (1 - o2) * (1 - hood)
+        G.fill(jt, hexc('2a3042'), 0.8)
+        # water weed and drips hanging from the intrados (the nave was under water once, higher than now)
+        for k in range(int(half / 6)):
+            t_ = rng.uniform(0.08, 0.92); a_ = math.pi * t_
+            sx_ = cx - half * math.cos(a_) * 0.98; sy_ = spring - (apex - spring) * -math.sin(a_) * 0.97
+            if broken is not None and sx_ > broken - 2: continue
+            ln = rng.uniform(4, 16) * (0.5 + math.sin(a_))
+            pts_ = [(sx_ + 0.8 * math.sin(j * 1.3 + k), sy_ + j * 2) for j in range(int(ln / 2) + 1)]
+            segs_ = [(x0_, y0_, x1_, y1_, 0.9 * (1 - j / len(pts_)) + 0.4) for j, ((x0_, y0_), (x1_, y1_)) in enumerate(zip(pts_, pts_[1:]))]
+            WEEDS.extend(segs_)
+            G.fill(G.mask_lines(segs_), hexc('1e2a2c'))
         return cx, apex
     # irregular arcade: wide arch, narrower arch, a collapsed bay, an arch over the seam
     pier(30, 20, 98, 'foliate'); pier(172, 16, 104, 'plain'); pier(292, 22, 98, 'foliate'); pier(426, 16, 98, 'plain'); pier(368, 14, 128, 'broken')
@@ -181,13 +217,23 @@ def guide_mid():
         pts = [(bx + r * 1.4 * math.cos(a) + rng.uniform(-1, 1), by + r * math.sin(a) * 0.8) for a in np.linspace(0, 2 * math.pi, 7)[:-1]]
         G.fill(G.mask_poly(pts), hexc('3a4256')); G.fill(G.mask_poly([(x, min(y, by - 1)) for x, y in pts]), lit, 0.5)
     # censers on chains from the arch crowns (different lengths), and a broken chain
-    for (cx, apex), ln in ((c1, 52), (c2, 30), (c4, 64)):
+    for (cx, apex), ln in ((c1, 46), (c2, 28), (c4, 58)):
         top = 0 if apex < 4 else apex - 6
         y1 = apex + ln
-        G.fill(G.mask_lines([(cx, top, cx, y1, 0.8)]), hexc('4a4a50'))
-        G.fill(G.mask_poly([(cx - 4, y1), (cx + 4, y1), (cx + 5, y1 + 4), (cx + 3, y1 + 8), (cx - 3, y1 + 8), (cx - 5, y1 + 4)]), hexc('7e6230'))
-        G.fill(G.mask_poly([(cx - 3, y1 + 1), (cx - 1, y1 + 1), (cx - 2, y1 + 7)]), hexc('d0aa56'), 0.8)
-        G.fill(G.mask_lines([(cx - 4.5, y1 + 4, cx + 4.5, y1 + 4, 0.7)]), hexc('3a2e1c'))
+        for yy_ in np.arange(top, y1, 2.4):                                       # chain links
+            G.fill(np.clip(G.mask_ellipse(cx, yy_ + 1.2, 0.9, 1.4) - G.mask_ellipse(cx, yy_ + 1.2, 0.35, 0.7), 0, 1), hexc('5a5a60'))
+        G.fill(G.mask_lines([(cx - 5, y1 + 1, cx, y1 - 3, 0.6), (cx + 5, y1 + 1, cx, y1 - 3, 0.6)]), hexc('5a5a60'))
+        body = G.mask_poly([(cx - 6, y1 + 1), (cx + 6, y1 + 1), (cx + 7, y1 + 6), (cx + 4, y1 + 11), (cx - 4, y1 + 11), (cx - 7, y1 + 6)])
+        G.fill(body, hexc('7e6230'))
+        G.fill(body * (G.wdx(cx) < -1.5), hexc('a8843e'), 0.9)
+        G.fill(G.mask_poly([(cx - 7, y1 + 0.5), (cx + 7, y1 + 0.5), (cx + 6, y1 + 2.5), (cx - 6, y1 + 2.5)]), hexc('d0aa56'))
+        for k in (-3.5, 0, 3.5):                                                 # pierced holes, ember glow inside
+            G.fill(G.mask_ellipse(cx + k, y1 + 6, 1.0, 1.4), hexc('e8a050'))
+        G.fill(G.mask_lines([(cx - 6.5, y1 + 8.5, cx + 6.5, y1 + 8.5, 0.7)]), hexc('3a2e1c'))
+        G.fill(G.mask_ellipse(cx, y1 + 12, 1.6, 1.2), hexc('5a4626'))
+    for (px_, w_) in ((30, 20), (172, 16), (292, 22), (426, 16), (368, 14)):       # tide marks: the old water lines
+        for (ty_, k_) in ((176, 0.5), (183, 0.35)):
+            G.fill(G.mask_lines([(px_ - w_ / 2 - 1, ty_, px_ + w_ / 2 + 1, ty_ + 0.5, 1.2)]), hexc('6a7a8a'), k_)
     G.fill(G.mask_lines([(338 + 10, 0, 350, 46, 0.8)]), hexc('4a4a50'))              # chain hanging free over the collapse
     # broken pews jutting from the water (near, larger than the far ones), water line strip
     for (px, pw, tilt) in ((96, 34, 3), (236, 28, -4), (470, 30, 2.5)):
@@ -210,7 +256,7 @@ def paint_guides():
 
 RENDER = {
     'far': dict(prompt=PROMPT_FAR, seed=3, denoise=0.78, cn=0.45, cn_end=0.6, pix=0.6, guide_blur=1.3),
-    'mid': dict(prompt=PROMPT_MID, seed=1, denoise=0.72, cn=0.5, cn_end=0.7, pix=0.6, guide_blur=1.0, seam_band=96),
+    'mid': dict(prompt=PROMPT_MID, seed=2, denoise=0.66, cn=0.6, cn_end=0.8, pix=0.6, guide_blur=1.0, seam_band=96),
 }
 
 
@@ -243,10 +289,40 @@ def far_post(a, stage):
     return out
 
 
+# where gold may stay in the far layer (1x boxes x0, y0, x1, y1): pier capitals, the gilded sill, the rose's boss, the
+# chandelier over the seam, the two candle stands. Anywhere else the model's "gilding" came out as olive smudges on the piers.
+GOLD_OK = [(0, 20, W, 35), (104, 146, 196, 158), (140, 34, 160, 54), (0, 46, 28, 64), (500, 46, W, 64), (84, 110, 102, 172), (266, 110, 290, 172)]
+
+
+def clean_olive(q):
+    """Repaint stray gold/olive pixels with the nearest cool (AIR/LIGHT) colour of the same value."""
+    r, g_, b = q[..., 0], q[..., 1], q[..., 2]
+    warm = b < r + 6          # not blue: the gold ramp and the grey-olive accent (#363838) the smudges quantize to
+    ok = np.zeros(warm.shape, bool)
+    for (x0, y0, x1, y1) in GOLD_OK: ok[y0:y1, x0:x1] = True
+    bad = warm & ~ok
+    cool = np.array([hexc(c) for c in AIR + LIGHT])
+    lum = lambda c: (np.asarray(c) * np.array([0.299, 0.587, 0.114])).sum(-1)
+    cl = lum(cool); out = q.copy()
+    for y, x in zip(*np.nonzero(bad)):
+        out[y, x] = cool[np.argmin(np.abs(cl - lum(q[y, x])))]
+    return out, int(bad.sum())
+
+
+def draw_weeds(mid, al):
+    """The water weed, 1 px strands, only where the arch above them is solid (keyed alpha)."""
+    G = guide_mid(); m = G.mask_lines(WEEDS)
+    w1 = np.asarray(Image.fromarray((m * 255).astype(np.uint8)).resize((W, H), Image.BOX), float) / 255 > 0.3
+    out = mid.copy(); out[w1] = hexc('1b2328'); out[w1 & (np.roll(w1, 1, 0) == False)] = hexc('2a3a3a')
+    return out, al | w1
+
+
 def build(ase=True):
-    far, acc_f = far_pipeline(f'{SRC}/far_render.png', FAR_PAL, n_acc=4, grade_kw=dict(black=8, white=240, gamma=1.1, sat=0.75), post=far_post, dk=0.35)
+    far, acc_f = far_pipeline(f'{SRC}/far_render.png', FAR_PAL, n_acc=4, grade_kw=dict(black=8, white=240, gamma=1.1, sat=0.75), post=far_post, dk=0.3)
+    far, nb = clean_olive(far); print('olive px repainted', nb)
     mid, al, acc_m = mid_pipeline(f'{SRC}/mid_render.png', f'{SRC}/guide_mid_alpha.png', MID_PAL, n_acc=3,
                                   grade_kw=dict(black=10, white=330, gamma=0.85, sat=0.7), rim_col=hexc('44527a'))
+    mid, al = draw_weeds(mid, al)
     far_im, mid_im = to_rgba(far), to_rgba(mid, al)
     far_im.save(f'{SRC}/out_far.png'); mid_im.save(f'{SRC}/out_mid.png')
     preview(far_im, mid_im, TINT, f'{SRC}/preview.png')

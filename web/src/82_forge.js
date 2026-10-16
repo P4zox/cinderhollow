@@ -577,13 +577,16 @@ CFA_KIND.hall = (s, c) => {   // the Threshold's hall: dark slate wall, a broken
     const x1 = s.w * TILE, top = 2 * TILE, bot = room.ph - 3 * TILE;
     for (let y = top; y < bot; y += 8) for (let x = 0; x < x1 + 40; x += 16) {
       const ox = (y / 8) % 2 ? 8 : 0, bx = x - ox;
-      const ex = (bx + 8 - (x1 + 70)) / 170, ey = (y + 4 - bot) / ((bot - top) * 0.92), arch = ex * ex + ey * ey < 1 + (hash2(bx, y) - 0.5) * 0.12;
-      if (arch) continue;
+      const ex = (bx + 8 - (x1 + 70)) / 170, ey = (y + 4 - bot) / ((bot - top) * 0.92), e = ex * ex + ey * ey - (hash2(bx, y) - 0.5) * 0.12;
+      if (e < 1) continue;
+      // v17 bg rollout C: the bricks crumble away toward the opening (fading over a band) instead of ending in a hard 16x8 staircase
+      ctx.globalAlpha = Math.min(1, (e - 1) / 0.42) ** 0.8;
       const k = hash2(bx * 3, y * 7), light = Math.max(0, 1 - (x1 - bx) / 260);
       const v = Math.round(14 + k * 6 + light * 26), b = Math.round(v * 1.45);
       ctx.fillStyle = `rgb(${v},${Math.round(v * 1.18)},${b})`; ctx.fillRect(bx, y, 16, 8);
       ctx.fillStyle = 'rgba(4,5,8,0.9)'; ctx.fillRect(bx, y, 16, 1); ctx.fillRect(bx, y, 1, 8);
       ctx.fillStyle = `rgba(150,160,180,${0.08 + light * 0.25})`; ctx.fillRect(bx + 1, y + 1, 15, 1);
+      ctx.globalAlpha = 1;
     }
   } });
 };

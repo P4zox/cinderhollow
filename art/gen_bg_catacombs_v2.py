@@ -25,7 +25,7 @@ SRC = os.path.join(HERE, 'bg_src', B); os.makedirs(SRC, exist_ok=True)
 CAVE = ['070507', '0b080b', '100c0f', '161114', '1d161a', '251c20', '2e2427', '382c2e', '443635', '524139', '614d42', '735b4c', '876b58']
 TEAL = ['152322', '1b2d2b', '223835', '2b4541', '36554f', '46685f', '5e8579', '84ab9b']
 GOLD = ['4a301c', '684622', '8a602c', 'ac7e38', 'cca04c', 'e8c470', 'f6e2a4']
-BONE = ['6e6252', '8c7d68', 'a89880']
+BONE = ['6e6252', '8c7d68', 'a89880']   # + SKULL_RAMP (the stamped skulls, v17 rollout C)
 FAR_PAL = [hexc(c) for c in CAVE + TEAL + GOLD + BONE]
 SIL = ['0d090a', '130e0f', '1a1415', '221a1a', '2b2120', '352927', '403230', '4c3b37']
 RIM = ['2a4541', '3e6158', '5e8579']
@@ -41,8 +41,11 @@ PROMPT_MID = ('pixel art, dark fantasy, ruined crypt stone arches and broken pil
 
 
 # -------------------------------------------------------------------------------------------------- guides
+SKULLS = []   # (x, y, guide colour) of every skull the far guide paints; restamped crisp at 1x (stamp_skulls)
+
+
 def guide_far():
-    rng = np.random.default_rng(7)
+    rng = np.random.default_rng(7); SKULLS.clear()
     G = Guide(hexc('120d0f'))
     nz = tile_noise(WS, HS, 96, 48, 1); nz2 = tile_noise(WS, HS, 24, 12, 2, octaves=2)
     # cavern air: brighter in the middle distance and toward the main opening (x=232), darker at roof and floor
@@ -81,7 +84,9 @@ def guide_far():
                 if rng.random() < 0.08: continue
                 jit = rng.uniform(-0.6, 0.6)
                 cy_ = ty + 8 + jit
-                G.fill(G.mask_ellipse(nx, cy_, 2.4, 2.6), skull * rng.uniform(0.85, 1.05))
+                sc_ = skull * rng.uniform(0.85, 1.05)
+                SKULLS.append((float(nx), float(cy_), sc_))
+                G.fill(G.mask_ellipse(nx, cy_, 2.4, 2.6), sc_)
                 G.fill(G.mask_ellipse(nx - 0.9, cy_ + 0.3, 0.75, 0.8), hexc('1a1214'))
                 G.fill(G.mask_ellipse(nx + 0.9, cy_ + 0.3, 0.75, 0.8), hexc('1a1214'))
                 G.fill(G.mask_ellipse(nx, cy_ + 2.0, 1.4, 0.6), hexc('3a2e28'))
@@ -269,8 +274,43 @@ def far_post(a, stage):
     return np.clip(a * k[..., None], 0, 255)
 
 
+# a 5x5 skull at 1x (v17 rollout C): the model rendered the guide's skull rows as rounded blobs that read as shelves of jars
+# at 1x, so every visible skull is restamped crisp. 3 = lit cranium, 2 = bone, 1 = shade side / jaw, 0 = socket, . = keep
+SKULL_PX = ['.332.',
+            '33221',
+            '20201',
+            '.221.',
+            '.1.1.']
+SKULL_RAMP = ['3a2e2a', '524139', '614d42', '735b4c', '8c7d68', 'a89880', 'c4b498']
+
+
+def stamp_skulls(q, G):
+    """Restamp the guide's skulls (those no root or niche covers) onto the final far layer, shaded by the local light."""
+    out = q.copy(); lum = (q * np.array([0.299, 0.587, 0.114])).sum(-1)
+    ramp = [hexc(c) for c in SKULL_RAMP]; sock = hexc('161114')
+    n = 0
+    for (x, y, col) in SKULLS:
+        x0, y0 = int(round(x - 2.5)), int(round(y - 2.6))
+        # still visible in the guide? (roots, loculi and buttresses are painted over some)
+        ys, xs = slice(int((y - 2.0) * S), int((y + 2.0) * S)), slice(int((x - 1.8) * S), int((x + 1.8) * S))
+        vis = (np.abs(G.rgb[ys, xs] - col).max(-1) < 2).mean()
+        if vis < 0.4: continue
+        xx = np.arange(x0 - 2, x0 + 7) % W
+        L = lum[max(0, y0 - 3):y0 + 8][:, xx].mean()
+        base = int(np.clip(1 + (L - 22) / 16, 1, len(ramp) - 3))     # band brightness picks the ramp step
+        for r, row in enumerate(SKULL_PX):
+            for c, ch in enumerate(row):
+                if ch == '.': continue
+                px, py = (x0 + c) % W, y0 + r
+                if not (0 <= py < H): continue
+                out[py, px] = sock if ch == '0' else ramp[base + int(ch) - 2 + (1 if ch == '3' else 0)]
+        n += 1
+    return out, n
+
+
 def build(ase=True):
     far, acc_f = far_pipeline(f'{SRC}/far_render.png', FAR_PAL, n_acc=8, grade_kw=dict(black=6, white=228, gamma=1.25, sat=0.92), post=far_post)
+    far, ns = stamp_skulls(far, guide_far()); print('skulls stamped', ns)
     mid, al, acc_m = mid_pipeline(f'{SRC}/mid_render.png', f'{SRC}/guide_mid_alpha.png', MID_PAL, n_acc=3,
                                   grade_kw=dict(black=14, white=360, gamma=0.85, sat=0.6), rim_col=hexc('6a5440'))
     far_im, mid_im = to_rgba(far), to_rgba(mid, al)

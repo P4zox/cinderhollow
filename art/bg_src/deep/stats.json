@@ -1,0 +1,21 @@
+{
+ "far": {
+  "colors": 30,
+  "lum": 38.1,
+  "dark": 0.35,
+  "seam": 1.02,
+  "repeat": 0.5
+ },
+ "mid": {
+  "colors": 11,
+  "lum": 31.9,
+  "dark": 0.22,
+  "seam": 0.44,
+  "repeat": 0.15
+ },
+ "accents_far": [
+  "885b40",
+  "e8ac3c"
+ ],
+ "accents_mid": []
+}

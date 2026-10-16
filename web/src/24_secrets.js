@@ -30,8 +30,9 @@ registerTile('$', SC_SEAL_T, { solid: true, draw(ctx, sh, px, py, x, y, R, back)
   drawTile(back, hs.ok ? hs : sh, 38 + ((x + y) & 1), px, py, 1);
   back.fillStyle = 'rgba(6,4,6,0.55)'; back.fillRect(px, py, 16, 16);
 } });
-// '&' — a gap in a cave's back wall: the back layer is cleared so the parallax (the Pale Root) shows through
-registerTile('&', SC_GAP_T, { draw(ctx, sh, px, py, x, y, R, back) { back.clearRect(px, py, 16, 16); } });
+// '&' — a gap in a cave's back wall: the back layer is cleared so the parallax (the Pale Root) shows through. With the smooth
+// veil (AREA_VEIL hermit/ember, v17 bg rollout C) the veil fades into the gap instead: a cleared 16 px cell left a hard box.
+registerTile('&', SC_GAP_T, { gap: true, draw(ctx, sh, px, py, x, y, R, back) { if (!R.veilSmooth) back.clearRect(px, py, 16, 16); } });
 
 // ================================================================== small shared helpers
 const scBossDmg = (d, b) => BOSS_DMG * d * NGP.dmg * (b && b.phase === 2 ? 1.1 : 1) * ((b && b.dmgK) || 1);
