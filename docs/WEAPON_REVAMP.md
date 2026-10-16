@@ -955,7 +955,12 @@ factor is 1.0: the Gravegrinder keeps base 42.
 
 **Identity:** a Monster-Hunter bow fought up close. Chain shots to climb charge levels, step to keep the foe in the
 sweet spot, and spend the level on one big shot. Weapon: **Ashstring Recurve** (type `bow`, prefix `bw_`; base 42,
-Str E / Dex A, speed 1.15, reach 1.3, stamina 0.85, poise 0.8; default art Backstep Slash).
+Str E / Dex A, speed 1.15, reach 1.3, stamina 0.85, poise 0.8; weapon art **Ashen Volley**, see below).
+
+**Weapon art (v17): Ashen Volley** (`ashen_volley`, 12 FP, 5 s). A snap kick (0.5) off the foe into a back-flip with
+0.25 s of i-frames; at the top, three burning arrows (0.6 each) fan down into the spot you left. They are real bow
+arrows, so they burn out at the bow's short range, and the first one that lands raises the charge level by one. Hold:
+five arrows (0.35) that stick and burst 0.42 s later (0.25 each). Write-up: `docs/v17/bow_art.md`.
 
 **Trait: charge levels and the sweet spot**
 - **Levels 1–3.** `P.bwLv` is the level banked for the *next* shot.
@@ -1099,7 +1104,7 @@ factor is **1.0** and the Ashstring Recurve keeps base 42.
 ### 3.12 Martial Arts: two styles, one body
 
 **As built (v15):** `fist` / prefix `ft_`, weapon **Penitent's Knuckles** (base 42, STR C / DEX B, speed 1.35, reach 0.7,
-stamina 0.75, poise 0.9), default art **Bloodstep**. Code: `web/src/78_mech_fist.js`; write-up: `docs/v15/fist.md`.
+stamina 0.75, poise 0.9), weapon art **Litany of Fists** (see below). Code: `web/src/78_mech_fist.js`; write-up: `docs/v15/fist.md`.
 
 **Identity:** two styles in one body. **Swift** is fast, light and evasive; **Iron** is slow, rooted, armoured and breaks
 stance. The skill is crossing between them in the middle of a combo, so a chain can run Swift → Iron → Swift.
@@ -1275,7 +1280,12 @@ second knuckle, and kicks use real IK legs. No move borrows another type's tag.
 - **Ember palm:** 3.0 / 120 poise as planned, plus commit, 30% armour and a 4 s burn.
 - **Move list:** the plan counted 33 entries; the in-game list has **32** (the code has 39 move rows, counting the
   hold states `ft_khold`, `ft_ichg`, `ft_ihold` and the two flourishes).
-- **Weapon art:** the default Bloodstep is kept; no new art was made.
+- **Weapon art (v17): Litany of Fists** (`litany`, 14 FP, 5.5 s). It follows the current style and never switches it.
+  - **Swift:** a stepping flurry of 6 palm and knuckle blows (0.32 each), then a rising knee (0.9) that launches small
+    foes. Hold: 9 blows and a 1.15 knee.
+  - **Iron:** a planted, armoured palm (1.4, 60 poise) and an ember shock wave along the floor (72 px, 0.9). Hold: palm
+    1.8, wave 116 px for 1.4, and both break guards.
+  - Focus adds ×1.1 and +6 px; the art grants +1 Flow once per use. Write-up: `docs/v17/fist_art.md`.
 - **Attack factor:** `WM_AR_TUNE.fist = 0.92` (set in `78_mech_fist.js`, balance phase 2b), so the Knuckles' attack is
   42 → 38.6. On the real-boss bot the shift route was 16% faster than the 14-type average (0.84–0.86); it now sits at
   0.92.
@@ -1419,7 +1429,13 @@ so its factor is **1.0** and Requiem keeps its 42 base AR.
 decides which buffs a Perform will give you. You choose your buffs by how you fight, then spend a beat to toll them.
 
 **Weapon:** Dirgebell (`dirge_bell`, type `bell`, move prefix `wb_`): base AR 42 before the attack factor (47.0 after
-×1.12, see below), scaling Str A / Fth D, speed 0.8, reach 1.1, stamina 1.35, poise 1.8, armoured. Default art: War Cry.
+×1.12, see below), scaling Str A / Fth D, speed 0.8, reach 1.1, stamina 1.35, poise 1.8, armoured. Weapon art: **Funeral Peal** (see below).
+
+**Weapon art (v17): Funeral Peal** (`funeral_peal`, 14 FP, 6.5 s). Heave the bell over your shoulder and drive it
+into the floor: a ring of sound rolls both ways along the floor (2.8 light per foe, 70 stance before ×1.3, 88 px), and
+destroys enemy missiles it touches. Each foe struck writes a note (Ember ahead, Ash behind; at most 2, 3 held), so the
+peal sets up the next Perform without spending the staff. Hold: 3.4, 140 px, stuns small foes 1.8 s, +30 stance on
+bosses. Armoured. Write-up: `docs/v17/bell_art.md`.
 
 **Trait: notes, tolls, Perform**
 - **Notes.** A blow that **lands** rings one note into a 3-note staff (HUD); when a 4th note rings, the oldest falls off.
@@ -2050,6 +2066,15 @@ The full command list of each weapon, 311 moves in all, exactly as the in-game *
 
 ---
 ## Appendix A. Changelog
+
+### v17: unique arts for the last three types
+
+The Bow, Martial Arts and the Warbell no longer borrow another weapon's art: **Ashen Volley**, **Litany of Fists**
+and **Funeral Peal** (sections 3.11, 3.12, 3.14). Old saves holding Backstep Slash, Bloodstep or War Cry with these
+weapons are switched to the new art by the art lock. Each art alone stays well below its type's best combo on boss
+time-to-kill; used whenever ready inside the combo loop it adds about 12–46% (fist), 14% (bell), and nothing (bow, whose
+J loop is already denser). Also: a fatality K latched mid-move now reaches 36 px further and steps in, so the
+Spear's J then K on a staggered foe plays Skypiercer.
 
 ### v14 weapon pass: what changed
 

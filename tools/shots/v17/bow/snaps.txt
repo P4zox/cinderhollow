@@ -1,0 +1,182 @@
+{
+ "t0_coil": [
+  442,
+  504,
+  3,
+  "art",
+  "art_ashen_volley",
+  0,
+  0,
+  1
+ ],
+ "t1_kick": [
+  462,
+  504,
+  3,
+  "art",
+  "art_ashen_volley",
+  1,
+  1,
+  1
+ ],
+ "t2_launch": [
+  440,
+  457,
+  3,
+  "art",
+  "art_ashen_volley",
+  3,
+  2,
+  1
+ ],
+ "t3_turn": [
+  417,
+  423,
+  3,
+  "art",
+  "art_ashen_volley",
+  4,
+  2,
+  1
+ ],
+ "t4_loose": [
+  406,
+  411,
+  3,
+  "art",
+  "art_ashen_volley",
+  5,
+  3,
+  1
+ ],
+ "t5_volley": [
+  396,
+  408,
+  3,
+  "art",
+  "art_ashen_volley",
+  5,
+  3,
+  2
+ ],
+ "t6_hits": [
+  392,
+  407,
+  3,
+  "art",
+  "art_ashen_volley",
+  5,
+  3,
+  2
+ ],
+ "t7_round": [
+  392,
+  408,
+  3,
+  "art",
+  "art_ashen_volley",
+  6,
+  4,
+  2
+ ],
+ "t8_land": [
+  392,
+  505,
+  3,
+  "art",
+  "art_ashen_volley",
+  8,
+  5,
+  2
+ ],
+ "t9_rise": [
+  392,
+  505,
+  3,
+  "art",
+  "art_ashen_volley",
+  10,
+  5,
+  2
+ ],
+ "t10_after_lv2": [
+  392,
+  504,
+  3,
+  "idle",
+  "idle",
+  0,
+  5,
+  2
+ ],
+ "h0_charged": [
+  480,
+  504,
+  3,
+  "art",
+  "art_ashen_volley",
+  0,
+  0,
+  1
+ ],
+ "h1_volley5": [
+  400,
+  408,
+  3,
+  "art",
+  "art_ashen_volley",
+  5,
+  3,
+  1
+ ],
+ "h2_stuck": [
+  394,
+  407,
+  3,
+  "art",
+  "art_ashen_volley",
+  5,
+  3,
+  2
+ ],
+ "h3_burst": [
+  392,
+  505,
+  3,
+  "art",
+  "art_ashen_volley",
+  9,
+  5,
+  2
+ ],
+ "h4_burst_late": [
+  392,
+  505,
+  3,
+  "art",
+  "art_ashen_volley",
+  9,
+  5,
+  2
+ ],
+ "h5_floor_stuck": [
+  392,
+  429,
+  3,
+  "art",
+  "art_ashen_volley",
+  7,
+  4,
+  1
+ ],
+ "h6_floor_burst": [
+  392,
+  505,
+  3,
+  "art",
+  "art_ashen_volley",
+  9,
+  5,
+  1
+ ]
+}

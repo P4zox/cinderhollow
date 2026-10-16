@@ -1,0 +1,121 @@
+{
+ "icon": true,
+ "art": [
+  "crescent",
+  "Litany of Fists",
+  14,
+  5.5,
+  "litany",
+  "litany"
+ ],
+ "swift_tap": {
+  "started": true,
+  "tag": "art_litany",
+  "fpCost": 14,
+  "frames": 81,
+  "end": "idle",
+  "flow": 1,
+  "hits": 7,
+  "light": 2.82,
+  "poise": 66,
+  "kinds": [
+   "light",
+   "heavy"
+  ],
+  "styleAfter": "swift"
+ },
+ "swift_hold": {
+  "started": true,
+  "tag": "art_litany",
+  "fpCost": 14,
+  "frames": 89,
+  "end": "idle",
+  "flow": 1,
+  "hits": 10,
+  "light": 4.03,
+  "poise": 94,
+  "kinds": [
+   "light",
+   "heavy"
+  ],
+  "styleAfter": "swift"
+ },
+ "iron_tap": {
+  "started": true,
+  "tag": "art_litany_iron",
+  "fpCost": 14,
+  "frames": 59,
+  "end": "idle",
+  "flow": 1,
+  "hits": 2,
+  "light": 2.3,
+  "poise": 110,
+  "kinds": [
+   "heavy"
+  ],
+  "styleAfter": "iron"
+ },
+ "iron_hold": {
+  "started": true,
+  "tag": "art_litany_iron",
+  "fpCost": 14,
+  "frames": 49,
+  "end": "idle",
+  "flow": 1,
+  "hits": 2,
+  "light": 3.2,
+  "poise": 170,
+  "kinds": [
+   "heavy"
+  ],
+  "styleAfter": "iron"
+ },
+ "swift_focus": {
+  "hits": 7,
+  "light": 3.102,
+  "poise": 66,
+  "kinds": [
+   "light",
+   "heavy"
+  ],
+  "end": "idle"
+ },
+ "iron_focus": {
+  "hits": 2,
+  "light": 2.53,
+  "poise": 110,
+  "kinds": [
+   "heavy"
+  ],
+  "end": "idle"
+ },
+ "swift_launch": {
+  "minVy": -186.66666666666666,
+  "launches": 4,
+  "foeState": "stagger"
+ },
+ "iron_shove": {
+  "dx": 50,
+  "shoves": 8
+ },
+ "iron_wave_far": {
+  "dmg": 46
+ },
+ "guard_tap": {
+  "breaks": 0,
+  "foeState": "guard",
+  "end": "idle"
+ },
+ "guard_hold": {
+  "breaks": 2,
+  "foeState": "guard",
+  "end": "idle"
+ },
+ "iron_armor_small": "art",
+ "iron_armor_big": "hurt",
+ "swift_flinch": "hurt",
+ "oldSave": "litany",
+ "noFp": "idle",
+ "onCd": "idle",
+ "pass": true
+}

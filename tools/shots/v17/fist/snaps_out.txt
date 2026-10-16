@@ -1,0 +1,106 @@
+{
+ "shots": [
+  "01_sw_prayer",
+  "02_sw_flurry_2",
+  "03_sw_flurry_5",
+  "04_sw_knee",
+  "05_sw_float",
+  "06_sw_charge",
+  "07_sw_hold_flurry_8",
+  "08_sw_focus_flurry",
+  "09_ir_coil",
+  "10_ir_palm",
+  "11_ir_wave_a",
+  "12_ir_wave_b",
+  "13_ir_charge",
+  "14_ir_hold_palm",
+  "15_ir_hold_wave",
+  "16_ir_focus_palm"
+ ],
+ "POS": {
+  "01_sw_prayer": [
+   408,
+   504,
+   3
+  ],
+  "02_sw_flurry_2": [
+   422,
+   504,
+   3
+  ],
+  "03_sw_flurry_5": [
+   442,
+   504,
+   3
+  ],
+  "04_sw_knee": [
+   482,
+   497,
+   3
+  ],
+  "05_sw_float": [
+   493,
+   453,
+   3
+  ],
+  "06_sw_charge": [
+   408,
+   504,
+   3
+  ],
+  "07_sw_hold_flurry_8": [
+   478,
+   504,
+   3
+  ],
+  "08_sw_focus_flurry": [
+   436,
+   504,
+   3
+  ],
+  "09_ir_coil": [
+   408,
+   504,
+   3
+  ],
+  "10_ir_palm": [
+   414,
+   504,
+   3
+  ],
+  "11_ir_wave_a": [
+   424,
+   504,
+   3
+  ],
+  "12_ir_wave_b": [
+   424,
+   504,
+   3
+  ],
+  "13_ir_charge": [
+   408,
+   504,
+   3
+  ],
+  "14_ir_hold_palm": [
+   414,
+   504,
+   3
+  ],
+  "15_ir_hold_wave": [
+   424,
+   504,
+   3
+  ],
+  "16_ir_focus_palm": [
+   414,
+   504,
+   3
+  ]
+ },
+ "own": [
+  true,
+  true
+ ]
+}

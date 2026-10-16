@@ -5467,13 +5467,26 @@ for _grp in ("blade", "heavy", "guard", "agile", "new"):
     except Exception as _e:  # noqa: BLE001
         print("WARNING: player_v16_fatal_%s skipped: %r" % (_grp, _e), file=sys.stderr)
 
+# v17 weapon arts for the Bow, Martial Arts and Warbell (docs/v17/ARTS_BRIEF.md): one module per type
+# (art/player_v17_<type>.py, the v13 register(G) contract), loaded after V16 in a fixed order. A module that is not there
+# yet is skipped quietly; one that fails is skipped with a warning.
+V17_MOVES = []
+for _grp in ("bow", "fist", "bell"):
+    if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "player_v17_%s.py" % _grp)):
+        continue
+    try:
+        _m = __import__("player_v17_" + _grp)
+        V17_MOVES += _v13_take(_m.register(sys.modules[__name__]))
+    except Exception as _e:  # noqa: BLE001
+        print("WARNING: player_v17_%s skipped: %r" % (_grp, _e), file=sys.stderr)
+
 ANIMS = [("idle", idle), ("run", run), ("jump_up", jump_up), ("jump_fall", jump_fall), ("land", land),
          ("roll", roll), ("attack1", attack1), ("attack2", attack2), ("attack3", attack3), ("heavy", heavy),
          ("hurt", hurt), ("heal", heal), ("death", death),
          # v3 additions (appended; the frames above keep their indices)
          ("attack_up", attack_up), ("attack_down", attack_down), ("air_attack", air_attack), ("cast", cast),
          ("parry", parry), ("riposte", riposte), ("wall_slide", wall_slide), ("double_jump", double_jump),
-         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS + V13_MOVES + V14_MOVES + V15_MOVES + V16_MOVES   # v4 movesets after frame 124, v5 arts after 252,
+         ("rest", rest), ("rise", rise)] + MOVES + ARTS + TRAV + V8_MOVES + V8_ARTS + V9_MOVES + V9_ARTS + V9_SWIM + V10_MOVES + AA_ARTS + V13_MOVES + V14_MOVES + V15_MOVES + V16_MOVES + V17_MOVES   # v4 movesets after frame 124, v5 arts after 252,
                                                             # v7 traversal after 308, v8 classes/techniques after 329
 
 # v10 polish: these tags ease back toward the idle pose at the end (last frame split; active frames and total time unchanged)

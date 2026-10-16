@@ -1,0 +1,98 @@
+{
+ "use": [
+  {
+   "style": "swift",
+   "hold": false,
+   "hits": 2.82,
+   "perFp": 0.201,
+   "perCdSec": 0.513,
+   "secs": 1.37,
+   "poise": 66
+  },
+  {
+   "style": "swift",
+   "hold": true,
+   "hits": 4.03,
+   "perFp": 0.288,
+   "perCdSec": 0.733,
+   "secs": 2.32,
+   "poise": 94
+  },
+  {
+   "style": "iron",
+   "hold": false,
+   "hits": 2.3,
+   "perFp": 0.164,
+   "perCdSec": 0.418,
+   "secs": 1,
+   "poise": 110
+  },
+  {
+   "style": "iron",
+   "hold": true,
+   "hits": 3.2,
+   "perFp": 0.229,
+   "perCdSec": 0.582,
+   "secs": 1.65,
+   "poise": 170
+  }
+ ],
+ "boss": [
+  {
+   "route": "Swift J J J J",
+   "dps": 0.82,
+   "artShare": 0,
+   "uses": 0,
+   "presses": 121
+  },
+  {
+   "route": "Swift J J J J + art",
+   "dps": 1.57,
+   "artShare": 0.3,
+   "uses": 5,
+   "presses": 210
+  },
+  {
+   "route": "Iron J J J",
+   "dps": 1.51,
+   "artShare": 0,
+   "uses": 0,
+   "presses": 39
+  },
+  {
+   "route": "Iron J J J + art",
+   "dps": 1.69,
+   "artShare": 0.23,
+   "uses": 5,
+   "presses": 32
+  },
+  {
+   "route": "Shift dance J (J I)",
+   "dps": 1.22,
+   "artShare": 0,
+   "uses": 0,
+   "presses": 42
+  },
+  {
+   "route": "Shift dance + art",
+   "dps": 1.78,
+   "artShare": 0.26,
+   "uses": 5,
+   "presses": 38
+  },
+  {
+   "route": "Swift art only (FP refilled)",
+   "dps": 0.47,
+   "artShare": 1,
+   "uses": 5,
+   "presses": 0
+  },
+  {
+   "route": "Iron art only (FP refilled)",
+   "dps": 0.38,
+   "artShare": 1,
+   "uses": 5,
+   "presses": 0
+  }
+ ]
+}

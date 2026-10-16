@@ -1,0 +1,9 @@
+[
+ "2.58  J J J J (main loop) [rank 1, foe at 30 px] 90 hits  {\"bw_1 lv1\":13,\"bw_2 lv2\":26,\"bw_3 lv3\":39,\"bw_pin lv3\":12}",
+ "2.48  J J J -> hold K (lv3 from the bank) [rank 1, foe at 30 px] 80 hits  {\"bw_1 lv1\":12,\"bw_2 lv2\":24,\"bw_3 lv3\":33,\"bw_power lv3\":11}",
+ "2.30  L L -> hold K (II, lv3 power), step-cancel [rank 2, foe at 30 px] 23 hits  {\"bw_power lv3\":23}",
+ "0.46  art only (Ashen Volley, tap, on cooldown) [rank 1, foe at 24 px] 16 hits  {\"ashen_volley lv2\":12}",
+ "0.69  art only (Ashen Volley, held) [rank 1, foe at 24 px] 44 hits  {\"ashen_volley lv2\":20}",
+ "2.05  art -> hold K (the banked level), J J J J between [rank 1, foe at 24 px] 71 hits  {\"ashen_volley lv2\":12,\"bw_power lv2\":4,\"bw_1 lv1\":7,\"bw_2 lv2\":14,\"bw_3 lv3\":21,\"bw_pin lv3\":6,\"bw_power lv1\":3}",
+ "2.41  J J J J + art when ready [rank 1, foe at 24 px] 92 hits  {\"bw_1 lv1\":7,\"bw_2 lv2\":14,\"bw_3 lv3\":30,\"bw_pin lv3\":10,\"ashen_volley lv2\":12,\"bw_1 lv2\":6,\"bw_2 lv3\":9}"
+]

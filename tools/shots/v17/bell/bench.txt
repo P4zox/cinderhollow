@@ -1,0 +1,44 @@
+{
+ "boss": [
+  {
+   "plan": "JJJ+perform",
+   "dps": 1.43,
+   "artDps": 0,
+   "arts": 0,
+   "presses": 62,
+   "performs": 2,
+   "staggers": 2,
+   "buffs": "{\"swift\":5.397500000000417,\"fury\":9.097500000000469}"
+  },
+  {
+   "plan": "art only",
+   "dps": 0.47,
+   "artDps": 0.47,
+   "arts": 5,
+   "presses": 0,
+   "performs": 0,
+   "staggers": 0,
+   "buffs": "{}"
+  },
+  {
+   "plan": "JJJ+perform+art",
+   "dps": 1.63,
+   "artDps": 0.49,
+   "arts": 5,
+   "presses": 25,
+   "performs": 4,
+   "staggers": 2,
+   "buffs": "{\"iron\":7.819166666667074,\"fury\":10.735833333333904}"
+  }
+ ],
+ "tap": {
+  "hitsPerUse": 2.8,
+  "perFp": 0.2,
+  "perCdSec": 0.431
+ },
+ "held": {
+  "hitsPerUse": 3.4,
+  "perFp": 0.243,
+  "perCdSec": 0.523
+ }
+}
