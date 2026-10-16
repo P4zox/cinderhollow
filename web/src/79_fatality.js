@@ -647,6 +647,13 @@ const FATFX = {
 const fatFxNames = () => Object.keys(FATFX);
 
 // ---- per-frame: effects, particles, the cinematic values
+// while a fatality plays, a hit only pulses the target pale (flash <= 0.28) instead of turning it solid white: the
+// fatality's own effects carry the impact, and the boss's white silhouette used to swallow them (v16 demo review)
+const FAT_FLASH_CAP = 0.28;
+HOOKS.update.push(() => {
+  const F = FAT.on; if (!F) return;
+  for (const t of [F.target, F.owner].concat(F.owner && F.owner.parts || [])) if (t && t.flash > FAT_FLASH_CAP) t.flash = FAT_FLASH_CAP;
+});
 HOOKS.update.push(dt => {
   const ms = dt * 1000;
   for (const e of FAT.fx) {
