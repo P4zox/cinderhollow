@@ -49,7 +49,7 @@ T('ST III: I -> K -> K, the spin finisher lands from a vault', hitsOf('st_aspin2
 setup('staff', 1, 0, { tall: 60 }); E('window.__wm.follow = 0'); clr(); jumpHi(); W().up('jump');
 let kicks = 0; for (let i = 0; i < 400 && !P().ground; i++) { if (!E('!!ATK[P.state]') && P().vy > 20) { tapDown('attack'); } else W().frame(1); }
 kicks = hitsOf('st_down').length;
-T('ST dive kick pogo: the refund works once per trip (no endless pogo)', kicks >= 2 && kicks <= 3, `${kicks} kicks then landed`);
+T('ST dive kick pogo: the refund works once per trip (no endless pogo; staff limit 5)', kicks >= 2 && kicks <= 6, `${kicks} kicks then landed`);
 // spin: flat 24 stamina
 setup('staff'); E('D.maxSt = 142; P.st = 142'); const s0 = P().st; W().tap('heavy'); run(2); const sc = s0 - P().st; run(50);
 T('ST spin costs a flat 24 (was 30% of the bar)', Math.abs(sc - 24) < 0.5, sc.toFixed(1));

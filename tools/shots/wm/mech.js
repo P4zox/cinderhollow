@@ -127,7 +127,7 @@ T('SP: charge dash -- 400 ms wind-up, then 8 stamina/s while running', Math.abs(
 setup('staff'); const vy0 = P().y; W().tap('parry'); W().frame(4); const vh0 = P().hp; hurt(20); const vinv = P().hp === vh0; let top = 0; for (let i = 0; i < 40; i++) { W().frame(1); top = Math.max(top, vy0 - P().y); }
 T('ST: vault -- invulnerable at first, about 2.2 tiles up, 15 stamina', vinv && top > 28 && top < 46, `inv ${vinv} height ${top.toFixed(0)}`);
 setup('staff'); W().tap('parry'); untilState('air', 40); W().tap('attack'); W().frame(3); W().tap('heavy'); W().frame(30); const lockV = E('P.airLock'), airN = E('P.airN'), seqV = E('MV.last');
-T('ST: the vault is not an attack -- 2 air attacks after it, then the lock', lockV && airN === 2 && seqV === 'st_aspin', `lock ${lockV} n ${airN} last ${seqV}`);
+T('ST: the vault is not an attack -- 2 air attacks after it count 2 (staff limit 5: no lock yet)', !lockV && airN === 2 && seqV === 'st_aspin', `lock ${lockV} n ${airN} last ${seqV}`);
 for (let i = 0; i < 120 && !G.P.ground; i++) W().frame(1); W().frame(20);
 setup('staff', 1, 0, { tall: 90 }); E('window.__wm.follow = 0'); W().down('jump'); W().frame(4); W().tap('attack'); W().frame(14); W().up('jump'); const m1 = E('P.mom'); W().down('up'); W().tap('attack'); W().up('up'); W().frame(16); const m2 = E('P.mom');
 T('ST: each air hit adds a momentum stack (+8%)', m1 === 1 && m2 === 2, `${m1} ${m2}`);

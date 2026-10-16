@@ -544,3 +544,16 @@ MV_STATES.grapple = (dt, ax, grav) => {
   P.vx = dx / d * 360; P.vy = dy / d * 360; P.ground = false;
 };
 HOOKS.update.push(dt => { for (const e of enemies) if (e._whStun > 0) { e._whStun -= dt; if (e.vx !== undefined) e.vx = 0; } });
+
+// ---- the Staff is master of the air: up to ST_AIR_CHAIN airborne attacks per trip through the air (every other type
+// keeps AIR_CHAIN = 2, or 3 with the thorn charm). The dive kick's refund and the double vault still work on top.
+const ST_AIR_CHAIN = 5;
+{ const _aas = airAtkStart, _ar = airRefund;
+  airAtkStart = function () {
+    if (mvType() !== 'staff') return _aas();
+    P.airN = (P.airN || 0) + 1; if (P.airN >= ST_AIR_CHAIN) { P.airLock = true; P.airCd = AIR_CD; P.airDenied = false; }
+  };
+  airRefund = function () {
+    if (mvType() !== 'staff') return _ar();
+    if (P.airN > 0) P.airN--; if (P.airN < ST_AIR_CHAIN) P.airLock = false;
+  }; }

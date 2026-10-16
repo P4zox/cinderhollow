@@ -702,7 +702,10 @@ Boss time to kill 1.04 of the average, damage taken 0.87.
 
 **Strengths:** the best evasion (it's hard to be where the boss swings), hits on both sides, momentum burst, good
 against fliers.
-**Weaknesses:** low poise, weaker on the ground, the air limit caps its burst, and it punishes mistimed vaults.
+**Weaknesses:** low poise, weaker on the ground, and it punishes mistimed vaults.
+
+**Air limit (owner's call):** the Staff alone gets **5 air attacks per jump** (every other type: 2). The vault itself still
+doesn't count; the dive kick's refund and the double vault work on top.
 
 | Input | Move | Job | Dmg | Poise | Stam | Time | Notes |
 |---|---|---|---|---|---|---|---|
@@ -2172,7 +2175,8 @@ default).
 - **v14c:** 3–4 more J / K mixes per weapon (K J, K K, J K J, J J K K …), each with its own animation.
 
 **Open questions** (where the build already behaves one way, it says so; that is not yet a user decision)
-1. **Staff and the 2-air-attack limit:** should the Staff be the exception, or stay within the limit?
+1. **Staff and the 2-air-attack limit:** should the Staff be the exception, or stay within the limit? *Decided (user):*
+   the Staff gets up to **5** air attacks per jump (`ST_AIR_CHAIN` in `76_mech_reach.js`); every other type keeps 2.
    *As built:* it stays within the limit. The vault isn't an attack; the vault kick and every air swing count; the dive
    kick's first bounce in a jump refunds one air attack; the double vault (IV) refunds them all once per jump.
 2. **No block:** Dual Blades and Whip have no block. OK? *As built:* no block. The Dual Blades defend with the perfect
