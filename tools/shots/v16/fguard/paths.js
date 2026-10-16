@@ -17,7 +17,7 @@ for (const ty of ['sns', 'spear', 'bow']) {
   out[ty + '_midJ_K'] = { during: jSt, started: st, name: E('FAT.last && FAT.last.name'), end: E('P.state') };
   out[ty + '_moveList'] = E(`(MV.types['${ty}'].combos.find(c => c.fatality) || {}).desc`).split(':')[0];
 }
-// spear_midJ_K is informational: the latched K is decided when sp_1 ends, and by then its recovery + the foe's stagger
-// slide have put the foe past the 34 px crit range (the latch then plays sp_jk, as the framework intends)
-out.pass = Object.entries(out).filter(([k]) => /guardK|holdK|midJ_K/.test(k) && k !== 'spear_midJ_K').every(([, v]) => v.started && v.end === 'idle');
+// spear_midJ_K: sp_1's push slides the foe past the 34 px crit range before the move ends; a latched K reaches 36 px
+// further and steps in (fatLatchTarget / fatStepIn), so it must start the fatality too
+out.pass = Object.entries(out).filter(([k]) => /guardK|holdK|midJ_K/.test(k) && true).every(([, v]) => v.started && v.end === 'idle');
 return out;

@@ -781,6 +781,29 @@ HOOKS.hud.push(() => {   // the fatality's name, in the title font, under the to
   };
 }
 
+// ================================================================== a K latched mid-move
+// The move's own push can carry a staggered foe past the crit range before the move ends (the spear's thrust slides it
+// ~20 px), so the latched K would play the type's J -> K instead. A latched K reaches FAT_LATCH_PX further and steps in.
+const FAT_LATCH_PX = 36;
+function fatLatchTarget() {
+  if (!P || !D || !P.ground || FAT.on || typeof state === 'undefined' || state !== 'play' || P.state === 'dead') return null;
+  let best = null, bd = 1e9;
+  for (const t of targets()) {
+    if (!t.critable || !t.critable()) continue;
+    const ad = Math.abs(t.x - P.x);
+    if (ad >= (t.critRange || 34) + FAT_LATCH_PX || Math.abs(t.y - P.y) >= 30 || ad >= bd) continue;
+    best = t; bd = ad;
+  }
+  return best;
+}
+function fatStepIn(t) {   // close inside the crit range (a quick step with an afterimage); false when a wall is in the way
+  const r = (t.critRange || 34) - 8, dx = t.x - P.x; if (Math.abs(dx) < r + 8) return true;
+  const dir = Math.sign(dx), goal = t.x - dir * r;
+  for (let x = P.x; dir * (goal - x) > 0; x += dir * 2) if (solidAtPx(x + dir * 6, P.y - 6) || solidAtPx(x + dir * 6, P.y - 20)) return false;
+  try { ghosts.push({ f: P.anim.frame, x: P.x, y: P.y, face: P.face, life: 0.22, col: '#c8d0e8' }); } catch (e) {}
+  P.x = goal; P.face = dir; return true;
+}
+
 // ================================================================== inputs (J keeps the riposte; K on a critable foe = the fatality)
 {
   const _mvN = mvNeutral;   // the neutral K press (04_player's canStart block, '@K' routes)
@@ -796,9 +819,12 @@ HOOKS.hud.push(() => {   // the fatality's name, in the title font, under the to
   mvParryUpdate = function (dt, ax) { if (peek('heavy') && fatReady()) { take('heavy'); if (fatalityStart()) return true; } return _mvPU.apply(this, arguments); };
   // K pressed during a move: it latches even on a finisher and leads to the fatality when the move ends
   const _mvR = mvRouted;
-  mvRouted = function (A, b) { if (b === 'K' && fatReady()) return true; return _mvR.apply(this, arguments); };
+  mvRouted = function (A, b) { if (b === 'K' && (fatReady() || fatLatchTarget())) return true; return _mvR.apply(this, arguments); };
   const _mvNx = mvNext;
-  mvNext = function (A, q) { if (q && q.b === 'K' && !q.peek && fatReady()) return '@K'; return _mvNx.apply(this, arguments); };
+  mvNext = function (A, q) {
+    if (q && q.b === 'K' && !q.peek) { if (fatReady()) return '@K'; const t = fatLatchTarget(); if (t && fatStepIn(t)) return '@K'; }
+    return _mvNx.apply(this, arguments);
+  };
   // invulnerable throughout: nothing reaches the player (blows, projectiles, spikes, a killing blow)
   const _hp = hurtPlayer;
   hurtPlayer = function () { if (FAT.on) return false; return _hp.apply(this, arguments); };
