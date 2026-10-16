@@ -317,6 +317,7 @@ function renderWorld() {
   g.drawImage(room.front, 0, 0);
   for (const p of props) if (p.type !== 'fog' && p.type !== 'veil') lxDrawProp(p);
   for (const f of fx) if (f.name === 'ground_crack') drawFx(f);
+  if (HOOKS.renderMid) runHooks('renderMid');   // v16 (79_fatality.js): after the terrain and props, before any body
   // shadows
   const shadow = (x, y, w, a) => { g.fillStyle = `rgba(6,4,10,${a})`; g.beginPath(); g.ellipse(Math.round(x), Math.round(y) + 1, Math.max(2, w), 2.5, 0, 0, 6.3); g.fill(); };
   if (P.ground) shadow(P.x, P.y, 8, 0.45);
