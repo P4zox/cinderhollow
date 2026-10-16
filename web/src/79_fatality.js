@@ -807,7 +807,7 @@ function fatMoveRows() {
     const T = MV.types[ty]; if (!Array.isArray(T.combos)) T.combos = [];
     if (T.combos.some(c => c && c.fatality)) continue;
     T.combos.push({ fatality: true, rank: 1, name: 'Fatality', input: 'K on a staggered foe',
-      get desc() { const d = FAT.defs[ty]; return `${d ? d.name : 'Last Rite'}: a cinematic execution in place of the riposte (J). Bosses take 5× your attack rating; lesser foes die outright if weak enough, else take 8×. You can't be harmed while it plays.`; } });
+      get desc() { const d = FAT.defs[ty]; return `${d ? d.name : 'Last Rite'}: an execution, 5× on bosses, kills weak foes.`; } });
   }
 }
 fatMoveRows();

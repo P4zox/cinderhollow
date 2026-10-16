@@ -206,7 +206,7 @@ mvRegister('scythe', {
     { rank: 1, name: 'Scything spiral', input: 'J J K', desc: 'Three turns of the blade round you, front and back.' },
     { rank: 1, name: 'Wide crescent', input: 'K', desc: 'One huge flat arc that cuts ahead and behind.' },
     { rank: 1, name: 'Twin crescent', input: 'K K', desc: 'Two more crescents, round and back again: 40 poise.' },
-    { rank: 1, name: 'Reap', input: 'hold K (souls)', desc: 'Every soul on one great arc: 1.6 / 2.4 / 3.2, both sides. Also J / J J.' },
+    { rank: 1, name: 'Reap', input: 'hold K (souls)', desc: 'Every soul on one great arc: 1.6/2.4/3.2, both sides. Also J / J J.' },
     { rank: 1, name: 'Charged crescent', input: 'hold K (no souls)', desc: 'Hold till the blade gleams (0.5 s), release: 2.0, 50 poise.' },
     { rank: 1, name: 'Hook step', input: 'I', desc: 'Hook the blade behind the foe ahead and swing round to its back.' },
     { rank: 1, name: 'Rising harvest', input: '↑J', desc: 'The blade swept up overhead: lifts small foes, for fliers.' },
