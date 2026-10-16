@@ -175,9 +175,25 @@ function renderRoomLayers(R) {
   const mk = () => { const c = document.createElement('canvas'); c.width = R.pw; c.height = R.ph; const x = c.getContext('2d'); x.imageSmoothingEnabled = false; return [c, x]; };
   const [bc, bx] = mk(), [fc, fx2] = mk();
   const air = (x, y) => !isSolidT(tileAtR(R, x, y));
+  // v17 bg pilot: AREAS[b].veil = [a1, a2, a3, aOpen] opts a biome into a smooth back-wall veil: the same per-tile alphas,
+  // interpolated bilinearly across tiles instead of stepping every 16px (a bright painted backdrop showed the steps as boxes)
+  const VEIL = def.indoor && AREAS[def.biome] && AREAS[def.biome].veil;
+  if (VEIL) {
+    const [wc, wx] = mk(), mc = document.createElement('canvas'); mc.width = R.w; mc.height = R.h;
+    const mx = mc.getContext('2d'), md = mx.createImageData(R.w, R.h);
+    for (let y = 0; y < R.h; y++) for (let x = 0; x < R.w; x++) {
+      let d = 9;
+      for (let yy = -3; yy <= 3; yy++) for (let xx = -3; xx <= 3; xx++) if (isSolidT(tileAtR(R, x + xx, y + yy))) d = Math.min(d, Math.max(Math.abs(xx), Math.abs(yy)));
+      md.data[(y * R.w + x) * 4 + 3] = Math.round(255 * (d === 0 ? 1 : VEIL[Math.min(3, d - 1)]));
+      if (!isSolidT(R.grid[y * R.w + x])) drawTile(wx, sh, 38 + Math.floor(hash2(x, y) * 4), x * TILE, y * TILE, 1);
+    }
+    mx.putImageData(md, 0, 0);
+    wx.globalCompositeOperation = 'destination-in'; wx.imageSmoothingEnabled = true; wx.drawImage(mc, 0, 0, R.pw, R.ph);
+    bx.drawImage(wc, 0, 0);
+  }
   for (let y = 0; y < R.h; y++) for (let x = 0; x < R.w; x++) {
     const t = R.grid[y * R.w + x], ch = charAt(def, x, y), px = x * TILE, py = y * TILE;
-    if (!isSolidT(t) && def.indoor) {
+    if (!isSolidT(t) && def.indoor && !VEIL) {
       // background walls frame the play space; they fade out towards open space so the parallax shows through
       let d = 9;
       for (let yy = -3; yy <= 3; yy++) for (let xx = -3; xx <= 3; xx++) if (isSolidT(tileAtR(R, x + xx, y + yy))) d = Math.min(d, Math.max(Math.abs(xx), Math.abs(yy)));

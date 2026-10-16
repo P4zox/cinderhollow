@@ -91,8 +91,8 @@ const ENEMY = {
 
 const AREAS = {
   ramparts: { name: 'The Ashen Ramparts', ambient: 0.42, amb: 'ash', tint: '#1a1420' },
-  catacombs: { name: 'Rootbound Catacombs', ambient: 0.6, amb: 'dust', tint: '#0a0c10' },
-  cathedral: { name: 'The Sunken Cathedral', ambient: 0.55, amb: 'gold', tint: '#0e0c14' },
+  catacombs: { name: 'Rootbound Catacombs', ambient: 0.6, amb: 'dust', tint: '#0a0c10', veil: [1, 0.75, 0.42, 0.18] },
+  cathedral: { name: 'The Sunken Cathedral', ambient: 0.55, amb: 'gold', tint: '#0e0c14', veil: [1, 0.8, 0.5, 0.28] },
   mire: { name: 'The Weeping Mire', ambient: 0.42, amb: 'spore', tint: '#0b120e' },
   crown: { name: 'The Pale Crown', ambient: 0.12, amb: 'petal', tint: '#cfd8e6' },
   archives: { name: 'The Ashen Archives', ambient: 0.44, amb: 'gold', tint: '#0c0a12' },

@@ -25,3 +25,9 @@ tools/shots/*/out/
 tools/shots/*/*/
 tools/shots/**/*.png
 tools/shots/**/*.log
+
+# bg v2 pilot (docs/v17/bg_pilot.md): raw ComfyUI renders are ~8 MB per pair of biomes; the gen_bg_<biome>_v2.py build
+# needs <layer>_render.png locally (or --render to regenerate them with ComfyUI). Guides, outputs and stats stay tracked.
+art/bg_src/*/*_pass1.png
+art/bg_src/*/*_render.png
+art/bg_src/*/v1/
