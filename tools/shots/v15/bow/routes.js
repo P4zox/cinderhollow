@@ -51,15 +51,36 @@ hold('heavy', 70); W().frame(50);
 ok(W().log.some(l => l.st === 'second') && L().filter(h => h.id === 'bw_power').length >= 2, 'a level 3 power shot pierces through the first foe into the second');
 E('enemies = enemies.filter(e => e.wmDummy)');
 
-// ---- the sweet spot
-for (const [dx, k] of [[14, 0.7], [44, 1.0], [100, 1 - 0.5 * (100 - 8 - 64) / 56], [190, 0.5]]) {
+// ---- the sweet spot (v15b: x0.9 under 12 px, x1.0 at 12-56, easing to x0.6 at the burn-out ~86 px; nothing past it)
+for (const [dx, k] of [[14, 0.9], [24, 1.0], [56, 1.0], [80, 1 - 0.4 * (80 - 8 - 56) / 30], [100, null], [190, null]]) {
   go(1, dx); W().tap('heavy', 2); W().frame(70);
   const h = L()[0];
-  ok(h && Math.abs(h.k - k) < 0.03, `sweet spot: foe at ${dx} px (edge ${h ? h.d : '?'}) -> x${h ? f2(h.k) : '?'} (want ${f2(k)})`);
+  if (k === null) ok(!h, `foe at ${dx} px (edge ${dx - 8}): the arrow burns out before it (${h ? 'HIT x' + f2(h.k) : 'no hit'})`);
+  else ok(h && Math.abs(h.k - k) < 0.03, `sweet spot: foe at ${dx} px (edge ${h ? h.d : '?'}) -> x${h ? f2(h.k) : '?'} (want ${f2(k)})`);
 }
+// ---- range: no arrow of any kind ever hits past the burn-out (72 px of flight, ~86 px from the archer)
+{
+  const far = [];
+  for (const dx of [70, 84, 90, 94, 100, 110]) {
+    for (const route of ['JJJJ', 'K', 'Khold', 'L J', 'air J']) {
+      go(5, dx);
+      if (route === 'JJJJ') { for (let i = 0; i < 4; i++) { W().tap('attack', 2); W().frame(8); } W().frame(60); }
+      else if (route === 'K') { W().tap('heavy', 2); W().frame(60); }
+      else if (route === 'Khold') { hold('heavy', 70); W().frame(60); }
+      else if (route === 'L J') { W().down('right'); W().tap('roll', 2); W().up('right'); W().frame(10); W().tap('attack', 2); W().frame(40); }
+      else { W().tap('jump', 2); W().frame(8); W().tap('attack', 2); W().frame(50); }
+      for (const h of L()) far.push({ dx, route, flown: h.flown, d: h.d });
+    }
+  }
+  const worst = far.reduce((m, h) => Math.max(m, h.flown), 0), worstD = far.reduce((m, h) => Math.max(m, h.d), 0);
+  ok(far.length > 0 && worst <= 74 && worstD <= 88, `no arrow hits past the burn-out: ${far.length} hits on foes 70-110 px away, max ${worst} px of flight, max ${worstD} px from the archer`);
+}
+go(1, null); W().tap('heavy', 2); let burned = 0, flying = 0; for (let i = 0; i < 60 && !burned; i++) { W().frame(1); burned = E('BW.burn.length'); flying = E('BW.arrows.length'); }
+ok(burned === 1 && flying === 0, `an arrow that meets nothing burns out (ash + embers), it doesn't fly on (burning ${burned}, flying ${flying})`);
 // the glint
-go(1, 44); W().frame(3); const g1 = E('P.bwSweet'); go(1, 130); W().frame(3); const g2 = E('P.bwSweet'); go(1, 12); W().frame(3); const g3 = E('P.bwSweet');
-ok(g1 && !g2 && !g3, `sweet-spot glint: on at 44 px (${g1}), off at 130 (${g2}) and point-blank (${g3})`);
+const glint = dx => { go(1, dx); W().frame(3); return E('P.bwSweet'); };
+const gl = [[14, false], [22, true], [44, true], [64, true], [66, false], [90, false]].map(([dx, want]) => [dx, glint(dx), want]);
+ok(gl.every(([, g, w]) => g === w), 'sweet-spot glint follows the 12-56 px band (foe at dx: on?): ' + gl.map(([dx, g]) => dx + ':' + (g ? 'on' : 'off')).join(' '));
 E('render()'); await new Promise(r => setTimeout(r, 300)); E('render()');
 ok(!!E('bwTip()'), 'the arrowhead is found in the overlay frame: ' + JSON.stringify(E('bwTip()')));
 
@@ -101,9 +122,13 @@ for (const r of [2, 3]) {
 
 // ---- up J: arc shot (5 arrows, 7 at IV) rains 40-90 px ahead
 for (const r of [1, 4]) {
-  go(r, 64); W().down('up'); W().tap('attack', 2); W().up('up'); W().frame(25); const n0 = E('BW.arrows.length'); W().frame(60);
-  ok(n0 === 3 + (r === 4 ? 7 : 5) && L().some(h => h.id === 'bw_arc'), `↑J arc shot (rank ${r}): ${n0 - 3} rain arrows + 3 rising; ${L().filter(h => h.id === 'bw_arc').length} hit a foe at 64 px`);
+  go(r, 64); W().down('up'); W().tap('attack', 2); W().up('up'); W().frame(25); const n0 = E('BW.arrows.filter(p => p.bw.rain).length'); W().frame(60);
+  ok(n0 === (r === 4 ? 7 : 5) && L().some(h => h.id === 'bw_arc'), `↑J arc shot (rank ${r}): ${n0} rain arrows; ${L().filter(h => h.id === 'bw_arc').length} hit a foe at 64 px`);
 }
+
+go(4, null); E('BW.stuck = []; enemies = enemies.filter(e => !e.wmDummy)'); W().down('up'); W().tap('attack', 2); W().up('up'); W().frame(92);
+const land = E('BW.stuck.map(q => Math.round((q.x - P.x) * P.face))');
+ok(land.length >= 7 && Math.max(...land) <= 86 && Math.min(...land) >= 24, 'arc shot rain lands 30-82 px ahead (stuck at ' + land.join(' ') + ')');
 
 // ---- I: limb deflect -> counter shot
 go(1, 30); W().tap('parry', 2); W().frame(2);

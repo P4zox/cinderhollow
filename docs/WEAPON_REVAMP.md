@@ -962,10 +962,18 @@ Str E / Dex A, speed 1.15, reach 1.3, stamina 0.85, poise 0.8; default art Backs
     (from level 1: level 2 at 520 ms, level 3 at 920 ms of draw).
   - The power shot, the pinning shot, the leaping point-blank and the dive shot **spend** it (back to 1).
   - After **1.5 s** with no bow move and no step, the bank falls back to 1.
-- **The sweet spot.** Each arrow measures from where it was loosed to the foe's near edge:
-  - 24–64 px: ×1.0.
-  - Under 16 px: ×0.7, easing up to ×1.0 between 16 and 24 px.
-  - 64–120 px: falls from ×1.0 to ×0.5. Past 120 px: ×0.5.
+- **Short range (v15b).** The owner asked for "much shorter range, which the arrow disappear at mid range so the player
+  have to play melee". Every arrow **burns out 72 px from where it was loosed**, about 86 px from the archer, since it
+  leaves the bow ~14 px ahead. It fades from 52 px of flight (the head smoulders orange), then chars from the head back
+  and falls apart as ash and embers. It can't hit anything past that point.
+  - Why 72: nothing is hit past ~86 px from the archer. That is the whip's tipped crack (~70 px plus its step), so the bow
+    never out-reaches the game's longest melee weapon.
+  - A shot at the far edge of the sweet spot (56 px) still has about 30 px of clean flight before it starts to fade.
+  - The arc shot's rain lands 30–82 px ahead.
+- **The sweet spot (v15b).** Each arrow measures from the archer (where it stood at the loose) to the foe's near edge:
+  - 12–56 px: ×1.0.
+  - Under 12 px: ×0.9.
+  - 56 px to the burn-out (~86 px): falls from ×1.0 to ×0.6. Nothing is hit beyond that.
   - **Point-blank moves** (recoil shot, leaping point-blank, counter shot, dive shot, hollow piercer) take no
     point-blank cut. The arc shot always deals ×1.0.
 - **Arrows are real projectiles.** Walls stop them and wards block them. They hit as weapon (melee) hits, through the
@@ -978,10 +986,12 @@ Str E / Dex A, speed 1.15, reach 1.3, stamina 0.85, poise 0.8; default art Backs
   blow lands.
 - **Reading it:** the arrowhead glows by level (cold steel, amber, gold); three HUD arrowheads show the level, with a
   bar for draw progress or the time before the bank gutters; a white glint sweeps the broadhead every 0.55 s while the
-  nearest foe ahead (within 90 px) is 24–64 px away.
+  nearest foe ahead (within 90 px) is 12–56 px away.
 
-**Strengths:** safe mid-close range, charge levels that climb through a chain, a limb deflect with a counter shot.
-**Weaknesses:** weak far away and too close alike, light poise, and every big shot asks you to stand and draw.
+**Strengths:** a little more reach than a sword, charge levels that climb through a chain, a limb deflect with a counter
+shot.
+**Weaknesses:** no range at all past ~86 px (the arrows burn out), light poise, and every big shot asks you to stand and
+draw.
 
 Damage is per arrow in light-AR units, × the sweet spot unless marked pb. Poise is the whole move's total if every
 arrow lands.
@@ -997,7 +1007,7 @@ arrow lands.
 | lv3 power shot → K tap | **Hollow piercer** (`bw_hollow`) | III | 0.4 ×6 per foe (pb) | 70 | 22 | 360/1100 | One slow arrow (230 px/s, 34 px/s inside a foe) boring through every foe in the line: a bite every 80 ms, up to 6 per foe; commit |
 | J → K tap | **Arrow stab** (`bw_stab`) | I | 0.8 (melee) | 16 | 10 | 120/380 | A jab with the nocked arrow, 10 px step. J: back into the volley after the last quick shot; K tap: recoil shot |
 | J → K → K tap | **Recoil shot** (`bw_recoil`) | I | 1.2 (pb) | 30 | 14 | 140/520 | Loosed slightly downward; the kick hops you 30 px up and back; banks +1 |
-| ↑J | **Arc shot** (`bw_arc`) | I | 0.3 ×3 rising + 0.3 ×5 falling | 40 (+8 per rising arrow) | 16 | 300/760 | The rain lands 40–90 px ahead from 0.3 s after the loose, staggered 45 ms; no sweet-spot scaling. The rising three catch fliers |
+| ↑J | **Arc shot** (`bw_arc`) | I | 0.3 ×3 rising + 0.3 ×5 falling | 40 (+8 per rising arrow) | 16 | 300/760 | The rain lands 30–82 px ahead from 0.3 s after the loose, staggered 45 ms; no sweet-spot scaling. The rising three catch fliers |
 | L | **Charge step** (`bw_step`) | I | – | – | 12 | –/300 | 160 ms invulnerable, 40 px. Neutral steps back, a held direction steps that way. Banks +1 (one step between shots at rank I). J from 150 ms, K from 120 ms |
 | L L | Double charge step | II | – | – | 12 + 12 | –/300 each | The second step straight out of the first (from 150 ms); both bank, so L L takes level 1 to 3 |
 | L → J | **Dash shot** (`bw_dash`) | I | 0.5 + 0.25 × lv, split over lv arrows (0.75 / 1.0 / 1.25) | 16 | 12 | 140/400 | Skid in 22 px; banks +1. J: quick shot `bw_3`; K tap: arrow stab |
@@ -1010,13 +1020,46 @@ arrow lands.
 | air K | **Hunter's dive** (`bw_dive`) | I | – | – | 16 | loop (≤ 1.2 s) | Replaces the plunge. A 0.1 s beat, then a dive at about 50°; once per jump. Ends on landing, on reaching a foe (< 14 px) or after 1.2 s |
 | dive end | **Dive shot** (`bw_diveshot`) | I | 0.5 ×3 (pb) | 36 | 0 | 60/460 | A point-blank fan; bounces you up if it fires before landing; spends the level |
 
-**Routes / balance** (bow bench `tools/shots/v15/bow/bench.js`, 12 s per route, real presses, infinite stamina, foe at
-44 px unless noted): J J J J **2.59/s** (the main loop) · point-blank (14 px) 1.81 · far (110 px) 1.63 · J J J → hold K
-(lv3 power from the bank) 2.56 · L → hold K step-cancel loop 2.16 · L L → hold K (II) 2.33 · J K K at 26 px 2.29 · L → J
-loop 2.06 · L → K tap at 26 px 1.47 · lv3 power → hollow piercer (III) 1.41 on one foe · hold K lv3 loop 1.33 · K tap
-loop 1.20 · arc shot at 64 px 1.12. Against real bosses (phase 2b balance matrix, 25 bosses, bot at 36 px on J J J J
-with the limb deflect): time to kill **0.95** and damage taken **0.95** of the 14-type average (0.67 / 0.65 before the
-deflect fix).
+**Routes / balance** (v15b; bow bench `tools/shots/v15/bow/bench.js`, 12 s per route, real presses, infinite stamina,
+foe at 44 px unless noted).
+
+J J J J at different distances:
+
+| Foe at | dmg/s | Note |
+|---|---|---|
+| **44 px (the main loop)** | **2.59** | |
+| 24 px | 2.59 | |
+| 64 px (band edge) | 2.57 | |
+| 14 px (point-blank) | 2.33 | |
+| 80 px (fading) | 2.01 | |
+| 110 px | **0** | the arrows burn out |
+
+Other routes:
+
+| Route | dmg/s |
+|---|---|
+| J J J → hold K (lv3 power from the bank) | 2.57 |
+| J K K, at 26 px | 2.50 |
+| L L → hold K (II) | 2.33 |
+| L → hold K, step-cancel loop | 2.10 |
+| L → J loop | 2.06 |
+| arc shot ×7 (IV), at 64 px | 1.50 |
+| L → K tap, at 26 px | 1.47 |
+| lv3 power → hollow piercer (III), one foe | 1.33 |
+| hold K lv3 loop | 1.33 |
+| K tap loop | 1.20 |
+| arc shot, at 64 px | 1.12 |
+
+Against real bosses, the v15 balance bot (25 bosses × 3 seeds, merged into the final phase-2b matrix of all 14 types)
+gives these, relative to the 14-type average:
+
+| Bot | Time to kill | Damage taken |
+|---|---|---|
+| Kept at its 36 px spacing | **0.96** | 1.02 |
+| Same bot before v15b | 0.92 | 0.93 |
+| Held at 72 px ("safe" play) | 1.81 | 1.38 |
+
+So close play stays at par with the pack, and standing off now loses almost half the damage.
 
 **Mastery**
 
@@ -1028,6 +1071,9 @@ deflect fix).
 | V | **Point-blank burst** | – (lv3 shot < 20 px) | A level-3 arrow landing with the foe's near edge under 20 px away bursts through: +0.6 dmg, 20 poise, and it hits up to 30 px behind the foe |
 
 **Deviations from the plan:**
+- **v15b, the owner's ask:** arrows burn out 72 px from the loose (~86 px from the archer), and the sweet spot moved in:
+  ×1.0 at 12–56 px, ×0.9 under 12 px, ×1.0 → ×0.6 to the burn-out, nothing beyond. The plan had ×1.0 at 24–64, ×0.7
+  under 16 and ×0.5 forever. The arc shot's rain moved from 40–90 to 30–82 px.
 - Quick shots 0.35 → **0.4** per arrow, and the pinning shot 1.3 → **1.7**, so J J J J (about 2.6/s) stays the main
   loop with J J J → draw (lv3 power 2.0) just under it.
 - Power shot wind 160 → **70 ms** after release (the draw is the wind-up; at least 180 ms of draw), and it is a
@@ -1057,13 +1103,27 @@ stance. The skill is crossing between them in the middle of a combo, so a chain 
 
 **Mechanic: Swift and Iron** (the style is `P.ftStyle`)
 - **Swift:** quick hands and kicks, guard high. L is the **slip step**: 8 stamina, 240 ms, 0.18 s invulnerable, 46 px.
-  A blow met in the **first 120 ms** of the slip is a **perfect slip**: +1 Flow and a brief slow-motion flash (and at
-  rank III the Flowing counter).
+  A blow met in its first 120 ms is a **perfect dodge** (below; at rank III, J out of it is the Flowing counter).
 - **Iron:** walks at **82%** speed. Every Iron move is **armoured during its wind-up** (until its hit time): a blow under
   **20% of max HP** doesn't flinch it. The shoulder charge, the shoulder bash, the iron fist charge and the iron fist
   itself are armoured **all the way through**. The Falling star counts as an Iron move (armoured wind-up); the diving
   elbow and the Tempest to mountain are not armoured. L is the **iron step**: 12 stamina, 340 ms, 0.16 s invulnerable,
-  30 px, with no perfect slip. Iron's J J J chain deals 124 poise against Swift's 37.
+  30 px; it gets the same perfect dodge as the slip. Iron's J J J chain deals 124 poise against Swift's 37.
+
+**Mechanic: perfect dodge → Focus** (both styles; the owner's request after the build)
+- A **slip step or iron step started at most 120 ms before a blow lands** (the blow meets the dodge in its first 120 ms,
+  inside the i-frames) is a **perfect dodge**. 120 ms rather than the Dual Blades' 100: the fist's dodges are short
+  (0.18 / 0.16 s invulnerable against the roll's 0.28) and it fights point-blank, where blows arrive with less warning;
+  the same 120 ms was already the Flowing counter's window, so the two read as one rule. A dodge 121–180 ms ahead
+  still avoids the blow but gives nothing.
+- It grants **Focus for 6 s**: **every martial-arts hit deals ×1.1** and **every hit box reaches 6 px further** (the front
+  edge; both edges on the spins; the dives, the hundred fists and the stomp's shockwave too). A new perfect dodge
+  **refreshes** the 6 s; it never stacks. It also gives +1 Flow and Weapon Mastery XP.
+- **Not farmable:** one perfect dodge per blow *and* per enemy attack (keyed like the Dual Blades: the ticks of a beam,
+  mist or hazard pool are one blow; the windows of one boss attack share its attack id), and body contact is no blow.
+- **Feedback:** a crisp chime (bright for Swift, lower for Iron), a 0.09 s slow-time flicker, an afterimage, sparks and a
+  flash in the style's colour; while Focus lasts both fists glow in the style's colour, and a **timer ring around the
+  style glyph** on the HUD drains over the 6 s.
 
 **Mechanic: the switch and the Shift strike**
 - **I from neutral** (on the ground) changes style with a **300 ms flourish** (0 stamina). **I in the air** changes style
@@ -1083,18 +1143,18 @@ stance. The skill is crossing between them in the middle of a combo, so a chain 
     shifted. I mid-move on such a move is dropped, except in its last 150 ms, where it stays buffered as a style change.
   - A Shift needs stamina above 0; the linking blow costs its own stamina (14 / 12).
 - **Flow** (5 pips, shared by both styles): **+0.5** for a move that lands (once per move), **+1** for a Shift strike or
-  the Flowing counter, **+1** for a perfect slip, **+0.08** per Hundred-fists hit. After **6 s** without gaining Flow it
+  the Flowing counter, **+1** for a perfect dodge, **+0.08** per Hundred-fists hit. After **6 s** without gaining Flow it
   drops to the pip below every **1.5 s**.
   - **Ranks I–IV: Ember shift.** A Shift strike made at 5 Flow ignites: **×1.3** instead of ×1.15, plus a 3 s burn
     (0.08 light AR per second), and it spends all the Flow.
   - **Rank V:** the Flow is kept instead; **hold I** in neutral for 220 ms spends it on the **Ember palm**. A tap of I
     still changes style.
-- A landed Shift strike and a perfect slip each count toward Weapon Mastery.
+- A landed Shift strike and a perfect dodge each count toward Weapon Mastery.
 - **Feedback:** a ring of light in the new style's colour on a change (Swift steel-blue, Iron ember) with its own sound;
   an afterimage of the old style on each Shift; an ember glow at the knuckles in Iron; smouldering wraps at full Flow; a
   short orange aura when the armour soaks a blow; the iron fist charge brightens with a glint at each level.
 - **HUD** (right of the stamina bar): a style glyph (Swift a pale double chevron, Iron an ember block) and the 5 Flow
-  pips, which pulse when full; at rank V a ring shows the palm is ready.
+  pips, which pulse when full; at rank V a ring shows the palm is ready; while Focus lasts a ring round the glyph drains.
 
 **Strengths:** the most moves of any weapon, the fastest strikes, armoured Iron blows, combos that cross styles.
 **Weaknesses:** the shortest reach, low damage per hit in Swift, and the style dance is a lot to learn.
@@ -1114,7 +1174,7 @@ stance. The skill is crossing between them in the middle of a combo, so a chain 
 | J J K | Whirlwind kick | I | 0.5 ×2 | 18 | 11 | 160 / 520 | Finisher; spins, hits both sides, 140 ms apart |
 | hold K | Hundred fists | II | 0.15 every 65 ms | 2 per hit | 4 + 16/s | loop | Held 130 ms to start (released sooner: the snap kick, with no added delay). Up to 3 s; stops on release or at 0 stamina; stamina doesn't regenerate while it runs |
 | ↑J | Rising uppercut | I | 0.8 | 16 | 9 | 120 / 400 | Launches light foes, reaches fliers |
-| L | Slip step | I | – | – | 8 | 240 | 0.18 s invulnerable, 46 px. Perfect slip in the first 120 ms: +1 Flow |
+| L | Slip step | I | – | – | 8 | 240 | 0.18 s invulnerable, 46 px. A blow in the first 120 ms: perfect dodge (Focus) |
 | L → J | Shadow jab | I | 0.8 | 10 | 8 | 100 / 320 | 20 px dash-in. J: cross |
 | L → K | Sliding sweep | I | 0.9 | 22 | 10 | 140 / 460 | Finisher; 26 px low slide; trips (breaks the stance of) non-elite small foes |
 | L (perfect) → J | Flowing counter | III | 1.4 | 30 | 6 | 80 / 400 | Counter, finisher, 20 px, +1 Flow. J during a perfect slip fires at once, turned to the nearest foe within 90 px |
@@ -1134,7 +1194,7 @@ stance. The skill is crossing between them in the middle of a combo, so a chain 
 | J K | Grapple throw | I | 1.6 | 50 | 16 | 240 / 800 | Finisher. A small foe (not a boss, elite or flier) is heaved 18 px behind you, stance broken; not if a wall is there. A boss just takes the palm |
 | J J K | Pillar kick | I | 1.4 | 50 | 16 | 300 / 760 | Finisher; a heel straight up (tall box); launches light foes |
 | ↑J | Heaven's uppercut | I | 1.3 | 40 | 14 | 300 / 700 | Launches light foes |
-| L | Iron step | I | – | – | 12 | 340 | 0.16 s invulnerable, 30 px; no perfect slip |
+| L | Iron step | I | – | – | 12 | 340 | 0.16 s invulnerable, 30 px; a blow in the first 120 ms: perfect dodge (Focus) |
 | L → J | Iron palm | I | 1.1 | 30 | 12 | 260 / 560 | The palm out of the step; J J carries on with the Iron chain |
 | L → K | Shoulder bash | I | 1.2 | 50 | 14 | 200 / 560 | Finisher; a 30 px armoured dash |
 
@@ -1143,6 +1203,7 @@ stance. The skill is crossing between them in the middle of a combo, so a chain 
 | Input | Move | Rank | Dmg | Poise | Stam | Wind/Total | Notes |
 |---|---|---|---|---|---|---|---|
 | I (neutral) | Change style | I | – | – | 0 | 300 / 300 | Swift ⇄ Iron flourish (`ft_toiron` / `ft_toswift`). In the air: instant |
+| L just before a blow | Perfect dodge (Focus) | I | ×1.1 | – | – | 6 s | Both styles: every hit ×1.1 and +6 px reach for 6 s; refreshes, doesn't stack; one per enemy attack; +1 Flow |
 | I mid-combo | Shift strike | I | ×1.15 | – | – | fires 50 ms after the hit | Cancels any ground move of a style into the other style's linking blow (the next two rows). Up to 150 ms late still counts |
 | Swift move → I | Falling star | I | 1.4 (×1.15) | 50 | 14 | 260 / 640 | Iron heel drop out of a hop; armoured wind-up; +1 Flow. J: elbow; K: hammer fist |
 | Iron move → I | Wind cut | I | 0.28 ×4 (×1.15) | 20 | 12 | 120 / 520 | Four Swift blows 70 ms apart, 14 px; +1 Flow. J: cross; K: snap kick |
@@ -1164,7 +1225,8 @@ light-AR units, so the ×0.92 attack factor doesn't change them): Swift J J J J 
 J, (J I)… **2.79** (the skill ceiling, 44 stamina a cycle) · Iron J → I → J J J 2.64 · Tempest J J J → I → K (III) 2.50
 · Swift K J J J 2.38 · Swift J J → I → J J 2.31 · Swift K K 2.17 · Hundred fists (II) 2.09 · Iron J J J 2.04 · Swift
 J K / J J K 2.01 / 2.01 · Iron J J K / J K 1.94 / 1.93 · Iron K K 1.77 · Iron hold K level 2 loop 1.17 (hold time
-counted; 2.6 in one hit inside an opening). **Boss bench** (Gravetusk, a bot swinging inside the 1.3 s opening and
+counted; 2.6 in one hit inside an opening). **With Focus kept up** (perfect dodge): Swift J J J J 2.65, Iron J J J
+2.24, Shift dance 3.07, i.e. +10% like the Dual Blades' perfect-dodge buff (3.4 → 3.7). **Boss bench** (Gravetusk, a bot swinging inside the 1.3 s opening and
 rolling each swing): Iron J J J 1.51, Shift dance 1.22, Swift J J J J 0.82; Swift is caught mid-chain while Iron's
 armour soaks the swing. **Real-boss bot** (`docs/v15/balance.md` phase 2b, 25 bosses, route J I J J J): time to kill
 **0.92** of the 14-type average, damage taken **1.21**, 2.4 staggers per fight. It trades safety for its big hits.
@@ -1199,8 +1261,9 @@ second knuckle, and kicks use real IK legs. No move borrows another type's tag.
 - **Tempest to mountain** is its own move reached as Falling star → K, only when the star came out of the hook; from
   any other move K after the star is the plain hammer fist.
 - **Mountain stomp poise** is split 40 on the stamp + 30 on the shockwave (the plan's 70 in total).
-- **Perfect slip** is defined as the first 120 ms of the slip and gives +1 Flow; the Flowing counter goes out at once
-  from inside the slip.
+- **Perfect dodge (added after the build, owner's request):** both styles' dodges have it (120 ms window, one per enemy
+  attack), giving Focus (×1.1 damage, +6 px reach, 6 s, refreshes) and +1 Flow; the Flowing counter (III) still goes
+  out at once from inside a perfect Swift slip.
 - **New routes:** snap kick → J (cross), hammer fist → J (elbow), Iron L → J (palm), the backfist → J (knee rush), the
   release → J (cross); an Iron K tap is the hammer fist with no charge delay.
 - **The air moves:** the diving heel replaces the plunge as air K in both styles; the diving elbow is Iron's air J;
@@ -1583,7 +1646,7 @@ of the gap (table above).
 <!-- MOVELIST:BEGIN -->
 ## 7. Move lists
 
-The full command list of each weapon, 310 moves in all, exactly as the in-game **Move List** shows it (Esc → weapon mastery → Enter, or the MOVE LIST button). **Rank** is the Weapon Mastery rank that unlocks the move (I = available from the start). Inputs: **J** light, **K** heavy, **I** block / parry / special, **L** roll / step, **↑ / ↓** held, **air** = while airborne, **hold** = keep the button down, **(pause)** = wait a beat before the last press, **→** = right after the previous move. This section is generated from the code by `tools/movelist_doc.py`; the weapon sections (3.1–3.14) have the timings and numbers.
+The full command list of each weapon, 311 moves in all, exactly as the in-game **Move List** shows it (Esc → weapon mastery → Enter, or the MOVE LIST button). **Rank** is the Weapon Mastery rank that unlocks the move (I = available from the start). Inputs: **J** light, **K** heavy, **I** block / parry / special, **L** roll / step, **↑ / ↓** held, **air** = while airborne, **hold** = keep the button down, **(pause)** = wait a beat before the last press, **→** = right after the previous move. This section is generated from the code by `tools/movelist_doc.py`; the weapon sections (3.1–3.14) have the timings and numbers.
 
 ### Longsword — 21 moves (16 from the start)
 *Ashen Longsword* · default art **Ashen Crescent** · mechanic: Parry and riposte
@@ -1866,10 +1929,10 @@ The full command list of each weapon, 310 moves in all, exactly as the in-game *
 
 | Rank | Move | Input | What it does |
 |---|---|---|---|
-| I | Volley chain | J J J | Quick shots: 1, 2, then 3 arrows (0.4 each). Each raises the level. |
+| I | Volley chain | J J J | Quick shots: 1, 2, 3 arrows (0.4 each). Best at 12-56 px from the foe. |
 | I | Pinning shot | J J J J | One heavy arrow (1.7) that staggers small foes. Spends the level. |
 | I | Draw | hold K | +1 level every 0.4 s, from the level you banked. Walk at 40%. |
-| I | Power shot | release K | 0.9 / 1.4 / 2.0 by level; level 3 pierces. Tap K: banked level. |
+| I | Power shot | release K | 0.9 / 1.4 / 2.0 by level; lv3 pierces. Arrows burn out at ~85 px. |
 | I | Charge step | L | A quick sidestep that raises the next shot one level. |
 | I | Step and draw | L → hold K | Draw straight out of the step, from the level it banked. |
 | I | Arrow stab | J → K | Jab the nocked arrow into the foe (0.8). J: back to the volley. |
@@ -1877,7 +1940,7 @@ The full command list of each weapon, 310 moves in all, exactly as the in-game *
 | I | Dash shot | L → J | Skid in and loose at the banked level (1.0 at lv2). J: volley. |
 | I | Leaping point-blank | L → K | Hop in and loose a fan of three down into the foe (1.5). |
 | I | Limb deflect | I (timed) | A 150 ms window: turn the blow on the limb, counter shot (1.6). |
-| I | Arc shot | ↑J | Loose high: five arrows rain 40-90 px ahead (0.3 each). |
+| I | Arc shot | ↑J | Loose high: five arrows rain 30-82 px ahead (0.3 each). |
 | I | Aerial shot | air J | Loose down at a slant in mid-air (0.9). Twice per jump. |
 | I | Talon stomp | air ↓J | Stamp down with the bow limb: pogo off foes and spikes. |
 | I | Hunter's dive | air K | Dive at the foe and loose point-blank as you land (1.5). |
@@ -1886,7 +1949,7 @@ The full command list of each weapon, 310 moves in all, exactly as the in-game *
 | IV | Arc shot ×7 | ↑J | Seven arrows in the arc. |
 | V | Point-blank burst | lv3 shot < 20 px | The shot bursts through the foe: +0.6, and hits behind it. |
 
-### Martial Arts — 32 moves (26 from the start)
+### Martial Arts — 33 moves (27 from the start)
 *Penitent’s Knuckles* · default art **Bloodstep** · mechanic: Swift and Iron styles
 
 | Rank | Move | Input | What it does |
@@ -1916,6 +1979,7 @@ The full command list of each weapon, 310 moves in all, exactly as the in-game *
 | I | Diving elbow | Iron: air J | Drop elbow-first at a slant to the floor. |
 | I | Diving heel | air K | A steep heel-first dive; bounces off a foe it meets. |
 | I | Stomp | air ↓J | Stamp down: pogo off foes and spikes. |
+| I | Perfect dodge (Focus) | L just before a blow | Dodge ≤0.12 s before a hit: +10% damage and +6 px reach for 6 s. |
 | I | Ember shift | Shift at 5 Flow | Full Flow ignites the next Shift strike: x1.3 and a burn. |
 | II | Spinning backfist | Swift: J J (pause) J | Wait a beat after the cross: turn into a backfist. J: knee rush. |
 | II | Hundred fists | Swift: hold K | Jabs as fast as the eye can follow while K is held. |

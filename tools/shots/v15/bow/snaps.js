@@ -13,4 +13,8 @@ W().up('heavy'); W().frame(4); await shot('power_lv3_flight'); W().frame(40);
 setup(5, 90); for (let i = 0; i < 3; i++) { W().tap('attack', 2); W().frame(8); } W().frame(6); await shot('volley_lv3'); W().frame(60);
 setup(5, 60); W().down('up'); W().tap('attack', 2); W().up('up'); W().frame(36); await shot('arc_rain'); W().frame(22); await shot('arc_stuck');
 setup(5, 40); W().tap('roll', 2); W().frame(4); await shot('step'); W().frame(30); await shot('after_step_lv2');
+// v15b range: an arrow fired at nothing fades, then burns out ~72 px from the bow
+setup(5, 300); for (let i = 0; i < 3; i++) { W().tap('attack', 2); W().frame(8); } W().frame(2);
+for (let i = 0; i < 40 && !E('BW.arrows.some(p => p.bw.flown > 56)'); i++) W().frame(1); await shot('fading');
+for (let i = 0; i < 30 && !E('BW.burn.length'); i++) W().frame(1); W().frame(2); await shot('burnout'); W().frame(5); await shot('burnout_ash');
 return POS;

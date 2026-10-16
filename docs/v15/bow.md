@@ -6,6 +6,73 @@ Files (all owned by the bow agent): `web/src/78_mech_bow.js` (moveset, arrows, H
 `art/player_v15_bow.py` (20 tags and the restyled bow), tests in `tools/shots/v15/bow/`. Test build: `web/dist/v15_bow.html`.
 No shared file was edited.
 
+## v15b: short range (the owner: "let the bow have much shorter range, which the arrow disappear at mid range so the player have to play melee and not shredding boss bar")
+
+**Arrows burn out at mid range.** Every arrow of every kind burns out **72 px from where it was loosed**. That covers quick shots, power shots (including the level-3 pierce), the pinning shot, the dash shot, the leaping fan, the counter shot, the aerial shot, the dive fan, the hollow piercer and the arc shot's rising arrows.
+- The arrow leaves the bow about 14 px ahead of the archer, so nothing is hit past **~86 px from the archer**.
+- **Why 72:** an 86 px reach is the whip's tipped crack (~70 px plus its step). The bow is never the longest reach in the game, so it plays as a melee weapon with a little extra reach.
+- A shot at the far edge of the sweet spot (56 px) still has ~30 px of clean flight before it starts to fade.
+- **The look:**
+  - From 52 px of flight the arrow fades and its head smoulders orange, with a few embers.
+  - At 72 px it stops, chars from the head back, and crumbles away as it drifts down: a charred shaft with an ember bead running down it, ash and ember particles, and a small orange light. Snapshots: `out/burn.png`.
+- **In the code:** a hit can never land past the burn-out. Each frame's sweep is clipped at the 72 px point and then the arrow burns out (`BW_RANGE` / `BW_FADE` / `BW_REACH` in `78_mech_bow.js`).
+- **The arc shot's rain** now lands **30–82 px** ahead, down from 40–90.
+
+**The sweet spot moved in:**
+
+| Foe's near edge, from the archer | Damage |
+|---|---|
+| 12–56 px | **×1.0** |
+| under 12 px | ×0.9 (was ×0.7) |
+| 56 px to the burn-out | ×1.0 falling to ×0.6 |
+| past the burn-out | nothing |
+
+The glint and the HUD pip follow the 12–56 band.
+
+**Numbers:**
+
+J J J J by distance:
+
+| Foe at | dmg/s | Note |
+|---|---|---|
+| 44 px (the main loop, in band) | 2.59 | |
+| 24 px | 2.59 | |
+| 64 px | 2.57 | |
+| 14 px | 2.33 | |
+| 80 px | 2.01 | fading |
+| 110 px | **0** | the arrows burn out |
+
+Other routes:
+
+| Route | dmg/s |
+|---|---|
+| J J J → hold K | 2.57 |
+| J K K | 2.50 |
+| L L → K (II) | 2.33 |
+| L → K | 2.10 |
+| L → J | 2.06 |
+| arc ×7 | 1.50 |
+| hollow piercer | 1.33 |
+| arc | 1.12 |
+
+The balance agent's bot (`tools/shots/v15/balance/bot_lib.js`, bow only, 25 bosses × 3 seeds, merged into the final 14-type matrix `/tmp/b_final` with `relmerge.py`), relative to the 14-type average:
+
+| Bot | Time to kill | Damage taken |
+|---|---|---|
+| At its usual 36 px | **0.96** | 1.02 |
+| Same bot before v15b | 0.92 | 0.93 |
+| Held at 72 px (`de: 72`, "safe" play) | **1.81** | 1.38 |
+
+Close play stays at par with the pack. Playing from a distance nearly halves the damage, and past ~86 px it does nothing.
+
+`routes.js` (49/49 pass) gained these checks:
+- The 12–56 band, ×0.9 point-blank and ×0.79 at 72 px.
+- No hit on a foe 92+ px away.
+- Across 51 hits from five routes on foes 70–110 px away: no hit past 72 px of flight or 86 px from the archer.
+- An arrow that meets nothing burns out.
+- The glint band.
+- The arc rain lands at 31–79 px.
+
 ## The trait: charge levels and the sweet spot
 
 - **Levels 1-3.** `P.bwLv` is the level banked for the *next* shot.
@@ -14,10 +81,7 @@ No shared file was edited.
   - Holding K draws it up one level every 0.4 s, after a 120 ms raise.
   - The power shot, the pinning shot, the leaping point-blank and the dive shot spend it (back to 1).
   - After 1.5 s with no shot or step, it falls back to 1 (with a soft gutter sound and ash off the arrowhead).
-- **The sweet spot.** The distance is measured from the shooter to the foe's near edge.
-  - 24-64 px: ×1.0.
-  - Under 16 px: ×0.7, easing up to ×1.0 by 24 px.
-  - 64-120 px: falls from ×1.0 to ×0.5. Past 120 px: ×0.5.
+- **The sweet spot** (v15b, see above): ×1.0 at 12-56 px, ×0.9 under 12, falling to ×0.6 at the burn-out (~86 px), nothing past it.
   - The point-blank moves (recoil shot, leaping point-blank, counter shot, dive shot, hollow piercer) take no point-blank cut. The arc shot always deals ×1.
 - **Arrows are real projectiles.** They live in `projectiles`, so walls stop them and boss wards (the Omen's sigil) block them.
   - The bow file sweeps each arrow's path against the targets itself: sweet spot, pierce, drilling. The engine's own test is held shut with `win`.
@@ -32,7 +96,7 @@ No shared file was edited.
   - **The draw pose itself** pulls deeper per level: frames 2/3/4 of `bw_draw`, with a strain tremble at level 3.
   - **HUD:** three arrowheads in the level colour, and a bar under them.
     - While drawing, the bar shows progress to the next level. Otherwise it shows the time before the bank gutters.
-- **Sweet-spot glint.** When the nearest foe ahead is 24-64 px away, a pure-white 4-point glint sweeps over the broadhead every 0.55 s.
+- **Sweet-spot glint.** When the nearest foe ahead is 12-56 px away, a pure-white 4-point glint sweeps over the broadhead every 0.55 s.
   - The level colours are amber and gold, so white is reserved for the glint.
   - A white pip also blinks beside the HUD arrowheads.
 
@@ -51,7 +115,7 @@ dmg in light-AR units, ×sweet spot unless marked pb (point-blank: no cut under 
 | lv3 power → K tap | Hollow piercer (`bw_hollow`) | III | 360 / 1100 | 6 × 0.4 (pb) | 70 | 22 | A slow arrow that bores through each foe in the line (6 bites per foe) |
 | J → K tap | Arrow stab (`bw_stab`) | I | 120 / 380 | 0.8 (melee) | 16 | 10 | A jab with the nocked arrow; J goes back to the volley |
 | stab → K tap | Recoil shot (`bw_recoil`) | I | 140 / 520 | 1.2 (pb) | 30 | 14 | The kick hops you 30 px up and back; banks +1 |
-| ↑J | Arc shot (`bw_arc`) | I | 300 / 760 | 3 rising + 5 falling × 0.3 | 40 | 16 | Rain lands 40-90 px ahead; the rising three catch fliers |
+| ↑J | Arc shot (`bw_arc`) | I | 300 / 760 | 3 rising + 5 falling × 0.3 | 40 | 16 | Rain lands 30-82 px ahead (v15b); the rising three catch fliers |
 | L | Charge step (`bw_step`) | I | 300 (160 inv, 40 px) | – | – | 12 | +1 level. Neutral steps back (out to the sweet spot); a held direction steps that way |
 | L → J | Dash shot (`bw_dash`) | I | 140 / 400 | 0.5 + 0.25·lv split over lv arrows (1.0 at lv2) | 16 | 12 | Skid in 22 px; J continues the volley |
 | L → K tap | Leaping point-blank (`bw_leap`) | I | 220 / 600 | 3 × 0.5 (pb) | 36 | 16 | Hop in 30 px, a fan loosed down into the foe; commit; spends the level |
@@ -92,7 +156,7 @@ Frame by frame:
 - `bw_recoil`: point-blank, the bow angled down; the kick lifts you up and back.
 - `bw_deflect`: the bow swept up so its upper limb turns the blow.
 
-## Bench (`tools/shots/v15/bow/bench.js`, 12 s per route, real presses, infinite stamina)
+## Bench before v15b (`tools/shots/v15/bow/bench.js`, 12 s per route, real presses, infinite stamina)
 
 | Route | Rank | Foe at | dmg/s |
 |---|---|---|---|
@@ -154,6 +218,6 @@ Run with `SHOT_HTML=web/dist/v15_bow.html sh tools/shots/wm/run.sh tools/shots/v
 
 1. **Arrow hits count as weapon (melee) hits.** They get the charm and skill bonuses, bleed and fire like a sword hit, and the dummy and bench count them. Spell bonuses don't apply.
 2. **A neutral charge step goes backward.** The alternative is forward, like every other type's dodge. Backward fits "fight up close, but at the sweet spot".
-3. **The point-blank cut is ×0.7.** Hugging the foe with J J J J drops the bow to about 1.8 dmg/s. The point-blank moves are exempt.
+3. **The point-blank cut is now ×0.9 (v15b).** It was ×0.7. Hugging the foe with J J J J gives 2.33 dmg/s against 2.59 in the band.
 4. **The default art is still Backstep Slash.** A bow art, e.g. a point-blank volley, could come later.
 5. **Platform test conflict.** `tools/shots/v15/platform/types.js` still expects the skeleton's ids (`bw_heavy`, `bw_rollj`, `bw_rollk`, a J J J chain named bw_1..3 landing as melee). The bow's real moves differ: K = draw / power shot, L → J = `bw_dash`, L → K = `bw_leap` (rank I). That test needs its bow rows updated.

@@ -6,8 +6,11 @@ const SECS = 12, ONLY = window.__bwOnly;
 const ROUTES = [
   // [name, rank, pattern, dx, note]
   ['J J J J (main loop)', 1, ['J', 'J', 'J', 'J!'], 44],
-  ['J J J J point-blank', 1, ['J', 'J', 'J', 'J!'], 14, 'x0.7 inside 16 px'],
-  ['J J J J far (110 px)', 1, ['J', 'J', 'J', 'J!'], 110],
+  ['J J J J close (foe at 24)', 1, ['J', 'J', 'J', 'J!'], 24],
+  ['J J J J point-blank', 1, ['J', 'J', 'J', 'J!'], 14, 'x0.9 inside 12 px'],
+  ['J J J J band edge (foe at 64)', 1, ['J', 'J', 'J', 'J!'], 64],
+  ['J J J J mid range (foe at 80)', 1, ['J', 'J', 'J', 'J!'], 80, 'fading'],
+  ['J J J J far (foe at 110)', 1, ['J', 'J', 'J', 'J!'], 110, 'burns out'],
   ['J J J -> hold K (lv3 from the bank)', 1, ['J!', 'J', 'J', { draw: 120 }], 44],
   ['K tap loop (lv1)', 1, ['K!'], 44],
   ['hold K lv3 loop', 1, [{ draw: 920, idle: true }], 44],

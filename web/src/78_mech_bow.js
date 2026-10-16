@@ -3,8 +3,11 @@
 //  * Charge levels 1-3. P.bwLv is the level banked for the NEXT shot: each shot in a chain raises it (J J J = lv 1, 2, 3),
 //    the charge step (L) raises it, holding K draws it up one level every 0.4 s. A power shot (K release), the pinning shot
 //    and the dive shot spend it (back to 1); 1.5 s without a shot or a step and it falls back to 1.
-//  * The sweet spot: damage x1.0 when the foe's near edge is 24-64 px away, x0.7 point-blank (< 16 px), falling to x0.5
-//    past 120 px. Point-blank moves (recoil shot, leaping point-blank, counter shot, dive shot) take no point-blank cut.
+//  * Short range (v15b, the owner: "the arrow disappear at mid range so the player have to play melee"): every arrow burns
+//    out BW_RANGE (72) px from where it was loosed -- it fades from 52 px, then chars into ash and embers and can't hit past
+//    that (about 86 px from the archer). The arc shot's rain lands no further than 82 px ahead.
+//  * The sweet spot: damage x1.0 when the foe's near edge is 12-56 px away, x0.9 point-blank (< 12 px), easing to x0.6 at
+//    the burn-out. Point-blank moves (recoil shot, leaping point-blank, counter shot, dive shot) take no point-blank cut.
 //    A glint on the arrowhead (the real one, found in the overlay frame) shows when the nearest foe ahead is in it.
 //  * Arrows are real projectiles in `projectiles` (walls stop them, wards block them); this file sweeps them against the
 //    targets itself (the engine's own hit test is kept shut with `win`), applies the sweet spot and draws them.
@@ -14,16 +17,20 @@
 const BW_LV_MS = 400, BW_DECAY = 1.5, BW_TAP = 110, BW_MIN = 180;   // a power shot needs at least BW_MIN ms of draw
 const BW_COL = [null, '196,214,255', '255,160,70', '255,220,130'];   // level glow: cold steel, amber, gold (the sweet-spot glint is pure white)
 const BW_PWR = { dmg: [0, 0.9, 1.4, 2.0], poise: [0, 20, 35, 55], spd: [0, 380, 450, 540] };
-const BW = { arrows: [], stuck: [], tips: new Map(), tipSheet: null, cv: null, log: [] };
+// range: an arrow fades from BW_FADE px of flight and burns out at BW_RANGE. 72 px of flight from the arrowhead (it is
+// loosed ~14 px ahead of the archer) = nothing hit past ~86 px from the archer: the whip's tipped crack (~70 px + its
+// step), so the bow is never the longest reach in the game. A shot at the far edge of the sweet spot (56 px from the
+// archer, ~42 px of flight) still has 30 px of clean flight before it starts to fade.
+const BW_RANGE = 72, BW_FADE = 52, BW_SWEET = [12, 56], BW_REACH = 86;
+const BW = { arrows: [], stuck: [], burn: [], tips: new Map(), tipSheet: null, cv: null, log: [] };
 
 // ---- the sweet spot: d = px from the shooter to the foe's near edge
 function bwSweet(d, pb) {
-  if (d < 16) return pb ? 1 : 0.7;
-  if (d < 24) return pb ? 1 : 0.7 + 0.3 * (d - 16) / 8;
-  if (d <= 64) return 1;
-  if (d < 120) return 1 - 0.5 * (d - 64) / 56;
-  return 0.5;
+  if (d < BW_SWEET[0]) return pb ? 1 : 0.9;
+  if (d <= BW_SWEET[1]) return 1;
+  return Math.max(0.6, 1 - 0.4 * (d - BW_SWEET[1]) / (BW_REACH - BW_SWEET[1]));   // 56 -> 86 px (the burn-out): x1.0 -> x0.6
 }
+const bwInSweet = d => d >= BW_SWEET[0] && d <= BW_SWEET[1];
 // the nearest foe ahead (or overlapping you): { t, d } with d to its near edge, or null
 function bwNearest(range = 160) {
   let best = null;
@@ -87,14 +94,14 @@ function bwArrow(o) {
   if (o.x !== undefined) { x = o.x; y = o.y; }
   const pr = { owner: 'player', kind: 'bw_arrow', fxName: 'bw_none', face, t: 0, hits: new Set(), win: [9e9, 9e9],
     x, y, vx: face * Math.cos(a) * spd, vy: Math.sin(a) * spd, g: o.g || 0, life: o.life || 0.5, r: 2, dmg: 0, pierce: true, delay: o.delay || 0,
-    bw: { ...o, A: o.A || ATK[P.state] || ATK.bw_1, sx: o.sx ?? P.x, face, px: o.x !== undefined ? x : P.x, py: y, lv: o.lv || 1, n: 0, per: new Map(), trail: [], done: false } };
+    bw: { ...o, A: o.A || ATK[P.state] || ATK.bw_1, sx: o.sx ?? P.x, face, px: o.x !== undefined ? x : P.x, py: y, ox: x, oy: y, flown: 0, lv: o.lv || 1, n: 0, per: new Map(), trail: [], done: false } };
   projectiles.push(pr); BW.arrows.push(pr);
   return pr;
 }
 function bwArrowHit(pr, t, hb) {
   const b = pr.bw, A = b.A, heavy = A.kind === 'heavy' || !!b.heavy;
   const d = Math.max(0, b.face > 0 ? hb.x0 - b.sx : b.sx - hb.x1);
-  const k = b.flat ? 1 : bwSweet(d, b.pb), sweet = !b.flat && d >= 24 && d <= 64;
+  const k = b.flat ? 1 : bwSweet(d, b.pb), sweet = !b.flat && bwInSweet(d);
   const W = D.W, fire = P.fireT > 0 || (W.fire && heavy);
   const dmg = outgoing(D.light, b.mul * k, 'melee') * (A.counter ? P.counterMul || 1 : 1) * (P.twinBuff ? 1.25 : 1);
   const y = clamp(pr.y, hb.y0 + 2, hb.y1 - 2), x = clamp(pr.x, hb.x0 + 2, hb.x1 - 2);
@@ -103,7 +110,7 @@ function bwArrowHit(pr, t, hb) {
   const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise, dir: b.face, kind: heavy ? 'heavy' : 'light', charged: heavy && b.lv >= 2, bleed: (typeof skBleedUnits === 'function' ? skBleedUnits(heavy, b.mul * k) : bleedAmt(heavy)) * (b.bleedK ?? 1), fire, rotDot: !!W.rot,
     x, y, melee: true, big: heavy || b.lv >= 3 || !!b.big, arrow: true };
   t.hit(info);
-  BW.log.push({ id: A.mv && A.mv.id, mul: b.mul, k, d: Math.round(d), lv: b.lv, dmg: info.dmg / D.light }); if (BW.log.length > (BW.cap || 60)) BW.log.shift();   // (tests read it)
+  BW.log.push({ id: A.mv && A.mv.id, mul: b.mul, k, d: Math.round(d), lv: b.lv, dmg: info.dmg / D.light, flown: Math.round(Math.hypot(pr.x - b.ox, pr.y - b.oy)) }); if (BW.log.length > (BW.cap || 60)) BW.log.shift();   // (tests read it)
   runHooks('strike', t, { dmg, heavy, x, y }, A);
   if (A.counter && !P.mvGained && !t.prop) { P.mvGained = true; mvGain('counter'); }
   if (b.reel && !t.boss && !t.prop && t.alive !== false && t.breakStance && !(t.cfg && t.cfg.elite) && t.state !== 'stagger') t.breakStance();
@@ -127,6 +134,18 @@ function bwArrowHit(pr, t, hb) {
   }
   if (b.onHit) b.onHit(t, info);
 }
+// the burn-out: the arrow's last stretch of flight -- it chars from the head back, then falls apart as ash and embers
+function bwBurnOut(pr, ang) {
+  const b = pr.bw, len = b.drill ? 14 : 11, c = Math.cos(ang), s = Math.sin(ang);
+  BW.burn.push({ x: pr.x, y: pr.y, ang, len, vx: pr.vx * 0.06, vy: pr.vy * 0.06, t: 0, max: 0.3, lv: b.lv });
+  if (BW.burn.length > 24) BW.burn.shift();
+  for (let i = 0; i <= len; i += 2) {
+    const px = pr.x - c * i, py = pr.y - s * i;
+    particles.push({ x: px, y: py, vx: pr.vx * 0.05 + rand(-10, 10), vy: rand(-28, -6), life: rand(0.35, 0.7), kind: i % 4 ? 'ash' : 'ember' });
+  }
+  for (let i = 0; i < 2 + b.lv; i++) particles.push({ x: pr.x + rand(-1, 1), y: pr.y + rand(-1, 1), vx: pr.vx * 0.08 + rand(-20, 20), vy: -rand(20, 50), life: rand(0.25, 0.5), kind: b.lv >= 3 ? 'gold' : 'ember' });
+  addLight(pr.x, pr.y, 14, '255,140,60', 0.5);
+}
 // stick an arrow where it stopped (a wall, the floor, a foe for a moment)
 function bwStick(x, y, ang, t, life = 1.4) {
   BW.stuck.push({ x, y, ang, t, ox: t ? x - t.x : 0, oy: t ? y - t.y : 0, life, max: life });
@@ -141,6 +160,16 @@ function bwArrowsTick(dt) {
     if (pr.life <= 0 || !projectiles.includes(pr)) {   // the engine stopped it: a wall / the floor / a ward / the room changed
       b.done = true; if (pr.t > 0.02 && projectiles.length >= 0) { bwStick(pr.x, pr.y, ang, null); for (let i = 0; i < 3; i++) particles.push({ x: pr.x, y: pr.y, vx: rand(-40, 40), vy: -rand(10, 60), g: 300, life: 0.3, kind: 'spark' }); }
       continue;
+    }
+    // range: past BW_RANGE px of flight the arrow is pulled back to that point, sweeps up to it and burns out there
+    let burn = false;
+    if (!b.rain) {
+      const d1 = Math.hypot(pr.x - b.ox, pr.y - b.oy);
+      if (d1 >= BW_RANGE) {
+        const d0 = Math.hypot(b.px - b.ox, b.py - b.oy), f = d1 > d0 ? clamp((BW_RANGE - d0) / (d1 - d0), 0, 1) : 0;
+        pr.x = b.px + (pr.x - b.px) * f; pr.y = b.py + (pr.y - b.py) * f; burn = true;
+      }
+      b.flown = Math.min(BW_RANGE, d1);
     }
     // sweep the path since the last frame against the targets (a thin box around the segment)
     const x0 = Math.min(b.px, pr.x) - 2, x1 = Math.max(b.px, pr.x) + 2, y0 = Math.min(b.py, pr.y) - 2, y1 = Math.max(b.py, pr.y) + 2;
@@ -165,6 +194,7 @@ function bwArrowsTick(dt) {
       }
     }
     if (stop) { pr.life = 0; b.done = true; continue; }
+    if (burn) { pr.life = 0; b.done = true; bwBurnOut(pr, ang); continue; }
     if (b.drill) { const sp = inside ? 34 : b.spd0 || 230; pr.vx = b.face * sp; if (inside && Math.random() < 0.5) shake = Math.max(shake, 1.5); }
     b.trail.push({ x: pr.x, y: pr.y }); if (b.trail.length > 6) b.trail.shift();
     b.px = pr.x; b.py = pr.y;
@@ -172,6 +202,8 @@ function bwArrowsTick(dt) {
     if (b.drill && Math.random() < 0.8) particles.push({ x: pr.x + rand(-2, 2), y: pr.y + Math.sin(pr.t * 40) * 4, vx: -pr.vx * 0.1, vy: 0, life: 0.3, kind: 'gold' });
   }
   BW.arrows = BW.arrows.filter(pr => !pr.bw.done || pr.life > 0);
+  for (const q of BW.burn) { q.t += dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vy += 40 * dt; }
+  if (BW.burn.length) BW.burn = BW.burn.filter(q => q.t < q.max);
   for (const s of BW.stuck) s.life -= dt;
   if (BW.stuck.length) BW.stuck = BW.stuck.filter(s => s.life > 0 && (!s.t || s.t.alive !== false));
 }
@@ -194,6 +226,7 @@ function bwDrawArrow(x, y, ang, len, a, lv, glow) {
     g.fillStyle = `rgba(150,44,40,${a})`; const tx = x - c * len, ty = y - s * len; g.fillRect(Math.round(tx + c - s), Math.round(ty + s + c), 1, 1); g.fillRect(Math.round(tx + c + s), Math.round(ty + s - c), 1, 1);
   }
 }
+const bwFadeA = b => (b.rain ? 1 : 1 - 0.65 * clamp((b.flown - BW_FADE) / (BW_RANGE - BW_FADE), 0, 1));   // 1 -> 0.35 over the last 20 px
 function bwArrowsRender() {
   for (const s of BW.stuck) {
     const k = Math.min(1, s.life / Math.min(0.4, s.max));
@@ -206,23 +239,36 @@ function bwArrowsRender() {
   for (const pr of BW.arrows) {
     if (pr.delay > 0 || pr.life <= 0) continue;
     const b = pr.bw, ang = Math.atan2(pr.vy, pr.vx);
-    bwDrawArrow(pr.x, pr.y, ang, b.drill ? 14 : 11, 1, b.lv, false);
+    bwDrawArrow(pr.x, pr.y, ang, b.drill ? 14 : 11, bwFadeA(b), b.lv, false);
+  }
+  // burnt-out arrows: a charred shaft that greys and crumbles away (the head first) as it drifts down
+  for (const q of BW.burn) {
+    const k = q.t / q.max, c = Math.cos(q.ang), s = Math.sin(q.ang), from = Math.floor(k * q.len);
+    for (let i = from; i <= q.len; i++) {
+      if ((i + Math.floor(q.t * 40)) % 3 === 0 && k > 0.3) continue;   // crumbling gaps
+      const px = Math.round(q.x - c * i), py = Math.round(q.y - s * i + k * k * 3);
+      g.fillStyle = i - from < 2 ? `rgba(255,${150 - 80 * k | 0},60,${1 - k})` : `rgba(${70 - 30 * k | 0},${60 - 25 * k | 0},${58 - 20 * k | 0},${0.9 * (1 - k)})`;
+      g.fillRect(px, py, 1, 1);
+    }
   }
   drawGlow(() => {
+    for (const q of BW.burn) { const k = q.t / q.max; addLight(q.x, q.y, 12 * (1 - k), '255,130,50', 0.5 * (1 - k)); g.fillStyle = `rgba(255,170,80,${0.8 * (1 - k)})`; g.fillRect(Math.round(q.x - Math.cos(q.ang) * k * q.len), Math.round(q.y - Math.sin(q.ang) * k * q.len), 1, 1); }
     for (const pr of BW.arrows) {
       if (pr.delay > 0 || pr.life <= 0) continue;
-      const b = pr.bw, ang = Math.atan2(pr.vy, pr.vx), col = b.drill ? '255,226,150' : BW_COL[b.lv];
+      const b = pr.bw, ang = Math.atan2(pr.vy, pr.vx), col = b.drill ? '255,226,150' : BW_COL[b.lv], fa = bwFadeA(b);
+      // the last stretch before the burn-out: the head smoulders orange
+      if (fa < 1) { const h = 1 - (fa - 0.35) / 0.65; g.fillStyle = `rgba(255,140,60,${0.9 * h})`; g.fillRect(Math.round(pr.x), Math.round(pr.y), 1, 1); g.fillRect(Math.round(pr.x - Math.cos(ang)), Math.round(pr.y - Math.sin(ang)), 1, 1); addLight(pr.x, pr.y, 8, '255,130,50', 0.4 * h); if (Math.random() < 0.4 * h) particles.push({ x: pr.x, y: pr.y, vx: -pr.vx * 0.04, vy: -rand(8, 24), life: 0.3, kind: 'ember' }); }
       // the streak behind it: faint for level 1, an amber tail at 2, a long white-gold one at 3
       const tr = b.trail, n = tr.length;
       if (n > 1) {
         g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
         for (let i = 1; i < n; i++) {
-          const k = i / n; g.strokeStyle = `rgba(${col},${(b.lv === 1 ? 0.18 : 0.32 + 0.12 * b.lv) * k})`; g.lineWidth = b.lv >= 3 || b.drill ? 2 : 1;
+          const k = i / n * fa; g.strokeStyle = `rgba(${col},${(b.lv === 1 ? 0.18 : 0.32 + 0.12 * b.lv) * k})`; g.lineWidth = b.lv >= 3 || b.drill ? 2 : 1;
           g.beginPath(); g.moveTo(tr[i - 1].x, tr[i - 1].y); g.lineTo(tr[i].x, tr[i].y); g.stroke();
         }
         g.restore();
       }
-      if (b.lv >= 2 || b.drill) bwDrawArrow(pr.x, pr.y, ang, 2, 0.95, b.lv, true);
+      if (b.lv >= 2 || b.drill) bwDrawArrow(pr.x, pr.y, ang, 2, 0.95 * fa, b.lv, true);
       addLight(pr.x, pr.y, b.drill ? 30 : 10 + b.lv * 7, col, b.lv === 1 ? 0.35 : 0.7);
       if (b.drill) mvStar(pr.x + Math.cos(ang) * 2, pr.y + Math.sin(ang) * 2, 3 + Math.sin(pr.t * 50) * 1.5, '255,236,180', 0.9);
     }
@@ -364,9 +410,9 @@ mvRegister('bow', {
         const tp = bwTip(); if (tp) for (let i = 0; i < 4; i++) particles.push({ x: tp.x, y: tp.y, vx: rand(-15, 15), vy: -rand(10, 30), life: 0.35, kind: 'ash' });
       }
     }
-    // the sweet-spot glint: the nearest foe ahead sits 24-64 px away
+    // the sweet-spot glint: the nearest foe ahead sits 12-56 px away
     const n = bwNearest(90);
-    const inSweet = !!(n && n.d >= 24 && n.d <= 64);
+    const inSweet = !!(n && bwInSweet(n.d));
     if (inSweet && !P.bwSweet) P.bwGlintT = 0;
     P.bwSweet = inSweet; P.bwGlintT = (P.bwGlintT || 0) + dt;
   },
@@ -415,10 +461,10 @@ mvRegister('bow', {
     { rank: 5, id: 'bw_burst', name: 'Point-blank burst', input: '–', desc: 'Level 3 shots inside 20 px burst through the foe: +0.6, hits behind it.' },
   ],
   combos: [
-    { rank: 1, name: 'Volley chain', input: 'J J J', desc: 'Quick shots: 1, 2, then 3 arrows (0.4 each). Each raises the level.' },
+    { rank: 1, name: 'Volley chain', input: 'J J J', desc: 'Quick shots: 1, 2, 3 arrows (0.4 each). Best at 12-56 px from the foe.' },
     { rank: 1, name: 'Pinning shot', input: 'J J J J', desc: 'One heavy arrow (1.7) that staggers small foes. Spends the level.' },
     { rank: 1, name: 'Draw', input: 'hold K', desc: '+1 level every 0.4 s, from the level you banked. Walk at 40%.' },
-    { rank: 1, name: 'Power shot', input: 'release K', desc: '0.9 / 1.4 / 2.0 by level; level 3 pierces. Tap K: banked level.' },
+    { rank: 1, name: 'Power shot', input: 'release K', desc: '0.9 / 1.4 / 2.0 by level; lv3 pierces. Arrows burn out at ~85 px.' },
     { rank: 1, name: 'Charge step', input: 'L', desc: 'A quick sidestep that raises the next shot one level.' },
     { rank: 1, name: 'Step and draw', input: 'L → hold K', desc: 'Draw straight out of the step, from the level it banked.' },
     { rank: 1, name: 'Arrow stab', input: 'J → K', desc: 'Jab the nocked arrow into the foe (0.8). J: back to the volley.' },
@@ -426,7 +472,7 @@ mvRegister('bow', {
     { rank: 1, name: 'Dash shot', input: 'L → J', desc: 'Skid in and loose at the banked level (1.0 at lv2). J: volley.' },
     { rank: 1, name: 'Leaping point-blank', input: 'L → K', desc: 'Hop in and loose a fan of three down into the foe (1.5).' },
     { rank: 1, name: 'Limb deflect', input: 'I (timed)', desc: 'A 150 ms window: turn the blow on the limb, counter shot (1.6).' },
-    { rank: 1, name: 'Arc shot', input: '↑J', desc: 'Loose high: five arrows rain 40-90 px ahead (0.3 each).' },
+    { rank: 1, name: 'Arc shot', input: '↑J', desc: 'Loose high: five arrows rain 30-82 px ahead (0.3 each).' },
     { rank: 1, name: 'Aerial shot', input: 'air J', desc: 'Loose down at a slant in mid-air (0.9). Twice per jump.' },
     { rank: 1, name: 'Talon stomp', input: 'air ↓J', desc: 'Stamp down with the bow limb: pogo off foes and spikes.' },
     { rank: 1, name: "Hunter's dive", input: 'air K', desc: 'Dive at the foe and loose point-blank as you land (1.5).' },
@@ -478,16 +524,16 @@ mvRegister('bow', {
       bwTwang(Math.max(2, lv)); P.vy = -110; P.ground = false; shake = Math.max(shake, 3);
       spawnFx('dust', P.x, P.y, -P.face); bwBank(lv + 1, 'quiet');
     } } },
-  // ↑J: the arc shot -- loose high; five (IV: seven) arrows come down 40-90 px ahead
+  // ↑J: the arc shot -- loose high; five (IV: seven) arrows come down 30-82 px ahead
   bw_arc: { tags: ['bw_arc', 'sp_up'], up: true, dmg: 0.3, poise: 40, stam: 16, wind: 300, total: 760, noHit: true,
     on: { swing() {
       const n = mvHas(4) ? 7 : 5, face = P.face, x0 = P.x, y0 = P.y, lv = P.bwLv || 1;
       for (let i = 0; i < 3; i++) bwArrow({ mul: 0.3, poise: 8, lv, ang: -1.25 + (i - 1) * 0.08, spd: 520, life: 0.28, flat: true, dy: -30, dx: 6 });
       bwTwang(Math.max(2, lv));
       for (let i = 0; i < n; i++) {
-        const fx = x0 + face * (40 + 50 * i / (n - 1) + (i % 2 ? 3 : -2));
+        const fx = x0 + face * (32 + 48 * i / (n - 1) + (i % 2 ? 2 : -2));   // 30-82 px ahead (never past the burn-out)
         let top = y0 - 24; while (top > y0 - 130 && !solidAtPx(fx - face * 12, top - 6)) top -= 6;   // under the ceiling
-        bwArrow({ face, mul: 0.3, poise: 40 / n, lv, ang: 1.38, spd: 420, life: 0.9, flat: true, x: fx - face * (y0 - top) * 0.19, y: top, delay: 0.3 + i * 0.045, sx: x0 });
+        bwArrow({ face, mul: 0.3, poise: 40 / n, lv, ang: 1.38, spd: 420, life: 0.9, flat: true, rain: true, x: fx - face * (y0 - top) * 0.19, y: top, delay: 0.3 + i * 0.045, sx: x0 });
       }
     } } },
   // L -> J: the dash shot -- skid in and loose at the banked level (0.5 + 0.25 per level, split over its arrows)
@@ -540,4 +586,4 @@ mvRegister('bow', {
       } } },
 });
 // keep the room's arrows in step with the room
-HOOKS.enter.push(() => { BW.arrows = []; BW.stuck = []; });
+HOOKS.enter.push(() => { BW.arrows = []; BW.stuck = []; BW.burn = []; });
