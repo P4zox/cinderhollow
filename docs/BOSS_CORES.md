@@ -1,6 +1,6 @@
 # Cinderhollow — Boss Cores
 
-Every boss drops its **Core** on the first kill — 32 in all. Socket one into a weapon at the **Ashwright**
+Every boss drops its **Core** on the first kill — 33 in all. Socket one into a weapon at the **Ashwright**
 ("Enchant a weapon", **400 cinders**; removing it is free and gives the Core back). Each of the 14 weapon types keeps
 its own Core, and a Core sits in one weapon at a time.
 
@@ -26,7 +26,7 @@ and tests: `docs/v15/cores.md`.*
 
 - **Bonus strikes:** Gravetusk’s Core (*Rend*), Omen Core (*Omen Line*), Librarian’s Core (*Overdue*), Bell Core (*Toll*), Drake Core (*Stormcall*), Pharaoh’s Core (*Dusk Count*), Star Core (*Starfall*), Gilded Core (*Twin Oath*), First Ember Core (*Kindling*)
 - **Damage over time:** Coven Core (*Thornbind*), Vessel Core (*Rot Sap*), Twinned Core (*Flame and Frost*), Overseer’s Core (*Forgefire*)
-- **Raw power and stance:** Antlered Core (*Antler’s Weight*), Choir Core (*Resonance*), Champion’s Core (*Unyielding*), Headsman’s Core (*Verdict*), Colossus Core (*Molten Crack*), Orrery Core (*Orbit*), Sovereign Core (*Kneel*), Last Kindling Core (*Last Flame*)
+- **Raw power and stance:** Antlered Core (*Antler’s Weight*), Choir Core (*Resonance*), Champion’s Core (*Unyielding*), Headsman’s Core (*Verdict*), Colossus Core (*Molten Crack*), Orrery Core (*Orbit*), Sovereign Core (*Kneel*), Hearthkeeper’s Core (*Retemper*), Last Kindling Core (*Last Flame*)
 - **Control:** Glacial Core (*Chill*), Enforcer Core (*Curfew*), Unwritten Core (*Redaction*)
 - **Defence:** Oathless Core (*Unbroken Oath*), Scarab Core (*Sun Shell*), Null Core (*Nullify*)
 - **Sustain and tempo:** Pilgrim’s Core (*Wayfarer’s Wind*), Ferryman’s Core (*Toll of Breath*), Vesper’s Core (*Attentive*), Sanguine Core (*Blood Tithe*), Hollow Crown Core (*Grief’s Due*)
@@ -63,6 +63,7 @@ and tests: `docs/v15/cores.md`.*
 | SAINT-0 | Null Core | Nullify | null cyan `#a8f4ff` | 4% + defence |
 | Gilded Sentinels | Gilded Core | Twin Oath | gilded `#ffd870` | 12% |
 | Pale Sovereign | Sovereign Core | Kneel | pale gold `#fff0c8` | 4% (12% staggered) |
+| The Hearthkeeper | Hearthkeeper’s Core | Retemper | hearth amber `#ffb45a` | stance + ~6% |
 | The First Ember | First Ember Core | Kindling | ember red `#ff6a24` | 6.7% |
 | Venn | Last Kindling Core | Last Flame | pale flame `#f4eedc` | 4% (16% low) |
 
@@ -277,6 +278,13 @@ A gilded echo strikes 0.3 s after each enchanted move for 12% of its damage.
 +15% stance damage and +4% damage; a staggered foe takes 8% more from enchanted moves.
 
 *Makes great foes kneel, then punishes the kneel.*
+
+### Hearthkeeper’s Core — *Retemper*
+**Boss:** The Hearthkeeper · **Colour:** hearth amber (`#ffb45a`) · **Type:** Raw power and stance
+
++12% stance damage; breaking a foe’s stance re-tempers the weapon: the next three enchanted moves deal +12%.
+
+*He re-tempers whatever you fail to break; break him and the temper is yours. Left in his ash, not handed over: taking it opens the Great Furnace (v17).*
 
 ### First Ember Core — *Kindling*
 **Boss:** The First Ember · **Colour:** ember red (`#ff6a24`) · **Type:** Bonus strikes

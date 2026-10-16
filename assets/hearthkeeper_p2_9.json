@@ -1,0 +1,177 @@
+{ "frames": [
+   {
+    "filename": "hearthkeeper_p2_9 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 80
+   },
+   {
+    "filename": "hearthkeeper_p2_9 1.aseprite",
+    "frame": { "x": 224, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 150
+   },
+   {
+    "filename": "hearthkeeper_p2_9 2.aseprite",
+    "frame": { "x": 448, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 150
+   },
+   {
+    "filename": "hearthkeeper_p2_9 3.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 250
+   },
+   {
+    "filename": "hearthkeeper_p2_9 4.aseprite",
+    "frame": { "x": 896, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 550
+   },
+   {
+    "filename": "hearthkeeper_p2_9 5.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 320
+   },
+   {
+    "filename": "hearthkeeper_p2_9 6.aseprite",
+    "frame": { "x": 1344, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 173
+   },
+   {
+    "filename": "hearthkeeper_p2_9 7.aseprite",
+    "frame": { "x": 1568, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 173
+   },
+   {
+    "filename": "hearthkeeper_p2_9 8.aseprite",
+    "frame": { "x": 1792, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 173
+   },
+   {
+    "filename": "hearthkeeper_p2_9 9.aseprite",
+    "frame": { "x": 2016, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 200
+   },
+   {
+    "filename": "hearthkeeper_p2_9 10.aseprite",
+    "frame": { "x": 2240, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 80
+   },
+   {
+    "filename": "hearthkeeper_p2_9 11.aseprite",
+    "frame": { "x": 2464, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 120
+   },
+   {
+    "filename": "hearthkeeper_p2_9 12.aseprite",
+    "frame": { "x": 2688, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 120
+   },
+   {
+    "filename": "hearthkeeper_p2_9 13.aseprite",
+    "frame": { "x": 2912, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 270
+   },
+   {
+    "filename": "hearthkeeper_p2_9 14.aseprite",
+    "frame": { "x": 3136, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 100
+   },
+   {
+    "filename": "hearthkeeper_p2_9 15.aseprite",
+    "frame": { "x": 3360, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 100
+   },
+   {
+    "filename": "hearthkeeper_p2_9 16.aseprite",
+    "frame": { "x": 3584, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 120
+   },
+   {
+    "filename": "hearthkeeper_p2_9 17.aseprite",
+    "frame": { "x": 3808, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 120
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "hearthkeeper_p2_9.png",
+  "format": "RGBA8888",
+  "size": { "w": 4032, "h": 144 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "p3shift", "from": 0, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "draw_blade", "from": 10, "to": 17, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

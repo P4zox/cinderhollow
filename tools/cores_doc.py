@@ -10,7 +10,7 @@ import json, re, sys
 CAT = {  # how each Core plays, for the overview
     'Bonus strikes': ['hound', 'omen', 'librarian', 'bellringer', 'cindervane', 'pharaoh', 'astrel', 'sentinels', 'first_ember'],
     'Damage over time': ['coven', 'vessel', 'twins', 'overseer'],
-    'Raw power and stance': ['warden', 'choir', 'champion', 'executioners', 'colossus', 'orrery', 'sovereign', 'venn'],
+    'Raw power and stance': ['warden', 'choir', 'champion', 'executioners', 'colossus', 'orrery', 'sovereign', 'hearthkeeper', 'venn'],
     'Control': ['ice_warden', 'enforcer', 'unwritten'],
     'Defence': ['kalden', 'scarab', 'saint0'],
     'Sustain and tempo': ['oswin', 'ferryman', 'butler', 'sanguine', 'vael'],

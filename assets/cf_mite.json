@@ -1,0 +1,207 @@
+{ "frames": [
+   {
+    "filename": "cf_mite 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 70
+   },
+   {
+    "filename": "cf_mite 1.aseprite",
+    "frame": { "x": 24, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 70
+   },
+   {
+    "filename": "cf_mite 2.aseprite",
+    "frame": { "x": 48, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 70
+   },
+   {
+    "filename": "cf_mite 3.aseprite",
+    "frame": { "x": 72, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 70
+   },
+   {
+    "filename": "cf_mite 4.aseprite",
+    "frame": { "x": 96, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 70
+   },
+   {
+    "filename": "cf_mite 5.aseprite",
+    "frame": { "x": 120, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 60
+   },
+   {
+    "filename": "cf_mite 6.aseprite",
+    "frame": { "x": 144, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 50
+   },
+   {
+    "filename": "cf_mite 7.aseprite",
+    "frame": { "x": 168, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 50
+   },
+   {
+    "filename": "cf_mite 8.aseprite",
+    "frame": { "x": 192, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 60
+   },
+   {
+    "filename": "cf_mite 9.aseprite",
+    "frame": { "x": 216, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 90
+   },
+   {
+    "filename": "cf_mite 10.aseprite",
+    "frame": { "x": 240, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 90
+   },
+   {
+    "filename": "cf_mite 11.aseprite",
+    "frame": { "x": 264, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 90
+   },
+   {
+    "filename": "cf_mite 12.aseprite",
+    "frame": { "x": 288, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 90
+   },
+   {
+    "filename": "cf_mite 13.aseprite",
+    "frame": { "x": 312, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 90
+   },
+   {
+    "filename": "cf_mite 14.aseprite",
+    "frame": { "x": 336, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 70
+   },
+   {
+    "filename": "cf_mite 15.aseprite",
+    "frame": { "x": 360, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 90
+   },
+   {
+    "filename": "cf_mite 16.aseprite",
+    "frame": { "x": 384, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 80
+   },
+   {
+    "filename": "cf_mite 17.aseprite",
+    "frame": { "x": 408, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 80
+   },
+   {
+    "filename": "cf_mite 18.aseprite",
+    "frame": { "x": 432, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 80
+   },
+   {
+    "filename": "cf_mite 19.aseprite",
+    "frame": { "x": 456, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 80
+   },
+   {
+    "filename": "cf_mite 20.aseprite",
+    "frame": { "x": 480, "y": 0, "w": 24, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 24, "h": 16 },
+    "sourceSize": { "w": 24, "h": 16 },
+    "duration": 80
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "cf_mite.png",
+  "format": "RGBA8888",
+  "size": { "w": 504, "h": 16 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "crawl", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
+   { "name": "leap", "from": 4, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "cling", "from": 10, "to": 13, "direction": "forward", "color": "#000000ff" },
+   { "name": "hurt", "from": 14, "to": 15, "direction": "forward", "color": "#000000ff" },
+   { "name": "death", "from": 16, "to": 20, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}

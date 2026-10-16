@@ -1,0 +1,117 @@
+{
+ "summon": true,
+ "room": "CF8",
+ "wake": true,
+ "start": {
+  "st": "idle",
+  "tag": "idle",
+  "ph": 1,
+  "hp": 16520,
+  "max": 16520,
+  "temper": 0,
+  "tWin": 30,
+  "dark": false,
+  "biome": "forge",
+  "cut": false,
+  "props": ""
+ },
+ "temper1": {
+  "sawTemperAt": 175,
+  "st": "attack",
+  "tag": "temper",
+  "ph": 1,
+  "hp": 16520,
+  "max": 16520,
+  "temper": 1,
+  "tWin": 30,
+  "dark": false,
+  "biome": "forge",
+  "cut": false,
+  "props": ""
+ },
+ "afterStagger": {
+  "st": "stagger",
+  "tag": "stagger",
+  "ph": 1,
+  "hp": 16520,
+  "max": 16520,
+  "temper": 0,
+  "tWin": 30,
+  "dark": false,
+  "biome": "forge",
+  "cut": false,
+  "props": ""
+ },
+ "critable": true,
+ "fatStarted": "fatality",
+ "fatality": {
+  "frames": 123,
+  "dealt": 215,
+  "last": "Ashen Verdict"
+ },
+ "afterFatality": {
+  "st": "attack",
+  "tag": "sweep",
+  "ph": 1,
+  "hp": 16305,
+  "max": 16520,
+  "temper": 0,
+  "tWin": 28.2,
+  "dark": false,
+  "biome": "forge",
+  "cut": false,
+  "props": ""
+ },
+ "pending2": 2,
+ "snap2": 1,
+ "phase2": {
+  "cutSeen": true,
+  "st": "idle",
+  "tag": "idle",
+  "ph": 2,
+  "hp": 10903,
+  "max": 16520,
+  "temper": 0,
+  "tWin": 26,
+  "dark": false,
+  "biome": "forge",
+  "cut": false,
+  "props": "hammer"
+ },
+ "phase3": {
+  "cutSeen": true,
+  "st": "idle",
+  "tag": "idle",
+  "ph": 3,
+  "hp": 4956,
+  "max": 16520,
+  "temper": 0,
+  "tWin": 22,
+  "dark": true,
+  "biome": "forge",
+  "cut": false,
+  "props": "hammer,blade"
+ },
+ "death": {
+  "coreAt": 221,
+  "flag": 1,
+  "owned": false,
+  "dark": false,
+  "save": "{\"room\":\"CF8\",\"x\":496,\"y\":288}"
+ },
+ "furnaceMissing": false,
+ "taken": {
+  "w2": 1,
+  "owned": true,
+  "furnace": 1,
+  "propLeft": false
+ },
+ "effigy": true,
+ "rekindle": true,
+ "rematch": {
+  "core": false,
+  "w2": 1,
+  "owned": false
+ },
+ "errs": []
+}

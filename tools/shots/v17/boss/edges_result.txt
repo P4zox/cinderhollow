@@ -1,0 +1,33 @@
+{
+ "arena": true,
+ "wake": true,
+ "res": [
+  "west p1 slam       x 114..132 in [72,782] OK air 0 offFloor 0",
+  "west p1 leap       x 96..132 in [72,782] OK air 74 offFloor 0",
+  "west p1 grab       x 104..132 in [72,782] OK air 0 offFloor 0",
+  "west p1 combo      x 105..132 in [72,782] OK air 0 offFloor 0",
+  "west p1 sweep      x 121..132 in [72,782] OK air 0 offFloor 0",
+  "west p1 backhand   x 132..137 in [72,782] OK air 0 offFloor 0",
+  "west p2 spear      x 76..132 in [72,782] OK air 0 offFloor 0",
+  "west p2 blade      x 104..132 in [72,782] OK air 0 offFloor 0",
+  "west p2 chain      x 115..132 in [72,782] OK air 0 offFloor 0",
+  "west p3 dark_lunge x 74..132 in [72,782] OK air 0 offFloor 0",
+  "west p3 flame_grab x 73..132 in [72,782] OK air 0 offFloor 0",
+  "west p3 ft_combo   x 114..132 in [72,782] OK air 0 offFloor 0",
+  "west p3 bellows_lo x 122..132 in [72,782] OK air 0 offFloor 0",
+  "east p1 slam       x 722..740 in [72,782] OK air 0 offFloor 0",
+  "east p1 leap       x 722..747 in [72,782] OK air 74 offFloor 0",
+  "east p1 grab       x 722..748 in [72,782] OK air 0 offFloor 0",
+  "east p1 combo      x 722..749 in [72,782] OK air 0 offFloor 0",
+  "east p1 sweep      x 722..733 in [72,782] OK air 0 offFloor 0",
+  "east p1 backhand   x 717..722 in [72,782] OK air 0 offFloor 0",
+  "east p2 spear      x 722..778 in [72,782] OK air 0 offFloor 0",
+  "east p2 blade      x 722..752 in [72,782] OK air 0 offFloor 0",
+  "east p2 chain      x 722..729 in [72,782] OK air 0 offFloor 0",
+  "east p3 dark_lunge x 722..747 in [72,782] OK air 0 offFloor 0",
+  "east p3 flame_grab x 722..773 in [72,782] OK air 0 offFloor 0",
+  "east p3 ft_combo   x 722..740 in [72,782] OK air 0 offFloor 0",
+  "east p3 bellows_lo x 722..732 in [72,782] OK air 0 offFloor 0"
+ ],
+ "errs": []
+}

@@ -1,0 +1,55 @@
+{
+ "CF1": {
+  "placed": "cf_mite,cf_mite,cf_mite",
+  "live": "cf_mite,cf_mite,cf_mite",
+  "states": "cf_mite:walk cf_mite:idle"
+ },
+ "CF2": {
+  "placed": "cf_mite,cf_mite,cf_mite,cf_smith",
+  "live": "cf_mite,cf_mite,cf_mite,cf_smith",
+  "states": "cf_mite:walk cf_smith:walk cf_mite:attack cf_mite:idle"
+ },
+ "CF3": {
+  "placed": "cf_mite,cf_mite,cf_mite,cf_mite",
+  "live": "cf_mite,cf_mite,cf_mite,cf_mite",
+  "states": "cf_mite:walk cf_mite:idle"
+ },
+ "CF4": {
+  "placed": "cf_smith,cf_smith,cf_mite,cf_mite",
+  "live": "cf_smith,cf_smith,cf_mite,cf_mite",
+  "states": "cf_smith:walk cf_mite:walk cf_mite:idle cf_smith:attack cf_smith:idle"
+ },
+ "CF9": {
+  "placed": "cf_unforged",
+  "live": "cf_unforged/staff",
+  "states": "cf_unforged:idle cf_unforged:attack"
+ },
+ "CF5": {
+  "placed": "cf_wraith,cf_wraith,cf_wraith,cf_smith",
+  "live": "cf_wraith,cf_wraith,cf_wraith,cf_smith",
+  "states": "cf_wraith:rising cf_wraith:still cf_smith:walk cf_wraith:attack cf_wraith:idle"
+ },
+ "CF10": "no foes",
+ "CF6": {
+  "placed": "cf_hulk,cf_wraith,cf_mite,cf_mite,cf_mite,cf_smith",
+  "live": "cf_hulk,cf_wraith,cf_mite,cf_mite,cf_mite,cf_smith",
+  "states": "cf_hulk:walk cf_wraith:still cf_mite:walk cf_mite:idle cf_smith:walk"
+ },
+ "CF13": {
+  "placed": "cf_unforged",
+  "live": "cf_unforged/staff",
+  "states": "cf_unforged:idle cf_unforged:attack"
+ },
+ "CF7": "no foes",
+ "CF12": {
+  "placed": "cf_wraith,cf_mite,cf_hulk",
+  "live": "cf_wraith,cf_mite,cf_hulk",
+  "states": "cf_wraith:rising cf_mite:walk cf_hulk:walk cf_wraith:idle cf_mite:idle cf_wraith:attack"
+ },
+ "CF11": {
+  "placed": "cf_smith",
+  "live": "cf_smith",
+  "states": "cf_smith:walk cf_smith:attack cf_smith:idle"
+ },
+ "CF8": "no foes"
+}

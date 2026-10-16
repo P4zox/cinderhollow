@@ -1,0 +1,200 @@
+{
+ "summon": true,
+ "errs": [],
+ "wake": true,
+ "res": {
+  "p1 slam": {
+   "frames": 112,
+   "tags": "slam>idle",
+   "events": "slam:land idle:land",
+   "hits": 1,
+   "log": "slam:slam:6:54",
+   "temper": 0
+  },
+  "p1 sweep": {
+   "frames": 159,
+   "tags": "sweep>snap>idle",
+   "events": "",
+   "hits": 1,
+   "log": "sweep:sweep:5:42",
+   "temper": 0
+  },
+  "p1 combo": {
+   "frames": 246,
+   "tags": "combo>sweep>idle",
+   "events": "combo:land",
+   "hits": 2,
+   "log": "combo:combo:4:37 combo:combo:12:56",
+   "temper": 0
+  },
+  "p1 grab": {
+   "frames": 164,
+   "tags": "grab>grabhold>idle",
+   "events": "grabhold:strike1 grabhold:strike2 grabhold:throw idle:strike1 idle:strike2 idle:throw",
+   "hits": 4,
+   "log": "grab:grab:4:14 grab:grabhold:4:26 grab:grabhold:7:33 grab:grabhold:9:19",
+   "temper": 0
+  },
+  "p1 snap": {
+   "frames": 158,
+   "tags": "snap>sweep>idle",
+   "events": "",
+   "hits": 1,
+   "log": "snap:snap:2:30",
+   "temper": 0
+  },
+  "p1 ring": {
+   "frames": 188,
+   "tags": "ring>idle",
+   "events": "ring:ring idle:ring",
+   "hits": 1,
+   "log": "ring:ring:6:32",
+   "temper": 0
+  },
+  "p1 leap": {
+   "frames": 147,
+   "tags": "leap>idle",
+   "events": "leap:takeoff leap:apex leap:fall leap:land idle:takeoff idle:apex idle:fall idle:land",
+   "hits": 1,
+   "log": "leap:leap:7:58",
+   "temper": 0
+  },
+  "p1 sparks": {
+   "frames": 143,
+   "tags": "sparks>idle",
+   "events": "sparks:sparks idle:sparks",
+   "hits": 1,
+   "log": "sparks:idle:3:21",
+   "temper": 0
+  },
+  "p1 backhand": {
+   "frames": 71,
+   "tags": "backhand>idle",
+   "events": "",
+   "hits": 1,
+   "log": "backhand:backhand:3:44",
+   "temper": 0
+  },
+  "p1 temper": {
+   "frames": 172,
+   "tags": "temper>idle",
+   "events": "temper:loop0 temper:loop1 temper:tempered idle:loop0 idle:loop1 idle:tempered",
+   "hits": 0,
+   "log": "",
+   "temper": 1
+  },
+  "p2 blade": {
+   "frames": 386,
+   "tags": "draw_blade>bl_cleave>bl_charge>drop_blade>idle",
+   "events": "draw_blade:draw bl_charge:charge bl_charge:chop drop_blade:drop idle:drop",
+   "hits": 2,
+   "log": "bl_cleave:bl_cleave:4:40 bl_charge:bl_charge:6:61",
+   "temper": 0
+  },
+  "p2 spear": {
+   "frames": 422,
+   "tags": "draw_spear>sp_lunge>sp_thrust>sp_hurl>idle",
+   "events": "draw_spear:draw sp_lunge:aim sp_lunge:dash sp_lunge:skid sp_hurl:throw idle:throw",
+   "hits": 3,
+   "log": "sp_lunge:sp_lunge:3:51 sp_thrust:sp_thrust:2:35 sp_hurl:sp_hurl:5:39",
+   "temper": 0
+  },
+  "p2 chain": {
+   "frames": 356,
+   "tags": "draw_chain>ch_lash>ch_hook>drop_chain>idle",
+   "events": "draw_chain:draw ch_lash:crack ch_hook:hook ch_hook:yank drop_chain:drop idle:drop",
+   "hits": 2,
+   "log": "ch_lash:ch_lash:4:47 ch_hook:ch_hook:2:16",
+   "temper": 0
+  },
+  "p2 coal_kick": {
+   "frames": 162,
+   "tags": "coal_kick>idle",
+   "events": "coal_kick:kick idle:kick",
+   "hits": 2,
+   "log": "coal_kick:coal_kick:4:23 coal_kick:idle:0:11",
+   "temper": 0
+  },
+  "p2 temper": {
+   "frames": 143,
+   "tags": "temper>idle",
+   "events": "temper:loop0 temper:loop1 temper:tempered idle:loop0 idle:loop1 idle:tempered",
+   "hits": 0,
+   "log": "",
+   "temper": 1
+  },
+  "p3 ft_sweep": {
+   "frames": 131,
+   "tags": "ft_sweep>idle",
+   "events": "ft_sweep:sweep idle:sweep",
+   "hits": 1,
+   "log": "ft_sweep:ft_sweep:4:49",
+   "temper": 0
+  },
+  "p3 ember_rain": {
+   "frames": 243,
+   "tags": "ember_rain>idle",
+   "events": "ember_rain:rain idle:rain",
+   "hits": 1,
+   "log": "ember_rain:idle:5:28",
+   "temper": 0
+  },
+  "p3 bellows_lo": {
+   "frames": 90,
+   "tags": "bellows_lo>idle",
+   "events": "bellows_lo:blast idle:blast",
+   "hits": 1,
+   "log": "bellows_lo:bellows_lo:5:40",
+   "temper": 0
+  },
+  "p3 bellows_hi": {
+   "frames": 83,
+   "tags": "bellows_hi>idle",
+   "events": "bellows_hi:blast idle:blast",
+   "hits": 0,
+   "log": "",
+   "temper": 0
+  },
+  "p3 flame_grab": {
+   "frames": 125,
+   "tags": "flame_grab>fgrabhold>idle",
+   "events": "flame_grab:lunge fgrabhold:burn1 fgrabhold:burn2 fgrabhold:throw idle:burn1 idle:burn2 idle:throw",
+   "hits": 4,
+   "log": "flame_grab:flame_grab:3:12 flame_grab:fgrabhold:3:24 flame_grab:fgrabhold:6:30 flame_grab:fgrabhold:8:21",
+   "temper": 0
+  },
+  "p3 nova": {
+   "frames": 149,
+   "tags": "nova>idle",
+   "events": "nova:nova idle:nova",
+   "hits": 1,
+   "log": "nova:nova:6:39",
+   "temper": 0
+  },
+  "p3 ft_combo": {
+   "frames": 75,
+   "tags": "ft_combo>idle",
+   "events": "",
+   "hits": 1,
+   "log": "ft_combo:ft_combo:2:35",
+   "temper": 0
+  },
+  "p3 dark_lunge": {
+   "frames": 88,
+   "tags": "dark_lunge>idle",
+   "events": "dark_lunge:dark dark_lunge:lunge idle:dark idle:lunge",
+   "hits": 1,
+   "log": "dark_lunge:dark_lunge:3:53",
+   "temper": 0
+  },
+  "p3 temper": {
+   "frames": 132,
+   "tags": "temper>idle",
+   "events": "temper:loop0 temper:loop1 temper:tempered idle:loop0 idle:loop1 idle:tempered",
+   "hits": 0,
+   "log": "",
+   "temper": 1
+  }
+ },
+ "hkLog": "slam sweep snap combo sweep grab snap sweep ring leap sparks backhand temper blade spear chain coal_kick temper ft_sweep ember_rain bellows_lo bellows_hi flame_grab nova ft_combo dark_lunge temper"
+}

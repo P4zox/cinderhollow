@@ -1,0 +1,113 @@
+{
+ "res": {
+  "cf_smith": {
+   "seen": [
+    "walk",
+    "toss",
+    "idle",
+    "hammer",
+    "grab",
+    "hold",
+    "throw"
+   ],
+   "hitBy": {
+    "hammer": 1,
+    "grab": 3
+   },
+   "gone": true,
+   "killed": true
+  },
+  "cf_wraith": {
+   "seen": [
+    "rising",
+    "idle",
+    "hiss",
+    "lunge",
+    "walk",
+    "claw",
+    "sinking"
+   ],
+   "hitBy": {
+    "lunge": 2,
+    "claw": 1
+   },
+   "gone": true,
+   "killed": true
+  },
+  "cf_hulk": {
+   "seen": [
+    "walk",
+    "sweep",
+    "idle",
+    "slam",
+    "blast",
+    "vent"
+   ],
+   "hitBy": {
+    "sweep": 4,
+    "slam": 4,
+    "blast": 1
+   },
+   "gone": true,
+   "killed": true
+  },
+  "hulk_fatality": {
+   "hitsToStagger": 7,
+   "staggered": "stagger",
+   "critable": true,
+   "fat": true,
+   "last": {
+    "type": "longsword",
+    "name": "Ashen Verdict",
+    "exec": false,
+    "dealt": 359
+   },
+   "hp0": 1114,
+   "hp1": 755,
+   "state": "stagger"
+  },
+  "hulk_vent_stance": 36,
+  "cf_mite": {
+   "seen": [
+    "walk",
+    "leap",
+    "cling"
+   ],
+   "hitBy": {},
+   "clingBurns": 1,
+   "gone": true,
+   "killed": true
+  },
+  "swarm": [
+   "cf_mite:274",
+   "cf_mite:288",
+   "cf_mite:302",
+   "cf_mite:316"
+  ]
+ },
+ "shots": [
+  "bt_smith_toss",
+  "bt_smith_hammer",
+  "bt_smith_hold",
+  "bt_smith_throw",
+  "bt_smith_death",
+  "bt_wraith_still",
+  "bt_wraith_rising",
+  "bt_wraith_hiss",
+  "bt_wraith_lunge",
+  "bt_wraith_claw",
+  "bt_wraith_sinking",
+  "bt_wraith_death",
+  "bt_hulk_sweep",
+  "bt_hulk_slam",
+  "bt_hulk_blast",
+  "bt_hulk_vent",
+  "bt_hulk_core_flare",
+  "bt_hulk_stagger",
+  "bt_hulk_fatality",
+  "bt_hulk_death",
+  "bt_mite_leap",
+  "bt_mite_cling",
+  "bt_mite_death"
+ ]
+}

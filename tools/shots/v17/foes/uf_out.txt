@@ -1,0 +1,602 @@
+{
+ "res": {
+  "longsword": {
+   "forced": {
+    "atk1": {
+     "hits": 2,
+     "dmg": [
+      63,
+      72
+     ],
+     "dist": 22,
+     "frames": 112,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      110
+     ],
+     "dist": 32,
+     "frames": 99,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      82
+     ],
+     "dist": 20,
+     "frames": 129,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk2": 6,
+     "atk3": 6,
+     "atk1": 6
+    },
+    "hits": 8
+   },
+   "gone": true,
+   "killed": true
+  },
+  "katana": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      98
+     ],
+     "dist": 93,
+     "frames": 118,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      60
+     ],
+     "dist": 18,
+     "frames": 90,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      57
+     ],
+     "dist": 92,
+     "frames": 141,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk2": 8,
+     "atk1": 4,
+     "atk3": 6
+    },
+    "hits": 9
+   },
+   "gone": true,
+   "killed": true
+  },
+  "greatsword": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      117
+     ],
+     "dist": 23,
+     "frames": 135,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      82
+     ],
+     "dist": 26,
+     "frames": 82,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      76
+     ],
+     "dist": 88,
+     "frames": 111,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 8,
+     "atk2": 6,
+     "atk3": 4
+    },
+    "hits": 7
+   },
+   "gone": true,
+   "killed": true
+  },
+  "maul": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      35
+     ],
+     "dist": 21,
+     "frames": 110,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      54
+     ],
+     "dist": 26,
+     "frames": 97,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      38
+     ],
+     "dist": 100,
+     "frames": 136,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 10,
+     "atk2": 8,
+     "atk3": 2
+    },
+    "hits": 7
+   },
+   "gone": true,
+   "killed": true
+  },
+  "sns": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      57
+     ],
+     "dist": 18,
+     "frames": 78,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      57
+     ],
+     "dist": 77,
+     "frames": 96,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      85
+     ],
+     "dist": 22,
+     "frames": 137,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 14,
+     "atk2": 4,
+     "atk3": 4
+    },
+    "hits": 9
+   },
+   "gone": true,
+   "killed": true
+  },
+  "dual": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      28
+     ],
+     "dist": 17,
+     "frames": 70,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      69
+     ],
+     "dist": 93,
+     "frames": 96,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      35
+     ],
+     "dist": 23,
+     "frames": 96,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 12,
+     "atk3": 8,
+     "atk2": 2
+    },
+    "hits": 10
+   },
+   "gone": true,
+   "killed": true
+  },
+  "spear": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      57
+     ],
+     "dist": 54,
+     "frames": 78,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      50
+     ],
+     "dist": 127,
+     "frames": 151,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      85
+     ],
+     "dist": 64,
+     "frames": 87,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 6,
+     "atk3": 6
+    },
+    "hits": 7
+   },
+   "gone": true,
+   "killed": true
+  },
+  "staff": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      38
+     ],
+     "dist": 22,
+     "frames": 77,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      76
+     ],
+     "dist": 92,
+     "frames": 118,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      50
+     ],
+     "dist": 20,
+     "frames": 98,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 10,
+     "atk3": 8,
+     "atk2": 2
+    },
+    "hits": 10
+   },
+   "gone": true,
+   "killed": true
+  },
+  "whip": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      63
+     ],
+     "dist": 60,
+     "frames": 81,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 2,
+     "dmg": [
+      32,
+      57
+     ],
+     "dist": 65,
+     "frames": 115,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      95
+     ],
+     "dist": 60,
+     "frames": 88,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 12,
+     "atk2": 6,
+     "atk3": 4
+    },
+    "hits": 9
+   },
+   "gone": true,
+   "killed": true
+  },
+  "saxe": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      57
+     ],
+     "dist": 21,
+     "frames": 78,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 2,
+     "dmg": [
+      82,
+      113
+     ],
+     "dist": 21,
+     "frames": 105,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      113
+     ],
+     "dist": 44,
+     "frames": 125,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 6,
+     "atk2": 8,
+     "atk3": 8
+    },
+    "hits": 9
+   },
+   "gone": true,
+   "killed": true
+  },
+  "bow": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      60
+     ],
+     "dist": 65,
+     "frames": 76,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      44
+     ],
+     "dist": 75,
+     "frames": 136,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 2,
+     "dmg": [
+      50,
+      60
+     ],
+     "dist": 13,
+     "frames": 118,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 10,
+     "atk2": 8,
+     "atk3": 2
+    },
+    "hits": 7
+   },
+   "gone": true,
+   "killed": true
+  },
+  "fist": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      32
+     ],
+     "dist": 26,
+     "frames": 69,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      101
+     ],
+     "dist": 18,
+     "frames": 123,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      91
+     ],
+     "dist": 83,
+     "frames": 135,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 12,
+     "atk2": 8,
+     "atk3": 2
+    },
+    "hits": 9
+   },
+   "gone": true,
+   "killed": true
+  },
+  "scythe": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      82
+     ],
+     "dist": 26,
+     "frames": 98,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      35
+     ],
+     "dist": 56,
+     "frames": 118,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      79
+     ],
+     "dist": 70,
+     "frames": 101,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 10,
+     "atk3": 6,
+     "atk2": 4
+    },
+    "hits": 9
+   },
+   "gone": true,
+   "killed": true
+  },
+  "bell": {
+   "forced": {
+    "atk1": {
+     "hits": 1,
+     "dmg": [
+      63
+     ],
+     "dist": 35,
+     "frames": 107,
+     "snapped": true
+    },
+    "atk2": {
+     "hits": 1,
+     "dmg": [
+      113
+     ],
+     "dist": 26,
+     "frames": 157,
+     "snapped": true
+    },
+    "atk3": {
+     "hits": 1,
+     "dmg": [
+      69
+     ],
+     "dist": 20,
+     "frames": 105,
+     "snapped": true
+    }
+   },
+   "free": {
+    "used": {
+     "atk1": 6,
+     "atk2": 6,
+     "atk3": 6
+    },
+    "hits": 6
+   },
+   "gone": true,
+   "killed": true
+  }
+ },
+ "n": 56,
+ "roll": {
+  "mine": "longsword",
+  "rolls": {
+   "bell": 6,
+   "maul": 15,
+   "spear": 6,
+   "bow": 14,
+   "greatsword": 7,
+   "fist": 16,
+   "saxe": 8,
+   "scythe": 19,
+   "sns": 11,
+   "katana": 11,
+   "dual": 8,
+   "staff": 12,
+   "whip": 7
+  },
+  "kinds": 13,
+  "fixed": "bell"
+ }
+}

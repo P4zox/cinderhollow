@@ -89,6 +89,7 @@ loops on the WM dummy for 6 cycles, then 5 s for delayed procs). In that rhythm 
 | Pale Sovereign | Sovereign Core | pale gold | **Kneel** | +15% stance, +4%; staggered foes take +8% more | 4% (12% staggered) | makes great foes kneel, then punishes the kneel |
 | The First Ember | First Ember Core | ember red | **Kindling** | 3 enchanted moves build kindling; the 4th burns it for +40% | 6.7% | the first fire, banked then loosed |
 | Venn | Last Kindling Core | pale flame | **Last Flame** | +16% below 40% HP, else +4% | 4% (16% low) | the last flame burns brightest when you're nearly out |
+| The Hearthkeeper (hearthkeeper) | Hearthkeeper's Core | hearth amber | **Retemper** | +12% stance; a stance break re-tempers the weapon: +12% on the next 3 enchanted moves | stance + ~6% | he re-tempers whatever you fail to break; break him and the temper is yours. Left in his ash, not handed over: taking it opens the Great Furnace (v17) |
 
 How the numbers were picked: the boss weapons used to be signature effects on EVERY hit (fire % on all heavies, bleed on all
 blows, rot ticking 0.6% max HP/s), which is why they were too strong. Cores only touch committed moves (about 40% of damage),

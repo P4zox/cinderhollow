@@ -1,0 +1,140 @@
+{ "frames": [
+   {
+    "filename": "hearthkeeper_p3_1 0.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 120
+   },
+   {
+    "filename": "hearthkeeper_p3_1 1.aseprite",
+    "frame": { "x": 224, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 150
+   },
+   {
+    "filename": "hearthkeeper_p3_1 2.aseprite",
+    "frame": { "x": 448, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 150
+   },
+   {
+    "filename": "hearthkeeper_p3_1 3.aseprite",
+    "frame": { "x": 672, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 180
+   },
+   {
+    "filename": "hearthkeeper_p3_1 4.aseprite",
+    "frame": { "x": 896, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 180
+   },
+   {
+    "filename": "hearthkeeper_p3_1 5.aseprite",
+    "frame": { "x": 1120, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 250
+   },
+   {
+    "filename": "hearthkeeper_p3_1 6.aseprite",
+    "frame": { "x": 1344, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 550
+   },
+   {
+    "filename": "hearthkeeper_p3_1 7.aseprite",
+    "frame": { "x": 1568, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 225
+   },
+   {
+    "filename": "hearthkeeper_p3_1 8.aseprite",
+    "frame": { "x": 1792, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 225
+   },
+   {
+    "filename": "hearthkeeper_p3_1 9.aseprite",
+    "frame": { "x": 2016, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 225
+   },
+   {
+    "filename": "hearthkeeper_p3_1 10.aseprite",
+    "frame": { "x": 2240, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 225
+   },
+   {
+    "filename": "hearthkeeper_p3_1 11.aseprite",
+    "frame": { "x": 2464, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 233
+   },
+   {
+    "filename": "hearthkeeper_p3_1 12.aseprite",
+    "frame": { "x": 2688, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 233
+   },
+   {
+    "filename": "hearthkeeper_p3_1 13.aseprite",
+    "frame": { "x": 2912, "y": 0, "w": 224, "h": 144 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 224, "h": 144 },
+    "sourceSize": { "w": 224, "h": 144 },
+    "duration": 233
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.18.6-arm64",
+  "image": "hearthkeeper_p3_1.png",
+  "format": "RGBA8888",
+  "size": { "w": 3136, "h": 144 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "death", "from": 0, "to": 13, "direction": "forward", "color": "#000000ff" }
+  ]
+ }
+}
