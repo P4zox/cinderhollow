@@ -20,17 +20,21 @@ const ROUTES = [
   ['Swift J J -> I -> J J (fstar into elbow, shoulder)', 1, 'swift', [], ['J', 'J', 'I', 'J', 'J', 'swift'], 'alt'],
   ['Iron J -> I -> J J J (wind cut into the Swift chain)', 1, 'iron', [], ['J', 'I', 'J', 'J', 'J', 'iron'], 'alt'],
   ['Tempest: J J J -> I -> K', 3, 'swift', [], ['J', 'J', 'J', 'I', 'K', 'swift'], 'alt'],
+  // with the perfect-dodge Focus buff kept up (+10% dmg, +6 px reach)
+  ['FOCUS Swift J J J J', 1, 'swift', [], ['J', 'J', 'J', 'J'], '<= ~10% over the band', true],
+  ['FOCUS Iron J J J', 1, 'iron', [], ['J', 'J', 'J'], '', true],
+  ['FOCUS Shift dance', 1, 'swift', ['J'], ['J', 'I'], '', true],
 ];
 const out = { table: [], boss: [] };
 const busy = () => E('!!ATK[P.state] && (!!P.mvQ || !!P.ftShiftQ || !!P.ftShiftCarry)');
 const free = () => E("['idle','run','land'].includes(P.state) || (!!ATK[P.state] && !P.mvQ && !P.ftShiftQ && !P.ftShiftCarry && P.mvT > 40 && !ATK[P.state].mv.loop)");
-for (const [name, rank, style, pre, cyc, note] of ROUTES) {
+for (const [name, rank, style, pre, cyc, note, focus] of ROUTES) {
   W().reset('fist', rank); arena(); W().reset('fist', rank); E(`D.maxSt = 1e6; P.st = 1e6; P.ftStyle = '${style}'; P.ftFlow = 0; P.inv = 0`);
   W().dummy(24); E('window.__wm.follow = 24');
   const seq = [...pre]; let i = 0, t0 = null, holdLeft = 0;
   const next = () => (i < seq.length ? seq[i] : cyc[(i - seq.length) % cyc.length]);
   for (let f = 0; f < SECS * 60 + 900; f++) {
-    E(`P.st = 1e6; P.ftFlow = 0; if (P.x > 330) P.x -= 200`);
+    E(`P.st = 1e6; P.ftFlow = 0; P.ftPdT = ${focus ? 6 : 0}; if (P.x > 330) P.x -= 200`);
     if (holdLeft > 0) { if (--holdLeft === 0) W().up('heavy'); W().frame(1); continue; }
     let p = next();
     if (p === 'swift' || p === 'iron') {   // wait for neutral, then reset the style (a route that crossed styles starts over)

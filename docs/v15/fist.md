@@ -6,7 +6,7 @@ move falls back to a borrowed tag.
 Files:
 - `web/src/78_mech_fist.js`: the moves, the trait and the HUD.
 - `art/player_v15_fist.py`: the tags, the second fist and the kicking legs.
-- `tools/shots/v15/fist/`: `routes.js` (63 checks), `bench.js`, `snaps.js`, `montage.png`, `prev/*.png`.
+- `tools/shots/v15/fist/`: `routes.js` (77 checks), `bench.js`, `snaps.js`, `montage.png`, `prev/*.png`.
 
 ## The trait: two styles, one body
 
@@ -29,7 +29,7 @@ The style is stored in `P.ftStyle` and is either `swift` or `iron`.
   - A J or K already pressed behind the I plays after the Shift strike, so `J J J I K` works.
   - An I pressed up to 150 ms after a move ends still shifts.
   - Mashing I during a Shift strike is dropped; it doesn't queue a flourish.
-- **Flow** has 5 pips and is shared by both styles. A move that lands gives +0.5, a Shift strike +1, a perfect slip +1,
+- **Flow** has 5 pips and is shared by both styles. A move that lands gives +0.5, a Shift strike +1, a perfect dodge +1,
   and each hundred-fists hit +0.08. After 6 s without a hit it fades by 1 pip every 1.5 s.
   - At ranks I–IV, a Shift strike at 5 Flow becomes an **Ember shift**: x1.3 plus a burn, and it spends the Flow.
   - At rank V the Flow is kept: **hold I** in neutral (220 ms) spends it on the **Ember palm**. A tap still changes
@@ -43,6 +43,34 @@ The style is stored in `P.ftStyle` and is either `swift` or `iron`.
   - Smears are coloured by style: Swift steel-blue, Iron ember.
 - **HUD** (`T.hud`, y = 22, right of the stamina bar): a style glyph (Swift: pale double chevron; Iron: ember block),
   then 5 Flow pips. They pulse when full, and at rank V a ring shows that the palm is ready.
+
+## Perfect dodge → Focus (both styles; added on the owner's request)
+
+- **The window.** A slip step or iron step started at most **120 ms** before a blow lands is a perfect dodge: the blow
+  meets the dodge in its first 120 ms, inside the i-frames.
+  - Why 120 rather than the Dual Blades' 100: the fist's dodges are short (0.18 / 0.16 s invulnerable, against the
+    roll's 0.28), and it fights point-blank, where blows give less warning.
+  - 120 ms was already the Flowing counter's window, so it stays one rule.
+  - A dodge 121–180 ms ahead still avoids the blow, but gives no Focus.
+- **Focus lasts 6 s.**
+  - Every martial-arts hit deals **×1.1**. This goes through `hitMod`, and the hundred fists, the dives and the stomp
+    shockwave multiply it in themselves.
+  - Every hit box reaches **+6 px**. I chose a flat 6 px, which is about 20% of a jab's box. It applies to the front edge
+    (both edges on spins) through a wrapper of `mvRect` in `78_mech_fist.js`, and to the manual boxes too.
+  - A new perfect dodge refreshes the 6 s; it never stacks.
+  - It also gives +1 Flow and Mastery XP.
+- **No farming.** There is one perfect dodge per blow and per enemy attack, keyed with the Dual Blades' `twKeys`: a
+  hazard's or beam's ticks are one blow, and one boss attack's windows share its attack id. Body contact is never a
+  blow.
+- **Rank III.** A Swift perfect slip → J is still the Flowing counter, and it gets the Focus bonus too (1.54). A perfect
+  Iron step → J is the palm.
+- **Feedback:**
+  - a chime (bright for Swift, lower for Iron);
+  - a 0.09 s slow-time flicker;
+  - an afterimage, sparks and a flash in the style's colour;
+  - both fists glow in the style's colour while Focus lasts;
+  - on the HUD, a timer ring around the style glyph that drains over the 6 s.
+- **Move List:** a new entry, "Perfect dodge (Focus)", for both styles.
 
 ## Moves
 
@@ -140,7 +168,10 @@ The Move List has 32 entries, each description 70 characters or fewer.
 
 ## Tests
 
-`tools/shots/v15/fist/routes.js` passes **63 / 63**. Every move is driven from real inputs (press, hold, timing), and
+`tools/shots/v15/fist/routes.js` passes **77 / 77** (14 of the checks are perfect-dodge checks: perfect against late
+in both styles, refreshing without stacking, one per attack, hazard ticks, body contact, reach (a jab at 43 px misses
+without Focus and lands with it), damage (jab 0.55, palm 1.21, hundred fists 0.165 a hit), the Flowing counter with
+Focus (1.54), Iron step → J being the palm, and the 6 s expiry). Every move is driven from real inputs (press, hold, timing), and
 the run covers:
 - **Rank gates:** backfist / hundred II, counter / tempest III, release IV, palm V.
 - **Mashing:** J ×12 stops at the knee rush.
@@ -174,6 +205,7 @@ the run covers:
 | Iron J J K / J K | 1.94 / 1.93 |
 | Iron K K | 1.77 (70 poise stomp) |
 | Iron hold K lv2 loop | 1.17 (hold time counted; 2.6 in one hit inside an opening) |
+| **With Focus kept up:** Swift J J J J / Iron J J J / Shift dance | **2.65 / 2.24 / 3.07** (+10%, like the Dual Blades' 3.4 → 3.7) |
 
 **Boss bench** on Gravetusk, held in place and swinging every 2 s: a bot attacks inside the 1.3 s opening and rolls
 through each swing, on real stamina.
@@ -188,6 +220,8 @@ The swing catches Swift mid-chain and flinches it, while Iron's armour soaks it.
 the slip step), and the crude bot never dodges early. For scale, the Katana's mixes score about 1.16 on this bot.
 
 ## Deviations from C3 (and why)
+
+- **Perfect dodge with Focus (owner's request, added after the build):** described in its own section above.
 
 - **Knee rush:** 0.35 ×3 → **0.4 ×3**, which lifts the main loop from 2.33 to 2.41 (into the band).
 - **Hundred fists:** 0.2 / 60 ms → **0.15 / 65 ms**, 14 → 16 stamina/s, with a 3 s cap. At plan rates it ran 3.3 dmg/s,

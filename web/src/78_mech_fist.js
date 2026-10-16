@@ -12,7 +12,39 @@
 // Mastery: II spinning backfist + hundred fists; III flowing counter + tempest to mountain; IV iron to wind release;
 // V ember palm. 37 move rows (the plan's 33 entries; L→J / L→K, air J J and the two style flourishes split in two).
 const FT_SHIFT_AT = 50, FT_FLOW_MAX = 5, FT_HOLD_K = 130, FT_HOLD_I = 220, FT_IRON_LV = [320, 900], FT_PERFECT_MS = 120;
+// Perfect dodge (both styles): a slip step / iron step started <= FT_PERFECT_MS before a blow lands. One per enemy
+// attack (keyed like the Dual Blades' twKeys: a beam's / mist's ticks are one blow, body contact is no blow); grants
+// the Focus buff for FT_PD_SECS (refreshes, never stacks): every martial-arts hit +FT_PD_MUL damage and +FT_PD_REACH px
+// of reach (the front edge of the box; both edges on spins).
+const FT_PD_SECS = 6, FT_PD_MUL = 1.1, FT_PD_REACH = 6;
 const FT_COL = { swift: '170,214,255', iron: '255,140,60' }, FT_HEX = { swift: '#a8d4ff', iron: '#e8843c' };
+function ftPdMul() { return P && P.ftPdT > 0 ? FT_PD_MUL : 1; }
+function ftPdReach() { return P && P.ftPdT > 0 ? FT_PD_REACH : 0; }
+function ftPerfect(g, id, opt) {
+  if (!g || g.perfect || (g.kind !== 'slip' && g.kind !== 'istep')) return false;
+  const el = P.state === 'roll' && P.dg === g ? g.t : (P.clk - g.start) * 1000;
+  if (el > FT_PERFECT_MS + 1) return false;   // +1: inclusive of the frame the window closes on
+  const k = typeof twKeys === 'function' ? twKeys(id, opt) : (id == null ? null : { blow: String(id).replace(/_\d+$/, ''), atk: 'b' + String(id).replace(/_\d+$/, '') });
+  if (!k) return false;   // body contact: no blow
+  P.ftPdKeys = P.ftPdKeys || new Set(); P.ftPdAtk = P.ftPdAtk || new Set();
+  if (P.ftPdKeys.has(k.blow) || P.ftPdAtk.has(k.atk)) return false;   // one per blow and one per enemy attack
+  P.ftPdKeys.add(k.blow); P.ftPdAtk.add(k.atk);
+  if (P.ftPdKeys.size > 64) P.ftPdKeys = new Set([k.blow]); if (P.ftPdAtk.size > 64) P.ftPdAtk = new Set([k.atk]);
+  g.perfect = true; P.ftPdT = FT_PD_SECS; P.ftPdFlash = 0.18; MV.ftPerfect = (MV.ftPerfect || 0) + 1;
+  ftFlowAdd(1); mvGain('perfect dodge');
+  // feedback: a crisp chime, a flicker of slow time, an afterimage and sparks in the style's colour
+  const st = ftIron() ? 'iron' : 'swift', hex = st === 'iron' ? '#ffb070' : '#d8ecff';
+  if (st === 'iron') { tone(523, 0.25, 0.06, 'triangle', 1.3); tone(1046, 0.3, 0.04, 'sine', 1.2, 0.03); }
+  else { tone(1760, 0.2, 0.05, 'triangle', 1.5); tone(2637, 0.3, 0.03, 'sine', 1.2, 0.04); }
+  slowmo = Math.max(slowmo, 0.09);
+  mvAfterimage(hex, 0.45, 0.5); mvSpark(P.x, P.y - 16, 8, FT_COL[st], 160);
+  if (typeof feelFlash === 'function') feelFlash(P.x, P.y - 16, 26, FT_COL[st], 1, 0.08);
+  return true;
+}
+// the Focus reach: every martial-arts box grows FT_PD_REACH px at the front (and the back on spins) while it lasts
+{ const _ftRect = mvRect; mvRect = function (A) { const r = _ftRect(A); if (!A || A.cls !== 'fist' || !(P && P.ftPdT > 0)) return r;
+  const e = FT_PD_REACH, back = A.reach && A.reach[0] < -6 ? e : 0;
+  return P.face > 0 ? rect(r.x0 - back, r.y0, r.x1 + e, r.y1) : rect(r.x0 - e, r.y0, r.x1 + back, r.y1); }; }
 function ftIron() { return !!P && P.ftStyle === 'iron'; }
 function ftSetStyle(s, loud) {
   if (!P) return;
@@ -51,8 +83,8 @@ function ftDiveMove(dt, A, ax, grav) {
   if (!P.ground) {
     P.vx = P.face * d.dvx; P.vy = d.dvy;
     if (Math.random() < 0.6) particles.push({ x: P.x - P.face * rand(0, 6), y: P.y - rand(4, 24), vx: 0, vy: -rand(40, 90), life: 0.22, kind: ftIron() ? 'spark' : 'mote' });
-    const box = rect(Math.min(P.x - P.face * 4, P.x + P.face * d.dreach), P.y - d.dtop, Math.max(P.x - P.face * 4, P.x + P.face * d.dreach), P.y + 8);
-    const n = mvStrikeAt(box, d.dmg * (P.mvMul || 1), d.poise, { A, kind: 'heavy', big: true, onHit: (t, info) => { if (!t.prop) mvOnHit(t, info, A, { mul: d.dmg }); } });
+    const dr = d.dreach + ftPdReach(), box = rect(Math.min(P.x - P.face * 4, P.x + P.face * dr), P.y - d.dtop, Math.max(P.x - P.face * 4, P.x + P.face * dr), P.y + 8);
+    const n = mvStrikeAt(box, d.dmg * (P.mvMul || 1) * ftPdMul(), d.poise, { A, kind: 'heavy', big: true, onHit: (t, info) => { if (!t.prop) mvOnHit(t, info, A, { mul: d.dmg }); } });
     if (n) {   // a foe met in the air: bounce off it (no landing blow)
       P.ftLanded = true; P.vy = -230; P.vx = -P.face * 40; P.mvT = Math.max(P.mvT, d.diveEnd); hitstop = Math.max(hitstop, 0.06); shake = Math.max(shake, 4);
       spawnFx(fxOr('pogo', 'hit'), P.x + P.face * 6, P.y + 4, P.face); P.airDash = true;
@@ -62,8 +94,8 @@ function ftDiveMove(dt, A, ax, grav) {
   P.ftLanded = true; P.mvT = Math.max(P.mvT, d.diveEnd); ftDiveLand(A); grav();
 }
 function ftDiveLand(A) {
-  const d = A.mv, x1 = P.x + P.face * d.lreach;
-  mvStrikeAt(rect(Math.min(P.x - P.face * 8, x1), P.y - 22, Math.max(P.x - P.face * 8, x1), P.y + 2), d.dmg * (P.mvMul || 1), d.poise, { A, kind: 'heavy', big: true, onHit: (t, info) => { if (!t.prop) mvOnHit(t, info, A, { mul: d.dmg }); } });
+  const d = A.mv, x1 = P.x + P.face * (d.lreach + ftPdReach());
+  mvStrikeAt(rect(Math.min(P.x - P.face * 8, x1), P.y - 22, Math.max(P.x - P.face * 8, x1), P.y + 2), d.dmg * (P.mvMul || 1) * ftPdMul(), d.poise, { A, kind: 'heavy', big: true, onHit: (t, info) => { if (!t.prop) mvOnHit(t, info, A, { mul: d.dmg }); } });
   shake = Math.max(shake, d.id === 'ft_aheel' ? 5 : 4); sfx.land(); if (d.id === 'ft_aheel') tone(70, 0.3, 0.2, 'sine', 0.5);
   spawnFx('dust', P.x + P.face * 8, P.y, P.face); spawnFx('shockwave', P.x + P.face * 10, P.y, 1);
   for (let i = 0; i < 10; i++) particles.push({ x: P.x + P.face * 10 + rand(-12, 12), y: P.y - 2, vx: rand(-70, 70), vy: -rand(30, 100), g: 320, life: 0.5, kind: 'dust' });
@@ -91,17 +123,14 @@ mvRegister('fist', {
     return ftIron() ? { stam: 12, total: 340, inv: 0.16, dist: 30, move: 220, kind: 'istep', tags: ['ft_istep', 'roll'] }
       : { stam: 8, total: 240, inv: 0.18, dist: 46, move: 170, kind: 'slip', tags: ['ft_slip', 'roll'] };
   },
-  rollJ(g) { if (g.kind === 'istep') return 'ft_palm'; return g.perfect && mvHas(3) ? 'ft_fcounter' : 'ft_sjab'; },
+  rollJ(g) { if (g.kind === 'istep') return 'ft_palm'; return g.perfect && mvHas(3) ? 'ft_fcounter' : 'ft_sjab'; },   // the Flowing counter is Swift's
   rollK(g) { const ax = inputX(); if (ax) P.face = ax; return mvStart(g.kind === 'istep' ? 'ft_bash' : 'ft_sweep'); },
   dodged0(g) { P.ftSlip = g; },
-  dodged(dmg, dir, id, opt) {   // a blow met in the first 120 ms of the slip step: a perfect slip (Flowing counter at III)
-    const g = P.dg; if (P.state !== 'roll' || !g || g.kind !== 'slip' || g.perfect || g.t > FT_PERFECT_MS) return;
-    g.perfect = true; MV.ftPerfect = (MV.ftPerfect || 0) + 1; ftFlowAdd(1); mvGain('perfect slip');
-    tone(1760, 0.2, 0.05, 'triangle', 1.5); tone(2637, 0.3, 0.03, 'sine', 1.2, 0.04); slowmo = Math.max(slowmo, 0.08);
-    mvAfterimage('#d8ecff', 0.4, 0.45); mvSpark(P.x, P.y - 16, 7, '210,232,255', 150);
-  },
+  // a blow met in the first 120 ms of either dodge: a perfect dodge (the Focus buff; at III a Swift slip -> J is the
+  // Flowing counter). A blow landing just after a slip's i-frames ended can't count: it hits (no dodge, no buff).
+  dodged(dmg, dir, id, opt) { const g = P.dg; if (P.state !== 'roll' || !g) return; ftPerfect(g, id, opt); },
   dodgeUpdate(dt, g) {   // III: the Flowing counter goes out at once, still inside the slip
-    if (g.perfect && mvHas(3) && P.st > -10 && peek('attack')) { take('attack'); P.dg = null; const t = ftNearestFoe(); if (t) P.face = t.x > P.x ? 1 : -1; mvStart('ft_fcounter'); return true; }
+    if (g.perfect && g.kind === 'slip' && mvHas(3) && P.st > -10 && peek('attack')) { take('attack'); P.dg = null; const t = ftNearestFoe(); if (t) P.face = t.x > P.x ? 1 : -1; mvStart('ft_fcounter'); return true; }
   },
   onJ(ax) {   // Iron air J: the diving elbow (Swift: the air kick string, T.air)
     if (P.ground || !ftIron() || held.has('down') || held.has('up')) return false;
@@ -123,6 +152,7 @@ mvRegister('fist', {
     return mvStart(ftIron() ? 'ft_toswift' : 'ft_toiron');
   },
   started(A, o) { P.ftShiftQ = P.ftShiftCarry && A.mv.shift ? { at: P.clk } : null; P.ftShiftCarry = false; P.ftFlowGot = false; P.ftLanded = false; P.ftShiftGain = false; },
+  hitMod(c) { if (P.ftPdT > 0) c.mul *= FT_PD_MUL; },
   walkMul() { return ftIron() ? 0.82 : 1; },
   idleTag(want) { return ftIron() ? (want === 'run' ? 'ft_ir_walk' : 'ft_ir_idle') : (want === 'run' ? 'ft_sw_run' : 'ft_sw_idle'); },
   hurt(c) {   // Iron: the wind-ups (and the charge, the shoulder charge) don't flinch under 20% of max HP
@@ -138,6 +168,7 @@ mvRegister('fist', {
   },
   tick(dt) {
     P.ftSwT = Math.max(0, (P.ftSwT || 0) - dt); P.ftFullT = Math.max(0, (P.ftFullT || 0) - dt); P.ftArmT = Math.max(0, (P.ftArmT || 0) - dt);
+    P.ftPdT = Math.max(0, (P.ftPdT || 0) - dt); P.ftPdFlash = Math.max(0, (P.ftPdFlash || 0) - dt);
     if (P.ftFlow > 0 && (P.ftFlowT = (P.ftFlowT || 0) - dt) <= 0) { P.ftFlow = Math.max(0, Math.floor(P.ftFlow - 0.01)); P.ftFlowT = 1.5; }
     const A = ATK[P.state], d = A && A.mv;
     if (!d || d.type !== 'fist' || d.loop) return;
@@ -171,6 +202,12 @@ mvRegister('fist', {
     if (P.state === 'ft_ichg') { const lv = P.ftLv || 0, f = clamp(P.mvT / FT_IRON_LV[1], 0, 1); addLight(P.x - P.face * 4, P.y - 16, 14 + 20 * f, lv >= 2 ? '255,230,180' : FT_COL.iron, 0.4 + 0.5 * f); }
     if (P.state === 'ft_ihold' || (P.state === 'ft_ember' && P.mvT < ATK.ft_ember.mv.wind)) { const f = clamp(P.mvT / 380, 0, 1); addLight(P.x + P.face * 4, P.y - 18, 18 + 26 * f, '255,180,90', 0.5 + 0.5 * f); }
     if (P.ftArmT > 0) mvAura('#e07030', 0.18 * P.ftArmT / 0.18);
+    if (P.ftPdT > 0) {   // Focus: both fists burn with a cold (Swift) or hot (Iron) light, fading in the last second
+      const st = iron ? 'iron' : 'swift', k = Math.min(1, P.ftPdT) * (0.75 + 0.25 * Math.sin(P.clk * 10)), fx = P.x - P.face * 1, fy = P.y - 20;
+      addLight(hx, hy, 14, FT_COL[st], 0.45 * k); addLight(fx, fy, 10, FT_COL[st], 0.3 * k);
+      if (Math.random() < 0.3 * k) particles.push({ x: hx + rand(-2, 2), y: hy + rand(-2, 2), vx: rand(-8, 8), vy: -rand(15, 40), life: 0.3, kind: iron ? 'spark' : 'mote' });
+      if (P.ftPdFlash > 0) mvAura(iron ? '#ffb070' : '#d8ecff', 0.16 * P.ftPdFlash / 0.18);
+    }
   },
   hud(x) {
     // the style glyph (Swift: a pale double chevron; Iron: an ember block) and the 5 Flow pips
@@ -181,6 +218,7 @@ mvRegister('fist', {
       vctx.strokeStyle = FT_HEX.swift; vctx.lineWidth = scale;
       for (const o of [-1.2, 1.2]) { vctx.beginPath(); vctx.moveTo(X(gx - 1.5 + o), Y(gy - 2.4)); vctx.lineTo(X(gx + 1 + o), Y(gy)); vctx.lineTo(X(gx - 1.5 + o), Y(gy + 2.4)); vctx.stroke(); }
     }
+    if (P.ftPdT > 0) mvHudRing(gx + 0.5, gy, 4.8, P.ftPdT / FT_PD_SECS, iron ? '#ffc890' : '#e4f0ff');   // the Focus timer
     const f = P.ftFlow || 0, full = f >= FT_FLOW_MAX, pulse = full ? 0.5 + 0.5 * Math.sin(P.clk * 8) : 0;
     for (let i = 0; i < FT_FLOW_MAX; i++) {
       const on = i < Math.floor(f + 1e-6), half = !on && i < f;
@@ -222,6 +260,7 @@ mvRegister('fist', {
     { rank: 1, name: 'Diving elbow', input: 'Iron: air J', desc: 'Drop elbow-first at a slant to the floor.' },
     { rank: 1, name: 'Diving heel', input: 'air K', desc: 'A steep heel-first dive; bounces off a foe it meets.' },
     { rank: 1, name: 'Stomp', input: 'air ↓J', desc: 'Stamp down: pogo off foes and spikes.' },
+    { rank: 1, name: 'Perfect dodge (Focus)', input: 'L just before a blow', desc: 'Dodge ≤0.12 s before a hit: +10% damage and +6 px reach for 6 s.' },
     { rank: 1, name: 'Ember shift', input: 'Shift at 5 Flow', desc: 'Full Flow ignites the next Shift strike: x1.3 and a burn.' },
     { rank: 2, name: 'Spinning backfist', input: 'Swift: J J (pause) J', desc: 'Wait a beat after the cross: turn into a backfist. J: knee rush.' },
     { rank: 2, name: 'Hundred fists', input: 'Swift: hold K', desc: 'Jabs as fast as the eye can follow while K is held.' },
@@ -261,8 +300,8 @@ mvRegister('fist', {
         P.st -= 16 * dt; P.stDelay = Math.max(P.stDelay || 0, 0.4);
         if ((P.ftHT -= dt * 1000) <= 0) {
           P.ftHT += 65; P.ftHN++;
-          const y = P.y - 22 + ((P.ftHN * 5) % 9), x0 = P.x + P.face * 4, x1 = P.x + P.face * 30;
-          const n = mvStrikeAt(rect(Math.min(x0, x1), P.y - 32, Math.max(x0, x1), P.y - 8), A.mv.dmg, A.mv.poise, { A });
+          const y = P.y - 22 + ((P.ftHN * 5) % 9), x0 = P.x + P.face * 4, x1 = P.x + P.face * (30 + ftPdReach());
+          const n = mvStrikeAt(rect(Math.min(x0, x1), P.y - 32, Math.max(x0, x1), P.y - 8), A.mv.dmg * ftPdMul(), A.mv.poise, { A });
           if (n) { ftFlowAdd(0.08); mvSpark(P.x + P.face * 22, y, 2, '255,236,210', 90); }
           if (P.ftHN % 2) sfx.swing();
         }
@@ -280,7 +319,7 @@ mvRegister('fist', {
   ft_hammer: { tags: ['ft_hammer', 'dg_heavy'], style: 'iron', iron: true, kind: 'heavy', dmg: 1.5, poise: 50, stam: 16, wind: 340, total: 800, lunge: 8, fx: null, next: { K: 'ft_stomp', J: 'ft_elbow' },
     on: { swing() { shake = Math.max(shake, 3); } } },
   ft_stomp: { tags: ['ft_stomp', 'dg_heavy'], style: 'iron', iron: true, kind: 'heavy', dmg: 1.0, poise: 40, stam: 18, wind: 360, total: 900, fin: true, ys: [-24, 0],
-    on: { swing() { mvShockwave({ r: 34, h: 18, dmg: 0.6, poise: 30, shake: 6 }); sfx.boom(); spawnFx('ground_crack', P.x + P.face * 10, P.y, 1); } } },
+    on: { swing() { mvShockwave({ r: 34 + ftPdReach(), h: 18, dmg: 0.6 * ftPdMul(), poise: 30, shake: 6 }); sfx.boom(); spawnFx('ground_crack', P.x + P.face * 10, P.y, 1); } } },
   // hold K (Iron): the armoured charge, 2 levels (320 / 900 ms); released early = the hammer fist; I at IV = the release
   ft_ichg: { tags: ['ft_ichg', 'dg_heavy'], style: 'iron', iron: true, ironAll: true, kind: 'heavy', loop: true, noHit: true, dmg: 0, poise: 0, stam: 0, wind: 1e9, total: 1e9,
     on: {

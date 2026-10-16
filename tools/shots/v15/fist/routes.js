@@ -3,7 +3,7 @@
 const out = [], fail = [];
 const ok = (c, m) => { out.push((c ? 'OK   ' : 'FAIL ') + m); if (!c) fail.push(m); };
 arena();
-const go = (r = 1, style = 'swift') => { W().reset('fist', r); E(`P.x = 120; P.y = 304; P.vx = 0; P.vy = 0; P.ground = true; P.face = 1; P.ftStyle = '${style}'; P.ftFlow = 0; P.ftFlowT = 0; P.ftShiftQ = null; P.inv = 0`); W().frame(2); reset(); };
+const go = (r = 1, style = 'swift') => { W().reset('fist', r); E(`P.x = 120; P.y = 304; P.vx = 0; P.vy = 0; P.ground = true; P.face = 1; P.ftStyle = '${style}'; P.ftFlow = 0; P.ftFlowT = 0; P.ftShiftQ = null; P.inv = 0; P.ftPdT = 0; P.lastHit = undefined`); W().frame(2); reset(); };
 const B = { J: 'attack', K: 'heavy', I: 'parry', L: 'roll' };
 const tap = (b, n = 2) => W().tap(B[b] || b, n);
 const sts = () => [...new Set(W().log.filter(l => l.melee).map(l => l.st))];
@@ -63,6 +63,42 @@ for (const r of [3, 2]) {
   if (r === 3) ok(perf && sts().includes('ft_fcounter'), `III: perfect slip -> J -> flowing counter (${sts().join(' ')}, ${dmg('ft_fcounter')})`);
   else ok(!sts().includes('ft_fcounter'), `II: no flowing counter yet (${sts().join(' ') || 'nothing'})`);
 }
+// ---------------------------------------------------------------- PERFECT DODGE (Focus buff), both styles
+const pdT = () => +E('P.ftPdT || 0').toFixed(2);
+const dodgeHit = (id, opt = '{}', f = 3) => { tap('L', 1); W().frame(f); const hp0 = E('P.hp'); E(`P.inv = 0; hurtPlayer(20, -1, ${JSON.stringify(id)}, ${opt})`); const hp1 = E('P.hp'); W().frame(30); return hp1 === hp0; };
+for (const st of ['swift', 'iron']) {
+  go(1, st); const dodged = dodgeHit(9001 + (st === 'iron' ? 10 : 0));
+  ok(dodged && pdT() > 5 && pdT() <= 6, `${st}: dodge started 67 ms before the blow -> perfect, Focus ${pdT()} s`);
+  go(1, st); const late = dodgeHit(9002 + (st === 'iron' ? 10 : 0), '{}', 8);
+  ok(late && pdT() === 0, `${st}: dodge 133 ms before the blow (still invulnerable) -> no Focus (${pdT()})`);
+}
+// refresh, not stack: a second perfect dodge 2 s later resets the timer to 6 s (never 6 + 4), the bonus stays x1.1
+go(1); dodgeHit(9101); W().frame(120); const t2 = pdT(); dodgeHit(9102); const t3 = pdT();
+W().dummy(24); tap('J'); W().frame(30);
+ok(t2 < 4.6 && t3 > 5 && t3 <= 6 && Math.abs(dmg('ft_jab') - 0.55) < 0.01, `refresh, not stack: ${t2} s -> ${t3} s; jab ${dmg('ft_jab')} (= 0.5 x 1.1)`);
+// no farming: two windows of one enemy attack, a ticking hazard's ticks, body contact
+go(1); let n0 = E('MV.ftPerfect || 0'); E('window.__src = { atkId: 77 }');
+dodgeHit(770, '{ src: window.__src }'); E('P.ftPdT = 0'); W().frame(20); dodgeHit(771, '{ src: window.__src }');
+ok(E('MV.ftPerfect') - n0 === 1 && pdT() === 0, `one per enemy attack: 2 windows of one attack -> ${E('MV.ftPerfect') - n0} perfect`);
+n0 = E('MV.ftPerfect'); dodgeHit('hz5_1'); E('P.ftPdT = 0'); W().frame(20); dodgeHit('hz5_2');
+ok(E('MV.ftPerfect') - n0 === 1, `a ticking hazard's ticks are one blow: ${E('MV.ftPerfect') - n0} perfect`);
+n0 = E('MV.ftPerfect'); dodgeHit('c12' + 33); W().frame(20); dodgeHit('c12' + 34);
+ok(E('MV.ftPerfect') - n0 === 0 && pdT() === 0, `body contact never counts: ${E('MV.ftPerfect') - n0} perfect`);
+// reach and damage: a jab at a foe 39 px off misses, with Focus it lands (+6 px); Iron palm 1.1 -> 1.21
+go(1); W().dummy(43); tap('J'); W().frame(30); const miss = hitsOf('ft_jab').length;
+go(1); dodgeHit(9201); W().dummy(43); tap('J'); W().frame(30); const hit = hitsOf('ft_jab').length;
+ok(miss === 0 && hit === 1, `reach: jab at 43 px misses without Focus (${miss}), lands with it (${hit}); box ${E("(() => { const r = mvRect(ATK.ft_jab); return Math.round(r.x1 - P.x); })()")} px`);
+go(1, 'iron'); dodgeHit(9202); W().dummy(26); tap('J'); W().frame(50);
+ok(Math.abs(dmg('ft_palm') - 1.21) < 0.01, `Iron with Focus: palm ${dmg('ft_palm')} (= 1.1 x 1.1)`);
+go(2); dodgeHit(9203); W().dummy(24); W().down('heavy'); W().frame(70); W().up('heavy'); W().frame(30);
+ok(Math.abs(dmg('ft_hundred') / hitsOf('ft_hundred').length - 0.165) < 0.005, `hundred fists with Focus: ${(dmg('ft_hundred') / hitsOf('ft_hundred').length).toFixed(3)} a hit (= 0.15 x 1.1)`);
+// the Flowing counter still rides on the Swift perfect slip (III), now with Focus; the Iron step's perfect -> J is the palm
+go(3); W().dummy(30); tap('L', 1); W().frame(3); E("P.inv = 0; hurtPlayer(20, -1, 9301, {})"); tap('J'); W().frame(50);
+ok(sts().includes('ft_fcounter') && Math.abs(dmg('ft_fcounter') - 1.54) < 0.01 && pdT() > 5, `III: perfect slip -> J -> flowing counter ${dmg('ft_fcounter')} (1.4 x 1.1), Focus ${pdT()}`);
+go(3, 'iron'); W().dummy(64); tap('L', 1); W().frame(3); E("P.inv = 0; hurtPlayer(20, -1, 9302, {})"); W().frame(14); tap('J'); W().frame(60);
+ok(!sts().includes('ft_fcounter') && sts().includes('ft_palm') && pdT() > 4, `III: perfect iron step -> J -> the palm, not the counter (${sts().join(' ')})`);
+go(1); dodgeHit(9401); W().frame(Math.round(6.1 * 60));
+ok(pdT() === 0, 'Focus ends after 6 s');
 // ---------------------------------------------------------------- STYLE CHANGE
 go(); tap('I'); W().frame(1);
 ok(state() === 'ft_toiron' && style() === 'iron', `I (neutral): change style -> ${style()} (${state()})`);
