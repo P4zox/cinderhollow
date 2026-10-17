@@ -268,7 +268,7 @@ SPAWNS.xrb = (s, c) => {
       const sh = sheet('xrb_acodex'), fr = xrbLoop(sh, 'idle', 4); if (fr < 0) return;   // the glowing script, alive, over the painted book
       drawSprite(sh, fr, cx + 8, fy + 60, 1, { bottom: true, alpha: 0.14 + 0.06 * Math.sin(time * 1.3), blend: 'lighter' });
     }, update() { addLight(cx + 8, fy - 40, 100, '170,120,255', 0.4, { shadow: false }); if (Math.random() < 0.08) particles.push({ x: cx + rand(-60, 70), y: fy + rand(40, 64), vx: 0, vy: rand(10, 25), g: 30, life: 1.4, kind: 'ink' }); } }); break;
-    case 'a_window': props.push({ type: 'xrb_winlight', x: cx, y: fy, anim: { update() {} }, draw() {}, update() { addLight(cx, fy - 64, 110, '150,160,220', 0.55, { shadow: false }); if (Math.random() < 0.02) { XRB.flash = 1; setTimeout(() => tone(55, 1.2, 0.05, 'sine', 0.9), 600); } } }); break;
+    case 'a_window': props.push({ type: 'xrb_winlight', x: cx, y: fy, anim: { update() {} }, draw() {}, update() { addLight(cx, fy - 64, 110, '150,160,220', 0.55, { shadow: false }); if (time >= (this.nt ??= time + rand(3, 8))) { this.nt = time + rand(9, 16); if (!(room && room.id === 'A14' && typeof v1Ready === 'function' && v1Ready('A14'))) { XRB.flash = 1; setTimeout(() => tone(55, 1.2, 0.05, 'sine', 0.9), 600); } } } }); break;   // a storm every 9-16 s (was 2% a frame: thunder every second); A14's painted vista times its own
     case 'a_note': {
       const p = { type: 'xrb_note', x: cx, y: fy - 4, anim: { update() {} }, n: s.n, sym: s.sym };
       p.draw = () => xrbDrawNote(p); p.update = () => { if (Math.abs(P.x - p.x) < 60 && Math.abs(P.y - p.y) < 50) addLight(p.x, p.y - 14, 26, '255,220,160', 0.5); };
