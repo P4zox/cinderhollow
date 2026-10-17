@@ -333,6 +333,7 @@ went 1.30 → 1.00 of the average, damage taken 1.65 → 1.24. Blade guard costs
 | K after a charged slash | **Strong charged slash** | Chain | ×1.25 | same | +4 | hold + 280 / 700 | Within 0.5 s |
 | I | **Blade guard** | Block | – | – | 1.2 × dmg × guard scale | – | Frontal only; 25% chip and heavy pushback; **no parry**; a blocked blow opens a 0.7 s counter window |
 | block → J | **Retort** (v14) | Guard payoff | 1.8 | 60 | 14 | 170 / 640 | Within 0.7 s of a block, also after letting go of I: the blade torn up out of the floor |
+| I just before a blow | **Perfect guard** (v17) | Guard payoff | — | — | 0 | — | A guard raised within 150 ms of a blow: no stamina, no chip; the next Retort (0.9 s window) hits ×1.5 with ×1.6 stance |
 | L | Roll (heavy) | Dodge | – | – | 18 | 520 | 0.28 s invulnerable, 70 px |
 | L → J | Overhead hack | Punish | 1.45 | 32 | 20 | 350 / 820 | Starts the light chain |
 | L → hold K | Rolling heavy | Punish | charge levels | | 28+ | hold + 280 / 750 | Banks 200 ms of charge |
@@ -1736,6 +1737,7 @@ The full command list of each weapon, 311 moves in all, exactly as the in-game *
 | I | Strong charged slash | charged slash → hold K | The same levels, ×1.25. |
 | I | Keep charging | hold K through a swing | Keep K held as a swing ends and the next charge starts at once. |
 | I | Blade guard | hold I | Block frontal blows: stamina and 25% chip, no parry. |
+| I | Perfect guard | I just before a blow | Within 150 ms: no stamina, no chip, the Retort hits ×1.5 and breaks stance ×1.6. |
 | I | Retort | block a blow → J | Within 0.7 s of a block: the blade torn up out of the floor (1.8). |
 | I | Rolling heavy | L → hold K | A charged slash out of the roll, 200 ms already banked. |
 | I | Great arc | ↑J | One arc from the floor to the sky, for fliers. |
