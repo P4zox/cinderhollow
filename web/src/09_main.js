@@ -145,11 +145,21 @@ function useShrine(p) {
 }
 function rest(p) {
   P.x = clamp(P.x, p.x - 12, p.x + 12); P.vx = 0; P.face = 1;
-  setP('rest', pHas('rest') ? 'rest' : 'heal', false);
   refreshDerived(); P.hp = D.maxHp; P.fp = D.maxFp; P.st = D.maxSt; refillFlasks();
-  SAVE.shrine = room.id; killed.clear(); respawnEnemies(); runHooks('rest', p);
+  SAVE.shrine = room.id; killed.clear();
+  p = restRebuild(p);   // every foe returns: this room is rebuilt (each enemy at its own spawn, full health), the rest as you enter them
+  setP('rest', pHas('rest') ? 'rest' : 'heal', false);
+  runHooks('rest', p);
   saveGame(); sfx.heal();
   setTimeout(() => { if (state === 'play') openShrineMenu(p); }, 450);
+}
+// resting rebuilds the shrine's room the way a death does (enterRoom runs every region's own spawns: perched, emerging and
+// ambush foes come back as placed, not just the map's enemy letters); the player stays where they knelt
+function restRebuild(p) {
+  const x = P.x, y = P.y, sx = p.x;
+  enterRoom(room.id, x, y, { quiet: true });
+  P.x = x; P.y = y; P.vx = 0; P.vy = 0; P.face = 1;
+  return props.find(q => q.type === 'shrine' && Math.abs(q.x - sx) < 2) || props.find(q => q.type === 'shrine') || p;
 }
 function respawnEnemies() {
   const def = room.def, have = new Set(enemies.map(e => e.key));
