@@ -552,7 +552,7 @@ function playerStrike(A) {
     P.hitSet.add(t);
     const c = mvHitCtx(t, hb, A, r); if (c.skip) continue;
     const dmg = outgoing(D.light, c.mul, 'melee') * (A.counter ? P.counterMul || 1 : 1) * (P.twinBuff ? 1.25 : 1);
-    const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise: c.poise, dir: c.dir, kind: heavy ? 'heavy' : 'light', charged: heavy && !!P.charged, bleed: bleedAmt(heavy), fire, rotDot: !!W.rot,
+    const info = { dmg: dmg * (fire && W.fire ? 1 + W.fire : 1), poise: c.poise * (A.counter ? P.counterPoise || 1 : 1), dir: c.dir, kind: heavy ? 'heavy' : 'light', charged: heavy && !!P.charged, bleed: bleedAmt(heavy), fire, rotDot: !!W.rot,
             x: c.x, y: c.y, melee: true, big: heavy || !!A.big };
     t.hit(info);
     runHooks('strike', t, { dmg, heavy, x: info.x, y: info.y }, A);

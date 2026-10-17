@@ -104,7 +104,7 @@ function mvStart(id, o = {}) {
   P.hitSet = new Set(); P.mvT = o.t0 || 0; P.mvHitK = -1; P.mvQ = null; P.mvO = o; P.mvMul = o.mul || 1; P.mvGained = false;
   P.mvLunge = d.lungeFn ? d.lungeFn(o) : d.lunge || 0;
   // a plain swing only steps its full distance when you push forward (half standing still); dash moves (own lungeLead) always do
-  if (P.mvLunge > 0 && d.lungeLead === undefined && !d.dash && inputX() !== P.face) P.mvLunge *= 0.5; P.counterMul = o.counterMul || 1; P.charged = !!o.charged; P.charge = o.charge || 0; P.pogoed = false; P.mvLv = o.lv || 0;
+  if (P.mvLunge > 0 && d.lungeLead === undefined && !d.dash && inputX() !== P.face) P.mvLunge *= 0.5; P.counterMul = o.counterMul || 1; P.counterPoise = o.counterPoise || 1; P.charged = !!o.charged; P.charge = o.charge || 0; P.pogoed = false; P.mvLv = o.lv || 0;
   P.comboStep = o.step !== undefined ? o.step : (d.step !== undefined ? d.step : -1);
   if (d.step === 0) P.combo = 1; else if (d.step > 0) P.combo = d.step + 1;
   const loop = !!((d.loop || d.animLoop) && R.real);
@@ -122,7 +122,7 @@ function mvStartLight(o = {}) {
   return mvStart(T.light0 ? T.light0() : T.light[0], { step: 0, ...o });
 }
 function mvNeutralK(ax) { const T = mvT(); if (T.onK) return T.onK(ax); return mvStart(T.K); }
-function mvCounter() { const T = mvT(); const id = T.counter ? T.counter() : null; if (!id || !ATK[id]) return false; if (!mvStart(id, { counterMul: P.counterBonus || 1 })) return false; P.gcT = 0; P.counterBonus = 0; sfx.glint(); spawnFx(fxOr('parry_flash', 'parry_spark'), P.x + P.face * 10, P.y - 18, P.face, null, { alpha: 0.6 }); return true; }
+function mvCounter() { const T = mvT(); const id = T.counter ? T.counter() : null; if (!id || !ATK[id]) return false; if (!mvStart(id, { counterMul: P.counterBonus || 1, counterPoise: P.counterPoiseBonus || 1 })) return false; P.gcT = 0; P.counterBonus = 0; P.counterPoiseBonus = 0; sfx.glint(); spawnFx(fxOr('parry_flash', 'parry_spark'), P.x + P.face * 10, P.y - 18, P.face, null, { alpha: 0.6 }); return true; }
 
 // ---- neutral: J / K / I from a free state (04_player's canStart block)
 function mvNeutral(ax) {
