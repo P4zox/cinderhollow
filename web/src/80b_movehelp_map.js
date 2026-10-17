@@ -82,6 +82,7 @@ Object.assign(MH_MAP, {
     'Strong charged slash': ['>gs_charged hold.K=gs_scharge release.K=gs_strong', '>gs_rollheavy hold.K=gs_scharge release.K=gs_strong', '>gs_wrath hold.K=gs_scharge release.K=gs_strong'],
     'Keep charging': null,
     'Blade guard': 'hold.I=@guard',
+    'Perfect guard': 'perfect.I=@guard',
     'Retort': '>@counter J=gs_retort',
     'Rolling heavy': 'L=@roll hold.K=gs_charge release.K=gs_rollheavy',
     'Shoulder tackle': 'hold.K=gs_charge L=gs_tackle',

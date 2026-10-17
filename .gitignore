@@ -32,3 +32,9 @@ art/bg_src/*/*_pass1.png
 art/bg_src/*/*_render.png
 art/bg_src/*/v1/
 art/bg_src/*/sweep/
+
+# prop rework batch B (docs/v17/props_b.md): renders, guides and previews; rebuilt by art/gen_props_b_*.py (--render for ComfyUI)
+art/bg_src/props_b/
+
+# prop rework batch A (docs/v17/props_a.md): ComfyUI renders, IP-Adapter refs, v1 sheet backups; rebuilt by art/gen_props_a.py (--render for ComfyUI)
+art/bg_src/props_a/

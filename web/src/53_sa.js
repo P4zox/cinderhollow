@@ -432,14 +432,14 @@ function saDrawGaze() {
   for (const Gz of SA.gazes) {
     const q = KIT.byId[Gz.s.seq]; if (!q) continue;
     const ord = Gz.s.order, step = 1.3, cyc = ord.length * step + 2.2, t = time % cyc, i = Math.floor(t / step);
-    const eyeY = Gz.y - 6;
+    const eyeY = Gz.y - 6 + (Gz.s.ey ?? 17);   // onto the painted Countess's eyes (xsa_portrait v2, docs/v17/props_b.md); the glow used to float 2 px above the frame
     let tx = Gz.x, ty = eyeY + 2, on = false;
     if (!q.active && i < ord.length) { const o = KIT.byId[ord[i]]; if (o) { tx = o.x; ty = o.spec.y * TILE; on = true; } }
     const lk = (t % step) / step, glow = on ? Math.sin(Math.min(1, lk * 1.6) * Math.PI) : q.active ? 0.6 : 0.15;
     const dx = clamp((tx - Gz.x) / 60, -2, 2), dy = clamp((ty - eyeY) / 60, -1, 1);
     drawGlow(() => {
       g.fillStyle = `rgba(255,40,50,${(0.45 + 0.55 * glow).toFixed(2)})`;
-      g.fillRect(Math.round(Gz.x - 5 + dx), Math.round(eyeY + dy), 2, 1); g.fillRect(Math.round(Gz.x + 3 + dx), Math.round(eyeY + dy), 2, 1);
+      g.fillRect(Math.round(Gz.x - 2 + dx * 0.5), Math.round(eyeY + dy * 0.5), 1, 1); g.fillRect(Math.round(Gz.x + 1 + dx * 0.5), Math.round(eyeY + dy * 0.5), 1, 1);
       if (on && glow > 0.2) {   // a thread of red light along her gaze
         const n = Math.max(8, Math.hypot(tx - Gz.x, ty - eyeY) / 5);
         for (let k = 0; k < n; k++) { const f = k / n; if ((k + Math.floor(time * 12)) % 3) continue; g.fillStyle = `rgba(255,50,60,${(0.35 * glow * (1 - f * 0.5)).toFixed(2)})`; g.fillRect(Math.round(lerp(Gz.x, tx, f)), Math.round(lerp(eyeY, ty, f)), 1, 1); }

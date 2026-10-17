@@ -538,14 +538,20 @@ XS_KIND.hearthstone = (s, c) => xsProp(s, c, { update() { addLight(this.x, this.
   const p = this; if (!xsVis(p.x, p.y)) return;
   drawGlow(() => { g.globalAlpha = 0.5 + 0.3 * Math.sin(time * 1.7); xsLineP(p.x - 18, p.y + 3, p.x - 4, p.y + 8, '#ff7a2a'); xsLineP(p.x - 4, p.y + 8, p.x + 6, p.y + 2, '#ff7a2a'); xsLineP(p.x + 6, p.y + 2, p.x + 18, p.y + 7, '#ffb040'); g.globalAlpha = 1; });
 } });
-XS_KIND.ruins = (s, c) => xsBake((bx) => {   // broken basalt colonnades in the dark behind the ash (baked into the back layer)
+XS_KIND.ruins = (s, c) => { const rs = sheet('xsc_ruins'); if (rs.ok) rs.img; xsBake((bx) => {   // broken basalt colonnades in the dark behind the ash (baked into the back layer)
   const R = room, W0 = R.w, H0 = R.h, solid = (x, y) => x < 0 || y < 0 || x >= W0 || y >= H0 || isSolidT(R.grid[y * W0 + x]);
-  for (let tx = 3 + (hash2(R.w, 7) * 5 | 0); tx < W0 - 2; tx += 7 + (hash2(tx, 3) * 6 | 0)) {
+  const cols = spr => { for (let tx = 3 + (hash2(R.w, 7) * 5 | 0); tx < W0 - 2; tx += 7 + (hash2(tx, 3) * 6 | 0)) {
     let fy = -1; for (let y = H0 - 2; y > 1; y--) if (!solid(tx, y) && solid(tx, y + 1)) { fy = y; break; }
     if (fy < 0) continue;
     let top = fy; while (top > 0 && !solid(tx, top - 1) && fy - top < 14) top--;
     const h = Math.max(3, Math.floor((fy - top) * (0.45 + hash2(tx, 5) * 0.55))), x0 = tx * TILE + 3, yb = (fy + 1) * TILE, yt = yb - h * TILE;
     bx.globalAlpha = 0.75;
+    if (spr) {   // the painted column pieces (assets/xsc_ruins from art/gen_props_c_ember.py, docs/v17/props_c.md)
+      const fr = (t, i) => rs.frames[rs.tag(t).from + i], put = (f, y) => bx.drawImage(rs.img, f.x, f.y, f.w, f.h, x0 + 5 - 12, y, f.w, f.h);
+      for (let y = yt, i = 0; y < yb; y += TILE, i++) put(fr('shaft', (tx + i) % 2), y);
+      put(fr('base', 0), yb - 16); put(hash2(tx, 9) < 0.5 ? fr('cap', 0) : fr('broken', tx % 2), yt - 12);
+      bx.globalAlpha = 1; continue;
+    }
     bx.fillStyle = '#140d0a'; bx.fillRect(x0, yt, 10, yb - yt);
     bx.fillStyle = '#20150f'; bx.fillRect(x0, yt, 3, yb - yt);
     for (let y = yt + 6; y < yb; y += 11) { bx.fillStyle = '#0b0706'; bx.fillRect(x0, y, 10, 1); }
@@ -554,8 +560,11 @@ XS_KIND.ruins = (s, c) => xsBake((bx) => {   // broken basalt colonnades in the 
     else for (let i = 0; i < 4; i++) { bx.fillStyle = '#140d0a'; bx.fillRect(x0 + i * 3, yt - 2 - (hash2(tx, i) * 4 | 0), 3, 3); }   // broken top
     bx.fillStyle = 'rgba(255,110,40,0.35)'; bx.fillRect(x0 + 9, yt + 2, 1, yb - yt - 4);   // ember-lit edge
     bx.globalAlpha = 1;
-  }
-});
+  } };
+  if (!rs.ok || !rs.has('shaft')) cols(false);                          // no sheet: the old rect columns
+  else if (rs.img.complete) cols(true);
+  else rs.img.addEventListener('load', () => { if (room === R) cols(true); }, { once: true });   // still decoding: paint them when it lands
+}); };
 XS_KIND.ashfall = (s, c) => xsProp(s, c, { update() {   // ash sifting down out of cracks in the roof
   if (Math.random() < 0.5) particles.push({ x: cam.x + rand(0, W), y: cam.y - 4, vx: rand(-6, 6), vy: rand(8, 20), life: rand(4, 7), kind: Math.random() < 0.85 ? 'ash' : 'ember' });
 } });

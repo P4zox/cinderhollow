@@ -61,6 +61,7 @@ function gsReleaseDef(tags, mulFn, extra, wind, total, more = {}) {
           end() { P.gsBurst = false; } },
     ...more };
 }
+const GS_PERFECT = 0.15;   // perfect-guard window (s): the guard raised this close before a blow
 mvRegister('greatsword', {
   light: ['gs_1', 'gs_2', 'gs_3'], K: 'gs_charge', heavyTag: 'gs_charged', up: 'gs_up', air: 'gs_air', down: 'gs_down',
   plunge: { dmg: 1.8, poise: 90, stam: 20 },
@@ -87,13 +88,27 @@ mvRegister('greatsword', {
     return true;
   },
   blockPose() { setP('block', pHas('gs_guard') ? 'gs_guard' : 'parry', false); P.anim.i = Math.min(1, P.anim.n - 1); P.anim.speed = 0.6; },
-  guardCost(dmg) { return { cost: 1.2 * dmg * mvGuardScale() * (charmOn('c_aegis') ? 0.7 : 1), chip: 0.25 * dmg, push: 150, counterT: 0.7 }; },
+  // perfect guard: a guard raised within GS_PERFECT s before the blow lands costs nothing, takes no chip, and the next
+  // Retort (J inside the 0.9 s counter window) hits x1.5 with x1.6 stance damage
+  guardCost(dmg) {
+    if (P.clk - (P.guardT0 ?? -9) <= GS_PERFECT) return { cost: 0, chip: 0, push: 40, counterT: 0.9, perfect: true };
+    return { cost: 1.2 * dmg * mvGuardScale() * (charmOn('c_aegis') ? 0.7 : 1), chip: 0.25 * dmg, push: 150, counterT: 0.7 };
+  },
+  blocked(dmg, dir, opt, G) {
+    if (!G.perfect) return;
+    P.counterBonus = 1.5; P.counterPoiseBonus = 1.6; MV.gsPerfects = (MV.gsPerfects || 0) + 1;
+    hitstop = Math.max(hitstop, 0.12); shake = Math.max(shake, 5); flashScreen = Math.max(flashScreen, 0.08);
+    sfx.glint(); tone(150, 0.35, 0.12, 'triangle', 0.9); tone(620, 0.22, 0.05, 'sine', 1.2);   // the flat of the blade rings
+    if (typeof feelFlash === 'function') feelFlash(P.x + P.face * 14, P.y - 20, 48, '255,236,200', 1.3, 0.16);
+    spawnFx(fxOr('parry_flash', 'parry_spark'), P.x + P.face * 14, P.y - 20, P.face);
+    for (let i = 0; i < 14; i++) particles.push({ x: P.x + P.face * 14, y: P.y - rand(12, 28), vx: P.face * rand(40, 170), vy: -rand(20, 120), g: 320, life: rand(0.25, 0.55), kind: 'spark' });
+  },
   hurt(c) {
     const A = ATK[P.state];
     if (A && A.mv && A.mv.charge && c.dmg < D.maxHp * 0.3) { c.armor = true; c.dmg *= 0.7; }   // flinch-proof charge (v15: x0.7, was x0.8 -- the bot took most of its hits holding a charge)
   },
   started() { hvStarted(); },
-  tick() { hvTick(); },
+  tick() { hvTick(); if (P.counterBonus && P.gcT <= 0) { P.counterBonus = 0; P.counterPoiseBonus = 0; } },
   interrupted() { P.guardKind = null; },
   render() {
     const A = ATK[P.state]; if (!A || !A.mv || !A.mv.charge) return;
@@ -126,6 +141,7 @@ mvRegister('greatsword', {
     { rank: 1, name: 'Strong charged slash', input: 'charged slash → hold K', desc: 'The same levels, ×1.25.' },
     { rank: 1, name: 'Keep charging', input: 'hold K through a swing', desc: 'Keep K held as a swing ends and the next charge starts at once.' },
     { rank: 1, name: 'Blade guard', input: 'hold I', desc: 'Block frontal blows: stamina and 25% chip, no parry.' },
+    { rank: 1, name: 'Perfect guard', input: 'I just before a blow', desc: 'Within 150 ms: no stamina, no chip, the Retort hits ×1.5 and breaks stance ×1.6.' },
     { rank: 1, name: 'Retort', input: 'block a blow → J', desc: 'Within 0.7 s of a block: the blade torn up out of the floor (1.8).' },
     { rank: 1, name: 'Rolling heavy', input: 'L → hold K', desc: 'A charged slash out of the roll, 200 ms already banked.' },
     { rank: 1, name: 'Great arc', input: '↑J', desc: 'One arc from the floor to the sky, for fliers.' },
