@@ -339,6 +339,21 @@ def rootarch():
     return c.im
 
 
+TREES = os.path.join(HERE, 'bg_src', 'trees')   # the trees pass (art/gen_trees.py, docs/v17/trees.md) writes the current art here
+
+
+def _trees_png(name):
+    from PIL import Image
+    p = os.path.join(TREES, name + '.png')
+    return Image.open(p).convert('RGBA') if os.path.exists(p) else None
+
+
+def elder_frames():
+    """[('elder', [back painting]), ('front', [the same tree lit as the solid column])] from the trees pass, else the old elder."""
+    a, b = _trees_png('elder'), _trees_png('elder_front')
+    return [('elder', [a]), ('front', [b])] if a and b else [('elder', [elder()])]
+
+
 def elder():
     W, H = 240, 440; c = Cv(W, H)
     body = [(66, 0), (174, 0), (178, 190), (190, 300), (214, 380), (240, H), (0, H), (26, 380), (50, 300), (62, 190)]
@@ -362,6 +377,8 @@ def elder():
 
 
 def motheroak():
+    im = _trees_png('motheroak')     # the trees pass's Mother Oak (art/gen_trees.py); the old procedural one below otherwise
+    if im: return im
     W, H = 256, 224; c = Cv(W, H)
     r = random.Random(41)
     # limbs first (behind the crown), then the crown in three depth layers, then the trunk and roots over them
@@ -408,7 +425,7 @@ def thornveil_frames():
 if __name__ == '__main__':
     build_skins(); build_icons(); build_tv()
     sheet('xsa_tvbig', 96, 128, [('rootarch', [rootarch()])])
-    sheet('xsa_elder', 240, 440, [('elder', [elder()])])
+    sheet('xsa_elder', 240, 440, elder_frames())
     sheet('xsa_oak', 256, 224, [('motheroak', [motheroak()])])
     sheet('xsa_thornveil', 32, 64, [('loop', thornveil_frames())], ms={'loop': 110})
     print('ok')

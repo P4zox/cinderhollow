@@ -82,6 +82,12 @@ def tree(v):
 
 
 def trees():
+    # the trees pass (art/gen_trees.py, docs/v17/trees.md) writes the current trunks to art/bg_src/trees/; the old ones otherwise
+    import os
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bg_src', 'trees')
+    ps = [os.path.join(d, f'tv_tree_v{v}.png') for v in range(3)]
+    if all(os.path.exists(p) for p in ps):
+        return 96, 240, [Image.open(p).convert('RGBA') for p in ps], [("v0", 0, 0), ("v1", 1, 1), ("v2", 2, 2)]
     fr = [tree(v) for v in range(3)]
     return 96, 240, fr, [("v0", 0, 0), ("v1", 1, 1), ("v2", 2, 2)]
 

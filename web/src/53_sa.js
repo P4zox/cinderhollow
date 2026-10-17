@@ -141,12 +141,20 @@ function saPaintSkins() {
   const fx = room.front.getContext('2d'), ts = tileSheet(room.def.biome), sk = sheet('xsa_skin');
   for (const q of SA.skins) {
     const C = SA_SKIN_COL[q.look] || SA_SKIN_COL.bark;
+    // trees pass (docs/v17/trees.md): the Elder's column shows the Elder itself (xsa_elder 'front', the same painting lit as
+    // the solid trunk) instead of tiled bark; any cell outside that painting falls back to the tiles
+    const eb = q.look === 'elder' && SA.back.find(t => t.sh === 'xsa_elder'), es = eb && sheet('xsa_elder');
+    const ef = es && es.ok && es.img.complete && es.has('front') ? es.frames[es.first('front')] : null;
+    const eox = ef && Math.round(eb.x - ef.w / 2), eoy = ef && Math.round(eb.y - ef.h);
     for (let ty = q.y; ty < q.y + q.h; ty++) for (let tx = q.x; tx < q.x + q.w; tx++) {
       if (!isSolidT(room.grid[ty * room.w + tx])) continue;
       const px = tx * TILE, py = ty * TILE, L = tx === q.x || !isSolidT(tileAt(tx - 1, ty)), R = tx === q.x + q.w - 1 || !isSolidT(tileAt(tx + 1, ty));
       const top = ty === q.y || !isSolidT(tileAt(tx, ty - 1)), bot = !isSolidT(tileAt(tx, ty + 1));
       const tag = q.look + (L && R ? '' : L ? '_l' : R ? '_r' : '') ;
-      if (sk.ok && sk.img.complete && (sk.has(tag) || sk.has(q.look))) {
+      const esx = ef ? px - eox : -1, esy = ef ? py - eoy : -1;
+      if (ef && esx >= 0 && esy >= 0 && esx + TILE <= ef.w && esy + TILE <= ef.h) {
+        fx.clearRect(px, py, TILE, TILE); fx.drawImage(es.img, ef.x + esx, ef.y + esy, TILE, TILE, px, py, TILE, TILE);
+      } else if (sk.ok && sk.img.complete && (sk.has(tag) || sk.has(q.look))) {
         const t = sk.has(tag) ? tag : q.look, T = sk.tag(t), f = sk.frames[T.from + Math.floor(hash2(tx * 7, ty * 3) * (T.to - T.from + 1))];
         fx.clearRect(px, py, TILE, TILE); fx.drawImage(sk.img, f.x, f.y, f.w, f.h, px, py, TILE, TILE);
       } else {   // procedural fallback
