@@ -142,6 +142,7 @@ function lxnCanvasOf(px, w, h) {
   const x = c.getContext('2d'); x.putImageData(new ImageData(px, w, h), 0, 0); return c;
 }
 function lxnGenFrame(sh, fi) {
+  if (!sh || !sh.ok || !sh.frames || !sh.img) return false;   // not loaded yet (or evicted): a boss pre-warm can ask before its sheet arrives
   const f = sh.frames[fi], img = sh.img; if (!f || !img.complete || !img.naturalWidth) return false;
   const x = lxnScratch(f.w, f.h); x.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
   if (sh._mat === undefined) sh._mat = lxnMatOf(sh.name);
@@ -154,6 +155,7 @@ function lxnGenFrame(sh, fi) {
   return true;
 }
 function lxnWant(sh, fi) {   // queue this frame and the next few of the same animation (the sheet is usually played in order)
+  if (!sh || !sh.frames) return;
   for (let k = 0; k < 6; k++) {
     const j = fi + k; if (!sh.frames[j] || (sh._lxn && sh._lxn.f[j])) continue;
     const key = sh.name + ':' + j; if (LXN.qk.has(key)) continue;
@@ -220,7 +222,7 @@ function lxnTick() {
 // name up to the phase (hearthkeeper_p1_1 … hearthkeeper_p1_12; cindervane, cindervane_p2 …).
 const LXN_WARM = { per: 3, big: 4096 };
 function lxnWarmSheet(sh, per = LXN_WARM.per) {
-  if (!sh || !sh.ok || !sh.frames.length) return 0;
+  if (!sh || !sh.ok || !sh.frames || !sh.frames.length) return 0;
   let n = 0; sh.img;   // starts the decode of a lazily loaded sheet
   for (const t of Object.values(sh.tags).concat(sh.frames.length ? [{ from: 0, to: 0 }] : [])) for (let j = t.from; j <= Math.min(t.to, t.from + per - 1); j++) {
     if (sh._lxn && sh._lxn.f[j]) continue;
@@ -301,7 +303,7 @@ lxNHook = {
   sprite(sh, fi, flip, dx, dy, w, h, img, sx, sy) {
     if (g.globalCompositeOperation !== 'source-over') return;
     if (LXO.occ && img) lxoDraw(img, sx, sy, w, h, dx, dy);
-    if (!LXN.on) return;
+    if (!LXN.on || !sh || !sh.frames) return;   // a sheet without a frame list (or not loaded): no normals
     let C = sh._lxn, c = C && (flip ? C.m : C.f)[fi];
     if (!c) {   // not cached yet: small frames (the knight, his weapon, most foes) are made on the spot, within ~1.5 ms a frame;
       const f = sh.frames[fi];   // big ones (bosses) are queued and show flat for a frame or two
@@ -315,7 +317,7 @@ lxNHook = {
   rot(sh, fi, dx, dy, w, h, img, sx, sy) {   // phase 3: a rotated draw (the transform holds the rotation and any mirror)
     if (g.globalCompositeOperation !== 'source-over') return;
     if (LXO.occ && img) lxoDraw(img, sx, sy, w, h, dx, dy);
-    if (!LXN.on) return;
+    if (!LXN.on || !sh || !sh.frames) return;   // a sheet without a frame list (or not loaded): no normals
     let C = sh._lxn;
     if (!(C && C.f[fi])) {
       const f = sh.frames[fi];
@@ -329,7 +331,7 @@ lxNHook = {
 };
 // phase 3: a frame drawn with a raw g.drawImage (unscaled, unflipped, e.g. moving platforms): draw its normals too
 function lxnRaw(sh, fi, dx, dy) {
-  if (!lxNHook.g || lxNHook.g !== g || !sh || !sh.ok) return;
+  if (!lxNHook.g || lxNHook.g !== g || !sh || !sh.ok || !sh.frames) return;
   const f = sh.frames[fi]; if (!f) return;
   lxNHook.sprite(sh, fi, false, dx, dy, f.w, f.h, null);
 }
@@ -358,6 +360,7 @@ function lxoProp(p) {
 }
 function lxoFill(sh) {   // how much of its frame's bounding box the art fills (frame 0, once per sheet)
   if (sh._fill !== undefined) return sh._fill;
+  if (!sh.frames) return 1;
   const f = sh.frames[0], img = sh.img; if (!f || !img.complete || !img.naturalWidth) return 1;
   const x = lxnScratch(f.w, f.h); x.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
   const d = x.getImageData(0, 0, f.w, f.h).data;
