@@ -4,13 +4,18 @@
 // albedo × (biome ambient × baked AO + Σ coloured lights), the summed light cut into a few soft steps (v17: no dither by
 // default), shadowed by a rounded wall SDF, then tone-mapped once (GFX_TM, 40_gfx.js; docs/v17/shading_phase1.md). lowFx goes over the result unlit, lowTop over that, and the
 // post shader in 40_gfx.js (bloom, grade, CRT…) runs on the composite. Classic / shaders off: one canvas + renderLighting().
-const LX_DEFAULTS = { light: 3, lband: 0, rim: 0 };   // lband: 0 Stepped (v17), 1 Smooth, 2 Dithered (the pre-v17 Pixel look)
+// v17 phase 2 (docs/v17/shading_phase2.md): the far backdrop (drawParallax) goes to its own layer `lowBg` (+ a mask of the biome's
+// mid layer, `lowBgM`) and takes the ambient plus only a depth-faded share of the lamps (no rings on painted skies); `low` keeps the
+// world with alpha. Surface lighting (41b_surf.js) mirrors sprite / room-layer normals into `lowN`, so lamps wrap the forms and rim them.
+const LX_DEFAULTS = { light: 3, lband: 0, rim: 1, surf: TOUCH_UI ? 0 : 1 };   // phones: surface lighting starts off (one more layer to draw and upload)   // surf (v17 phase 2): Surface lighting, sprite and brick normals (41b_surf.js)   // lband: 0 Stepped (v17), 1 Smooth, 2 Dithered (the pre-v17 Pixel look)
 for (const [k, v] of Object.entries(LX_DEFAULTS)) if (SETTINGS[k] === undefined) SETTINGS[k] = v;
 // v15: Lighting gained a 4th step, "Soft shadows" (SDF ray-marched penumbrae); saves that were on hard shadows move up once
 if ((SETTINGS.lxv || 0) < 1) { if (SETTINGS.light === 2) SETTINGS.light = 3; SETTINGS.lxv = 1; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} }
 // v17 shading: "Pixel" bands (Bayer-dithered rings) became "Stepped" (clean steps, same slot 0, so old Pixel saves move over by
 // themselves); the luminance rim light is gone and the new edge-only rim starts off, so saves that had the old default (on) switch off once
 if ((SETTINGS.lxv || 0) < 2) { if (SETTINGS.lband !== 1) SETTINGS.lband = 0; SETTINGS.rim = 0; SETTINGS.lxv = 2; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} }
+// v17 shading phase 2: the rim is rebuilt on the sprites' own silhouettes (41b_surf.js) and ships on; Surface lighting is new (on)
+if ((SETTINGS.lxv || 0) < 3) { SETTINGS.rim = 1; SETTINGS.lxv = 3; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} }
 const lxCanvas = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.imageSmoothingEnabled = false; return [c, x]; };
 const [lowFx, gFx] = lxCanvas(), [lowTop, gTop] = lxCanvas(), gLow = g;
 const LX = { on: false, bad: false, prog: null, u: {}, NL: 48, SS: 12, SSD: 20, n: 0, LP: null, LC: null, cx: 0, cy: 0, amb: [0.5, 0.5, 0.5], pk: 1, room: null, sum: -1, fr: 0, cand: [] };
@@ -19,7 +24,12 @@ const LX = { on: false, bad: false, prog: null, u: {}, NL: 48, SS: 12, SSD: 20, 
 //   steps/bmax: light bands (count, the light level of the top step); lmax: most light dark stone takes (bright art takes ~1.3);
 //   hcap: most haze a pixel gets; hard: penumbra size on Hard shadows; expo: scene exposure (× LX_EXPO[Brightness])
 const LX_TUNE = { amb: 0.78, gain: 1.7, haze: 0, hazeRays: 0, hcap: 0.05, emi: 0.85, ao: 0.5, aoMax: 0.5, fall: 1.0, depth: 34, sat: 0.68,
-  lmax: 2.2, player: 1.3, soft: 1.0, hard: 0.3, rim: 0.55, fog: 0.55, steps: 6, bmax: 2.6, bsoft: 0.25, desat: 0.4, expo: 1.2 };
+  lmax: 2.2, player: 1.3, soft: 1.0, hard: 0.3, rim: 1.0, fog: 0.55, steps: 6, bmax: 2.6, bsoft: 0.25, desat: 0.4, expo: 1.2,
+  // v17 phase 2 (surface lighting): sk how far a light wraps (1 + sk × facing), shz the height (px) a light sits in front of the
+  // plane (right in front of a lamp nothing is side-lit), ambk the sky's top-down share on normals, bgk the share of lamp light the
+  // far backdrop takes (soft, unshadowed, unbanded), ntol how far the lit pixel may differ from the one the normal was made from
+  sk: 1.25, shz: 18, ambk: 0.3, ntol: 0.035,
+  bgSky: 0.03, bgMid: 0.3 };
 // ambient light colour per biome. The level comes from AREAS[b].ambient (the old darkness) so darkT and boss rooms keep working.
 // A region can override with AREAS[b].lx = { amb: 'r,g,b', lvl: 0.9 } from its own file.
 // playtest pass: the darkest regions were hard to read under Dynamic lighting; lift their ambient a little
@@ -33,6 +43,17 @@ const LX_AMB = {
   necropolis: '130,150,220', nv_void: '120,130,190', crimson: '195,120,135', barrows: '110,175,175', thornveil: '120,180,140', starfall: '150,160,225',
   dunes: '240,205,155', vn_dusk1: '225,218,238', vn_dusk2: '195,185,210', vn_dusk3: '165,155,190', neohallow: '165,125,220', neohallow_cyber: '235,240,250',
 };
+// v17 phase 2: how much lamp light the painted backdrop takes. The far layer is a sky or a far view in most regions (next to
+// nothing: a lamp no longer paints rings on it); in the halls whose far painting is the room's own back wall it takes a share.
+// The mid layer (silhouettes of arches, pillars, ruins in between) takes LX_TUNE.bgMid. A room / region can override with
+// AREAS[b].lxBg = [far, mid]. Vista benches (85_vistas.js) are views: sky share.
+const LX_BG_FAR = { archives: 0.8, barrows: 0.75, catacombs: 0.85, cathedral: 0.6, deep: 0.6, forge: 0.8, thornveil: 0.4 };
+function lxBgShare() {
+  const b = room.def.biome, A = AREAS[b] || {}, T = LX_TUNE;
+  if (A.lxBg) return A.lxBg;
+  if (typeof VISTA_BG !== 'undefined' && VISTA_BG[room.id]) return [T.bgSky, T.bgSky];
+  return [LX_BG_FAR[b] ?? T.bgSky, T.bgMid];
+}
 // what stays in the lit layer (everything else a draw routes through drawGlow is emissive)
 const LX_GLOW_PROPS = new Set(['lantern', 'candelabra', 'item', 'remnant', 'hookpoint', 'fog']);
 const LX_LIT_FX = new Set(['dust', 'wall_dust', 'blood', 'bleed', 'death_ash', 'ink_splash', 'ink_pool', 'ink_page', 'db_splash', 'dp_debris', 'petal',
@@ -70,7 +91,8 @@ function lxFlashOver(fn) {
 function lxBegin() {
   g = gLow;
   LX.on = !!(room && SETTINGS.shaders && SETTINGS.light > 0 && !LX.bad && gfxReady() && (LX.prog || lxInitGL()));
-  if (LX.on) for (const c of [gFx, gTop]) { c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, W, H); }
+  if (LX.on) for (const c of [gFx, gTop, gBg]) { c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, W, H); }
+  lxnBegin(LX.on && !!SETTINGS.surf);
   return LX.on;
 }
 const lxProp = p => p.glow || LX_GLOW_PROPS.has(p.type);
@@ -234,7 +256,6 @@ function lxMaps(gl) {
   LX.room = room; LX.sum = lxGridSum(room);
   const t0 = performance.now(), M = lxBuildMaps(room); LX.map = M; LX.mapMs = performance.now() - t0;
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-  gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, LX.tO); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, M.w, M.h, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, M.sol);
   gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D, LX.tAO); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, M.aw, M.ah, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, M.ao);
   gl.activeTexture(gl.TEXTURE5); gl.bindTexture(gl.TEXTURE_2D, LX.tSD); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, M.aw, M.ah, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, M.sdf);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
@@ -248,16 +269,16 @@ precision highp float;
 precision mediump float;
 #endif
 varying vec2 v;
-uniform sampler2D A, F, TP, OC, AO, SD;
+uniform sampler2D A, F, TP, BM, AO, SD, NM, BG;
 uniform vec2 S, CAM;
 uniform vec4 OR;
 uniform vec3 AMB;
 uniform float NLt, SHAD, BANDS, NB, BMAX, BSOFT, DESAT, AOK, EMI, HAZE, HCAP, FALL, DEPTH, DBG, LMAX, SOFT, RIM, FOG, TM, EXPO;
+uniform float SURF, SK, SHZ, AMBK, BGF, BGM, NTOL;
 uniform vec4 LP[NL], LC[NL];
 ` + GFX_TM + `
 float bayer2(vec2 a) { return fract(a.x * 0.5 + a.y * a.y * 0.75); }
 float bayer4(vec2 a) { a = mod(a, 4.0); return bayer2(floor(a * 0.5)) * 0.25 + bayer2(mod(a, 2.0)); }
-float occ(vec2 w) { return texture2D(OC, (w - OR.xy) / OR.zw).r; }
 float sdf(vec2 w) { return texture2D(SD, (w - OR.xy) / OR.zw).r * 255.0 - 128.0; }   // px to the nearest wall edge, < 0 inside
 float h21(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float vn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
@@ -280,15 +301,21 @@ vec3 bands(vec3 L, float d) {
 void main() {
   vec2 sp = floor(vec2(v.x, 1.0 - v.y) * S), wp = sp + CAM + 0.5;
   float d = bayer4(sp + CAM);                                       // world-anchored (only the Dithered bands use it)
-  vec3 al = texture2D(A, v).rgb;
+  vec4 wA = texture2D(A, v);                                        // the world (unpremultiplied; alpha = coverage over the backdrop)
+  vec4 bm = texture2D(BM, v);                                       // v17 phase 2: the backdrop has its own layers (far, mid), lit by the
+  vec3 al = wA.rgb, bgc = texture2D(BG, v).rgb;                    // sky / ambient and only a depth-faded share of the lamps (lxBgShare);
+                                                                    // BM: where the biome's mid layer is (its alpha), which takes more
+  float bgs = mix(BGF, BGM, bm.a);
+  float wa = wA.a, lumW = dot(al, vec3(0.299, 0.587, 0.114));
+  // surface normal (41b_surf.js): trusted only while the lit layer still shows the pixel it was made from
+  vec4 nb = texture2D(NM, v);
+  float nk = SURF * step(0.5, nb.a) * step(0.5, wa) * (1.0 - step(NTOL + 0.04 * (1.0 - wa), abs(nb.b - lumW)));
+  vec2 nxy = (nb.rg * 255.0 - 128.0) / 127.0 * nk;
+  float tilt = length(nxy);
+  vec2 nd = nxy / max(tilt, 0.001);
+  float rimE = RIM * smoothstep(0.86, 0.95, tilt);                  // rim: only the steepest tilt step, the outer pixel of a silhouette
   float sd0 = sdf(wp);
-  float rimE = 0.0; vec2 sn = vec2(0.0);
-  if (RIM > 0.0 && sd0 < 1.0 && sd0 > -6.0) {                       // v17 rim: only the lip of the terrain (the outer few px of a wall)
-    sn = vec2(sdf(wp + vec2(2.0, 0.0)) - sdf(wp - vec2(2.0, 0.0)), sdf(wp + vec2(0.0, 2.0)) - sdf(wp - vec2(0.0, 2.0)));   // catches a light it faces
-    sn /= max(length(sn), 0.001);
-    rimE = RIM * smoothstep(-6.0, -1.5, sd0) * (1.0 - smoothstep(0.0, 1.0, sd0));
-  }
-  vec3 L = vec3(0.0), Lh = vec3(0.0), Lp = vec3(0.0);
+  vec3 L = vec3(0.0), Lf = vec3(0.0), Lh = vec3(0.0), Lp = vec3(0.0), Lb = vec3(0.0), Lr = vec3(0.0);
   for (int i = 0; i < NL; i++) {
     if (float(i) >= NLt) break;
     vec4 lp = LP[i], lc = LC[i];
@@ -297,6 +324,8 @@ void main() {
     if (dh >= lp.z) continue;
     float x = dh / lp.z, s = 1.0 - x * x, a = s * sqrt(s);          // v17: windowed falloff, no slope at the rim (no visible disc edge)
     if (FALL != 1.0) a = pow(a, FALL);
+    if (lp.w > 0.0) Lb += lc.rgb * lp.w * a;                        // the backdrop's share (scaled by its depth below): unshadowed
+    if (wa < 0.004) { if (lp.z > 24.0) Lh += lc.rgb * abs(lp.w) * a; continue; }   // pure backdrop: no shadow march
     vec2 dir = dv / max(dist, 0.001);
     if (lc.w > 0.0 && SHAD > 0.5 && dist > 10.0) {                  // shadows: sphere-trace the (rounded) wall SDF toward the light; the
       float end = dist - 10.0, ls = SOFT * clamp(lp.z * 0.05, 2.0, 12.0);   // light is a disc of radius ls, so the penumbra
@@ -314,38 +343,58 @@ void main() {
     vec3 c = lc.rgb * abs(lp.w) * a;
     if (lp.w < 0.0) { Lp += c * a; continue; }                      // soft fills (the knight's own, marker glows: strength < 0): smooth (a squared again,
                                                                     // no disc), unbanded, no rim / haze, and pale art barely takes them (below)
-    L += c * (1.0 + rimE * max(dot(sn, dir), 0.0));
     if (lp.z > 24.0) Lh += c;                                       // sparks and motes light surfaces but add no haze
+    Lf += c;                                                        // the same light on a flat surface (sets the art's soft cap, below)
+    if (tilt > 0.01) {                                              // v17 phase 2: the light wraps the form. facing: the normal's tilt toward
+      float df = dist / (dist + SHZ), fc = dot(nxy, dir) * df;      // the light (0 right in front of the lamp, where it lights the face)
+      c *= max(0.0, 1.0 + SK * fc);
+      Lr += c * rimE * smoothstep(0.2, 0.75, dot(nd, dir) * df);    // the edge that faces it catches a rim
+    }
+    L += c;
   }
-  float pa = 1.0 - dot(al, vec3(0.299, 0.587, 0.114));             // the fill reads the dark knight; pale art behind him barely takes it (no halo):
-  L = bands(L, d) + Lp * min(1.0, pa * pa * 1.4);                   // (1 - albedo luminance)^2, full on the knight's dark plate (lum <= ~0.15)
+  float pa = 1.0 - lumW;                                            // the fill reads the dark knight; pale art behind him barely takes it (no halo):
+  float nz = sqrt(max(0.0, 1.0 - tilt * tilt));
+  vec3 Lpf = Lp * min(1.0, pa * pa * 1.4);                          // (1 - albedo luminance)^2, full on the knight's dark plate (lum <= ~0.15)
+  Lf = bands(Lf, d) + Lpf;
+  L = bands(L, d) + Lpf * mix(1.0, nz, 0.6);                        // phase 2: the fill comes from the front: a form's edges turn away from it
   float fogm = FOG > 0.0 ? mix(1.0, 0.35 + 1.3 * (0.65 * vn(wp * 0.028 + vec2(TM * 0.19, TM * 0.06)) + 0.35 * vn(wp * 0.07 - vec2(TM * 0.11, 0.0))), FOG) : 1.0;   // drifting dust in the light
   float ao = mix(1.0, texture2D(AO, (wp - OR.xy) / OR.zw).r, AOK);
-  vec3 lit = AMB * ao + L * mix(1.0, ao, 0.5);
+  vec3 litF = AMB * ao + Lf * mix(1.0, ao, 0.5);
+  vec3 lit = AMB * ao * (1.0 - AMBK * nxy.y) + L * mix(1.0, ao, 0.5);   // normals: the sky lights tops a little more than undersides
   float mx = max(al.r, max(al.g, al.b)), mn = min(al.r, min(al.g, al.b)), ch = (mx - mn) / max(mx, 0.02);
-  float lm = max(lit.r, max(lit.g, lit.b));                         // bright or saturated art is already painted lit: it takes less light
+  float lm = max(litF.r, max(litF.g, litF.b));                      // bright or saturated art is already painted lit: it takes less light. Phase 2:
+                                                                    // the cap is set by the flat light and scales the shaded light, so the form's
+                                                                    // light and shade keep their ratio instead of being squeezed into the cap
   float lcap = mix(LMAX, 1.3, max(smoothstep(0.35, 0.75, mx), smoothstep(0.6, 0.92, ch) * step(0.25, mx)));   // (soft cap, so no flat plateau)
   if (lm > 1.0) lit *= (1.0 + (lm - 1.0) / (1.0 + (lm - 1.0) / max(lcap - 1.0, 0.01))) / lm;
-  float em = smoothstep(0.84, 1.0, mx) * EMI;                       // the brightest art (lava, runes, eyes, sky) shows as painted
+  vec3 rim = Lr / (1.0 + max(Lr.r, max(Lr.g, Lr.b)) / 0.6);         // the rim adds light of its own (black outlines catch it too), capped
+  vec3 alC = mix(bgc, al, wa);                                      // what the pixel shows, for the emitter test and the backdrop
+  float mxC = max(alC.r, max(alC.g, alC.b));
+  float em = smoothstep(0.84, 1.0, mxC) * EMI;                      // the brightest art (lava, runes, eyes, sky) shows as painted
   vec3 hz = Lh * HAZE * fogm * (1.0 - em);
   float hm = max(hz.r, max(hz.g, hz.b));
   hz *= 1.0 / (1.0 + hm / HCAP);                                    // a little light in the air, capped where lamps pile up (lava)
-  vec3 hdr = (al * lit + hz) * EXPO;
+  vec3 hdrB = bgc * (AMB + bands(Lb * bgs, d));                     // the backdrop: sky light, plus its share of the lamps (a painted
+                                                                    // hall wall takes some, a sky next to nothing: no rings on pale skies)
+  float bl = dot(bgc, vec3(0.299, 0.587, 0.114));                   // seen through a back wall (the veil's fading steps) the backdrop is lit
+  hdrB = mix(hdrB, bgc * lit, max(smoothstep(0.3, 0.8, wa), smoothstep(0.0, 0.3, wa) * (1.0 - smoothstep(0.12, 0.4, bl))));   // with the wall:
+                                                                    // the pool of lamp light stays whole, except where a pale sky shows through
+  vec3 hdr = (mix(hdrB, al * lit + rim, wa) + hz) * EXPO;
   vec3 col = tmap(hdr);                                             // scene light -> display (40_gfx.js GFX_TM); post adds glow in the same curve
   float cm = max(hdr.r, max(hdr.g, hdr.b));
   col = mix(col, vec3(max(col.r, max(col.g, col.b))), DESAT * smoothstep(0.7, 4.0, cm));   // hot light runs a little toward white (coloured lamps on stone don't go neon)
-  col = mix(col, al, em);
+  col = mix(col, alC, em);
   vec4 fx = texture2D(F, v);
   col = col * (1.0 - 0.85 * fx.a) + fx.rgb * fx.a;                  // emitters: unlit, over the lit scene, as painted
   vec4 tp = texture2D(TP, v);
-  if (DBG > 0.5) { gl_FragColor = vec4(DBG < 1.5 ? vec3(occ(wp)) : DBG < 2.5 ? vec3(texture2D(AO, (wp - OR.xy) / OR.zw).r) : DBG < 3.5 ? L * 0.5 : DBG < 4.5 ? vec3(fx.a) : DBG < 5.5 ? vec3(tp.a) : DBG < 6.5 ? tmap(al * lit) : DBG < 7.5 ? vec3(clamp(sd0 / 64.0 + 0.5, 0.0, 1.0)) : vec3(sn * 0.5 + 0.5, rimE), 1.0); return; }   // test views
+  if (DBG > 0.5) { gl_FragColor = vec4(DBG < 1.5 ? vec3(texture2D(BM, v).a) : DBG < 2.5 ? vec3(texture2D(AO, (wp - OR.xy) / OR.zw).r) : DBG < 3.5 ? L * 0.5 : DBG < 4.5 ? vec3(fx.a) : DBG < 5.5 ? vec3(tp.a) : DBG < 6.5 ? tmap(al * lit) : DBG < 7.5 ? vec3(clamp(sd0 / 64.0 + 0.5, 0.0, 1.0)) : DBG < 8.5 ? vec3(nxy * 0.5 + 0.5, nk) : DBG < 9.5 ? vec3(wa) : rim, 1.0); return; }   // test views (8 normals, 9 world coverage, 10 rim)
   gl_FragColor = vec4(clamp(mix(col, tp.rgb, tp.a), 0.0, 1.0), 1.0);
 }`;
 function lxInitGL() {
   const gl = GFX.gl; if (!gl || !GFX.prog) return false;
   try {
     const maxU = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) || 64;
-    const NL = Math.max(8, Math.min(TOUCH_UI ? 16 : 48, Math.floor((maxU - 28) / 2))), SS = TOUCH_UI ? 8 : 12, SSD = TOUCH_UI ? 10 : 20;
+    const NL = Math.max(8, Math.min(TOUCH_UI ? 16 : 48, Math.floor((maxU - 36) / 2))), SS = TOUCH_UI ? 8 : 12, SSD = TOUCH_UI ? 10 : 20;
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
     const prog = gl.createProgram();
     gl.attachShader(prog, sh(gl.VERTEX_SHADER, GFX_VS)); const ext = gl.getExtension('OES_standard_derivatives') ? '#extension GL_OES_standard_derivatives : enable\n' : '#define fwidth(x) 0.06\n';
@@ -354,17 +403,17 @@ function lxInitGL() {
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
     const u = {};
-    for (const n of ['A', 'F', 'TP', 'OC', 'AO', 'SD', 'S', 'CAM', 'OR', 'AMB', 'NLt', 'SHAD', 'BANDS', 'NB', 'BMAX', 'BSOFT', 'DESAT', 'AOK', 'EMI', 'HAZE', 'HCAP', 'FALL', 'DEPTH', 'DBG', 'LMAX', 'SOFT', 'RIM', 'FOG', 'TM', 'EXPO', 'TMK', 'TMT', 'LP', 'LC']) u[n] = gl.getUniformLocation(prog, n);
+    for (const n of ['A', 'F', 'TP', 'BM', 'AO', 'SD', 'S', 'CAM', 'OR', 'AMB', 'NLt', 'SHAD', 'BANDS', 'NB', 'BMAX', 'BSOFT', 'DESAT', 'AOK', 'EMI', 'HAZE', 'HCAP', 'FALL', 'DEPTH', 'DBG', 'LMAX', 'SOFT', 'RIM', 'FOG', 'TM', 'EXPO', 'TMK', 'TMT', 'LP', 'LC', 'NM', 'BG', 'SURF', 'SK', 'SHZ', 'AMBK', 'BGF', 'BGM', 'NTOL']) u[n] = gl.getUniformLocation(prog, n);
     const mk = (filt) => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, filt], [gl.TEXTURE_MAG_FILTER, filt], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v); return t; };
     gl.activeTexture(gl.TEXTURE0);
-    const tA = mk(gl.NEAREST), tF = mk(gl.NEAREST), tT = mk(gl.NEAREST), tO = mk(gl.LINEAR), tAO = mk(gl.LINEAR), tSD = mk(gl.LINEAR), tOut = mk(gl.LINEAR);
+    const tA = mk(gl.NEAREST), tF = mk(gl.NEAREST), tT = mk(gl.NEAREST), tN = mk(gl.NEAREST), tB = mk(gl.NEAREST), tBM = mk(gl.NEAREST), tAO = mk(gl.LINEAR), tSD = mk(gl.LINEAR), tOut = mk(gl.LINEAR);
     gl.bindTexture(gl.TEXTURE_2D, tOut); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     const fbo = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tOut, 0);
     const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE; gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     if (!ok) throw new Error('framebuffer incomplete');
-    gl.useProgram(prog); [['A', 0], ['F', 1], ['TP', 2], ['OC', 3], ['AO', 4], ['SD', 5]].forEach(([n, i]) => gl.uniform1i(u[n], i));
+    gl.useProgram(prog); [['A', 0], ['F', 1], ['TP', 2], ['BM', 3], ['AO', 4], ['SD', 5], ['NM', 6], ['BG', 7]].forEach(([n, i]) => gl.uniform1i(u[n], i));
     gl.useProgram(GFX.prog);
-    Object.assign(LX, { prog, u, NL, SS, SSD, tA, tF, tT, tO, tAO, tSD, tOut, fbo, room: null, LP: new Float32Array(NL * 4), LC: new Float32Array(NL * 4) });
+    Object.assign(LX, { prog, u, NL, SS, SSD, tA, tF, tT, tN, tB, tBM, tAO, tSD, tOut, fbo, room: null, LP: new Float32Array(NL * 4), LC: new Float32Array(NL * 4) });
     return true;
   } catch (e) { console.warn('dynamic lighting unavailable:', e && e.message); LX.bad = true; return false; }
 }
@@ -373,7 +422,8 @@ function lxPass(gl) {
   gl.useProgram(LX.prog);
   lxMaps(gl);
   const up = (i, t, src, fmt) => { gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t); if (src) gl.texImage2D(gl.TEXTURE_2D, 0, fmt, fmt, gl.UNSIGNED_BYTE, src); };
-  up(0, LX.tA, low, gl.RGB); up(1, LX.tF, lowFx, gl.RGBA); up(2, LX.tT, lowTop, gl.RGBA); up(3, LX.tO); up(4, LX.tAO); up(5, LX.tSD);
+  up(0, LX.tA, low, gl.RGBA); up(1, LX.tF, lowFx, gl.RGBA); up(2, LX.tT, lowTop, gl.RGBA); up(3, LX.tBM, lowBgM, gl.ALPHA); up(4, LX.tAO); up(5, LX.tSD);
+  up(6, LX.tN, LXN.on ? lowN : null, gl.RGBA); up(7, LX.tB, lowBg, gl.RGB);   // v17 phase 2: normals (only uploaded while on), the backdrop
   const T = LX_TUNE, map = LX.map;
   gl.uniform2f(u.S, W, H); gl.uniform2f(u.CAM, LX.cx, LX.cy);
   gl.uniform4f(u.OR, -LX_B * TILE, -LX_B * TILE, map.w * TILE, map.h * TILE);
@@ -381,9 +431,10 @@ function lxPass(gl) {
   const rays = SETTINGS.rays > 0, br = SETTINGS.bright ?? 1;   // Graphics › Light shafts also thickens the haze and lets dust drift through it
   gl.uniform1f(u.NLt, LX.n); gl.uniform1f(u.SHAD, SETTINGS.light >= 2 ? 1 : 0); gl.uniform1f(u.BANDS, [1, 0, 2][SETTINGS.lband | 0] ?? 1);
   gl.uniform1f(u.NB, T.steps); gl.uniform1f(u.BMAX, T.bmax); gl.uniform1f(u.BSOFT, T.bsoft); gl.uniform1f(u.DESAT, T.desat);
-  gl.uniform1f(u.SOFT, SETTINGS.light === 3 ? T.soft : T.hard); gl.uniform1f(u.RIM, SETTINGS.rim ? T.rim : 0); gl.uniform1f(u.FOG, rays ? T.fog : 0); gl.uniform1f(u.TM, time % 1000);
+  gl.uniform1f(u.SOFT, SETTINGS.light === 3 ? T.soft : T.hard); gl.uniform1f(u.RIM, SETTINGS.rim && LXN.on ? T.rim : 0); gl.uniform1f(u.FOG, rays ? T.fog : 0); gl.uniform1f(u.TM, time % 1000);
   gl.uniform1f(u.AOK, 1); gl.uniform1f(u.EMI, T.emi * (lxDark() ? 0.35 : 1)); gl.uniform1f(u.HAZE, rays ? T.hazeRays : T.haze); gl.uniform1f(u.HCAP, T.hcap); gl.uniform1f(u.FALL, T.fall); gl.uniform1f(u.DEPTH, T.depth); gl.uniform1f(u.DBG, LX.dbg || 0);
   gl.uniform1f(u.LMAX, T.lmax); gl.uniform1f(u.EXPO, T.expo * LX_EXPO[br]); gl.uniform1f(u.TMK, GFX_TONE.k); gl.uniform1f(u.TMT, GFX_TONE.t);
+  gl.uniform1f(u.SURF, LXN.on ? 1 : 0); gl.uniform1f(u.SK, T.sk); gl.uniform1f(u.SHZ, T.shz); gl.uniform1f(u.AMBK, T.ambk); const bk = lxBgShare(); gl.uniform1f(u.BGF, bk[0]); gl.uniform1f(u.BGM, bk[1]); gl.uniform1f(u.NTOL, T.ntol);
   gl.uniform4fv(u.LP, LX.LP); gl.uniform4fv(u.LC, LX.LC);
   gl.bindFramebuffer(gl.FRAMEBUFFER, LX.fbo); gl.viewport(0, 0, W, H);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -391,6 +442,18 @@ function lxPass(gl) {
   return LX.tOut;
 }
 // if the GL pass dies after the layers were split, flatten them so the plain blit still shows everything
-function lxFlatten() { if (!LX.on) return; LX.on = false; gLow.setTransform(1, 0, 0, 1, 0, 0); gLow.drawImage(lowFx, 0, 0); gLow.drawImage(lowTop, 0, 0); }
+function lxFlatten() {
+  if (!LX.on) return; LX.on = false; lxnBegin(false); gLow.setTransform(1, 0, 0, 1, 0, 0);
+  gLow.globalCompositeOperation = 'destination-over'; gLow.drawImage(lowBg, 0, 0); gLow.globalCompositeOperation = 'source-over';   // the backdrop goes back under
+  gLow.drawImage(lowFx, 0, 0); gLow.drawImage(lowTop, 0, 0);
+}
+// v17 phase 2: under Dynamic lighting the far backdrop (drawParallax and its overrides: biome layers, vistas, forge…) is drawn
+// into its own layer, so lamps light the world and not the painted sky behind it. Other code that needs the whole picture.
+function lxDrawBackdrop() {
+  if (!LX.on) return drawParallax();
+  g = gBg; lxMidG = gBgM; gBgM.setTransform(1, 0, 0, 1, 0, 0); gBgM.clearRect(0, 0, W, H);   // the biome's mid layer goes to its own canvas (03_world.js)
+  try { drawParallax(); } finally { g = gLow; lxMidG = null; for (const c of [gBg, gBgM]) { c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; } }
+}
+function lxWholeLow(ctx) { if (LX.on) ctx.drawImage(lowBg, 0, 0); ctx.drawImage(low, 0, 0); }
 
 Object.assign(window.__game, { lx: { LX, LX_TUNE, LX_AMB, setDark(t) { darkT = t; }, addLight, get light() { return lights; } } });   // headless tests

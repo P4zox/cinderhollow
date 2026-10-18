@@ -316,15 +316,15 @@ function renderWorld() {
   g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1;
   g.clearRect(0, 0, W, H);
   if (!room) { g.fillStyle = '#0a0810'; g.fillRect(0, 0, W, H); return; }
-  drawParallax();
+  lxDrawBackdrop();   // v17 phase 2: Dynamic lighting draws the far backdrop into its own layer (41_light.js)
   const sk = shake * SETTINGS.shake, sx = sk ? rand(-sk, sk) * 0.5 : 0, sy = sk ? rand(-sk, sk) * 0.5 : 0;
   const cx = Math.round(cam.x - sx), cy = Math.round(cam.y - sy);
   LX.cx = cx; LX.cy = cy;
   g.setTransform(1, 0, 0, 1, -cx, -cy);
-  g.drawImage(room.back, 0, 0);
+  g.drawImage(room.back, 0, 0); lxnLayer(room.back, 'back');   // + the layer's normals (41b_surf.js, surface lighting)
   const p2tint = boss && boss.phase === 2 && boss.alive;
   if (p2tint && !dyn) { g.fillStyle = `rgba(255,150,50,${0.05 + 0.03 * Math.sin(time * 3)})`; g.fillRect(cx, cy, W, H); }
-  g.drawImage(room.front, 0, 0);
+  g.drawImage(room.front, 0, 0); lxnLayer(room.front, 'front');
   for (const p of props) if (p.type !== 'fog' && p.type !== 'veil') lxDrawProp(p);
   for (const f of fx) if (f.name === 'ground_crack') drawFx(f);
   if (HOOKS.renderMid) runHooks('renderMid');   // v16 (79_fatality.js): after the terrain and props, before any body

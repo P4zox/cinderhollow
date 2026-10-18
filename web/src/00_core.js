@@ -56,6 +56,7 @@ class Sheet {
 }
 const SHEETS = {};
 let SHEET_EPOCH = 0;   // bumped on every room change
+let lxNHook = null, lxMidG = null;   // lxMidG: where drawParallax puts the mid layer under Dynamic lighting (41_light.js)   // v17 shading phase 2 (41b_surf.js): mirrors lit sprite draws into the normal buffer
 // warm up sheets created while a room was built; free big ones unused for a few rooms (never the player/weapon)
 function sheetHousekeeping(keep) {
   SHEET_EPOCH++;
@@ -129,6 +130,7 @@ function drawSprite(sh, frame, x, y, face, opt = {}) {
   }
   if (flip) { g.translate(X, 0); g.scale(-1, 1); g.drawImage(img, sx, sy, f.w, f.h, -ax, Y - ay, f.w, f.h); }
   else g.drawImage(img, sx, sy, f.w, f.h, X - ax, Y - ay, f.w, f.h);
+  if (lxNHook && lxNHook.g === g) lxNHook.sprite(sh, frame, flip, flip ? -ax : X - ax, Y - ay, f.w, f.h);   // v17 surface lighting (41b_surf.js): the frame's normals, same place
   g.restore();
 }
 function drawRotated(sh, frame, x, y, angle, alpha = 1) {

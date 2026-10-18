@@ -250,7 +250,10 @@ function drawParallax() {
     for (let x = Math.round(ox); x < W; x += f.w) g.drawImage(sh.img, f.x, f.y, f.w, f.h, x, oy + (H - f.h), f.w, f.h);
   };
   layer(far, 0.08, 0.02);
-  layer(mid, 0.3, 0.08);
+  if (!lxMidG) return layer(mid, 0.3, 0.08);
+  // v17 phase 2 (Dynamic lighting): the mid layer is also kept on its own as a mask: it takes a different share of the lamps (41_light.js)
+  const g0 = g; g = lxMidG; try { layer(mid, 0.3, 0.08); } finally { g = g0; }
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.drawImage(lxMidG.canvas, 0, 0); g.restore();
 }
 // o (optional): { flicker: true (lanterns, torches…), shadow: false (skip the tile-shadow test), height: px in front of the wall }
 function addLight(x, y, r, color = '255,190,110', k = 1, o) { lights.push({ x, y, r, color, k, o }); }

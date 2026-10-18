@@ -492,7 +492,7 @@ const nhTmp = document.createElement('canvas'); nhTmp.width = W; nhTmp.height = 
 const nhTctx = nhTmp.getContext('2d');
 function nhGlitchScreen(k, seed = 0) {   // k 0..1: slice displacement, colour blocks, scanlines (screen space)
   if (k <= 0.01) return;
-  nhTctx.clearRect(0, 0, W, H); nhTctx.drawImage(low, 0, 0);
+  nhTctx.clearRect(0, 0, W, H); lxWholeLow(nhTctx);   // v17 phase 2: the backdrop lives in its own layer under Dynamic lighting
   const n = Math.floor(3 + k * 16);
   for (let i = 0; i < n; i++) {
     const y = Math.floor(hash2(i, Math.floor(time * 30) + seed) * H), h = 1 + Math.floor(hash2(i, 7 + seed) * (4 + k * 18)), dx = Math.round((hash2(i, Math.floor(time * 24)) - 0.5) * (6 + k * 70));
