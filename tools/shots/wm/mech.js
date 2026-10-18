@@ -57,8 +57,10 @@ setup('greatsword'); W().down('heavy'); W().frame(20); const gh0 = P().hp; hurt(
 T('GS: charging is flinch-proof under 30% max HP, damage x0.7 (v15, was x0.8)', gst === 'gs_charge' && Math.abs(gdl / (E('D.maxHp') * 0.2) - 0.7) < 0.06, `${gst} took ${gdl}`);
 setup('greatsword'); W().down('heavy'); W().frame(20); hurt(Math.round(E('D.maxHp') * 0.4)); const gst2 = st(); W().up('heavy'); W().frame(60);
 T('GS: a blow over 30% max HP still flinches the charge', gst2 === 'hurt', gst2);
-setup('greatsword'); W().down('parry'); W().frame(4); const gb0 = P().hp, gs0 = P().st; hurt(40); const gbl = gb0 - P().hp, gsl = gs0 - P().st; W().up('parry'); W().frame(10);
+setup('greatsword'); W().down('parry'); W().frame(20); const gb0 = P().hp, gs0 = P().st; hurt(40); const gbl = gb0 - P().hp, gsl = gs0 - P().st; W().up('parry'); W().frame(10);   // 333 ms after raising: an ordinary block (within 150 ms is the v17 perfect guard)
 T('GS: blade guard -- 1.2 x dmg stamina (x v15 guard scale), 25% chip', Math.abs(gsl - 48 * E('mvGuardScale()')) < 2 && Math.abs(gbl - 10) <= 1, `stam ${gsl.toFixed(1)} chip ${gbl}`);
+setup('greatsword'); W().down('parry'); W().frame(4); const gpb0 = P().hp, gps0 = P().st; hurt(40); const gpbl = gpb0 - P().hp, gpsl = gps0 - P().st; W().up('parry'); W().frame(10);
+T('GS: perfect guard (v17) -- raised 67 ms before the blow: no stamina, no chip', gpsl === 0 && gpbl === 0, `stam ${gpsl} chip ${gpbl}`);
 setup('greatsword', 2); W().down('heavy'); W().frame(36); W().tap('roll'); W().frame(2); const tk = st(); W().frame(30); const back = st(), bank = E('P.gsMs'); W().up('heavy'); W().frame(60);
 T('GS II: shoulder tackle out of a charge keeps the charge', tk === 'gs_tackle' && back === 'gs_charge' && bank > 600, `${tk} -> ${back} ${Math.round(bank)} ms`);
 setup('greatsword', 1); W().down('heavy'); W().frame(36); W().tap('roll'); W().frame(2); const tk1 = st(); W().up('heavy'); W().frame(60);
