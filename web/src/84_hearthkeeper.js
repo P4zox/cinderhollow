@@ -592,7 +592,7 @@ function hkCrescent(b, dir, spd) {
 function hkDrawn(b, w) {
   b.weapon = w; const p = hkPt(b); sfx.fire(); flashScreen = Math.max(flashScreen, 0.1);
   for (let i = 0; i < 16; i++) particles.push({ x: b.x + b.face * rand(20, 40), y: b.floor - 2, vx: rand(-60, 60), vy: -rand(60, 160), g: 300, life: rand(0.5, 1), kind: 'fire' });
-  if (p) addLight(p.x, p.y, 60, '255,180,100', 1);
+  if (p) addLight(p.x, p.y, 60, '255,180,100', 1, LX_FXL);
   if (!HK.said[w]) { HK.said[w] = 1; toast({ blade: 'He draws a blade from the coals.', spear: 'He draws a spear from the coals.', chain: 'He draws a chain from the coals.' }[w], 2); }
 }
 function hkDrop(b, w) {

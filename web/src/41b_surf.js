@@ -339,7 +339,8 @@ function lxnLayer(cv, kind) {   // a cached room layer was just drawn into the l
 }
 function lxnBegin(on, lit) {
   LXN.on = on; lxNHook.g = lit ? gLow : null;
-  LXO.on = !!(lit && SETTINGS.csh > 0 && LX.ocOK); LXO.occ = false; LXO.n = 0; LXO.pools = 0; LXO.bb = [1e9, 1e9, -1e9, -1e9];
+  const sil = SETTINGS.csh >= 2 || lx4WantSil();   // phase 4: reflections and light shafts read the silhouettes too (41c_atmos.js)
+  LXO.on = !!(lit && LX.ocOK && (SETTINGS.csh > 0 || sil)); LXO.sil = LXO.on && sil; LXO.occ = false; LXO.n = 0; LXO.pools = 0; LXO.bb = [1e9, 1e9, -1e9, -1e9];
   if (LXO.on) { gO.setTransform(1, 0, 0, 1, 0, 0); gO.globalAlpha = 1; gO.globalCompositeOperation = 'source-over'; gO.clearRect(0, 0, W, H); }
   if (!on) return;
   gN.setTransform(1, 0, 0, 1, 0, 0); gN.globalAlpha = 1; gN.clearRect(0, 0, W, H);
@@ -347,7 +348,7 @@ function lxnBegin(on, lit) {
 }
 // cast shadows: who goes into the silhouette buffer (renderWorld sets LXO.occ around these draws)
 function lxoProp(p) {
-  if (!LXO.on || SETTINGS.csh < 2 || !p.sh || !p.sh.ok || lxProp(p) || p.type === 'fog' || p.type === 'veil' || p.type === 'updraft' || p.type === 'npc') return false;
+  if (!LXO.sil || !p.sh || !p.sh.ok || lxProp(p) || p.type === 'fog' || p.type === 'veil' || p.type === 'updraft' || p.type === 'npc') return false;
   const fw = p.sh.fw, fh = p.sh.fh;
   if (!(fh >= LXO_TUNE.propMin && fw >= 12 && fw <= LXO_TUNE.propMax && fh <= LXO_TUNE.propMax)) return false;
   const t = tileAt(Math.floor(p.x / TILE), Math.floor((p.y + 2) / TILE));   // standing on a floor: pictures, windows and banners on the wall
@@ -390,14 +391,17 @@ function lxoFinish(cx, cy) {
   gO.setTransform(1, 0, 0, 1, 0, 0); gO.globalAlpha = 1;
   if (LXO.n) { gO.globalCompositeOperation = 'source-in'; gO.fillStyle = '#ff0000'; gO.fillRect(0, 0, W, H); }
   gO.globalCompositeOperation = 'destination-over'; gO.setTransform(1, 0, 0, 1, -cx, -cy);
+  if (SETTINGS.csh > 0) lxoPools();
+  gO.setTransform(1, 0, 0, 1, 0, 0); gO.globalCompositeOperation = 'source-over';
+}
+function lxoPools() {
   if (P && P.state !== 'dead' && !(P.x < -900)) lxoPool(P.x, P.y, 7, 1, P.ground);
   for (const e of enemies) if (e.alive !== false && !e.dead && e.hp > 0) lxoPool(e.x, e.y, Math.max(5, e.w * 0.55), e.cfg && e.cfg.flying ? 0.7 : 1, e.ground && !(e.cfg && e.cfg.flying));
   if (boss && boss.alive && boss.state !== 'dormant' && !boss.hidden && boss.visible !== false && boss.floor !== undefined) lxoPool(boss.x, boss.y, boss.kind === 'hound' ? 46 : 28, 1, Math.abs(boss.y - boss.floor) < 2);
   if (SETTINGS.csh >= 1) for (const p of props) if (p.sh && p.sh.ok && !lxProp(p) && p.type !== 'fog' && p.type !== 'veil' && p.type !== 'updraft' && p.type !== 'lantern' && p.type !== 'shelfcage' && p.type !== 'item' && p.type !== 'hookpoint' && p.sh.fw >= 14 && p.sh.fw <= 96) {
-    if (Math.abs(p.x - cx - W / 2) > W / 2 + 60) continue;
+    if (Math.abs(p.x - LX.cx - W / 2) > W / 2 + 60) continue;
     const t = tileAt(Math.floor(p.x / TILE), Math.floor((p.y + 2) / TILE)); if (!(isSolidT(t) || t === T_PLAT)) continue;
     lxoPool(p.x, Math.floor((p.y + 2) / TILE) * TILE, Math.min(26, p.sh.fw * 0.36), 0.55, true);
   }
-  gO.setTransform(1, 0, 0, 1, 0, 0); gO.globalCompositeOperation = 'source-over';
 }
 Object.assign(window.__game, { lxn: { LXN, LXN_TUNE, LXO, LXO_TUNE, LXN_WARM, lxnBuild, lowN, lowBg, lowO } });   // headless tests

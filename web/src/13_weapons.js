@@ -70,7 +70,7 @@ function wFrostBurst(t) {
   t.hit({ dmg: d, poise: wIsBoss(t) ? 70 : 45, dir: t.x > P.x ? 1 : -1, kind: 'frost', x, y, big: true });
   t._slowT = wIsBoss(t) ? 1.6 : 3.0; wSlowWrap(t);
   shake = Math.max(shake, 4); tone(1480, 0.35, 0.07, 'triangle', 0.5); tone(2200, 0.25, 0.05, 'sine', 0.6); noise(0.25, 5000, 2, 0.2, 'highpass');
-  const e = wfx({ life: wfxDur('frost') || 0.5, x, y, draw() { if (!wfxDraw('frost', this.t, this.x, this.y, 1, { center: true })) { g.fillStyle = 'rgba(190,230,255,0.6)'; g.fillRect(this.x - 8, this.y - 8, 16, 16); } addLight(this.x, this.y, 50, '170,220,255', 0.9); } });
+  const e = wfx({ life: wfxDur('frost') || 0.5, x, y, draw() { if (!wfxDraw('frost', this.t, this.x, this.y, 1, { center: true })) { g.fillStyle = 'rgba(190,230,255,0.6)'; g.fillRect(this.x - 8, this.y - 8, 16, 16); } addLight(this.x, this.y, 50, '170,220,255', 0.9, LX_FXL); } });
   for (let i = 0; i < 18; i++) particles.push({ x, y, vx: rand(-110, 110), vy: rand(-120, 40), g: 260, life: rand(0.4, 0.9), kind: 'frost' });
   return e;
 }

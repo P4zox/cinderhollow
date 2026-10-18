@@ -92,7 +92,7 @@ function updateProjectiles(dt) {
     if (pr.g) pr.vy += pr.g * dt;
     pr.x += pr.vx * dt; pr.y += pr.vy * dt;
     const L = pr.kind === 'fireball' || pr.kind === 'ashbolt' ? ['255,160,70', 40] : pr.kind === 'sunspear' || pr.kind === 'lightorb' || pr.kind === 'sovlance' ? ['255,220,140', 46] : pr.kind === 'lance' || pr.kind === 'moonwave' ? ['160,210,255', 44] : pr.kind === 'shard' ? ['200,160,255', 22] : pr.kind === 'rotglob' ? ['150,210,90', 26] : null;
-    if (L) addLight(pr.x, pr.y, L[1], L[0], 0.9);
+    if (L) addLight(pr.x, pr.y, L[1], L[0], 0.9, LX_FXL);
     if (pr.kind === 'ashbolt' || pr.kind === 'fireball') if (Math.random() < 0.7) particles.push({ x: pr.x - sign(pr.vx) * 6, y: pr.y + rand(-2, 2), vx: -pr.vx * 0.1, vy: rand(-15, 5), life: 0.35, kind: pr.kind === 'fireball' ? 'fire' : 'gold' });
     if (pr.kind === 'sunspear') if (Math.random() < 0.6) particles.push({ x: pr.x - sign(pr.vx) * 10, y: pr.y + rand(-1, 1), vx: 0, vy: rand(-8, 8), life: 0.3, kind: 'gold' });
     if (!pr.static && solidAtPx(pr.x, pr.y)) { impact(pr); continue; }

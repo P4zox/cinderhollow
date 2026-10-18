@@ -184,7 +184,7 @@ class MetaBoss extends BossBase {
 function lightPillar(x, floor, delay, dmg) {
   hazards.push({ x, y: floor, w: 18, h: 120, dmg: BOSS_DMG * dmg * NGP.dmg, id: ++hazardId, life: 5, delay, fx: null,
     onStart: h => { h.fx = spawnFx(fxOr('lightpillar', 'pillar'), h.x, floor, 1, null, { bottom: true }); if (!h.fx) h.life = 0; },
-    update: h => { if (!h.fx || h.fx.anim.done) { h.life = 0; return; } const i = h.fx.anim.i; if (i === 3 && h.fx.anim.changed) { sfx.pillar(); shake = Math.max(shake, 2.5); } if (i >= 3 && i <= 5) addLight(h.x, floor - 50, 70, '255,240,200', 1); },
+    update: h => { if (!h.fx || h.fx.anim.done) { h.life = 0; return; } const i = h.fx.anim.i; if (i === 3 && h.fx.anim.changed) { sfx.pillar(); shake = Math.max(shake, 2.5); } if (i >= 3 && i <= 5) addLight(h.x, floor - 50, 70, '255,240,200', 1, LX_FXL); },
     active: h => h.fx && h.fx.anim.i >= 3 && h.fx.anim.i <= 5 });
 }
 function rootSpikeAt(x, floor, delay, dmg) {

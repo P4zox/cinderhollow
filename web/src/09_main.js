@@ -331,12 +331,12 @@ function renderWorld() {
   if (HOOKS.renderMid) runHooks('renderMid');   // v16 (79_fatality.js): after the terrain and props, before any body
   // shadows
   const shadow = (x, y, w, a) => { g.fillStyle = `rgba(6,4,10,${a})`; g.beginPath(); g.ellipse(Math.round(x), Math.round(y) + 1, Math.max(2, w), 2.5, 0, 0, 6.3); g.fill(); };
-  if (!LXO.on) {   // v17 phase 3: under Dynamic lighting with Character shadows the lighting pass lays soft contact pools instead (lxoFinish)
+  if (!(LXO.on && SETTINGS.csh > 0)) {   // v17 phase 3: under Dynamic lighting with Character shadows the lighting pass lays soft contact pools instead (lxoFinish)
     if (P.ground) shadow(P.x, P.y, 8, 0.45);
     for (const e of enemies) if (e.ground && !e.cfg.flying) shadow(e.x, e.y, e.w * 0.6, 0.4);
     if (boss && boss.state !== 'dormant') shadow(boss.x, boss.floor, boss.kind === 'hound' ? 55 : 34, 0.5);
   }
-  LXO.occ = LXO.on && SETTINGS.csh >= 2;   // the bodies go into the silhouette buffer: they cast shadows (41b_surf.js)
+  LXO.occ = LXO.sil;   // the bodies go into the silhouette buffer: they cast shadows (41b_surf.js); phase 4: and reflect / cut the shafts
   if (boss) boss.draw();
   for (const e of enemies) e.draw();
   LXO.occ = false;
@@ -353,7 +353,7 @@ function renderWorld() {
   for (const gh of ghosts) drawSprite(sheet('player'), gh.f, gh.x, gh.y, gh.face, { alpha: gh.life / 0.22 * 0.45, flash: 1, flashColor: gh.red ? '#c02030' : '#5a2a4a' });
   if (!(P.inv > 0 && P.state !== 'hurt' && P.state !== 'dead' && P.state !== 'rise' && Math.floor(time * 20) % 2)) {
     const op = P.flash > 0 ? { flash: P.flash * 0.55, flashColor: '#ff3030' } : P.empower > 0 ? { flash: 0.15 + 0.1 * Math.sin(time * 12), flashColor: '#ffd070' } : {};
-    LXO.occ = LXO.on && SETTINGS.csh >= 2;
+    LXO.occ = LXO.sil;
     drawSprite(sheet('player'), P.anim.frame, P.x, P.y, P.face, op);
     const ws = sheet('wpn_' + (SAVE.weapon || 'longsword'));
     const sgl = SIGS[SAVE.weapon], sigGlow = sgl && ATK[P.state] && P.anim.i >= ATK[P.state].active[0] - 1 && P.anim.i <= ATK[P.state].active[1];

@@ -9,7 +9,10 @@
 // world with alpha. Surface lighting (41b_surf.js) mirrors sprite / room-layer normals into `lowN`, so lamps wrap the forms and rim them.
 // v17 phase 3 (docs/v17/shading_phase3.md): csh Character shadows (0 Off: the old ellipse, 1 Contact: soft pools under feet, 2 On: pools
 // + bodies cast shadows from nearby lamps), mat Materials (metal glints, wet / ice sheen; needs Surface lighting), eyead Eye adaptation
-const LX_DEFAULTS = { light: 3, lband: 0, rim: 1, surf: TOUCH_UI ? 0 : 1, csh: TOUCH_UI ? 0 : 2, mat: TOUCH_UI ? 0 : 1, eyead: 1 };   // phones: surface lighting starts off (one more layer to draw and upload)   // surf (v17 phase 2): Surface lighting, sprite and brick normals (41b_surf.js)   // lband: 0 Stepped (v17), 1 Smooth, 2 Dithered (the pre-v17 Pixel look)
+// v17 phase 4 (docs/v17/shading_phase4.md, 41c_atmos.js): reflections (a pass after this one), lit particles (lowP), light shafts (shafts(),
+// shaft lamps), depth haze (the backdrop fades to the region's air), effect lights (LX_FXL, auto lights for effect sheets)
+// v17 phase 4 (docs/v17/shading_phase4.md): refl Reflections (water, ice, wet floors), lpart Lit particles, dhaze Depth haze (41c_atmos.js)
+const LX_DEFAULTS = { light: 3, lband: 0, rim: 1, surf: TOUCH_UI ? 0 : 1, csh: TOUCH_UI ? 0 : 2, mat: TOUCH_UI ? 0 : 1, eyead: 1, refl: TOUCH_UI ? 0 : 1, lpart: TOUCH_UI ? 0 : 1, dhaze: 1 };   // phones: surface lighting starts off (one more layer to draw and upload)   // surf (v17 phase 2): Surface lighting, sprite and brick normals (41b_surf.js)   // lband: 0 Stepped (v17), 1 Smooth, 2 Dithered (the pre-v17 Pixel look)
 for (const [k, v] of Object.entries(LX_DEFAULTS)) if (SETTINGS[k] === undefined) SETTINGS[k] = v;
 // v15: Lighting gained a 4th step, "Soft shadows" (SDF ray-marched penumbrae); saves that were on hard shadows move up once
 if ((SETTINGS.lxv || 0) < 1) { if (SETTINGS.light === 2) SETTINGS.light = 3; SETTINGS.lxv = 1; try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(SETTINGS)); } catch (e) {} }
@@ -67,7 +70,7 @@ const LX_LIT_FX = new Set(['dust', 'wall_dust', 'blood', 'bleed', 'death_ash', '
   'g2_sandstorm', 'g2_chains', 'g2_bramble', 'du_coffin', 'tv_cloud', 'tv_thorn', 'tv_rootspike', 'root_spike', 'kd_pool', 'ground_crack', 'rotmist']);
 const LX_LIT_P = new Set(['rock', 'ash', 'dust', 'blood', 'ink', 'petal', 'sand', 'sandd', 'db_foam', 'db_ink', 'db_bubble', 'tv_leaf', 'tv_thorn', 'glass', 'nh_dark', 'env', 'mat', 'wall', 'puddle', 'flood']);
 const LX_LIT_PROJ = new Set(['arrow', 'mist', 'emist']);
-const LX_PLAYER = { player: true }, LX_FLICKER = { flicker: true }, LX_SOFT = { soft: true };   // LX_SOFT: a small marker glow, drawn like the knight's fill (no band rings, no halo on pale art)
+const LX_PLAYER = { player: true }, LX_FLICKER = { flicker: true }, LX_SOFT = { soft: true }, LX_FXL = { fx: true };   // LX_FXL (phase 4): a spell / art / boss-attack light (k ≤ 0.8 under Dynamic lighting)   // LX_SOFT: a small marker glow, drawn like the knight's fill (no band rings, no halo on pale art)
    // shared option objects (lanterns, candles, torches, braziers pass LX_FLICKER)   // the personal light: always kept, never culled
 
 // run a draw callback into the glow layer (unlit, stays bright in the dark and feeds the bloom). Classic: draws normally.
@@ -100,6 +103,7 @@ function lxBegin() {
   LX.on = !!(room && SETTINGS.shaders && SETTINGS.light > 0 && !LX.bad && gfxReady() && (LX.prog || lxInitGL()));
   if (LX.on) for (const c of [gFx, gTop, gBg]) { c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, W, H); }
   lxnBegin(LX.on && !!SETTINGS.surf, LX.on);
+  lx4Begin(LX.on);   // phase 4: the reflection mask and the lit-particle layer (41c_atmos.js)
   return LX.on;
 }
 const lxProp = p => p.glow || LX_GLOW_PROPS.has(p.type);
@@ -112,7 +116,16 @@ function lxSplit(get, set, draw, lit) {   // draw a list in two passes: lit memb
   for (const q of all) (lit(q) ? a : b).push(q);
   try { set(a); draw(); set(b); drawGlow(draw); } finally { set(all); }
 }
-function lxDrawParticles() { lxSplit(() => particles, v => { particles = v; }, drawParticles, p => LX_LIT_P.has(p.kind)); }
+function lxDrawParticles() {
+  if (LX.on && LX4.part) {   // phase 4: dust, ash, spores, motes, snow… go to the lit-particle layer; debris stays in the world; the rest glows
+    const all = particles, air = [];
+    particles = [];
+    for (const p of all) (lx4AirP(p) ? air : particles).push(p);
+    try { lxSplit(() => particles, v => { particles = v; }, drawParticles, p => LX_LIT_P.has(p.kind)); lx4DrawAir(air); } finally { particles = all; }
+    return;
+  }
+  lxSplit(() => particles, v => { particles = v; }, drawParticles, p => LX_LIT_P.has(p.kind));
+}
 function lxDrawProjectiles() { lxSplit(() => projectiles, v => { projectiles = v; }, drawProjectiles, p => LX_LIT_PROJ.has(p.kind)); }
 
 // v17 phase 3: lightning (the Spire's sky flashes and strikes, the Pharaoh's storm) as a directional light from the sky that casts
@@ -147,7 +160,7 @@ function lxCollect(ls) {
   // 0.45 up, none at 0.25 or less (crown, dunes, the Last Field, training), a trace at the Threshold (0.3), stronger while a boss has snuffed the lamps
   LX.pk = clamp((amb - 0.25) / 0.2, 0, 1) * (typeof darkT !== 'undefined' && darkT > 0 ? 1.6 : 1);
   const cx = LX.cx, cy = LX.cy, cand = LX.cand; cand.length = 0;
-  for (const L of ls) {
+  for (const L of LX4.fxl.length ? ls.concat(LX4.fxl) : ls) {   // phase 4: + this frame's effect lights (41c_atmos.js lx4FxLight)
     if (L.o && L.o.sky) { if (L.k > 0.01) { L._s = 2e9; cand.push(L); } continue; }   // lightning: always first
     if (!(L.r > 1) || !(L.k > 0.01)) continue;
     const sx = L.x - cx, sy = L.y - cy;
@@ -157,6 +170,7 @@ function lxCollect(ls) {
   }
   cand.sort((p, q) => q._s - p._s);
   const n = Math.min(cand.length, LX.NL), LP = LX.LP, LC = LX.LC, shOn = SETTINGS.light >= 2, cs = SETTINGS.csh >= 2 ? 2048 : 0;
+  let nsl = LX4.sh && room.def.indoor ? 3 : 0;   // phase 4: indoors, up to 3 strong lamps also light the air they shine through (shafts cut by walls and bodies)
   for (let i = 0; i < n; i++) {
     const L = cand[i], o = L.o || {};
     if (o.sky) {   // directional: xy toward the sky (unit), z < 0: how far its shadows reach
@@ -165,7 +179,7 @@ function lxCollect(ls) {
       LC[i * 4] = col[0]; LC[i * 4 + 1] = col[1]; LC[i * 4 + 2] = col[2]; LC[i * 4 + 3] = shOn ? 1 + cs : -1;
       continue;
     }
-    let x = L.x, y = L.y, r = L.r, k = L.k;
+    let x = L.x, y = L.y, r = L.r, k = o.fx ? Math.min(L.k, LX4_TUNE.fxMax) : L.k;   // phase 4: effect lights stay restrained
     if (o.flicker) {   // smooth per-light noise, seeded by position so neighbours don't pulse together
       const s = hash2(Math.round(x / 4), Math.round(y / 4)) * 97, t = time;
       const f = 0.5 * Math.sin(t * 7.3 + s) + 0.3 * Math.sin(t * 12.9 + s * 1.7) + 0.2 * Math.sin(t * 23.1 + s * 2.9);
@@ -186,7 +200,9 @@ function lxCollect(ls) {
     }
     const col = lxCol(L.color), gain = LX_TUNE.gain;
     LP[i * 4] = x; LP[i * 4 + 1] = y; LP[i * 4 + 2] = r; LP[i * 4 + 3] = Math.min(1.6, k) * gain * (L.o === LX_PLAYER ? -LX_TUNE.player * LX.pk : o.soft ? -1 : 1);   // < 0: a soft fill (see LX_FS)
-    LC[i * 4] = col[0]; LC[i * 4 + 1] = col[1]; LC[i * 4 + 2] = col[2]; LC[i * 4 + 3] = (sh ? 1 : -1) * (1 + (o.height || 0) + (sh && o.cast !== false ? cs : 0));   // phase 3: + 2048: bodies cast shadows from it
+    const sl = nsl > 0 && sh && L.o !== LX_PLAYER && !o.soft && L.r >= 56 && L.r <= 140 && L.k >= 0.45 && o.shaft !== false ? (nsl--, 4096) : 0;   // phase 4: + 4096: a shaft lamp
+    L._sl = !!sl;
+    LC[i * 4] = col[0]; LC[i * 4 + 1] = col[1]; LC[i * 4 + 2] = col[2]; LC[i * 4 + 3] = (sh ? 1 : -1) * (1 + (o.height || 0) + (sh && o.cast !== false ? cs : 0) + sl);   // phase 3: + 2048: bodies cast shadows from it
   }
   LX.n = n;
 }
@@ -212,7 +228,24 @@ function lxBuildMaps(R) {
     ao[ay * aw + ax] = Math.round(255 * (1 - Math.min(LX_TUNE.aoMax, s * str)));
   }
   lxBlurAO(ao, sol, w, aw, ah, Q);
-  return { w, h, sol, aw, ah, ao, sdf: lxSdf(sol, w, h, Q, sc) };
+  const sdf = lxSdf(sol, w, h, Q, sc), roof = lxRoof(R, sol, w, h, Q), sdr = new Uint8Array(aw * ah * 2);
+  for (let i = 0; i < aw * ah; i++) { sdr[i * 2] = sdf[i]; sdr[i * 2 + 1] = roof[i]; }
+  return { w, h, sol, aw, ah, ao, sdf, roof, sdr };
+}
+// v17 phase 4: where sunlight in the air shows as shafts. Air under a roof (solid within LX4_TUNE.roofN tiles straight up) sees the sun
+// only through openings (holes in a ceiling, windows, cave mouths, the gaps between merlons), so the light it lets in reads as a shaft.
+// Open sky has no roof: no haze there (a screen-wide wash is what the old shafts did). Soft edges (the SDF's blur), in the SDF texture's alpha.
+function lxRoof(R, sol, w, h, Q) {
+  const N = (typeof LX4_TUNE !== 'undefined' && LX4_TUNE.roofN) || 10, t = new Uint8Array(w * h);
+  for (let x = 0; x < w; x++) {
+    let last = -1e9;   // row of the nearest solid above
+    for (let y = 0; y < h; y++) { if (sol[y * w + x]) { last = y; continue; } t[y * w + x] = R.def.indoor || y - last <= N ? 1 : 0; }
+  }
+  const aw = w * Q, ah = h * Q, f = new Float32Array(aw * ah), out = new Uint8Array(aw * ah);
+  for (let ay = 0; ay < ah; ay++) for (let ax = 0; ax < aw; ax++) f[ay * aw + ax] = t[((ay / Q) | 0) * w + ((ax / Q) | 0)] * 255;
+  lxBlur(f, aw, ah);
+  for (let i = 0; i < f.length; i++) out[i] = Math.round(f[i]);
+  return out;
 }
 // v17: separable gaussian (texel radius 3, sigma ~1.6 texels = ~6 px). AO: over open air only (walls keep 255 and don't bleed
 // light into the contact shade), which melts the per-tile stair-steps into soft corners.
@@ -280,7 +313,7 @@ function lxMaps(gl) {
   const t0 = performance.now(), M = lxBuildMaps(room); LX.map = M; LX.mapMs = performance.now() - t0;
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
   gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D, LX.tAO); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, M.aw, M.ah, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, M.ao);
-  gl.activeTexture(gl.TEXTURE5); gl.bindTexture(gl.TEXTURE_2D, LX.tSD); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, M.aw, M.ah, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, M.sdf);
+  gl.activeTexture(gl.TEXTURE5); gl.bindTexture(gl.TEXTURE_2D, LX.tSD); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE_ALPHA, M.aw, M.ah, 0, gl.LUMINANCE_ALPHA, gl.UNSIGNED_BYTE, M.sdr);   // phase 4: + the roof (alpha)
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
 }
 
@@ -301,6 +334,14 @@ uniform float SURF, SK, SHZ, AMBK, BGF, BGM, NTOL;
 uniform vec4 LP[NL], LC[NL];
 uniform vec4 OBB;                                                   // v17 phase 3: the bodies' silhouettes this frame (world px box)
 uniform float CSH, CON, CKZ, CMX, CSK, MAT, GLK, SHK, EYEZ;
+uniform float TOPK;                                                 // v17 phase 4 (41c_atmos.js): 0 while the reflection pass lays the overlays on
+uniform vec4 PQ;                                                    // lit particles: ambient share, lamp share, shaft share, on
+uniform vec3 AIR; uniform vec2 HZ;                                  // depth haze: the region's air colour, how far the far / mid layers fade to it
+uniform vec4 SUN; uniform vec3 SUNC; uniform vec4 SHF, SHL;              // light shafts: sun dir (toward it) + strength + reach, colour; gain, dust, -, lamps
+uniform vec4 BMA[NBM], BMB[NBM], BMC[NBM];                          // beams: origin + dir, half-width / length / strength / spread, colour
+#if PART
+uniform sampler2D PT;                                               // the lit-particle layer (dust, ash, spores, motes, rain, snow)
+#endif
 #if OCC
 uniform sampler2D OC;                                               // silhouettes (L × A) and contact pools (A − L × A), 41b_surf.js lowO
 float occ(vec2 w) { vec4 o = texture2D(OC, vec2((w.x - CAM.x) / S.x, 1.0 - (w.y - CAM.y) / S.y)); return o.r * o.a; }
@@ -312,6 +353,59 @@ float sdf(vec2 w) { return texture2D(SD, (w - OR.xy) / OR.zw).r * 255.0 - 128.0;
 float h21(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float vn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(h21(i), h21(i + vec2(1.0, 0.0)), f.x), mix(h21(i + vec2(0.0, 1.0)), h21(i + vec2(1.0, 1.0)), f.x), f.y); }
+float roofAt(vec2 w) { return texture2D(SD, (w - OR.xy) / OR.zw).a; }
+// phase 4: is the straight path a -> b clear of walls? sphere-traced on the SDF, a narrow penumbra (pw px per 100 px of travel)
+float clearTo(vec2 a, vec2 dir, float len, float pw) {
+  float t = 2.0, res = 1.0;
+  for (int k = 0; k < SSD; k++) {
+    if (t >= len) break;
+    float h = sdf(a + dir * t);
+    if (h <= 0.0) return 0.0;
+    res = min(res, h / max(pw * t * 0.01, 0.75));
+    t += max(h, 2.0);
+  }
+  return clamp(res, 0.0, 1.0);
+}
+#if OCC
+float occSeg(vec2 a, vec2 b) {                                      // the bodies' silhouettes on the segment a -> b (inside this frame's box)
+  vec2 d = b - a, dd = vec2(abs(d.x) < 0.001 ? 0.001 : d.x, abs(d.y) < 0.001 ? 0.001 : d.y);
+  vec2 t0 = (OBB.xy - a) / dd, t1 = (OBB.zw - a) / dd, mn = min(t0, t1), mx = max(t0, t1);
+  float e0 = max(max(mn.x, mn.y), 0.0), e1 = min(min(mx.x, mx.y), 1.0);
+  if (e1 <= e0) return 0.0;
+  float L = (e1 - e0) * length(d), n = clamp(ceil(L / 5.0), 1.0, 16.0), o = 0.0;
+  for (int k = 0; k < 16; k++) { if (float(k) >= n) break; o = max(o, occ(a + d * mix(e0, e1, (float(k) + 0.5) / n))); }
+  return o;
+}
+#endif
+float stepq(float x, float n) { float q = x * n, f = floor(q), r = q - f; return (f + smoothstep(0.35, 0.65, r)) / n; }   // clean steps, ~1 px edge
+// phase 4 light shafts: sunlight let into roofed air through openings (cut by walls and bodies), and beams from windows / vents
+vec3 shafts(vec2 wp, float sd0, float fogm) {
+  vec3 S = vec3(0.0);
+  if (sd0 <= 0.5 || SHF.x <= 0.0) return S;
+  if (SUN.z > 0.0) {
+    float rf = max(roofAt(wp), SHF.z);                              // open sky outdoors: a fainter share (crepuscular: the shadows of
+    if (rf > 0.02) {                                                // towers and ledges cut it)
+      float vis = clearTo(wp, SUN.xy, SUN.w, 1.6);
+#if OCC
+      if (vis > 0.0 && OBB.z > OBB.x) vis *= 1.0 - occSeg(wp + SUN.xy * 2.0, wp + SUN.xy * min(SUN.w, 220.0));
+#endif
+      S += SUNC * (SUN.z * stepq(vis * rf * fogm, 3.0));
+    }
+  }
+  for (int i = 0; i < NBM; i++) {
+    vec4 A = BMA[i], B = BMB[i];
+    if (B.z <= 0.0) continue;
+    vec2 r = wp - A.xy; float ta = dot(r, A.zw), sa = abs(dot(r, vec2(-A.w, A.z))), hw = B.x + ta * B.w;
+    if (ta <= 0.0 || ta >= B.y || sa >= hw + 1.0) continue;
+    float e = 1.0 - smoothstep(hw - 1.5, hw + 0.5, sa), f = 1.0 - ta / B.y;
+    float vis = clearTo(wp, -A.zw, ta - 1.0, 1.2);
+#if OCC
+    if (vis > 0.0 && OBB.z > OBB.x) vis *= 1.0 - occSeg(wp, A.xy);
+#endif
+    S += BMC[i].rgb * (B.z * stepq(e * sqrt(f) * vis * fogm, 3.0));
+  }
+  return S;
+}
 // v17 light bands. The summed light (not each lamp) is cut into NB steps, evenly spaced in sqrt (roughly perceptual) space,
 // so overlapping lamps share one set of steps. Stepped (default): each step edge is an anti-aliased ~1 px ramp, no dither;
 // the dimmest step fades out smoothly so a light has no hard outer ring. Dithered (the old look): Bayer-checkered edges.
@@ -358,11 +452,16 @@ void main() {
   }
 #endif
   float sd0 = sdf(wp);
-  vec3 L = vec3(0.0), Lf = vec3(0.0), Lh = vec3(0.0), Lp = vec3(0.0), Lb = vec3(0.0), Lr = vec3(0.0), Ls = vec3(0.0);
+  vec3 L = vec3(0.0), Lf = vec3(0.0), Lh = vec3(0.0), Lp = vec3(0.0), Lb = vec3(0.0), Lr = vec3(0.0), Ls = vec3(0.0), Lq = vec3(0.0), Lsl = vec3(0.0);
+  float qa = 0.0; vec4 pq = vec4(0.0);                              // phase 4: a lit particle here (dust, motes, rain…): it takes the lamps
+#if PART                                                            // as the air does (shadowed, no wall depth, no normals) and the shafts
+  if (PQ.w > 0.0) { pq = texture2D(PT, v); qa = pq.a; }
+#endif
   for (int i = 0; i < NL; i++) {
     if (float(i) >= NLt) break;
     vec4 lp = LP[i], lc = LC[i];
-    float aw = abs(lc.w), cs = step(2047.5, aw), h = aw - 1.0 - 2048.0 * cs;   // phase 3: +2048 = bodies cast shadows from this light
+    float aw = abs(lc.w), slp = step(4095.5, aw); aw -= 4096.0 * slp;   // phase 4: +4096 = a shaft lamp (it lights the air: shafts)
+    float cs = step(2047.5, aw), h = aw - 1.0 - 2048.0 * cs;   // phase 3: +2048 = bodies cast shadows from this light
     vec2 dv; float dist, a;
     if (lp.z < 0.0) { dist = 600.0; dv = lp.xy * dist; a = 1.0; }    // phase 3: lightning, a directional light from the sky (xy: toward it)
     else {
@@ -373,8 +472,9 @@ void main() {
       if (FALL != 1.0) a = pow(a, FALL);
     }
     if (lp.w > 0.0) Lb += lc.rgb * lp.w * a;                        // the backdrop's share (scaled by its depth below): unshadowed
-    if (wa < 0.004) { if (lp.z > 24.0) Lh += lc.rgb * abs(lp.w) * a; continue; }   // pure backdrop: no shadow march
+    if (wa < 0.004 && qa < 0.004 && (slp < 0.5 || SHF.w <= 0.0)) { if (lp.z > 24.0) Lh += lc.rgb * abs(lp.w) * a; continue; }   // pure backdrop: no shadow march
     vec2 dir = dv / max(dist, 0.001);
+    float mn = 1e3;
     if (lc.w > 0.0 && SHAD > 0.5 && dist > 10.0) {                  // shadows: sphere-trace the (rounded) wall SDF toward the light; the
       float end = lp.z < 0.0 ? -lp.z : dist - 10.0, ls = SOFT * (lp.z < 0.0 ? 18.0 : clamp(lp.z * 0.05, 2.0, 12.0));   // light is a disc of radius ls, so the penumbra
       float res = 1.0, t = 1.0, tex = sd0 > 0.0 ? 0.0 : -1.0;                // widens away from the wall that casts it
@@ -383,6 +483,7 @@ void main() {
         float hh = sdf(wp + dir * t);
         if (tex < 0.0) { if (hh > 0.0) tex = t; else { t += max(-hh, 1.5); continue; } }   // a wall pixel: walk out of its own wall first
         if (hh <= 0.0) { res = 0.0; break; }
+        if (t > 6.0) mn = min(mn, hh);                              // phase 4: how close the ray passes an edge (shafts show along shadows)
         if (t - tex > 3.0) res = min(res, hh * dist / (ls * (t - tex)));   // the first px off a surface: no self-penumbra (it speckled)
         t += max(hh, 1.5);
       }
@@ -402,8 +503,11 @@ void main() {
       }
 #endif
     }
+    if (slp > 0.5 && sd0 > 0.5) Lsl += lc.rgb * (abs(lp.w) * a * (1.0 - min(dist / max(lp.z, 1.0), 1.0)) * mix(SHL.x, 1.0, 1.0 - smoothstep(SHL.y, SHL.z, mn)));   // phase 4 lamp shafts: the air's
+                                                                    // light (walls and bodies cut it), brighter along the shadows' edges (a lit disc alone reads as fog)
     vec3 c = lc.rgb * abs(lp.w) * a;
-    if (lp.w < 0.0) { Lp += c * a; continue; }                      // soft fills (the knight's own, marker glows: strength < 0): smooth (a squared again,
+    if (lp.w < 0.0) { Lp += c * a; continue; }
+    Lq += c;                                                        // phase 4: the particle's light (the same shadows, flat)                      // soft fills (the knight's own, marker glows: strength < 0): smooth (a squared again,
                                                                     // no disc), unbanded, no rim / haze, and pale art barely takes them (below)
     if (lp.z > 24.0) Lh += c;                                       // sparks and motes light surfaces but add no haze
     Lf += c;                                                        // the same light on a flat surface (sets the art's soft cap, below)
@@ -452,7 +556,13 @@ void main() {
   float bl = dot(bgc, vec3(0.299, 0.587, 0.114));                   // seen through a back wall (the veil's fading steps) the backdrop is lit
   hdrB = mix(hdrB, bgc * lit, max(smoothstep(0.3, 0.8, wa), smoothstep(0.0, 0.3, wa) * (1.0 - smoothstep(0.12, 0.4, bl))));   // with the wall:
                                                                     // the pool of lamp light stays whole, except where a pale sky shows through
-  vec3 hdr = (mix(hdrB, al * lit + rim + spc, wa) + hz) * EXPO;
+  if (HZ.x + HZ.y > 0.0) hdrB = mix(hdrB, max(hdrB, AIR * AMB), mix(HZ.x, HZ.y, bm.a));   // phase 4 depth haze: far layers fade toward the region's air,
+                                                                    // mid less (lifts only: the dark silhouettes pale with distance, a lit sky never dims)
+  vec3 sh = shafts(wp, sd0, fogm);                                  // phase 4: light shafts (in the air, over the world and the backdrop)
+  if (SHF.w > 0.0) { vec3 ls = Lsl * (SHF.w * SHF.x * fogm); float lm = max(ls.r, max(ls.g, ls.b)); if (lm > 0.0005) sh += ls * (stepq(min(lm / SHL.w, 1.0), 3.0) * SHL.w / lm); }
+  if (sh.r + sh.g + sh.b > 0.0) sh *= 1.0 + 1.6 * step(0.9935, h21(floor(wp + vec2(-TM * 3.0, TM * 5.0))));   // dust motes drifting in the shafts
+  vec3 hdr = (mix(hdrB, al * lit + rim + spc, wa) + hz + sh * (1.0 - em)) * EXPO;
+  if (qa > 0.004) hdr = mix(hdr, pq.rgb * (AMB * PQ.x + bands(Lq, d) * PQ.y + Lp * 0.5 + sh * PQ.z) * EXPO, qa);
   vec3 col = tmap(hdr);                                             // scene light -> display (40_gfx.js GFX_TM); post adds glow in the same curve
   float cm = max(hdr.r, max(hdr.g, hdr.b));
   col = mix(col, vec3(max(col.r, max(col.g, col.b))), DESAT * smoothstep(0.7, 4.0, cm));   // hot light runs a little toward white (coloured lamps on stone don't go neon)
@@ -460,24 +570,25 @@ void main() {
   vec4 fx = texture2D(F, v);
   col = col * (1.0 - 0.85 * fx.a) + fx.rgb * fx.a;                  // emitters: unlit, over the lit scene, as painted
   vec4 tp = texture2D(TP, v);
-  if (DBG > 0.5) { gl_FragColor = vec4(DBG < 1.5 ? vec3(texture2D(BM, v).a) : DBG < 2.5 ? vec3(texture2D(AO, (wp - OR.xy) / OR.zw).r) : DBG < 3.5 ? L * 0.5 : DBG < 4.5 ? vec3(fx.a) : DBG < 5.5 ? vec3(tp.a) : DBG < 6.5 ? tmap(al * lit) : DBG < 7.5 ? vec3(clamp(sd0 / 64.0 + 0.5, 0.0, 1.0)) : DBG < 8.5 ? vec3(nxy * 0.5 + 0.5, nk) : DBG < 9.5 ? vec3(wa) : DBG < 10.5 ? rim : DBG < 11.5 ? vec3(occP, con / max(CON, 0.01), 0.0) : DBG < 12.5 ? vec3(mG, mS, mD) : spc, 1.0); return; }   // test views (8 normals, 9 world coverage, 10 rim; phase 3: 11 silhouettes / pools, 12 materials, 13 glints)
-  gl_FragColor = vec4(clamp(mix(col, tp.rgb, tp.a), 0.0, 1.0), 1.0);
+  if (DBG > 0.5) { gl_FragColor = vec4(DBG < 1.5 ? vec3(texture2D(BM, v).a) : DBG < 2.5 ? vec3(texture2D(AO, (wp - OR.xy) / OR.zw).r) : DBG < 3.5 ? L * 0.5 : DBG < 4.5 ? vec3(fx.a) : DBG < 5.5 ? vec3(tp.a) : DBG < 6.5 ? tmap(al * lit) : DBG < 7.5 ? vec3(clamp(sd0 / 64.0 + 0.5, 0.0, 1.0)) : DBG < 8.5 ? vec3(nxy * 0.5 + 0.5, nk) : DBG < 9.5 ? vec3(wa) : DBG < 10.5 ? rim : DBG < 11.5 ? vec3(occP, con / max(CON, 0.01), 0.0) : DBG < 12.5 ? vec3(mG, mS, mD) : DBG < 13.5 ? spc : DBG < 14.5 ? sh * 8.0 : vec3(qa), 1.0); return; }   // phase 4: 14 shafts (× 8), 15 lit particles   // test views (8 normals, 9 world coverage, 10 rim; phase 3: 11 silhouettes / pools, 12 materials, 13 glints)
+  gl_FragColor = vec4(clamp(mix(col, tp.rgb, tp.a * TOPK), 0.0, 1.0), 1.0);
 }`;
 function lxInitGL() {
   const gl = GFX.gl; if (!gl || !GFX.prog) return false;
   try {
     const maxU = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) || 64;
     const NL = Math.max(8, Math.min(TOUCH_UI ? 16 : 48, Math.floor((maxU - 40) / 2))), SS = TOUCH_UI ? 8 : 12, SSD = TOUCH_UI ? 10 : 20;
-    const OCC = (gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) || 8) >= 9 ? 1 : 0;   // phase 3: the silhouette / pool buffer takes a 9th texture unit
+    const UN = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) || 8, OCC = UN >= 9 ? 1 : 0;   // phase 3: the silhouette / pool buffer takes a 9th texture unit
+    const PART = UN >= 10 ? 1 : 0;   // phase 4: the lit-particle layer takes a 10th
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
     const prog = gl.createProgram();
     gl.attachShader(prog, sh(gl.VERTEX_SHADER, GFX_VS)); const ext = gl.getExtension('OES_standard_derivatives') ? '#extension GL_OES_standard_derivatives : enable\n' : '#define fwidth(x) 0.06\n';
-    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, ext + `#define NL ${NL}\n#define SS ${SS}\n#define SSD ${SSD}\n#define OCC ${OCC}\n` + LX_FS));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, ext + `#define NL ${NL}\n#define SS ${SS}\n#define SSD ${SSD}\n#define OCC ${OCC}\n#define PART ${PART}\n#define NBM ${LX4_NBM}\n` + LX_FS));
     gl.bindAttribLocation(prog, Math.max(0, gl.getAttribLocation(GFX.prog, 'a')), 'a');   // shares the post pass's quad
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
     const u = {};
-    for (const n of ['A', 'F', 'TP', 'BM', 'AO', 'SD', 'S', 'CAM', 'OR', 'AMB', 'NLt', 'SHAD', 'BANDS', 'NB', 'BMAX', 'BSOFT', 'DESAT', 'AOK', 'EMI', 'HAZE', 'HCAP', 'FALL', 'DEPTH', 'DBG', 'LMAX', 'SOFT', 'RIM', 'FOG', 'TM', 'EXPO', 'TMK', 'TMT', 'LP', 'LC', 'NM', 'BG', 'SURF', 'SK', 'SHZ', 'AMBK', 'BGF', 'BGM', 'NTOL', 'OC', 'OBB', 'CSH', 'CON', 'CKZ', 'CMX', 'CSK', 'MAT', 'GLK', 'SHK', 'EYEZ']) u[n] = gl.getUniformLocation(prog, n);
+    for (const n of ['A', 'F', 'TP', 'BM', 'AO', 'SD', 'S', 'CAM', 'OR', 'AMB', 'NLt', 'SHAD', 'BANDS', 'NB', 'BMAX', 'BSOFT', 'DESAT', 'AOK', 'EMI', 'HAZE', 'HCAP', 'FALL', 'DEPTH', 'DBG', 'LMAX', 'SOFT', 'RIM', 'FOG', 'TM', 'EXPO', 'TMK', 'TMT', 'LP', 'LC', 'NM', 'BG', 'SURF', 'SK', 'SHZ', 'AMBK', 'BGF', 'BGM', 'NTOL', 'OC', 'OBB', 'CSH', 'CON', 'CKZ', 'CMX', 'CSK', 'MAT', 'GLK', 'SHK', 'EYEZ', 'TOPK', 'PQ', 'AIR', 'HZ', 'SUN', 'SUNC', 'SHF', 'BMA', 'BMB', 'BMC', 'PT', 'SHL']) u[n] = gl.getUniformLocation(prog, n);
     const mk = (filt) => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, filt], [gl.TEXTURE_MAG_FILTER, filt], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v); return t; };
     gl.activeTexture(gl.TEXTURE0);
     const tA = mk(gl.NEAREST), tF = mk(gl.NEAREST), tT = mk(gl.NEAREST), tN = mk(gl.NEAREST), tB = mk(gl.NEAREST), tBM = mk(gl.NEAREST), tAO = mk(gl.LINEAR), tSD = mk(gl.LINEAR), tOut = mk(gl.LINEAR);
@@ -486,9 +597,11 @@ function lxInitGL() {
     const fbo = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tOut, 0);
     const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE; gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     if (!ok) throw new Error('framebuffer incomplete');
-    gl.useProgram(prog); [['A', 0], ['F', 1], ['TP', 2], ['BM', 3], ['AO', 4], ['SD', 5], ['NM', 6], ['BG', 7]].concat(OCC ? [['OC', 8]] : []).forEach(([n, i]) => gl.uniform1i(u[n], i));
+    const tP = mk(gl.NEAREST);
+    gl.useProgram(prog); [['A', 0], ['F', 1], ['TP', 2], ['BM', 3], ['AO', 4], ['SD', 5], ['NM', 6], ['BG', 7]].concat(OCC ? [['OC', 8]] : []).concat(PART ? [['PT', 9]] : []).forEach(([n, i]) => gl.uniform1i(u[n], i));
     gl.useProgram(GFX.prog);
-    Object.assign(LX, { prog, u, NL, SS, SSD, tA, tF, tT, tN, tB, tBM, tAO, tSD, tOut, tO, fbo, ocOK: !!OCC, room: null, LP: new Float32Array(NL * 4), LC: new Float32Array(NL * 4) });
+    Object.assign(LX, { prog, u, NL, SS, SSD, tA, tF, tT, tN, tB, tBM, tAO, tSD, tOut, tO, tP, fbo, ocOK: !!OCC, partOK: !!PART, room: null, LP: new Float32Array(NL * 4), LC: new Float32Array(NL * 4) });
+    lx4InitGL(gl, mk);   // phase 4: the reflection pass (41c_atmos.js); if it fails, reflections are off and the rest still runs
     return true;
   } catch (e) { console.warn('dynamic lighting unavailable:', e && e.message); LX.bad = true; return false; }
 }
@@ -500,6 +613,7 @@ function lxPass(gl) {
   up(0, LX.tA, low, gl.RGBA); up(1, LX.tF, lowFx, gl.RGBA); up(2, LX.tT, lowTop, gl.RGBA); up(3, LX.tBM, lowBgM, gl.ALPHA); up(4, LX.tAO); up(5, LX.tSD);
   up(6, LX.tN, LXN.on ? lowN : null, gl.RGBA); up(7, LX.tB, lowBg, gl.RGB);   // v17 phase 2: normals (only uploaded while on), the backdrop
   if (LX.ocOK) up(8, LX.tO, LXO.on ? lowO : null, gl.LUMINANCE_ALPHA);          // phase 3: silhouettes + contact pools (only while on)
+  if (LX.partOK) up(9, LX.tP, LX4.part && LX4.pn ? lowP : null, gl.RGBA);       // phase 4: lit particles (only while there are any)
   const T = LX_TUNE, map = LX.map;
   gl.uniform2f(u.S, W, H); gl.uniform2f(u.CAM, LX.cx, LX.cy);
   gl.uniform4f(u.OR, -LX_B * TILE, -LX_B * TILE, map.w * TILE, map.h * TILE);
@@ -512,20 +626,22 @@ function lxPass(gl) {
   gl.uniform1f(u.LMAX, T.lmax); gl.uniform1f(u.EXPO, T.expo * LX_EXPO[br]); gl.uniform1f(u.TMK, GFX_TONE.k); gl.uniform1f(u.TMT, GFX_TONE.t);
   gl.uniform1f(u.SURF, LXN.on ? 1 : 0); gl.uniform1f(u.SK, T.sk); gl.uniform1f(u.SHZ, T.shz); gl.uniform1f(u.AMBK, T.ambk); const bk = lxBgShare(); gl.uniform1f(u.BGF, bk[0]); gl.uniform1f(u.BGM, bk[1]); gl.uniform1f(u.NTOL, T.ntol);
   gl.uniform4fv(u.LP, LX.LP); gl.uniform4fv(u.LC, LX.LC);
-  const cso = LXO.on, B = LXO.bb, hasO = cso && LXO.n > 0 && SETTINGS.csh >= 2;   // phase 3: character shadows, contact pools, materials
-  gl.uniform1f(u.CSH, hasO ? T.csh : 0); gl.uniform1f(u.CON, cso ? T.con : 0);
-  if (hasO) gl.uniform4f(u.OBB, B[0] + LX.cx - 2, B[1] + LX.cy - 2, B[2] + LX.cx + 2, B[3] + LX.cy + 2); else gl.uniform4f(u.OBB, 1e9, 1e9, -1e9, -1e9);
+  const cso = LXO.on, B = LXO.bb, hasS = cso && LXO.n > 0, hasO = hasS && SETTINGS.csh >= 2;   // phase 3: character shadows, contact pools, materials
+  gl.uniform1f(u.CSH, hasO ? T.csh : 0); gl.uniform1f(u.CON, cso && SETTINGS.csh > 0 ? T.con : 0);   // (phase 4: the silhouettes may be on for the reflections / shafts alone)
+  if (hasS) gl.uniform4f(u.OBB, B[0] + LX.cx - 2, B[1] + LX.cy - 2, B[2] + LX.cx + 2, B[3] + LX.cy + 2); else gl.uniform4f(u.OBB, 1e9, 1e9, -1e9, -1e9);
   gl.uniform1f(u.CKZ, T.ckz); gl.uniform1f(u.CMX, T.cmx); gl.uniform1f(u.CSK, T.csk);
   gl.uniform1f(u.MAT, SETTINGS.mat && LXN.on ? 1 : 0); gl.uniform1f(u.GLK, T.glk); gl.uniform1f(u.SHK, T.shk); gl.uniform1f(u.EYEZ, T.eyez);
+  const rf = lx4Uniforms(gl, u);   // phase 4: particles, haze, shafts; true when this frame has reflective surfaces (their pass lays lowTop)
   gl.bindFramebuffer(gl.FRAMEBUFFER, LX.fbo); gl.viewport(0, 0, W, H);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.activeTexture(gl.TEXTURE0);
-  return LX.tOut;
+  return rf ? lx4Reflect(gl) : LX.tOut;
 }
 // if the GL pass dies after the layers were split, flatten them so the plain blit still shows everything
 function lxFlatten() {
   if (!LX.on) return; LX.on = false; lxnBegin(false, false); gLow.setTransform(1, 0, 0, 1, 0, 0);
   gLow.globalCompositeOperation = 'destination-over'; gLow.drawImage(lowBg, 0, 0); gLow.globalCompositeOperation = 'source-over';   // the backdrop goes back under
+  if (LX4.pn) gLow.drawImage(lowP, 0, 0);   // phase 4: the lit particles
   gLow.drawImage(lowFx, 0, 0); gLow.drawImage(lowTop, 0, 0);
 }
 // v17 phase 2: under Dynamic lighting the far backdrop (drawParallax and its overrides: biome layers, vistas, forge…) is drawn

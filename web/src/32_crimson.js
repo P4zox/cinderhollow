@@ -486,8 +486,8 @@ HOOKS.render.push(() => {
 HOOKS.renderTop.push(() => {
   try { cmMusicTick(); } catch (e) {}
   if (!cmIn()) return;
-  if (CM.rain) cmDrawRain();
-  if (room.id === 'CM7' && CM.col && CM.col.k > 0) { const r0 = CM.rain; CM.rain = { k: boss && boss.alive ? 0.6 : 0.3 }; cmDrawRain(); CM.rain = r0; }
+  if (CM.rain) lxAir(cmDrawRain);   // v17 phase 4: the blood rain is lit by the lamps (41c_atmos.js)
+  if (room.id === 'CM7' && CM.col && CM.col.k > 0) { const r0 = CM.rain; CM.rain = { k: boss && boss.alive ? 0.6 : 0.3 }; lxAir(cmDrawRain); CM.rain = r0; }
 });
 
 // ================================================================== enemies

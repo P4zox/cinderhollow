@@ -74,7 +74,7 @@ mvRegister('sns', {
   render() {
     // II: the perfect-rush flash -- the moment to press for a stronger next hit (on the 2nd cut only while the rush is alive)
     const A = ATK[P.state];
-    if (mvHas(2) && A && A.mv && (A.mv.id === 'sh_1' || (A.mv.id === 'sh_2' && P.shRush)) && P.mvT >= A.mv.total - 150) { addLight(P.x + P.face * 10, P.y - 22, 20, '255,240,200', 0.9); if (!P.shFlashed) { P.shFlashed = true; mvSpark(P.x + P.face * 12, P.y - 22, 4, '255,240,200', 90); } }
+    if (mvHas(2) && A && A.mv && (A.mv.id === 'sh_1' || (A.mv.id === 'sh_2' && P.shRush)) && P.mvT >= A.mv.total - 150) { addLight(P.x + P.face * 10, P.y - 22, 20, '255,240,200', 0.9, LX_FXL); if (!P.shFlashed) { P.shFlashed = true; mvSpark(P.x + P.face * 12, P.y - 22, 4, '255,240,200', 90); } }
     else P.shFlashed = false;
     if ((P.state === 'guard' || P.state === 'block') && mvHas(5) && P.clk - (P.guardT0 ?? -9) <= 0.1) addLight(P.x + P.face * 10, P.y - 18, 22, '255,245,215', 0.8);
   },

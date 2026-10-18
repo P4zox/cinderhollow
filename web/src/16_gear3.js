@@ -284,7 +284,7 @@ const GEAR3 = (() => {
           this.tick = 0.14; this.n++;
           areaHit(rect(this.x - (small ? 8 : 12), this.y - 150, this.x + (small ? 8 : 12), this.y + 2), { dmg: dmgPer, poise: small ? 6 : 14, quiet: this.n > 1, burnT: small ? 0 : 3, burnDps: dmgPer * 0.25, from: this.x });
         }
-        if (live) { addLight(this.x, this.y - 40, small ? 40 : 70, '255,220,130', 1); if (Math.random() < 0.6) particles.push({ x: this.x + rand(-8, 8), y: this.y - rand(0, 60), vx: 0, vy: -rand(20, 70), life: 0.5, kind: 'gold' }); }
+        if (live) { addLight(this.x, this.y - 40, small ? 40 : 70, '255,220,130', 1, LX_FXL); if (Math.random() < 0.6) particles.push({ x: this.x + rand(-8, 8), y: this.y - rand(0, 60), vx: 0, vy: -rand(20, 70), life: 0.5, kind: 'gold' }); }
         this.end = this.end ?? null;
         if (this.n >= this.ticks && this.end === null) this.end = this.t;
         return this.end === null || this.t - this.end < 0.16;

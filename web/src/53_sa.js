@@ -195,6 +195,7 @@ function saDrawAmbient() {
   const inView = (x, y, pad = 40) => x > cam.x - pad && x < cam.x + W + pad && y > cam.y - pad && y < cam.y + H + pad;
   drawGlow(() => {
     for (const q of SA.shafts) {
+      if (LX4.sh) break;   // v17 phase 4: real shafts (cut by walls and bodies) replace the painted ones (41c_atmos.js)
       if (!inView(q.x + q.w / 2, q.y + q.h / 2, q.w + q.h)) continue;
       const k = 0.75 + 0.25 * Math.sin(time * 0.6 + q.x * 0.01);
       for (let i = 0; i < q.h; i += 2) {

@@ -226,11 +226,13 @@ function gfxRaySources(dt) {
         let sx = ox + F.x; while (sx < W / 2 - F.w / 2) sx += F.w;
         x = sx / W; y = 1 - (oy + F.y) / H;
       }
-      want.push({ key: 'sun', x, y, k: sun[2], c: lxCol(sun[3]), th: sun[5] ?? 0.42 });
+      // phase 4: indoors, a moon above the view (the cathedral's) shines through holes and windows as real shafts (41c_atmos.js); a sun
+      // painted on screen (vistas, the far layer's) and the sun / moon over an open sky keep this screen-space bleed past the silhouettes
+      if (!(LX4.sh && room.def.indoor && y > 1)) want.push({ key: 'sun', x, y, k: sun[2], c: lxCol(sun[3]), th: sun[5] ?? 0.42 });
     }
     if (LX.on) for (const L of LX.cand) {
       if (want.length >= 3) break;
-      if (L.o === LX_PLAYER || !(L.r >= 56) || !(L.k >= 0.45)) continue;
+      if (L.o === LX_PLAYER || !(L.r >= 56) || !(L.k >= 0.45) || L._sl) continue;   // (phase 4: a shaft lamp lights the air itself, 41_light.js)
       const sx = (L.x - LX.cx) / W, sy = 1 - (L.y - LX.cy) / H;
       if (sx < 0.02 || sx > 0.98 || sy < 0.02 || sy > 0.98) continue;
       want.push({ key: Math.round(L.x / 24) + ',' + Math.round(L.y / 24), x: sx, y: sy, k: 0.42 * Math.min(1.2, L.k) * Math.min(1, L.r / 120), c: lxCol(L.color), th: 0.5 });
@@ -396,10 +398,13 @@ const GFX_ROWS = [
   { k: 'csh', label: 'Character shadows', opts: ['Off', 'Contact', 'On'], shader: true, desc: 'Needs Dynamic lighting. Contact: a soft shadow pools under feet. On: the knight, foes and bosses also throw shadows from nearby lamps (needs shadows).' },
   { k: 'mat', label: 'Materials', opts: ['Off', 'On'], shader: true, desc: 'Needs Surface lighting. Armour, blades and iron catch small glints from lamps; wet stone and ice a soft sheen.' },
   { k: 'eyead', label: 'Eye adaptation', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. Stepping from a bright room into a dark one, your eyes take a moment to adjust (and back).' },
+  { k: 'refl', label: 'Reflections', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. Water, ice and wet stone mirror the knight, foes, lamps and spells above them.' },
+  { k: 'lpart', label: 'Lit particles', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. Dust, ash, spores, snow and rain catch the light of nearby lamps and fall dark away from them. Embers and sparks still glow.' },
+  { k: 'dhaze', label: 'Depth haze', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. Far backdrops fade into the air of each region, the near ones less, so distance reads.' },
   { k: 'preset', label: 'Look', desc: 'A ready-made mix of the options below. Change any of them to make your own.' },
   { k: 'tex', label: 'Texture filter', opts: ['Crisp pixels', 'Smooth pixels', 'Soft'], desc: 'Crisp: hard pixel edges. Smooth pixels: clean anti-aliased pixel art (needs shaders). Soft: blurred.' },
   { k: 'bloom', label: 'Bloom', opts: ['Off', 'Low', 'High'], shader: true, desc: 'Embers, fire, spells and light sources glow and bleed into the dark.' },
-  { k: 'rays', label: 'Light shafts', opts: ['Off', 'Soft', 'Strong'], shader: true, desc: 'Sunlight and strong lamps throw shafts through gaps and past silhouettes, and dust drifts in the lit air.' },
+  { k: 'rays', label: 'Light shafts', opts: ['Off', 'Soft', 'Strong'], shader: true, desc: 'Sun, moon and windows throw shafts through openings, cut by walls and passing bodies, with dust drifting in them. Strong lamps bleed light.' },
   { k: 'grade', label: 'Colour grade', opts: ['Natural', 'Ember', 'Moonlit', 'Noir', 'Vivid'], shader: true, desc: 'Tints the whole world: warm ember, cold moonlight, black-and-white noir, or richer colour.' },
   { k: 'mood', label: 'Region mood', opts: ['Off', 'On'], shader: true, desc: 'Each region keeps its own colour: cold catacomb shadows, a molten Deep, sun-bleached dunes. Under the colour grade.' },
   { k: 'vig', label: 'Lens vignette', opts: ['Off', 'On'], shader: true, desc: 'Darkens the corners a little more, like an old lens.' },

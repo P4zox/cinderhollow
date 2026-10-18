@@ -335,7 +335,7 @@ HOOKS.renderTop.push(() => {
   const rdt = clamp(time - (SPR.lastT ?? time), 0, 0.1); SPR.lastT = time;
   if (state !== 'play') { SPR.flash = Math.max(0, SPR.flash - rdt * 2.2); if (SPR.sky) spUpdateSky(0); if (SPR.pieces.length) spUpdateSea(rdt, true); }   // cutscenes / menus: keep flashes decaying
   spDrawSkyDrake();
-  spDrawRain();
+  lxAir(spDrawRain);   // v17 phase 4: rain is lit by the lamps and the lightning (41c_atmos.js)
   if (SPR.flash > 0) { g.fillStyle = `rgba(210,228,255,${SPR.flash * 0.28})`; g.fillRect(0, 0, W, H); }
   if (SPR.stunT > 0 && P) {   // stunned: ringing stars around the head
     const x = P.x - cam.x, y = P.y - cam.y - 32;

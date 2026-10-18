@@ -56,7 +56,8 @@ class Sheet {
 }
 const SHEETS = {};
 let SHEET_EPOCH = 0;   // bumped on every room change
-let lxNHook = null, lxMidG = null;   // lxMidG: where drawParallax puts the mid layer under Dynamic lighting (41_light.js)   // v17 shading phase 2 (41b_surf.js): mirrors lit sprite draws into the normal buffer
+let lxNHook = null, lxMidG = null, lxFxHook = null;   // lxFxHook (v17 phase 4, 41c_atmos.js): effects drawn into the glow layer light the world
+   // lxMidG: where drawParallax puts the mid layer under Dynamic lighting (41_light.js)   // v17 shading phase 2 (41b_surf.js): mirrors lit sprite draws into the normal buffer
 // warm up sheets created while a room was built; free big ones unused for a few rooms (never the player/weapon)
 function sheetHousekeeping(keep) {
   SHEET_EPOCH++;
@@ -121,6 +122,7 @@ function drawSprite(sh, frame, x, y, face, opt = {}) {
   else if (opt.center) { ax = Math.floor(f.w / 2); ay = Math.floor(f.h / 2); }
   else if (opt.bottom) { ax = Math.floor(f.w / 2); ay = f.h; }
   else { ax = sh.ax; ay = sh.ay; }
+  if (lxFxHook && lxFxHook.g === g) lxFxHook.fx(sh, frame, flip ? X + ax - f.w / 2 : X - ax + f.w / 2, Y - ay + f.h / 2, f, opt);
   g.save();
   g.globalAlpha = opt.alpha ?? 1;
   if (opt.blend) g.globalCompositeOperation = opt.blend;

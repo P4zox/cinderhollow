@@ -57,7 +57,7 @@ SPAWNS.ra = (s, c) => {
     if (s.back === false) { props.push(raStatic(sh, s, pos, face, P_)); return; }
     RA.back.push({ sh, s, pos, face, P_ }); return;
   }
-  const p = { type: 'ra_' + s.k, x: pos.x, y: pos.y, face, anim: { update() {} }, glow: !!P_.glow, t0: rand(0, 10) };
+  const p = { type: 'ra_' + s.k, x: pos.x, y: pos.y, face, anim: { update() {} }, glow: !!P_.glow, t0: rand(0, 10), v: s.v };   // v: the lancet's glass (phase 4 beams)
   p.draw = () => {
     const F = raFrame(sh, s.k, s.v); if (!F) return;
     const n = F.t.to - F.t.from + 1, i = P_.f ? F.i : F.t.from + (n > 1 ? Math.floor((time + p.t0) * (P_.fps || 6)) % n : 0);

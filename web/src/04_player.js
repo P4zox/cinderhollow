@@ -200,7 +200,7 @@ function updatePlayer(dt) {
     case 'cast': {
       P.vx = approach(P.vx, 0, 900 * dt); grav();
       if (!P.spellFired && P.anim.i >= (pHas('cast') ? 4 : 3)) { P.spellFired = true; castSpell(P.castId); }
-      if (P.anim.i >= 2 && P.anim.i <= 5) addLight(P.x + P.face * 12, P.y - 18, 40, '255,210,120', 0.9);
+      if (P.anim.i >= 2 && P.anim.i <= 5) addLight(P.x + P.face * 12, P.y - 18, 40, '255,210,120', 0.9, LX_FXL);
       if (P.anim.done) setP('idle', 'idle', true);
       break;
     }

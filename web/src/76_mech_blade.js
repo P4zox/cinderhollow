@@ -104,7 +104,7 @@ mvRegister('longsword', {
     on: {
       start(A, o) { P.emberEdge = mvHas(5) && !!o.perfect; if (P.emberEdge) { sfx.fire(); for (let i = 0; i < 10; i++) particles.push({ x: P.x + P.face * rand(0, 16), y: P.y - rand(8, 30), vx: 0, vy: -rand(20, 60), life: 0.5, kind: 'fire' }); } },
       update(dt, A) {
-        if (P.emberEdge && P.fireT <= 0) addLight(P.x + P.face * 14, P.y - 18, 34, '255,140,60', 0.9);
+        if (P.emberEdge && P.fireT <= 0) addLight(P.x + P.face * 14, P.y - 18, 34, '255,140,60', 0.9, LX_FXL);
         if (P.emberEdge && P.mvT >= A.mv.wind + 170) {   // the burning follow-up: +1.2 and a burn
           P.emberEdge = false;
           const r = mvRect(A); spawnFx(fxOr('slash3', 'slash'), P.x + P.face * 22, P.y - 16, P.face, null, { tint: '#ff9050' });

@@ -77,7 +77,7 @@ function belPerformRing(encore) {
   belRing(cx, cy, 44, '255,236,190', 0.42, { sq: 0.55, w: 2 });
   belRing(cx, cy, 30, col, 0.32, { sq: 0.55 });
   if (P.belGrand) belRing(cx, cy, 58, '255,214,120', 0.55, { sq: 0.5, w: 2 });
-  addLight(cx, cy, 70, '255,220,160', 1.4);
+  addLight(cx, cy, 70, '255,220,160', 1.4, LX_FXL);
   if (typeof feelFlash === 'function') feelFlash(cx, cy, 52, '255,226,170', 1.2, 0.14);
   for (let i = 0; i < 14; i++) particles.push({ x: P.x + rand(-30, 30), y: P.y - 2, vx: rand(-70, 70), vy: -rand(20, 80), g: 320, life: 0.5, kind: 'dust' });
   const B = belBuffs();

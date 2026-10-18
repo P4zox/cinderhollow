@@ -495,7 +495,7 @@ CFA_KIND.flueshaft = (s, c) => cfaProp(s, c, { y: TILE, update() {
 } });
 CFA_KIND.ventlight = (s, c) => { (CFA.vlx || (CFA.vlx = [])).push(c.cx); return cfaProp(s, c, { y: s.y * TILE, update() { addLight(this.x, this.y + 60, 90, '150,170,205', 0.35); }, draw() {
   if (!cfaVis(this.x, this.y + 80, 120)) return;
-  drawGlow(() => { g.globalAlpha = 0.045; g.fillStyle = '#8f9aa8'; g.beginPath(); g.moveTo(this.x - 10, this.y); g.lineTo(this.x + 10, this.y); g.lineTo(this.x + 34, this.y + 170); g.lineTo(this.x - 30, this.y + 170); g.fill(); g.globalAlpha = 1; });
+  if (!LX4.sh) drawGlow(() => { g.globalAlpha = 0.045; g.fillStyle = '#8f9aa8'; g.beginPath(); g.moveTo(this.x - 10, this.y); g.lineTo(this.x + 10, this.y); g.lineTo(this.x + 34, this.y + 170); g.lineTo(this.x - 30, this.y + 170); g.fill(); g.globalAlpha = 1; });
   cfaR(this.x - 10, this.y - 1, 20, 2, '#2d3849'); for (let i = 0; i < 5; i++) cfaR(this.x - 9 + i * 4, this.y - 1, 2, 2, '#4f6079');
 } }); };
 // drop-through gratings over holes (EXPANSION2 §0: a marker and a prompt) and the drains

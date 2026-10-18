@@ -537,7 +537,7 @@ class Omen extends BossBase {
     const FLOOR = this.floor;
     hazards.push({ x, y: FLOOR, w: 16, h: 110, dmg: BOSS_DMG * 50, id: ++hazardId, life: 5, delay, fx: null,
       onStart: h => { h.fx = spawnFx('pillar', h.x, FLOOR, 1); if (!h.fx) h.life = 0; else sfx.pillar(); },
-      update: h => { if (!h.fx || h.fx.anim.done) { h.life = 0; return; } const i = h.fx.anim.i; if (i >= 3 && i <= 6) { addLight(h.x, FLOOR - 50, 60, '255,210,120', 1); if (Math.random() < 0.5) particles.push({ x: h.x + rand(-6, 6), y: FLOOR - rand(0, 100), vx: 0, vy: -rand(30, 70), life: 0.5, kind: 'gold' }); if (i === 3 && h.fx.anim.changed) shake = Math.max(shake, 2.5); } },
+      update: h => { if (!h.fx || h.fx.anim.done) { h.life = 0; return; } const i = h.fx.anim.i; if (i >= 3 && i <= 6) { addLight(h.x, FLOOR - 50, 60, '255,210,120', 1, LX_FXL); if (Math.random() < 0.5) particles.push({ x: h.x + rand(-6, 6), y: FLOOR - rand(0, 100), vx: 0, vy: -rand(30, 70), life: 0.5, kind: 'gold' }); if (i === 3 && h.fx.anim.changed) shake = Math.max(shake, 2.5); } },
       active: h => h.fx && h.fx.anim.i >= 3 && h.fx.anim.i <= 6 });
     // warning: a thin shaft of light and a burning ring on the floor until the pillar rises
     hazards.push({ x, y: FLOOR, w: 0, h: 0, dmg: 0, life: delay + 0.18, delay: 0, active: () => false, omWarn: true,
@@ -557,7 +557,7 @@ class Omen extends BossBase {
         addLight(s.x, s.y, 20, '255,220,140', 0.8); continue;
       }
       s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt;
-      addLight(s.x, s.y, 26, '255,220,140', 0.9);
+      addLight(s.x, s.y, 26, '255,220,140', 0.9, LX_FXL);
       if (Math.random() < 0.5) particles.push({ x: s.x, y: s.y, vx: 0, vy: -rand(0, 10), life: 0.3, kind: 'gold' });
       const tip = rect(s.x - 5, s.y - 4, s.x + 5, s.y + 4);
       if (overlap(tip, playerHurtbox()) && hurtPlayer(BOSS_DMG * s.dmg, sign(s.vx), s.id)) { s.life = 0; spawnFx('spear_impact', s.x, s.y); }
@@ -570,7 +570,7 @@ class Omen extends BossBase {
     const b = this.blade; if (!b) return;
     b.t += dt; b.rot += dt * 22;
     if (Math.random() < 0.6) particles.push({ x: b.x + rand(-10, 10), y: b.y + rand(-10, 10), vx: 0, vy: -rand(5, 20), life: 0.35, kind: 'gold' });
-    addLight(b.x, b.y, 50, '255,210,120', 0.9);
+    addLight(b.x, b.y, 50, '255,210,120', 0.9, LX_FXL);
     if (b.t % 0.25 < dt) omSfx.blade();
     if (b.phase === 'out') {
       const sp = Math.max(60, 330 * (1 - b.dist / b.max));
@@ -600,7 +600,7 @@ class Omen extends BossBase {
       l.t += dt;
       if (l.t >= l.delay && l.t - dt < l.delay) { sfx.pillar(); shake = Math.max(shake, 5); for (let x = l.x0; x < l.x1; x += 10) particles.push({ x: x + rand(-4, 4), y: this.floor - rand(0, l.h), vx: 0, vy: -rand(40, 110), life: rand(0.4, 0.8), kind: 'gold' }); }
       const on = l.t >= l.delay && l.t < l.delay + 0.28;
-      if (on) { for (let x = l.x0 + 16; x < l.x1; x += 48) addLight(x, this.floor - l.h / 2, 60, '255,220,140', 1);
+      if (on) { for (let x = l.x0 + 16; x < l.x1; x += 48) addLight(x, this.floor - l.h / 2, 60, '255,220,140', 1, LX_FXL);
         if (overlap(rect(l.x0, this.floor - l.h, l.x1, this.floor), playerHurtbox())) hurtPlayer(BOSS_DMG * l.dmg, P.x < (l.x0 + l.x1) / 2 ? -1 : 1, l.id); }
       if (l.t > l.delay + 0.6) l.gone = true;
     }
@@ -610,7 +610,7 @@ class Omen extends BossBase {
   updateCres(dt) {
     for (const c of this.cres) {
       c.t += dt; c.x += c.vx * dt; c.life -= dt;
-      addLight(c.x, this.floor - 30, 50, '255,220,140', 0.9);
+      addLight(c.x, this.floor - 30, 50, '255,220,140', 0.9, LX_FXL);
       if (c.x < TILE || c.x > room.pw - TILE) c.life = 0;
       if (overlap(rect(c.x - 8, this.floor - 56, c.x + 8, this.floor), playerHurtbox()) && hurtPlayer(BOSS_DMG * 40, sign(c.vx), c.id)) {}
     }
@@ -743,7 +743,7 @@ const OMEN_UPD = {
     if (an.changed && an.i === 2) { shake = Math.max(shake, 3); for (let i = 0; i < 12; i++) particles.push({ x: this.x + this.face * rand(0, 90), y: this.floor - rand(0, 6), vx: this.face * rand(20, 90), vy: -rand(20, 70), g: 300, life: 0.5, kind: 'dust' }); }
   },
   grab(an, dt, FLOOR, M) {
-    if (an.i <= 1) { const h = this.mp('grab', 'hand'); addLight(h.x, h.y, 34, '255,170,90', 0.9); if (Math.random() < 0.5) particles.push({ x: h.x + rand(-5, 5), y: h.y + rand(-5, 5), vx: 0, vy: -rand(10, 30), life: 0.4, kind: 'fire' }); }
+    if (an.i <= 1) { const h = this.mp('grab', 'hand'); addLight(h.x, h.y, 34, '255,170,90', 0.9, LX_FXL); if (Math.random() < 0.5) particles.push({ x: h.x + rand(-5, 5), y: h.y + rand(-5, 5), vx: 0, vy: -rand(10, 30), life: 0.4, kind: 'fire' }); }
     if (an.changed && an.i === 2) sfx.bossSwing();
     if (M.active.includes(an.i) && !this.caught && P.state !== 'dead' && !iframes() && !(P.inv > 0)) {
       const r = this.rectM(M.rects[String(an.i)]);
@@ -754,10 +754,10 @@ const OMEN_UPD = {
     this.holdPlayer();
     if (an.changed && an.i === 2) { this.impaleHit(68, false); flashScreen = 0.3; }
     if (an.changed && an.i === 4) this.impaleHit(24, true);
-    if (an.i === 3) addLight(this.x + this.face * 26, this.y - 80, 60, '255,220,140', 1);
+    if (an.i === 3) addLight(this.x + this.face * 26, this.y - 80, 60, '255,220,140', 1, LX_FXL);
   },
   dash(an, dt, FLOOR) {
-    if (an.i === 1) { addLight(this.x, this.y - 50, 80, '255,210,120', 0.9); if (Math.random() < 0.6) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 70), vx: -this.face * rand(10, 40), vy: -rand(5, 20), life: 0.4, kind: 'gold' }); }
+    if (an.i === 1) { addLight(this.x, this.y - 50, 80, '255,210,120', 0.9, LX_FXL); if (Math.random() < 0.6) particles.push({ x: this.x + rand(-30, 30), y: this.y - rand(0, 70), vx: -this.face * rand(10, 40), vy: -rand(5, 20), life: 0.4, kind: 'gold' }); }
     if (an.changed && an.i === 1) omSfx.dash();
     if (an.changed && an.i === 2 && !this.dash) {
       let x1 = clamp(P.x + this.face * 80, this.L + 24, this.R - 24);
@@ -840,7 +840,7 @@ const OMEN_UPD = {
     if (an.changed && an.i === 1) { this.warding = true; omSfx.ward(); }
     if (this.warding) {
       this.wardT -= dt;
-      addLight(sg.x, sg.y, 60, '255,230,160', 0.9);
+      addLight(sg.x, sg.y, 60, '255,230,160', 0.9, LX_FXL);
       for (const pr of projectiles) if (pr.owner === 'player' && Math.abs(pr.x - sg.x) < 20 + Math.abs(pr.vx || 0) * dt && Math.abs(pr.y - sg.y) < 40) {
         pr.life = 0; this.blocked = (this.blocked || 0) + 1; sfx.block(); spawnFx(fxOr('parry_spark', 'hit'), pr.x, pr.y, -this.face);
       }
@@ -865,7 +865,7 @@ const OMEN_UPD = {
   invoke(an, dt, FLOOR) {
     const tip = this.mp('invoke', 'tip');
     if (an.changed && an.i === 1) { this.charge = spawnFx('cast_charge', tip.x, tip.y, 1, null, { loop: true }); sfx.charge(); }
-    if (this.charge) { this.charge.x = tip.x; this.charge.y = tip.y; addLight(tip.x, tip.y, 60, '255,220,140', 1); }
+    if (this.charge) { this.charge.x = tip.x; this.charge.y = tip.y; addLight(tip.x, tip.y, 60, '255,220,140', 1, LX_FXL); }
     if (an.changed && an.i === 4) {
       if (this.charge) { this.charge.kill = true; this.charge = null; }
       flashScreen = 0.3; sfx.glint();
@@ -889,7 +889,7 @@ const OMEN_UPD = {
   },
   cast(an) {
     if (an.changed && an.i === 1) { const p = this.point(this.meta.cast_point); this.charge = spawnFx('cast_charge', p.x, p.y, 1, null, { loop: true }); sfx.charge(); }
-    if (this.charge) { const p = this.point(this.meta.cast_point); this.charge.x = p.x; this.charge.y = p.y; addLight(p.x, p.y, 60, '255,220,140', 1); }
+    if (this.charge) { const p = this.point(this.meta.cast_point); this.charge.x = p.x; this.charge.y = p.y; addLight(p.x, p.y, 60, '255,220,140', 1, LX_FXL); }
     if (an.changed && an.i === 5 && !this.spearsFired) {
       this.spearsFired = true; flashScreen = 0.2;
       if (this.charge) { this.charge.kill = true; this.charge = null; }

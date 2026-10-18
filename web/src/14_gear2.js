@@ -332,7 +332,7 @@ const GEAR2 = (() => {
     add({ x: P.x + P.face * 10, y: P.y - 22, vx: P.face * 185, vy: -175, face: P.face,
       update(dt) {
         this.vy += 560 * dt; this.x += this.vx * dt; this.y += this.vy * dt;
-        addLight(this.x, this.y, 40, '255,140,60', 1);
+        addLight(this.x, this.y, 40, '255,140,60', 1, LX_FXL);
         if (Math.random() < 0.8) particles.push({ x: this.x - sign(this.vx) * 3, y: this.y + rand(-2, 2), vx: -this.vx * 0.1, vy: rand(-20, 10), life: 0.4, kind: 'fire' });
         let hit = solidAtPx(this.x, this.y + 3) || solidAtPx(this.x + sign(this.vx) * 4, this.y) || this.t > 2.5;
         if (!hit) for (const t of foes()) { const hb = hbOf(t); if (hb && overlap(hb, rect(this.x - 5, this.y - 5, this.x + 5, this.y + 5))) { hit = true; break; } }
@@ -700,7 +700,7 @@ const GEAR2 = (() => {
       holdAt(P.artOwn ? P.artRel : 4);
       P.vx = P.face * 640; P.vy = 0; P.artI = true;
       if (Math.floor(s.t * 60) % 2 === 0) S.ghosts.push({ f: P.anim.frame, x: P.x, y: P.y, face: P.face, life: 0.25, col: '#8fe8ff' });
-      addLight(P.x, P.y - 14, 50, '160,225,255', 1);
+      addLight(P.x, P.y - 14, 50, '160,225,255', 1, LX_FXL);
       for (const t of areaHit(rect(P.x - 16, P.y - 30, P.x + 16, P.y + 2), { dmg: meleeDmg(D.light, s.ch ? 2.5 : 1.9), poise: 60, kind: 'heavy', big: true, melee: true }, s.set)) s.hitList.push(t);
       if (Math.abs(P.x - s.x0) >= s.max || solidAtPx(P.x + P.face * 10, P.y - 12) || s.t > 0.5) {
         s.phase = 2; s.t2 = 0; s.x1 = P.x; P.vx = P.face * 60; P.artI = false; s.seed = irand(0, 9999);
@@ -836,7 +836,7 @@ const GEAR2 = (() => {
     updateStatus(dt);
     // my projectiles: light + impact sparks
     for (const pr of S.myProj) {
-      if (pr.life > 0 && projectiles.includes(pr)) { if (!(pr.delay > 0)) { addLight(pr.x, pr.y, 22, '190,140,255', 0.9); if (Math.random() < 0.5) particles.push({ x: pr.x - sign(pr.vx) * 4, y: pr.y, vx: -pr.vx * 0.1, vy: rand(-10, 10), life: 0.3, kind: Math.random() < 0.3 ? 'gold' : 'ink' }); } }
+      if (pr.life > 0 && projectiles.includes(pr)) { if (!(pr.delay > 0)) { addLight(pr.x, pr.y, 22, '190,140,255', 0.9, LX_FXL); if (Math.random() < 0.5) particles.push({ x: pr.x - sign(pr.vx) * 4, y: pr.y, vx: -pr.vx * 0.1, vy: rand(-10, 10), life: 0.3, kind: Math.random() < 0.3 ? 'gold' : 'ink' }); } }
       else { S.myProj.delete(pr); if (pr.life > -dt && pr.t > 0 && pr.hits && pr.hits.size) spawnFx('g_spark', pr.x, pr.y, 1, null, { tint: '#b080ff' }); }
     }
     // reflected missiles glow + frost on hit (frost aegis)
