@@ -412,7 +412,9 @@ void main() {
       float ndh = dot(n3, normalize(normalize(vec3(dv, lp.z < 0.0 ? 0.8 * dist : SHZ)) + v3));   // The normals have 8 directions × 3 tilts,
       Ls += c * (mG * smoothstep(0.95, 0.98, ndh) * GLK            // so a glint jumps facet to facet as the lamp moves: small, sharp, stepped.
                + mD * smoothstep(0.93, 0.99, ndh) * GLK * 0.08     // metal away from the painted highlights: a faint sheen
-               + mS * pow(max(ndh, 0.0), 6.0) * SHK);              // wet stone, ice: a soft broad sheen
+               + mS * pow(max(ndh, 0.0), 6.0) * SHK * smoothstep(0.04, 0.3, lumW) * (lp.z < 0.0 ? 0.3 : 1.0));   // wet stone, ice: a soft broad
+                                                                    // sheen, following the art's own value (dark mortar stays dark); lightning
+                                                                    // would light every flat wet face alike, so it takes only a trace
     }
     if (tilt > 0.01) {                                              // v17 phase 2: the light wraps the form. facing: the normal's tilt toward
       float df = dist / (dist + SHZ), fc = dot(nxy, dir) * df;      // the light (0 right in front of the lamp, where it lights the face)

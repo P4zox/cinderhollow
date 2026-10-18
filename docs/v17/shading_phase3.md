@@ -12,7 +12,7 @@ settings), `40_gfx.js` (eye adaptation, Settings rows), `09_main.js` (which draw
 ## 1. Bodies cast shadows
 
 A new game-resolution buffer `lowO`. While `renderWorld` draws the knight (and his weapon), foes, the boss, and props between
-20 and 160 px that don't glow, `LXO.occ` is set and every `drawSprite` / `drawRotated` also draws the same frame into `lowO` with
+20 and 160 px that don't glow, stand on a floor and are not boxy (art fills < 62 % of the frame's bounding box), `LXO.occ` is set and every `drawSprite` / `drawRotated` also draws the same frame into `lowO` with
 the same transform and alpha. `lxoFinish` flattens it to a silhouette (`source-in` red). The pass uploads it as
 `LUMINANCE_ALPHA` (texture unit 8, LINEAR so taps come out soft).
 
@@ -56,7 +56,8 @@ Materials are decided when the normals are built:
   peak (+0.07 over its 4 neighbours) at ≥ 0.75 × that. All other metal is 3. `ice` sheets: pale blue-white pixels take sheen.
   Every other sheet is matte.
 - Room layers take their region's material from `LXN_MAT_ROOM`: Hoarfrost ice on both layers. The Mire, the Barrows and the
-  outdoor Spire (under rain) get wet stone, on the terrain only.
+  outdoor Spire (under rain) get wet stone, on the terrain only: every stone pixel, mortar included. Each pixel's sheen is
+  scaled by its own value (`smoothstep(0.04, 0.3, lum)`), so dark joints stay dark.
 
 In the shader, each lamp with r > 40 adds a specular term from `n·h`. `h` is halfway between the direction to the lamp (lamp
 `shz` px in front of the plane) and the viewer, who sits 420 px in front of the screen centre, so glints slide a little as the
@@ -64,7 +65,8 @@ view moves:
 
 - highlight: `smoothstep(0.95, 0.98, n·h) × 2.2`. Sharp, almost binary.
 - metal body: `smoothstep(0.93, 0.99) × 0.18`. A faint sheen.
-- wet / ice: `(n·h)^6 × 0.45`. A soft broad sheen.
+- wet / ice: `(n·h)^6 × 0.45 × smoothstep(0.04, 0.3, lum)`. A soft broad sheen. Lightning takes only 0.3 of it: a sky light
+  would light every flat wet face alike.
 
 The normals have only 8 directions × 3 tilts, so a glint jumps from facet to facet as a lamp or the knight moves. It stays
 small and stepped and never smears. Specular light is added as light of its own (like the rim), metal tints it 35 % toward
@@ -124,6 +126,32 @@ flashes, from a hash of the time. No `Math.random`, so seeded tests stay in step
 flash lights ledge tops, helmets and shoulders, leaves the faces under the ledges in shade, and throws the foes' shadows down
 and to the side (`lightning_sequence.png`, `lightning_zoom.png`).
 
+### Review fix: square blocks under the lightning
+The lead found hard-edged rectangles on the top brick course of SP8's platforms during a flash: a darker block inside a
+brick face, and pale outlines on the left wall top in the strike frame. They were not shadows. Rendering with Character
+shadows at Contact, Materials Off and Surface lighting Off showed they came from the **wet sheen**. The first cut kept
+inner-line pixels dry, and room layers decide "line" against the median of each 16 px cell. So in some cells a whole brick
+face counted as mortar and stayed dry, in square blocks, while its neighbours took the flash's sheen. The directional flash
+lights every flat wet face alike, which made those blocks stand out.
+
+Fixes:
+- Every stone pixel is wet; the sheen is scaled by the pixel's own value.
+- Lightning takes 0.3 of the sheen.
+- Body shadows now come only from props that stand on a floor and are not boxy. Portraits, windows and cabinets in the
+  Crimson rooms cast rectangles in the silhouette buffer (debug view 11).
+
+The pale block left of the statue on SP8's platform is painted frost on that brick. It is there in phase 2 and in calm frames.
+The flash's own shadows come from the rounded SDF march (phase 1) and the silhouettes, so they are soft and shaped like their
+casters.
+
+Re-checked:
+- Every open-sky Spire room under a flash and a strike: SP2, 3, 4, 5, 6, 8, 9, 11, 14, 16 and 17. The SP15 spot teleported
+  to SP8 instead.
+- The Pharaoh's storm in DU8 (`storms.js`, `lightning_rooms.png`).
+- The silhouette buffer in 10 regular rooms: R5, C8, CF5, A8, CM9, K7, NV10, TV9, DB15, SF11.
+
+No box-shaped shadows remain. `area/checks.js` re-run: 0 BAD/FAIL, `errs: []`. r_spire's mean is now 16.5 → 16.9 (was 17.1).
+
 ## Settings (Settings › Graphics)
 
 | row | options | default | notes |
@@ -135,7 +163,7 @@ and to the side (`lightning_sequence.png`, `lightning_zoom.png`).
 New keys get their defaults from `LX_DEFAULTS`; there is no migration. The silhouette buffer needs a 9th texture unit. On a GPU
 with only 8 (`MAX_TEXTURE_IMAGE_UNITS < 9`), the shader is compiled without it (`OCC 0`), and cast shadows and pools are
 skipped. New `LX_TUNE` knobs: `csh con ckz cmx csk glk shk eyez sky skyFill skyReach`. `LXN_TUNE`: `mCh mLo mHi mHk mPk iceV`.
-`LXO_TUNE`: `pool air propMin propMax`. Debug views (`LX.dbg`): 11 silhouettes (red) / pools (green), 12 materials (red
+`LXO_TUNE`: `pool air propMin propMax boxy`. Debug views (`LX.dbg`): 11 silhouettes (red) / pools (green), 12 materials (red
 highlight, green sheen, blue metal), 13 the specular light alone.
 
 ## Measurements
@@ -166,7 +194,7 @@ it the noisy one, as in phase 2.)
   release build minifies it. The split build was not rebuilt: it writes the tracked `web/dist/pub/`.
 
 ### Luminance (`luminance.md`, the phase-1 `stats.py` over every region, vista, dark and hot spot)
-Default-setting means stay within ±0.2 of phase 2 everywhere except **r_spire** (16.5 → 17.1, p95 51.8 → 54.8). That is the
+Default-setting means stay within ±0.2 of phase 2 everywhere except **r_spire** (16.5 → 16.9, p95 51.8 → 53.0). That is the
 wet-stone sheen under the moon-lamp on its ledge. No new pixels ≥ 245, and cream % is unchanged (±0.02). Stress (Bright +
 High bloom + Strong shafts): ±0.1. **Classic and shaders off: pixel-identical** (all 7 captures, bounding box of the
 difference = none).
@@ -180,6 +208,7 @@ difference = none).
   between him and the warden, plus the pools and glints.
 - `before_after_boss.png` and `_boss_zoom.png`: the Hearthkeeper in CF8 at fixed frames, phase 1 at the furnace, phase 3 in the
   dark with its flame (glints on helmet and arm, body shadows on the wall, pools).
+- `lightning_rooms.png`: every open-sky Spire room under a sky flash and the Pharaoh's storm in DU8, before | after (`storms.js`).
 - `lightning_sequence.png`, `_2.png`, `lightning_zoom.png`: SP8 calm, a sky flash at frames 1, 4, 8 and 14 of its decay, and a
   strike to the knight's right (frames 16, 19). The after column has the sky light with shadows; the before column has the
   old unshadowed flash light.

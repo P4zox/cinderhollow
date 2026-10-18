@@ -110,7 +110,7 @@ function lxnBuild(src, w, h, o) {
         for (const j of [i - 1, i + 1, i - w, i + w]) if (j >= 0 && j < n && al[j]) { nb += L[j]; c++; }
         mat[i] = L[i] >= hi || (c && L[i] - nb / c >= T.mPk && L[i] >= hi * 0.75) ? 1 : 3;
       } else if (o.mat === 'ice') { if (mx >= T.iceV && b >= r * 0.95 && ch < 0.55) mat[i] = 2; }
-      else if (o.mat === 'wet') { if (!line[i] && mx >= 0.05) mat[i] = 2; }
+      else if (o.mat === 'wet') { if (mx >= 0.05) mat[i] = 2; }   // every stone pixel (not the per-16 px-cell line test: it left whole brick faces dry in square blocks)
     }
   }
   // gradient -> quantized normal
@@ -281,7 +281,7 @@ function lxnRotOf(sh, fi, M) {
 // LUMINANCE_ALPHA: silhouette = L × A, pool = A − L × A.
 const [lowO, gO] = lxCanvas();
 const LXO = { on: false, occ: false, n: 0, bb: [1e9, 1e9, -1e9, -1e9], pools: 0 };
-const LXO_TUNE = { pool: 0.6, air: 88, propMin: 20, propMax: 160 };
+const LXO_TUNE = { pool: 0.6, air: 88, propMin: 20, propMax: 160, boxy: 0.62 };
 function lxoBox(dx, dy, w, h) {
   const M = g.getTransform(), B = LXO.bb;
   for (const [x, y] of [[dx, dy], [dx + w, dy], [dx, dy + h], [dx + w, dy + h]]) {
@@ -349,7 +349,19 @@ function lxnBegin(on, lit) {
 function lxoProp(p) {
   if (!LXO.on || SETTINGS.csh < 2 || !p.sh || !p.sh.ok || lxProp(p) || p.type === 'fog' || p.type === 'veil' || p.type === 'updraft' || p.type === 'npc') return false;
   const fw = p.sh.fw, fh = p.sh.fh;
-  return fh >= LXO_TUNE.propMin && fw >= 12 && fw <= LXO_TUNE.propMax && fh <= LXO_TUNE.propMax;
+  if (!(fh >= LXO_TUNE.propMin && fw >= 12 && fw <= LXO_TUNE.propMax && fh <= LXO_TUNE.propMax)) return false;
+  const t = tileAt(Math.floor(p.x / TILE), Math.floor((p.y + 2) / TILE));   // standing on a floor: pictures, windows and banners on the wall
+  if (!(isSolidT(t) || t === T_PLAT)) return false;                          // lie flat on it and cast none
+  return lxoFill(p.sh) < LXO_TUNE.boxy;   // nor do boxy props (cabinets, crates, plinths): their shadow would read as a block, not a shape
+}
+function lxoFill(sh) {   // how much of its frame's bounding box the art fills (frame 0, once per sheet)
+  if (sh._fill !== undefined) return sh._fill;
+  const f = sh.frames[0], img = sh.img; if (!f || !img.complete || !img.naturalWidth) return 1;
+  const x = lxnScratch(f.w, f.h); x.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
+  const d = x.getImageData(0, 0, f.w, f.h).data;
+  let c = 0, x0 = f.w, y0 = f.h, x1 = -1, y1 = -1;
+  for (let y = 0; y < f.h; y++) for (let xx = 0; xx < f.w; xx++) if (d[(y * f.w + xx) * 4 + 3] >= 100) { c++; if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  return (sh._fill = c ? c / ((x1 - x0 + 1) * (y1 - y0 + 1)) : 1);
 }
 // contact pools: a soft dark ellipse on the floor under x (feet at y). In the air it lies on the floor below, wider and fainter, and
 // tightens as the body comes down. w: half-width of the body's footprint.
