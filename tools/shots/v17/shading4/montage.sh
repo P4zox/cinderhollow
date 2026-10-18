@@ -3,9 +3,9 @@
 G="python3 grid.py"
 pairs() { b=$1; a=$2; shift 2; for n in "$@"; do printf '%s/%s.png %s/%s.png ' "$b" "$n" "$a" "$n"; done; }
 P="before_proto after_proto"
-$G before_after_reflections.png --cols 2 --w 640 $(pairs $P rf_CF5 rf_CF5b rf_CF10 rf_DB15 rf_M14 rf_M7)
-$G before_after_reflections_2.png --cols 2 --w 640 $(pairs $P rf_HF8 rf_HF13 rf_SP8 fx_holy)
-$G before_after_reflections_zoom.png --cols 2 --crop 300,280,900,600 --z 1.2 $(pairs $P rf_CF5 rf_CF10 rf_M7 rf_HF8)
+$G before_after_reflections.png --cols 2 --w 640 $(pairs $P rf_CF5 rf_CF5b rf_CF10 rf_DB15 rf_M14 rf_M7 rf_DB5)
+$G before_after_reflections_2.png --cols 2 --w 640 $(pairs $P rf_HF8 rf_HF13 rf_SP8 rf_DB15j rf_M7j fx_holy)
+$G before_after_reflections_zoom.png --cols 2 --crop 300,280,900,600 --z 1.2 $(pairs $P rf_CF5 rf_CF10 rf_DB5 rf_M7 rf_HF8 rf_HF13)
 $G before_after_particles.png --cols 2 --w 640 $(pairs $P pt_C10m pt_K7m pt_C10d pt_HF14s pt_M14s pt_SP8)
 $G before_after_particles_zoom.png --cols 2 --crop 250,150,850,500 --z 1.2 $(pairs $P pt_C10m pt_K7m pt_SP8)
 $G before_after_shafts.png --cols 2 --w 640 $(pairs $P sh_K7 sh_K7b sh_K11 sh_C10 sh_CF5)

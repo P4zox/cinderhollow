@@ -14,6 +14,7 @@ const PRE = window.__shPrefix || '', ONLY = window.__shOnly, DBG = window.__shDb
 const SPOTS = window.__shSpots || [   // phase 4 prototypes: reflections, particles, shafts, haze
   ['rf_CF5', 'CF5', 45, 14, 'foes'], ['rf_CF5b', 'CF5', 9, 14], ['rf_CF10', 'CF10', 20, 7], ['rf_DB15', 'DB15', 9, 10, '', 1], ['rf_M14', 'M14', 14, 8, '', 1],
   ['rf_HF8', 'HF8', 25, 7], ['rf_HF13', 'HF13', 12, 6], ['rf_SP8', 'SP8', 68, 17, 'foes'], ['rf_M7', 'M7', 20, 10],
+  ['rf_DB5', 'DB5', 30, 8, 'foes'], ['rf_DB15j', 'DB15', 11, 10, 'jump', 1], ['rf_M7j', 'M7', 20, 10, 'jump', 1],
   ['sh_K7', 'K7', 14, 7], ['sh_K7b', 'K7', 40, 7], ['sh_K11', 'K11', 20, 16], ['sh_C10', 'C10', 22, 10, 'foes'], ['sh_CF5', 'CF5', 40, 14], ['sh_R5', 'R5', 70, 12],
   ['pt_C10', 'C10', 40, 10, '', -1], ['pt_C10d', 'C10', 40, 10, '', -1, "__cloud('dust', 500)"], ['pt_C10m', 'C10', 26, 10, '', 1, "__cloud('mote', 300)"],
   ['pt_HF14s', 'HF14', 35, 20, '', 1, "__cloud('petal', 300)"], ['pt_M14s', 'M14', 20, 8, '', 1, "__cloud('spore', 300)"], ['pt_K7m', 'K7', 14, 7, '', 1, "__cloud('mote', 300)"], ['pt_A8', 'A8', 28, 27], ['pt_M14', 'M14', 20, 8], ['pt_HF14', 'HF14', 35, 20], ['pt_SP8', 'SP8', 60, 17],

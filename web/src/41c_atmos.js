@@ -22,7 +22,7 @@ const LX4_NBM = 4;   // beams (windows, vents) per frame
 //   particles: pAmb pLamp pShaft their share of the ambient, the lamps and the shafts
 //   shafts: sun (× GFX_SUN strength), beam, gain per Light shafts setting (Soft, Strong), reach (px), roofN (tiles to a roof)
 //   haze: far / mid (outdoors), farIn / midIn (indoors), farHall (halls whose far painting is the back wall), vista (× on benches)
-const LX4_TUNE = { env: 0.4, body: 0.75, bg: 0.12, dark: 0.88, wD: 44, iD: 10, wetD: 6, pudD: 5, wetS: 6, pudS: 2, wetT: 0.32, wetK: 0.6, sky: 0.3,
+const LX4_TUNE = { env: 0.4, body: 0.75, bg: 0.12, dark: 0.88, wD: 44, wDm: 84, gap0: 24, gap1: 56, lift: 1.35, iD: 10, wetD: 6, pudD: 5, wetS: 6, pudS: 2, wetT: 0.32, wetK: 0.6, sky: 0.3,
   fxMax: 0.8, fxK: 0.6, fxR: 0.95, fxMin: 22, fxMaxR: 170,
   pAmb: 0.9, pLamp: 1.0, pShaft: 6, sun: 0.22, open: 0, lamp: 0.12, lampOpen: 0.2, lampE0: 5, lampE1: 22, lampTop: 0.1, beam: 0.16, gain: [0, 1, 1.5], reach: 300, roofN: 10,
   far: 0.26, mid: 0.11, farIn: 0.16, midIn: 0.07, farHall: 0.1, vista: 0.45 };
@@ -131,7 +131,7 @@ function lx4Mask() {
     const sy = Math.round(f.y + 2);
     for (let tx = Math.max(tx0, Math.floor(f.x0 / TILE)); tx <= tx1 && tx * TILE < f.x1; tx++) {
       if (isSolidT(tileAt(tx, Math.floor((sy + 1) / TILE)))) continue;
-      let yb = sy; while (yb < sy + T.wD && !isSolidT(tileAt(tx, Math.floor(yb / TILE)))) yb = (Math.floor(yb / TILE) + 1) * TILE;
+      let yb = sy; while (yb < sy + T.wDm && !isSolidT(tileAt(tx, Math.floor(yb / TILE)))) yb = (Math.floor(yb / TILE) + 1) * TILE;
       const x0 = Math.max(f.x0, tx * TILE), x1 = Math.min(f.x1, tx * TILE + TILE);
       lx4Rect(x0, sy, x1 - x0, Math.min(yb, f.y1) - sy, sy, LX4_K.water, o.F === KIT_FLUID.poison ? 0 : 4);
     }
@@ -145,7 +145,7 @@ function lx4Mask() {
         let bot = ty; while (bot < ty1 && lx4Water(tileAt(tx, bot + 1))) bot++;
         const up = tileAt(tx, top - 1);
         if (!sk && !isSolidT(up)) {
-          const sy = top * TILE, y1 = Math.min((bot + 1) * TILE, sy + T.wD);
+          const sy = top * TILE, y1 = Math.min((bot + 1) * TILE, sy + T.wDm);
           if (y1 > ty * TILE) lx4Rect(px, Math.max(sy, ty * TILE), TILE, y1 - Math.max(sy, ty * TILE), sy, LX4_K.water, t === T_WATER ? 0 : t === T_FWATER_ ? 3 : forge ? 2 : 1);
         }
         ty = bot; continue;
@@ -162,7 +162,7 @@ function lx4Mask() {
     const y = Math.round(DBW.tide.y);
     for (let tx = tx0; tx <= tx1; tx++) {
       const c = tileAt(tx, Math.floor(y / TILE)); if (isSolidT(c) && c !== T_PLAT) continue;
-      lx4Rect(tx * TILE, y, TILE, T.wD, y, LX4_K.water, 1);
+      lx4Rect(tx * TILE, y, TILE, T.wDm, y, LX4_K.water, 1);
     }
   }
   if (typeof RA !== 'undefined' && RA.roomObj === room && RA.waters) for (const w of RA.waters) lx4Rect(w.x0, w.y, w.x1 - w.x0, w.y1 - w.y + 1, w.y, LX4_K.water, 4);
@@ -252,12 +252,51 @@ function lx4Air(bio) {
   return [0, 2, 4].map(i => parseInt(t.slice(i, i + 2), 16) / 255 * k);   // (not cached: the far sheet may still be decoding)
 }
 
+// ---- per body: how strongly it reflects (whole or not at all). Its box's lowest point against the first water / ice / floor under it:
+// full within RG.x px, none past RG.y; a body whose feet are already under the line wades (marked < 0: the shader keeps it only over
+// bright water, which shows the part below). Bodies that cannot reflect are not sent; the rest, up to 16, nearest the water first.
+function lx4Surf(x, y) {   // world px: the first water / solid surface at or below y (column x), within 5 tiles; { y, water }
+  const tx = Math.floor(x / TILE);
+  if (typeof DBW !== 'undefined' && DBW.roomObj === room && DBW.tide && y >= DBW.tide.y - LX4_TUNE.gap1 && y < DBW.tide.y + 80) return { y: DBW.tide.y, water: true };
+  for (let ty = Math.floor((y - 1) / TILE), k = 0; k < 6; ty++, k++) {
+    const t = tileAt(tx, ty);
+    if (lx4Water(t)) { let top = ty; while (top > ty - 40 && lx4Water(tileAt(tx, top - 1))) top--; return { y: top * TILE, water: true }; }
+    if (isSolidT(t) && ty * TILE >= y - 2) return { y: ty * TILE, water: false };
+  }
+  return null;
+}
+function lx4BodyK() {
+  const T = LX4_TUNE, out = [];
+  if (!LX4.rbx) { LX4.rbx = new Float32Array(64); LX4.rbk = new Float32Array(16); }
+  LX4.rbx.fill(0); LX4.rbk.fill(0);
+  for (const b of LXO.boxes) {
+    if (b[2] - b[0] < 2 || b[3] - b[1] < 2) continue;
+    const cx = (b[0] + b[2]) / 2 + LX.cx, bot = b[3] + LX.cy;
+    let best = null;
+    for (const fx of [0.3, 0.5, 0.7]) {   // the surface under three points of the body (a cloak over the edge of a basin)
+      const S = lx4Surf(b[0] + (b[2] - b[0]) * fx + LX.cx, bot - 4); if (!S) continue;
+      if (!best || S.y < best.y) best = S;   // the highest one: a body wading in one column wades
+    }
+    if (!best) continue;
+    const gap = best.y - bot, wade = best.water && bot > best.y + 3;
+    const k = wade ? -1 : 1 - clamp((gap - T.gap0) / (T.gap1 - T.gap0), 0, 1);
+    if (k === 0) continue;
+    out.push([b, k, Math.abs(gap)]);
+  }
+  out.sort((p, q) => p[2] - q[2]);
+  out.slice(0, 16).forEach(([b, k], i) => { LX4.rbx.set([b[0] - 1, b[1] - 1, b[2] + 1, b[3] + 1], i * 4); LX4.rbk[i] = k; });
+}
+
 // ---- the reflection pass (after the lighting, before the post pass): reads the lit frame at the mirrored pixel
 const LX_RF = GFX_HEAD.replace('uniform sampler2D T;\nuniform vec2 S;\n', '') + `
 uniform sampler2D LT, RM, OC, WA, TP, FX;
 uniform vec2 S, CAM;
 uniform float TM, WPH, HOC;
 uniform vec4 RK, RD, RW;
+uniform vec3 RG;
+uniform vec4 RBX[16], RBK[4];
+uniform float RE, DBG;
+vec3 dbg = vec3(0.0);
 uniform vec3 RT[8], SKY;
 vec2 uvp(vec2 p) { return vec2((p.x + 0.5) / S.x, 1.0 - (p.y + 0.5) / S.y); }
 void main() {
@@ -271,7 +310,8 @@ void main() {
     for (int i = 0; i < 8; i++) if (abs(float(i) - ti) < 0.5) tint = mix(vec3(1.0), RT[i], 0.6);   // a hint of the water's colour
     float depth = kind < 1.5 ? RD.x : kind < 2.5 ? RD.y : kind < 3.5 ? RD.z : RD.w;
     if (d >= 0.0 && d < depth) {
-      float fd = 1.0 - d / depth;
+      float de = kind < 1.5 ? RE : depth;                               // water: the surroundings fade over RE, bodies reach the whole mask
+      float fd = clamp(1.0 - d / de, 0.0, 1.0);
       fd = floor(fd * 4.0 + 0.75) / 4.0;                               // fades with depth in 4 clean steps (pixel-art water strips)
       vec2 q;
       if (kind < 1.5) {                                                // water: rippled (whole-pixel shifts that grow with depth) and
@@ -286,22 +326,39 @@ void main() {
         vec2 qu = uvp(q);
         vec3 r = texture2D(LT, qu).rgb;
         vec4 o = texture2D(OC, qu);
-        float body = max(HOC * o.r * o.a, texture2D(FX, qu).a);       // bodies (silhouettes) and emitters reflect clearly,
-        float kf = m.r * fd * clamp(q.y / 8.0, 0.0, 1.0);              // lit world faintly, the painted backdrop barely (its own painted
-        float ke = mix(RK.z, RK.x, texture2D(WA, qu).a) * kf, kb = RK.y * body * kf;   // reflections are not mirrored twice)
+        float bo = HOC * o.r * o.a, bf = texture2D(FX, qu).a, top = clamp(q.y / 8.0, 0.0, 1.0);
+        // a body reflects whole or not at all: one strength per body (lx4BodyK: how high its lowest point stands above the water under
+        // it; none when it hovers high, or wades in dark water that hides the part below the line, so its mirror would float loose),
+        // the same for every pixel of it: no depth steps cut it into pieces. The smallest box holding the mirrored pixel decides.
+        float lc = dot(col, vec3(0.299, 0.587, 0.114)), fg = 0.0, ba = 1e9;
+        if (bo > 0.05) for (int i = 0; i < 16; i++) {
+          vec4 bx = RBX[i]; float bk = RBK[i / 4][0];
+          if (i - 4 * (i / 4) == 1) bk = RBK[i / 4][1]; else if (i - 4 * (i / 4) == 2) bk = RBK[i / 4][2]; else if (i - 4 * (i / 4) == 3) bk = RBK[i / 4][3];
+          if (q.x < bx.x || q.x > bx.z || q.y < bx.y || q.y > bx.w) continue;
+          float ar = (bx.z - bx.x) * (bx.w - bx.y);
+          if (ar < ba) { ba = ar; fg = bk < 0.0 ? -bk * smoothstep(0.08, 0.2, lc) : bk; }   // < 0: wading (only bright water shows it)
+        }
+        float kf = m.r * fd * top;                                     // the surroundings: lit world faintly, the painted backdrop barely
+        float ke = mix(RK.z, RK.x, texture2D(WA, qu).a) * kf * (1.0 - step(0.05, bo));   // (its own painted reflections are not mirrored
+                                                                       // twice); a body never shows through this path, only whole (kb)
+        float kb = RK.y * m.r * top * max(bo * fg, bf * fd);           // bodies (silhouettes) whole; emitters (lamps, spells) by depth
+        float body = max(bo, bf); dbg = vec3(bo, bf, fg * step(0.05, bo));
         if (kind > 2.5 && kind < 3.5) {                                // wet stone: only what is bright (lamps, flames, spells) streaks
           float br = max(r.r, max(r.g, r.b));
           col += r * (max(br - RW.z, 0.0) / max(br, 0.01)) * (RW.w * m.r * fd * mix(0.7, 1.0, body));
         } else {
           vec3 rr = r * tint * RK.w;
           col = max(col, mix(col, rr, ke));                            // the surroundings only lighten the water (it keeps its own colour)
-          col = mix(col, rr, kb);                                      // a body shows as itself, darker or lighter than the water
+          float lr = dot(rr, vec3(0.299, 0.587, 0.114));
+          vec3 rb = mix(rr, rr * max(1.0, (lc * RG.z + 0.012) / max(lr, 0.004)), 1.0 - smoothstep(0.08, 0.2, lc));   // dark armour over dark water: a step above it, so the
+          col = mix(col, rb, kb);                                      // silhouette reads as itself instead of vanishing (cloak left floating)
         }
       }
       col += SKY * tint * (m.r * fd * (kind > 2.5 && kind < 3.5 ? 0.3 : 1.0));   // lightning: the sky flashes in the surface
     }
   }
   vec4 tp = texture2D(TP, v);
+  if (DBG > 15.5) { gl_FragColor = vec4(DBG < 16.5 ? dbg : m.rgb, 1.0); return; }   // test views: 16 the mirrored bodies (r silhouette, g emitter, b whole-body fade), 17 the mask
   gl_FragColor = vec4(clamp(mix(col, tp.rgb, tp.a), 0.0, 1.0), 1.0);
 }`;
 function lx4InitGL(gl, mk) {
@@ -324,9 +381,10 @@ function lx4Reflect(gl) {
   bind(0, LX.tOut); bind(2, LX.tO); bind(3, LX.tA); bind(4, LX.tT); bind(5, LX.tF);
   gl.uniform2f(u.S, W, H); gl.uniform2f(u.CAM, LX.cx, LX.cy); gl.uniform1f(u.TM, time % 1000); gl.uniform1f(u.WPH, (time * 3) % (Math.PI * 2));
   gl.uniform1f(u.HOC, LXO.on && LXO.n ? 1 : 0);
-  gl.uniform4f(u.RK, T.env, T.body, T.bg, T.dark); gl.uniform4f(u.RD, T.wD, T.iD, T.wetD, T.pudD); gl.uniform4f(u.RW, T.wetS, T.pudS, T.wetT, T.wetK);
+  gl.uniform4f(u.RK, T.env, T.body, T.bg, T.dark); gl.uniform4f(u.RD, T.wDm, T.iD, T.wetD, T.pudD); gl.uniform1f(u.RE, T.wD); gl.uniform1f(u.DBG, LX.dbg || 0); gl.uniform3f(u.RG, T.gap0, T.gap1, T.lift); gl.uniform4f(u.RW, T.wetS, T.pudS, T.wetT, T.wetK);
   if (!LX4.rt) { LX4.rt = new Float32Array(24); LX4_RT.forEach((c, i) => LX4.rt.set(c, i * 3)); }
   gl.uniform3fv(u.RT, LX4.rt);
+  lx4BodyK(); gl.uniform4fv(u.RBX, LX4.rbx); gl.uniform4fv(u.RBK, LX4.rbk);
   const s0 = LX.cand[0], sky = s0 && s0.o && s0.o.sky && LX.n ? s0 : null, c = sky ? lxCol(sky.color) : null, sk = sky ? Math.min(1.6, sky.k) * T.sky : 0;
   gl.uniform3f(u.SKY, sky ? c[0] * sk : 0, sky ? c[1] * sk : 0, sky ? c[2] * sk : 0);
   gl.bindFramebuffer(gl.FRAMEBUFFER, LX4.fbo2); gl.viewport(0, 0, W, H);

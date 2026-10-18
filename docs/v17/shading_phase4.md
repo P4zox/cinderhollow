@@ -35,6 +35,15 @@ The reflections are computed in screen space from the frame that is already lit,
   - **wet stone**: the floor is seen at a grazing angle, so 1 px of floor mirrors 6 px of height. Only what is bright reflects
     (lamps, flames, spells), so these show as very faint, short streaks under the lamps.
   - **puddles**: a squashed, slightly rippled mirror.
+  - **Bodies reflect whole or not at all** (lead review fix). Each body's box is recorded with its silhouette (`LXO.boxes`), and
+    `lx4BodyK` gives each body one strength from how high its lowest point stands above the first water, ice or floor under it:
+    full within 24 px, none past 56 px. A body whose feet are already under the line *wades*; dark water hides the part below
+    the line, so its mirror would float loose (the first cut showed the knight's cloak alone, mid-water, in CF10), and it gets
+    none. Over bright water (the Mire's rot water) a wading body still reflects. The 16 bodies nearest the water go to the shader
+    as boxes; the smallest box holding a mirrored pixel decides, so every pixel of a body gets the same strength and the depth
+    steps no longer cut it into pieces. Body reflections reach 84 px below the line; the surroundings still fade over 44 px.
+    Dark armour over dark water is kept a step (×1.35) above the water's own luminance, so the silhouette reads as itself.
+    Bodies never show through the surroundings' lighten-only path, only whole.
   - Bodies (the silhouette buffer) and emitters (`lowFx`) reflect strongly (0.75). The lit world reflects faintly (0.4) and only
     lightens the water, so bright rot water keeps its glow. The painted backdrop reflects barely (0.12), so a painting's own
     baked reflection is not mirrored a second time.
@@ -137,19 +146,19 @@ roofN`, haze `far mid farIn midIn farHall vista`, effects `fxMax fxK fxR fxMin f
 
 | room | main (phase 3, default) | phase 4, new options off | phase 4, all on (default) |
 |---|---|---|---|
-| C10 catacombs (lamp shafts) | 0.21 / 2.86 / 3.24 | 0.21 / 2.80 / 3.19 | 0.14 / 2.30 / 2.52 |
-| CF5 cisterns (reflections, vent beam) | 0.18 / 2.16 / 2.43 | 0.18 / 2.19 / 2.47 | 0.17 / 2.38 / 2.64 |
-| K7 cathedral (3 lancet beams, motes) | 0.19 / 2.18 / 2.48 | 0.23 / 2.26 / 2.59 | 0.21 / 2.37 / 2.67 |
-| DB15 lagoon (reflections, 3 beams) | 0.43 / 2.45 / 2.99 | 0.45 / 2.52 / 3.10 | 0.36 / 2.57 / 3.03 |
-| SP8 spire (puddles, wet stone, rain) | 0.41 / 2.31 / 2.86 | 0.44 / 2.42 / 3.01 | 0.41 / 2.65 / 3.17 |
-| R5 ramparts | 0.22 / 2.16 / 2.49 | 0.24 / 2.37 / 2.75 | 0.23 / 2.44 / 2.79 |
-| SF11 starfall | 0.37 / 2.29 / 2.77 | 0.38 / 2.41 / 2.92 | 0.37 / 2.43 / 2.93 |
+| C10 catacombs (lamp shafts) | 0.22 / 2.98 / 3.38 | 0.22 / 2.82 / 3.23 | 0.16 / 2.37 / 2.62 |
+| CF5 cisterns (reflections, vent beam) | 0.18 / 2.26 / 2.57 | 0.18 / 2.26 / 2.58 | 0.18 / 2.44 / 2.73 |
+| K7 cathedral (3 lancet beams, motes) | 0.24 / 2.26 / 2.61 | 0.22 / 2.28 / 2.64 | 0.24 / 2.48 / 2.85 |
+| DB15 lagoon (reflections, 3 beams) | 0.46 / 2.65 / 3.26 | 0.45 / 2.61 / 3.20 | 0.36 / 2.66 / 3.13 |
+| SP8 spire (puddles, wet stone, rain) | 0.37 / 2.39 / 2.91 | 0.38 / 2.52 / 3.07 | 0.45 / 2.85 / 3.46 |
+| R5 ramparts | 0.16 / 2.23 / 2.51 | 0.25 / 2.40 / 2.79 | 0.28 / 2.65 / 3.08 |
+| SF11 starfall | 0.41 / 2.38 / 2.93 | 0.42 / 2.58 / 3.16 | 0.43 / 2.70 / 3.30 |
 
 (renderWorld / presentWorld / whole step, ms. Each room's first column is measured right after entering it, which makes C10's the
 noisy one, as in phases 2 and 3. Per-option rows are in `perf.txt`.)
 
-- Overall: +0.1–0.35 ms a frame against main. The heaviest frame is SP8, with puddles, wet stone, rain and 12 foes: whole frames
-  stay at 2.5–3.2 ms.
+- Overall: +0.1–0.55 ms a frame against main (run-to-run noise is about ±0.15 ms). The heaviest frame is SP8, with puddles, wet
+  stone, rain and 12 foes: whole frames stay at 2.6–3.5 ms.
 - Reflections cost the mask (≈ 0.02 ms of CPU), one RGBA upload and the small pass (+0.1–0.2 ms), and only on frames that show
   water, ice or wet stone.
 - Shafts cost one SDF march per roofed air pixel while a high sun is up, plus a march inside each beam.
@@ -171,8 +180,9 @@ noisy one, as in phases 2 and 3. Per-option rows are in `perf.txt`.)
 ## Montages (`tools/shots/v17/shading4/`, gitignored like every capture)
 
 - **Reflections.**
-  - `before_after_reflections.png` and `_2.png`: CF5 (the smith and the knight in the cisterns), CF5b, CF10, DB15, M14, M7 (the
-    knight over rot water), HF8 (the knight on ice), HF13, SP8, and the holy burst over CF5's water.
+  - `before_after_reflections.png` and `_2.png`: CF5 (the smith; the knight floating), CF5b, CF10, DB15, M14, M7 (the knight
+    at rot water), DB5 (the Ferryman's mere, the knight wading), HF8 and HF13 (the knight on ice), SP8, the knight jumping over
+    DB15 and M7 (high: no reflection), and the holy burst over CF5's water.
   - `before_after_reflections_zoom.png`: native-pixel crops of the same.
 - **Particles.**
   - `before_after_particles.png` and `_zoom.png`: dense clouds near lamps. These are the C10 motes and dust, the K7 motes (the
@@ -209,8 +219,8 @@ to evaluate before the capture (e.g. `__cloud('mote', 300)`, a dense particle cl
 - `SHOT_HTML=… sh tools/shots/v17/boss/run.sh tools/shots/v17/boss/flow.js`: the full flow, `errs: []`, 0 BAD/FAIL.
 - `node shot.js v17/area/checks.js`: `errs: []`, 0 BAD/FAIL.
 - `node shot.js v15/cores/flow.js`: 34/34 OK, 0 BAD/FAIL.
-- `node shot.js tr/bosses.js`: 31 OK and 1 BAD, `saint0 … byPlayer=0`. This is the known flaky one, and it fails the same way on
-  main.
+- `node shot.js tr/bosses.js`: 32/32 OK on the final run (an earlier run had the known flaky `saint0 … byPlayer=0`, which fails the
+  same way on main).
 - **Settings matrix.** These ran on CF5, SP8, K7, C8 and R11 with no console errors:
   - Character shadows Off (reflections and shafts keep the silhouettes alone);
   - Dynamic without shadows (the old shafts);

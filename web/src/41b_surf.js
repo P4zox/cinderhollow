@@ -280,15 +280,16 @@ function lxnRotOf(sh, fi, M) {
 // under whatever stands on (or hovers over) the ground (alpha only, under the silhouettes). The lighting pass uploads it as
 // LUMINANCE_ALPHA: silhouette = L × A, pool = A − L × A.
 const [lowO, gO] = lxCanvas();
-const LXO = { on: false, occ: false, n: 0, bb: [1e9, 1e9, -1e9, -1e9], pools: 0 };
+const LXO = { on: false, occ: false, n: 0, bb: [1e9, 1e9, -1e9, -1e9], pools: 0, boxes: [] };
 const LXO_TUNE = { pool: 0.6, air: 88, propMin: 20, propMax: 160, boxy: 0.62 };
 function lxoBox(dx, dy, w, h) {
-  const M = g.getTransform(), B = LXO.bb;
+  const M = g.getTransform(), B = LXO.bb, b = [1e9, 1e9, -1e9, -1e9];
   for (const [x, y] of [[dx, dy], [dx + w, dy], [dx, dy + h], [dx + w, dy + h]]) {
     const X = M.a * x + M.c * y + M.e, Y = M.b * x + M.d * y + M.f;
     if (X < B[0]) B[0] = X; if (Y < B[1]) B[1] = Y; if (X > B[2]) B[2] = X; if (Y > B[3]) B[3] = Y;
+    if (X < b[0]) b[0] = X; if (Y < b[1]) b[1] = Y; if (X > b[2]) b[2] = X; if (Y > b[3]) b[3] = Y;
   }
-  LXO.n++;
+  LXO.n++; if (LXO.boxes.length < 96) LXO.boxes.push(b);   // phase 4: each body's own box (its reflection is decided per body, 41c_atmos.js)
 }
 function lxoDraw(img, sx, sy, w, h, dx, dy) {
   gO.setTransform(g.getTransform()); gO.globalAlpha = g.globalAlpha;
@@ -340,7 +341,7 @@ function lxnLayer(cv, kind) {   // a cached room layer was just drawn into the l
 function lxnBegin(on, lit) {
   LXN.on = on; lxNHook.g = lit ? gLow : null;
   const sil = SETTINGS.csh >= 2 || lx4WantSil();   // phase 4: reflections and light shafts read the silhouettes too (41c_atmos.js)
-  LXO.on = !!(lit && LX.ocOK && (SETTINGS.csh > 0 || sil)); LXO.sil = LXO.on && sil; LXO.occ = false; LXO.n = 0; LXO.pools = 0; LXO.bb = [1e9, 1e9, -1e9, -1e9];
+  LXO.on = !!(lit && LX.ocOK && (SETTINGS.csh > 0 || sil)); LXO.sil = LXO.on && sil; LXO.occ = false; LXO.boxes.length = 0; LXO.n = 0; LXO.pools = 0; LXO.bb = [1e9, 1e9, -1e9, -1e9];
   if (LXO.on) { gO.setTransform(1, 0, 0, 1, 0, 0); gO.globalAlpha = 1; gO.globalCompositeOperation = 'source-over'; gO.clearRect(0, 0, W, H); }
   if (!on) return;
   gN.setTransform(1, 0, 0, 1, 0, 0); gN.globalAlpha = 1; gN.clearRect(0, 0, W, H);
