@@ -549,7 +549,7 @@ SYS_KIND.lore = (s, c) => {
   p.interact = () => sysOpenPage(page, { fromWorld: true });
   p.update = () => {
     const unread = page && !x3().lore[page];
-    if (unread) { addLight(p.x, p.y - 12, 28, '255,220,150', 0.55 + 0.15 * Math.sin(time * 3)); if (Math.random() < 0.06) particles.push({ x: p.x + rand(-6, 6), y: p.y - rand(4, 16), vx: 0, vy: -rand(6, 16), life: 0.9, kind: 'gold' }); }
+    if (unread) { addLight(p.x, p.y - 12, 28, '255,220,150', 0.55 + 0.15 * Math.sin(time * 3), LX_SOFT); if (Math.random() < 0.06) particles.push({ x: p.x + rand(-6, 6), y: p.y - rand(4, 16), vx: 0, vy: -rand(6, 16), life: 0.9, kind: 'gold' }); }
   };
   p.draw = () => { if (look === 'none') return; if (!sysDraw(sh, look, 0, p.x, p.y, p.face)) { g.fillStyle = '#6a6070'; g.fillRect(Math.round(p.x) - 6, Math.round(p.y) - 14, 12, 14); } };
   props.push(p);

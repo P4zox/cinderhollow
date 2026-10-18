@@ -10,6 +10,8 @@ $P before_after_hot.png before after h_deep h_ember h_forge_hearth h_flue h_neon
 $P before_after_boss.png before after hk_p1_flash0 hk_p1_flash1 hk_p1_flash2 hk_p3_flash hk_flash55 hk_flash55_screen $W
 $P before_after_boss_zoom.png before after hk_p1_flash1 hk_flash55 --crop 420,180,820,560 $W
 $P before_after_buffers.png buffers_before buffers_after du_dbg2 du_dbg3 cat_dbg3 her_dbg3 $W
+$P before_after_fill_zoom.png before after r_threshold s_threshold_nofill s_threshold_read s_crown_snow s_dunes_sand --crop 380,250,880,560 --w 500
+$P before_after_fill_bright.png before after r_crown r_dunes s_LF1 s_X11 v_LF1 v_X11 $W
 $P before_after_bands_zoom.png before after d_catacombs d_hermit r_threshold --crop 380,150,880,450 $W
 $P before_after_stress.png before_stress after_stress r_ramparts r_crown d_catacombs h_forge_hearth $W
 $P before_after_classic.png before_off after_off r_ramparts d_catacombs d_lightsout $W

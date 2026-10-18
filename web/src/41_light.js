@@ -39,7 +39,8 @@ const LX_LIT_FX = new Set(['dust', 'wall_dust', 'blood', 'bleed', 'death_ash', '
   'g2_sandstorm', 'g2_chains', 'g2_bramble', 'du_coffin', 'tv_cloud', 'tv_thorn', 'tv_rootspike', 'root_spike', 'kd_pool', 'ground_crack', 'rotmist']);
 const LX_LIT_P = new Set(['rock', 'ash', 'dust', 'blood', 'ink', 'petal', 'sand', 'sandd', 'db_foam', 'db_ink', 'db_bubble', 'tv_leaf', 'tv_thorn', 'glass', 'nh_dark', 'env', 'mat', 'wall', 'puddle', 'flood']);
 const LX_LIT_PROJ = new Set(['arrow', 'mist', 'emist']);
-const LX_PLAYER = { player: true }, LX_FLICKER = { flicker: true };   // shared option objects (lanterns, candles, torches, braziers pass LX_FLICKER)   // the personal light: always kept, never culled
+const LX_PLAYER = { player: true }, LX_FLICKER = { flicker: true }, LX_SOFT = { soft: true };   // LX_SOFT: a small marker glow, drawn like the knight's fill (no band rings, no halo on pale art)
+   // shared option objects (lanterns, candles, torches, braziers pass LX_FLICKER)   // the personal light: always kept, never culled
 
 // run a draw callback into the glow layer (unlit, stays bright in the dark and feeds the bloom). Classic: draws normally.
 function drawGlow(fn) {
@@ -105,8 +106,8 @@ function lxCollect(ls) {
   const c = lxCol(O.amb || LX_AMB[bio] || '150,155,180'), lum = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2], lvl = (1 - amb) * (O.lvl ?? LX_TUNE.amb) * (LX_BOOST[bio] || 1) * LX_BRIGHT[SETTINGS.bright ?? 1] / lum;
   LX.amb = c.map(v => v * lvl);
   // v17: the knight's fill light matters in dark regions and only there (by the region's darkness, AREAS[b].ambient): full from
-  // 0.45 up, none in daylight rooms (crown, dunes, the Last Field), stronger while a boss has snuffed the lamps
-  LX.pk = clamp((amb - 0.2) / 0.25, 0, 1) * (typeof darkT !== 'undefined' && darkT > 0 ? 1.6 : 1);
+  // 0.45 up, none at 0.25 or less (crown, dunes, the Last Field, training), a trace at the Threshold (0.3), stronger while a boss has snuffed the lamps
+  LX.pk = clamp((amb - 0.25) / 0.2, 0, 1) * (typeof darkT !== 'undefined' && darkT > 0 ? 1.6 : 1);
   const cx = LX.cx, cy = LX.cy, cand = LX.cand; cand.length = 0;
   for (const L of ls) {
     if (!(L.r > 1) || !(L.k > 0.01)) continue;
@@ -139,7 +140,7 @@ function lxCollect(ls) {
       }
     }
     const col = lxCol(L.color), gain = LX_TUNE.gain;
-    LP[i * 4] = x; LP[i * 4 + 1] = y; LP[i * 4 + 2] = r; LP[i * 4 + 3] = Math.min(1.6, k) * gain * (L.o === LX_PLAYER ? LX_TUNE.player * LX.pk : 1);
+    LP[i * 4] = x; LP[i * 4 + 1] = y; LP[i * 4 + 2] = r; LP[i * 4 + 3] = Math.min(1.6, k) * gain * (L.o === LX_PLAYER ? -LX_TUNE.player * LX.pk : o.soft ? -1 : 1);   // < 0: a soft fill (see LX_FS)
     LC[i * 4] = col[0]; LC[i * 4 + 1] = col[1]; LC[i * 4 + 2] = col[2]; LC[i * 4 + 3] = (sh ? 1 : -1) * (1 + (o.height || 0));
   }
   LX.n = n;
@@ -251,7 +252,7 @@ uniform sampler2D A, F, TP, OC, AO, SD;
 uniform vec2 S, CAM;
 uniform vec4 OR;
 uniform vec3 AMB;
-uniform float NLt, SHAD, BANDS, NB, BMAX, BSOFT, DESAT, AOK, EMI, HAZE, HCAP, FALL, DEPTH, DBG, LMAX, SOFT, RIM, FOG, TM, PL, EXPO;
+uniform float NLt, SHAD, BANDS, NB, BMAX, BSOFT, DESAT, AOK, EMI, HAZE, HCAP, FALL, DEPTH, DBG, LMAX, SOFT, RIM, FOG, TM, EXPO;
 uniform vec4 LP[NL], LC[NL];
 ` + GFX_TM + `
 float bayer2(vec2 a) { return fract(a.x * 0.5 + a.y * a.y * 0.75); }
@@ -310,12 +311,14 @@ void main() {
       }
       a *= smoothstep(0.0, 1.0, res) * clamp(1.0 - (tex < 0.0 ? t : tex) / DEPTH, 0.12, 1.0);   // walls: lit from the surface, fading inward
     }
-    vec3 c = lc.rgb * lp.w * a;
-    if (float(i) < PL) { Lp += c * a; continue; }                   // the knight's own fill: smooth (a squared again: no disc), unbanded, no rim / haze
+    vec3 c = lc.rgb * abs(lp.w) * a;
+    if (lp.w < 0.0) { Lp += c * a; continue; }                      // soft fills (the knight's own, marker glows: strength < 0): smooth (a squared again,
+                                                                    // no disc), unbanded, no rim / haze, and pale art barely takes them (below)
     L += c * (1.0 + rimE * max(dot(sn, dir), 0.0));
     if (lp.z > 24.0) Lh += c;                                       // sparks and motes light surfaces but add no haze
   }
-  L = bands(L, d) + Lp * (1.0 - 0.75 * smoothstep(0.3, 0.7, max(al.r, max(al.g, al.b))));   // the fill reads the dark knight; pale walls behind him barely take it (no halo)
+  float pa = 1.0 - dot(al, vec3(0.299, 0.587, 0.114));             // the fill reads the dark knight; pale art behind him barely takes it (no halo):
+  L = bands(L, d) + Lp * min(1.0, pa * pa * 1.4);                   // (1 - albedo luminance)^2, full on the knight's dark plate (lum <= ~0.15)
   float fogm = FOG > 0.0 ? mix(1.0, 0.35 + 1.3 * (0.65 * vn(wp * 0.028 + vec2(TM * 0.19, TM * 0.06)) + 0.35 * vn(wp * 0.07 - vec2(TM * 0.11, 0.0))), FOG) : 1.0;   // drifting dust in the light
   float ao = mix(1.0, texture2D(AO, (wp - OR.xy) / OR.zw).r, AOK);
   vec3 lit = AMB * ao + L * mix(1.0, ao, 0.5);
@@ -351,7 +354,7 @@ function lxInitGL() {
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
     const u = {};
-    for (const n of ['A', 'F', 'TP', 'OC', 'AO', 'SD', 'S', 'CAM', 'OR', 'AMB', 'NLt', 'SHAD', 'BANDS', 'NB', 'BMAX', 'BSOFT', 'DESAT', 'AOK', 'EMI', 'HAZE', 'HCAP', 'FALL', 'DEPTH', 'DBG', 'LMAX', 'SOFT', 'RIM', 'FOG', 'TM', 'PL', 'EXPO', 'TMK', 'TMT', 'LP', 'LC']) u[n] = gl.getUniformLocation(prog, n);
+    for (const n of ['A', 'F', 'TP', 'OC', 'AO', 'SD', 'S', 'CAM', 'OR', 'AMB', 'NLt', 'SHAD', 'BANDS', 'NB', 'BMAX', 'BSOFT', 'DESAT', 'AOK', 'EMI', 'HAZE', 'HCAP', 'FALL', 'DEPTH', 'DBG', 'LMAX', 'SOFT', 'RIM', 'FOG', 'TM', 'EXPO', 'TMK', 'TMT', 'LP', 'LC']) u[n] = gl.getUniformLocation(prog, n);
     const mk = (filt) => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, filt], [gl.TEXTURE_MAG_FILTER, filt], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v); return t; };
     gl.activeTexture(gl.TEXTURE0);
     const tA = mk(gl.NEAREST), tF = mk(gl.NEAREST), tT = mk(gl.NEAREST), tO = mk(gl.LINEAR), tAO = mk(gl.LINEAR), tSD = mk(gl.LINEAR), tOut = mk(gl.LINEAR);
@@ -378,7 +381,7 @@ function lxPass(gl) {
   const rays = SETTINGS.rays > 0, br = SETTINGS.bright ?? 1;   // Graphics › Light shafts also thickens the haze and lets dust drift through it
   gl.uniform1f(u.NLt, LX.n); gl.uniform1f(u.SHAD, SETTINGS.light >= 2 ? 1 : 0); gl.uniform1f(u.BANDS, [1, 0, 2][SETTINGS.lband | 0] ?? 1);
   gl.uniform1f(u.NB, T.steps); gl.uniform1f(u.BMAX, T.bmax); gl.uniform1f(u.BSOFT, T.bsoft); gl.uniform1f(u.DESAT, T.desat);
-  gl.uniform1f(u.SOFT, SETTINGS.light === 3 ? T.soft : T.hard); gl.uniform1f(u.RIM, SETTINGS.rim ? T.rim : 0); gl.uniform1f(u.FOG, rays ? T.fog : 0); gl.uniform1f(u.TM, time % 1000); gl.uniform1f(u.PL, LX.n && LX.cand[0] && LX.cand[0].o === LX_PLAYER ? 1 : 0);
+  gl.uniform1f(u.SOFT, SETTINGS.light === 3 ? T.soft : T.hard); gl.uniform1f(u.RIM, SETTINGS.rim ? T.rim : 0); gl.uniform1f(u.FOG, rays ? T.fog : 0); gl.uniform1f(u.TM, time % 1000);
   gl.uniform1f(u.AOK, 1); gl.uniform1f(u.EMI, T.emi * (lxDark() ? 0.35 : 1)); gl.uniform1f(u.HAZE, rays ? T.hazeRays : T.haze); gl.uniform1f(u.HCAP, T.hcap); gl.uniform1f(u.FALL, T.fall); gl.uniform1f(u.DEPTH, T.depth); gl.uniform1f(u.DBG, LX.dbg || 0);
   gl.uniform1f(u.LMAX, T.lmax); gl.uniform1f(u.EXPO, T.expo * LX_EXPO[br]); gl.uniform1f(u.TMK, GFX_TONE.k); gl.uniform1f(u.TMT, GFX_TONE.t);
   gl.uniform4fv(u.LP, LX.LP); gl.uniform4fv(u.LC, LX.LC);

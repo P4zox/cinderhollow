@@ -19,6 +19,8 @@ const SPOTS = window.__shSpots || [
   ['d_catacombs', 'C10', 26, 10], ['d_crimson', 'CM1', 22, 8], ['d_hermit', 'H2', 24, 8], ['d_lightsout', 'C10', 26, 10, 'dark'],
   ['h_deep', 'D17', 8, 11], ['h_ember', 'E4', 28, 10], ['h_forge_hearth', 'CF8', 35, 17], ['h_neon', 'NH17', 8, 9], ['h_flue', 'CF3', 14, 26],
   ['v_R11', 'R11', 19, 5, 'seat'], ['v_K11', 'K11', 11, 16, 'seat'], ['v_HF14', 'HF14', 14, 14, 'seat'], ['v_SP15', 'SP15', 11, 6, 'seat'], ['v_DU15', 'DU15', 31, 12, 'seat'],
+  ['v_LF1', 'LF1', 66, 15, 'seat'], ['v_X11', 'X11', 20, 19, 'seat'], ['s_LF1', 'LF1', 66, 15], ['s_X11', 'X11', 20, 19], ['s_crown_snow', 'X10', 24, 11], ['s_dunes_sand', 'DU1', 37, 5],
+  ['s_threshold_nofill', 'CT2', 46, 31, 'nofill'], ['s_threshold_read', 'CT2', 46, 31, 'read'],   // nofill first: 'read' marks the page read for good
 ];
 const world = async (n) => { E(`vctx.fillStyle = '#050407'; vctx.fillRect(0, 0, view.width, view.height); renderWorld(); presentWorld();`); await snap(PRE + n); };
 const out = [JSON.stringify({ shaders: G.SETTINGS.shaders, light: G.SETTINGS.light, lband: G.SETTINGS.lband, rim: G.SETTINGS.rim, bloom: G.SETTINGS.bloom, rays: G.SETTINGS.rays, bright: G.SETTINGS.bright, mood: G.SETTINGS.mood, grade: G.SETTINGS.grade })];
@@ -35,7 +37,10 @@ for (const [n, r, x, y, kind] of SPOTS) {
       for (let i = 0; i < 170; i++) { G.step(1); G.enemies.length = 0; }
     }
     if (kind === 'dark') { E('darkT = 6'); }
+    if (kind === 'read' && window.__sys) { for (const p of G.props) if (p.page) window.__sys.x3().lore[p.page] = 1; }   // lore pages read: no 'unread' glow
+    const pl0 = G.lx && G.lx.LX_TUNE.player; if (kind === 'nofill' && G.lx) G.lx.LX_TUNE.player = 0;   // the knight's fill off (diagnostic)
     G.step(2); await world(n);
+    if (kind === 'nofill' && G.lx) G.lx.LX_TUNE.player = pl0;
     if (kind === 'seat' && window.__sys) { window.__sys.stand(); for (let i = 0; i < 60; i++) G.step(1); }
     E('darkT = 0');
     out.push(`${n} ok room=${G.room} state=${G.state}`);

@@ -90,11 +90,19 @@ layer, which would be a phase-2 job.
 ### 5. The knight's fill light
 - Light: `addLight(P.x, P.y − 12, 60, '255,188,140', 0.42)` (was r 100, k 0.9, '255,210,170', y − 16). It is smaller,
   warmer, lower and dimmer.
-- In the lighting pass it gets its own smooth accumulator: the falloff is applied twice (a² ≈ (1 − x²)³), it is not
-  banded, and it gets no rim or haze. Pale albedo behind the knight takes only 25 % of it (`1 − 0.75·smoothstep(0.3, 0.7,
-  max)`), so there is no halo on fog or snow.
-- It scales with the region's darkness (`AREAS[b].ambient`): full from 0.45, none in daylight rooms (Crown, Dunes, Last
-  Field, Training), and ×1.6 while a boss has snuffed the lamps (`darkT`).
+- In the lighting pass it is a "soft fill": strength < 0 in `LP` marks it. Soft fills get their own smooth accumulator:
+  the falloff is applied twice (a² ≈ (1 − x²)³), they are not banded, and they get no rim or haze. Pale art takes only
+  `min(1, 1.4·(1 − albedo luminance)²)` of them: the knight's dark plate takes all of it, Threshold fog about 22 %, so
+  there is no halo. The old `PL` uniform is gone.
+- It scales with the region's darkness (`AREAS[b].ambient`): full from 0.45, none at 0.25 or less (Crown, Dunes, Last
+  Field, Training), a trace at the Threshold (0.3), and ×1.6 while a boss has snuffed the lamps (`darkT`).
+- Review follow-up: the white glow behind the knight's helmet in the Threshold (CT2) was not this light. It was the
+  "unread lore page" marker (43_systems.js, r 28, k 0.55-0.7). The page sits on the spawn spot, and the marker's banded
+  disc showed against the pale fog. The proof is in `before_after_fill_zoom.png`: with the fill off (`s_threshold_nofill`)
+  the halo stays, and with the page read (`s_threshold_read`) it is gone. The marker now passes `LX_SOFT` and is drawn as a
+  soft fill: no band rings, and only a trace on pale art. It still glows on dark stone, with its gold motes. Checked with
+  no halo: Crown snow (X10), Dunes sand (DU1), Last Field (LF1) and the Pale Crown vista (X11), standing and seated, and CT2
+  (`before_after_fill_bright.png`).
 - Classic: the darkness hole for the knight is r × 1.2, k × 1.65, with a soft mid stop, so there is no disc edge. The warm
   glow uses `screen` instead of `lighter`, so it can't push a wall to flat white. The bench vista's copy of the fill
   (43_systems.js) matches.
@@ -131,48 +139,56 @@ Crown's white sky art.
 
 | shot | mean before | mean after | p95 before | p95 after | % ≥245 before | % ≥245 after | % cream before | % cream after |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| d_catacombs | 21.1 | 25.4 | 86.8 | 92.6 | 0.00 | 0.02 | 0.09 | 0.02 |
-| d_crimson | 8.5 | 11.4 | 31.5 | 43.8 | 0.00 | 0.00 | 0.03 | 0.01 |
-| d_hermit | 24.9 | 21.7 | 101.4 | 64.9 | 0.00 | 0.00 | 0.03 | 0.01 |
-| d_lightsout | 5.4 | 1.4 | 37.0 | 6.7 | 0.00 | 0.00 | 0.03 | 0.00 |
-| h_deep | 8.8 | 10.5 | 31.3 | 35.6 | 0.00 | 0.00 | 0.04 | 0.00 |
-| h_ember | 9.8 | 12.1 | 33.4 | 40.1 | 0.00 | 0.00 | 0.03 | 0.00 |
+| d_catacombs | 21.1 | 25.3 | 86.8 | 91.3 | 0.00 | 0.02 | 0.09 | 0.02 |
+| d_crimson | 8.5 | 11.3 | 31.5 | 43.8 | 0.00 | 0.00 | 0.03 | 0.01 |
+| d_hermit | 24.9 | 21.6 | 101.4 | 64.9 | 0.00 | 0.00 | 0.03 | 0.00 |
+| d_lightsout | 5.4 | 1.2 | 37.0 | 5.4 | 0.00 | 0.00 | 0.03 | 0.00 |
+| h_deep | 8.8 | 10.4 | 31.3 | 35.4 | 0.00 | 0.00 | 0.04 | 0.00 |
+| h_ember | 9.8 | 12.0 | 33.4 | 40.0 | 0.00 | 0.00 | 0.03 | 0.00 |
 | h_flue | 13.4 | 20.5 | 37.6 | 45.6 | 0.00 | 0.00 | 0.12 | 0.08 |
-| h_forge_hearth | 16.6 | 22.8 | 52.2 | 66.2 | 0.00 | 0.00 | 0.15 | 0.16 |
-| h_neon | 9.4 | 12.0 | 36.6 | 44.3 | 0.00 | 0.00 | 0.31 | 0.04 |
-| hk_flash55 | 10.4 | 14.6 | 31.3 | 35.8 | 0.00 | 0.00 | 0.44 | 0.21 |
-| hk_flash55_screen | 29.4 | 34.0 | 51.4 | 54.3 | 0.00 | 0.00 | 0.46 | 0.34 |
+| h_forge_hearth | 16.6 | 22.8 | 52.2 | 66.1 | 0.00 | 0.00 | 0.15 | 0.16 |
+| h_neon | 9.4 | 11.9 | 36.6 | 43.3 | 0.00 | 0.00 | 0.31 | 0.03 |
+| hk_flash55 | 10.4 | 14.6 | 31.3 | 35.7 | 0.00 | 0.00 | 0.44 | 0.20 |
+| hk_flash55_screen | 29.4 | 33.9 | 51.4 | 53.9 | 0.00 | 0.00 | 0.46 | 0.34 |
 | hk_p1_flash0 | 21.3 | 27.3 | 81.6 | 82.7 | 0.00 | 0.11 | 0.48 | 0.33 |
-| hk_p1_flash1 | 20.3 | 26.3 | 80.5 | 80.1 | 0.00 | 0.07 | 0.32 | 0.21 |
-| hk_p1_flash2 | 19.5 | 25.5 | 76.2 | 78.1 | 0.00 | 0.04 | 0.33 | 0.28 |
-| hk_p3_flash | 14.0 | 14.5 | 74.3 | 71.8 | 0.00 | 0.06 | 0.30 | 0.28 |
-| r_archives | 17.8 | 21.0 | 72.0 | 60.6 | 0.00 | 0.00 | 0.02 | 0.00 |
-| r_barrows | 35.3 | 35.0 | 161.3 | 155.8 | 0.00 | 0.00 | 1.03 | 0.02 |
-| r_catacombs | 14.6 | 19.1 | 52.5 | 50.7 | 0.00 | 0.00 | 0.03 | 0.01 |
-| r_cathedral | 24.3 | 25.8 | 70.0 | 77.0 | 0.00 | 0.00 | 0.22 | 0.05 |
+| hk_p1_flash1 | 20.3 | 26.4 | 80.5 | 80.4 | 0.00 | 0.07 | 0.32 | 0.20 |
+| hk_p1_flash2 | 19.5 | 25.6 | 76.2 | 78.4 | 0.00 | 0.04 | 0.33 | 0.27 |
+| hk_p3_flash | 14.0 | 11.5 | 74.3 | 60.1 | 0.00 | 0.00 | 0.30 | 0.07 |
+| r_archives | 17.8 | 20.8 | 72.0 | 60.6 | 0.00 | 0.00 | 0.02 | 0.00 |
+| r_barrows | 35.3 | 34.9 | 161.3 | 155.8 | 0.00 | 0.00 | 1.03 | 0.02 |
+| r_catacombs | 14.6 | 19.0 | 52.5 | 50.0 | 0.00 | 0.00 | 0.03 | 0.01 |
+| r_cathedral | 24.3 | 25.8 | 70.0 | 76.6 | 0.00 | 0.00 | 0.22 | 0.05 |
 | r_crimson | 8.6 | 12.8 | 38.6 | 53.6 | 0.00 | 0.00 | 0.03 | 0.00 |
 | r_crown | 80.5 | 87.0 | 211.0 | 205.3 | 0.00 | 0.11 | 12.77 | 6.06 |
-| r_deep | 20.1 | 21.8 | 86.0 | 87.9 | 0.00 | 0.00 | 0.02 | 0.00 |
-| r_dunes | 40.0 | 38.7 | 132.7 | 110.7 | 0.00 | 0.00 | 0.02 | 0.00 |
+| r_deep | 20.1 | 21.8 | 86.0 | 87.8 | 0.00 | 0.00 | 0.02 | 0.00 |
+| r_dunes | 40.0 | 38.5 | 132.7 | 110.7 | 0.00 | 0.00 | 0.02 | 0.00 |
 | r_ember | 14.4 | 17.4 | 47.6 | 55.3 | 0.00 | 0.00 | 0.04 | 0.00 |
 | r_forge | 9.5 | 15.1 | 32.8 | 41.4 | 0.00 | 0.00 | 0.08 | 0.01 |
-| r_hermit | 19.5 | 21.6 | 66.4 | 62.2 | 0.00 | 0.00 | 0.03 | 0.00 |
-| r_hoarfrost | 28.6 | 31.6 | 114.8 | 129.0 | 0.00 | 0.00 | 0.74 | 0.56 |
+| r_hermit | 19.5 | 21.6 | 66.4 | 61.9 | 0.00 | 0.00 | 0.03 | 0.00 |
+| r_hoarfrost | 28.6 | 31.4 | 114.8 | 127.0 | 0.00 | 0.00 | 0.74 | 0.52 |
 | r_lastfield | 73.8 | 74.9 | 182.0 | 160.2 | 0.00 | 0.00 | 0.03 | 0.02 |
-| r_mire | 37.2 | 38.9 | 135.8 | 135.9 | 0.00 | 0.00 | 0.09 | 0.00 |
-| r_necropolis | 25.8 | 25.0 | 81.6 | 74.3 | 0.00 | 0.00 | 1.06 | 0.69 |
-| r_neohallow | 8.7 | 12.3 | 35.7 | 49.6 | 0.00 | 0.00 | 0.07 | 0.00 |
-| r_ramparts | 24.3 | 23.3 | 79.5 | 69.5 | 0.00 | 0.00 | 0.05 | 0.00 |
-| r_spire | 15.6 | 19.4 | 53.5 | 60.9 | 0.00 | 0.00 | 0.13 | 0.07 |
-| r_starfall | 9.1 | 12.5 | 30.2 | 46.4 | 0.00 | 0.00 | 0.56 | 0.14 |
-| r_thornveil | 16.7 | 20.4 | 50.6 | 56.3 | 0.00 | 0.00 | 0.12 | 0.00 |
-| r_threshold | 74.0 | 74.7 | 190.8 | 134.6 | 0.00 | 0.00 | 8.10 | 0.79 |
+| r_mire | 37.2 | 38.7 | 135.8 | 135.1 | 0.00 | 0.00 | 0.09 | 0.00 |
+| r_necropolis | 25.8 | 25.0 | 81.6 | 73.9 | 0.00 | 0.00 | 1.06 | 0.67 |
+| r_neohallow | 8.7 | 12.3 | 35.7 | 49.3 | 0.00 | 0.00 | 0.07 | 0.00 |
+| r_ramparts | 24.3 | 23.1 | 79.5 | 68.5 | 0.00 | 0.00 | 0.05 | 0.00 |
+| r_spire | 15.6 | 19.3 | 53.5 | 60.5 | 0.00 | 0.00 | 0.13 | 0.07 |
+| r_starfall | 9.1 | 12.4 | 30.2 | 46.3 | 0.00 | 0.00 | 0.56 | 0.14 |
+| r_thornveil | 16.7 | 20.3 | 50.6 | 56.3 | 0.00 | 0.00 | 0.12 | 0.00 |
+| r_threshold | 74.0 | 73.8 | 190.8 | 130.4 | 0.00 | 0.00 | 8.10 | 0.23 |
 | r_training | 179.0 | 186.7 | 218.9 | 230.9 | 0.00 | 0.00 | 66.05 | 67.96 |
+| s_LF1 | 73.1 | 74.2 | 176.0 | 156.9 | 0.00 | 0.00 | 0.03 | 0.02 |
+| s_X11 | 72.8 | 71.5 | 187.2 | 142.8 | 0.00 | 0.47 | 1.06 | 0.50 |
+| s_crown_snow | 29.7 | 31.9 | 93.5 | 107.4 | 0.00 | 0.06 | 0.70 | 0.37 |
+| s_dunes_sand | 55.9 | 54.2 | 190.5 | 154.9 | 0.00 | 0.01 | 0.06 | 0.00 |
+| s_threshold_nofill | 60.4 | 73.4 | 109.6 | 130.3 | 0.00 | 0.00 | 0.38 | 0.23 |
+| s_threshold_read | 74.0 | 73.6 | 191.8 | 130.4 | 0.00 | 0.00 | 9.04 | 0.35 |
 | v_DU15 | 54.1 | 52.2 | 150.2 | 141.0 | 0.00 | 0.00 | 0.00 | 0.00 |
 | v_HF14 | 25.2 | 25.3 | 107.6 | 108.9 | 0.00 | 0.00 | 0.19 | 0.18 |
 | v_K11 | 32.1 | 32.1 | 100.1 | 99.7 | 0.00 | 0.00 | 0.04 | 0.03 |
+| v_LF1 | 69.8 | 70.3 | 163.3 | 160.5 | 0.00 | 0.00 | 0.00 | 0.00 |
 | v_R11 | 36.7 | 35.8 | 121.4 | 117.0 | 0.00 | 0.00 | 0.01 | 0.01 |
 | v_SP15 | 25.8 | 25.2 | 74.1 | 70.2 | 0.00 | 0.00 | 0.43 | 0.36 |
+| v_X11 | 82.2 | 83.1 | 170.7 | 168.5 | 0.00 | 0.19 | 0.55 | 0.24 |
 
 Other settings (stress = Bright + High bloom + Strong shafts, Classic, shaders off, Hard shadows, Dark and Bright) are
 in `tools/shots/v17/shading/luminance.md`.
@@ -189,6 +205,8 @@ in `tools/shots/v17/shading/luminance.md`.
 - `before_after_buffers.png`: AO (LX.dbg 2) and the light buffer (LX.dbg 3). Square AO and checker rings before; rounded
   AO and clean steps after.
 - `before_after_bands_zoom.png`: native-pixel crops of the bands.
+- `before_after_fill_zoom.png` and `before_after_fill_bright.png`: the knight's fill and the page marker on pale art
+  (Threshold, Crown snow, Dunes sand, LF1, X11).
 - `before_after_stress.png`, `_classic.png` (shaders off), `_brightness_dark.png`, `_brightness_bright.png`.
 
 ## Reproduce
@@ -204,8 +222,8 @@ tools/shots/v17/shading/run_all.sh $PWD/web/dist/shading.html after
 - `stats.py <dir> [<dir2>]` prints the table.
 
 ## Regression tests (run one at a time, test build `web/dist/shading.html`)
-- `tools/shots/wm/run.sh tools/shots/wm/mech.js`: 62/63. The one BAD ("GS: blade guard … chip 0") fails the same way on
-  the before build (main): the new greatsword perfect guard catches the test's blow.
+- `tools/shots/wm/run.sh tools/shots/wm/mech.js`: 64/64, with the lead's test fix 09fc871 (the blade-guard check
+  blocks 333 ms after the raise; the 67 ms perfect guard is checked separately).
 - `tools/shots/v17/boss/run.sh tools/shots/v17/boss/flow.js`: full flow, no errors. Phases, temper, death/core, furnace,
   rekindle and rematch are all as in `flow_result.txt`, apart from frame-count jitter.
 - `node tools/shots/shot.js tools/shots/v17/area/checks.js` (from tools/shots/): no errors, all pages and dialogue present.
