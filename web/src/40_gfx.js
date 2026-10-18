@@ -23,6 +23,27 @@ const GFX_PRESETS = [
 const GFX = { ok: null, cv: null, gl: null, prog: null, tex: null, u: {}, lost: false };
 
 const GFX_VS = `attribute vec2 a; varying vec2 v; void main() { v = a * 0.5 + 0.5; gl_Position = vec4(a, 0.0, 1.0); }`;
+// v17 shading: THE tone curve, shared by the lighting pass (41_light.js) and the post pass. It works on the brightest channel and
+// scales the other two with it, so a hue never drifts to cream: linear up to the knee TMK, a Reinhard shoulder from there
+// to 1.0 (never reached, so lit stone can't clip), and a small toe TMT that deepens the last few % of black. tmapInv is its
+// exact inverse: the post pass lifts the display image back to scene light, adds bloom and shafts there, and maps once more,
+// so glow piles up into the shoulder instead of clipping, and an image with nothing added comes back unchanged.
+const GFX_TM = `
+uniform float TMK, TMT;
+float tmC(float x) {
+  float y = x > TMK ? TMK + (x - TMK) / (1.0 + (x - TMK) / (1.0 - TMK)) : x;
+  return y * y / (y + TMT) * (1.0 + TMT);
+}
+float tmCi(float z) {
+  z = clamp(z, 0.0, 0.996) / (1.0 + TMT);
+  float y = 0.5 * (z + sqrt(z * z + 4.0 * z * TMT));
+  return y > TMK ? TMK + (y - TMK) / max(1.0 - (y - TMK) / (1.0 - TMK), 0.004) : y;
+}
+vec3 tmap(vec3 c) { float m = max(c.r, max(c.g, c.b)); return m > 0.00001 ? c * (tmC(m) / m) : vec3(0.0); }
+vec3 tmapInv(vec3 c) { float m = max(c.r, max(c.g, c.b)); return m > 0.00001 ? c * (tmCi(m) / m) : vec3(0.0); }
+`;
+// knee + toe of the curve; bloom/shafts: the most they can add to a pixel (soft cap, scene light), and their strengths per setting
+const GFX_TONE = { k: 0.6, t: 0.004, cap: 0.45, bloom: [0, 0.3, 0.45], rays: [0, 0.7, 1.05], expo: [0.86, 1, 1.12] };
 const GFX_FS = `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
@@ -32,8 +53,9 @@ precision mediump float;
 varying vec2 v;
 uniform sampler2D T, B1, B2, GR;
 uniform vec2 S, O;
-uniform float tm, bloom, vig, scan, grain, ca, filt, grade, expo, chain, rays, mood, gSat, gCon;
+uniform float tm, bloom, vig, scan, grain, ca, filt, grade, expo, chain, rays, mood, gSat, gCon, bloomK, raysK, addCap;
 uniform vec3 gS, gH;
+` + GFX_TM + `
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 vec3 tap(vec2 uv) {
   vec2 t = uv * S;
@@ -54,10 +76,10 @@ void main() {
   vec3 col;
   if (ca > 0.5) { vec2 o = (uv - 0.5) * vec2(1.6, 1.2) / S; col = vec3(tap(uv + o).r, tap(uv).g, tap(uv - o).b); }
   else col = tap(uv);
+  float bl = dot(col, vec3(0.299, 0.587, 0.114));
+  vec3 add = vec3(0.0);                                             // v17: everything the post pass adds, in scene light
   if (bloom > 0.5 && chain > 0.5) {                                 // v15: soft-knee bright pass, blurred at 1/2 and 1/4 res (gfxChain)
-    vec3 b = texture2D(B1, uv).rgb * 0.6 + texture2D(B2, uv).rgb * 0.9;
-    float bl = dot(col, vec3(0.299, 0.587, 0.114));
-    col += b * (bloom > 1.5 ? 0.5 : 0.3) * (1.0 - 0.8 * bl);
+    add += (texture2D(B1, uv).rgb * 0.6 + texture2D(B2, uv).rgb * 0.9) * bloomK * (1.0 - 0.6 * bl);
   } else if (bloom > 0.5) {                                         // fallback: bright-pass ring taps around the texel
     vec3 b = vec3(0.0);
     for (float i = 0.0; i < 12.0; i += 1.0) {
@@ -65,12 +87,13 @@ void main() {
       vec3 s = texture2D(T, uv + vec2(cos(a), sin(a)) * r / S).rgb;
       b += max(s - 0.6, 0.0) * (r < 2.0 ? 1.0 : 0.6);
     }
-    float bl = dot(col, vec3(0.299, 0.587, 0.114));
-    col += b * (bloom > 1.5 ? 0.24 : 0.13) * (1.0 - 0.7 * bl);   // glow lifts the dark around a light, not what's already bright
+    add += b * bloomK * 0.45 * (1.0 - 0.6 * bl);                    // glow lifts the dark around a light, not what's already bright
   }
   if (rays > 8.5) { gl_FragColor = vec4((rays > 9.5 ? texture2D(B1, uv).rgb : texture2D(GR, uv).rgb) * 2.0, 1.0); return; }   // test views (SETTINGS.rays 9 / 10)
-  if (rays > 0.5) col += texture2D(GR, uv).rgb * (rays > 1.5 ? 1.3 : 0.8);   // light shafts (gfxChain), screen blend so they never clip
-  col *= expo;
+  if (rays > 0.5) add += texture2D(GR, uv).rgb * raysK;             // light shafts (gfxChain)
+  float am = max(add.r, max(add.g, add.b));
+  add *= 1.0 / (1.0 + am / addCap);                                 // soft cap: glow and shafts together never add more than addCap
+  col = tmap(tmapInv(col) * expo + add);                            // the one tone map: the scene comes back as it was, the glow rolls off
   if (mood > 0.0) {                                                 // v15 biome mood: saturation, contrast about a low pivot, split-tone
     float ml = dot(col, vec3(0.299, 0.587, 0.114));
     vec3 m = mix(vec3(ml), col, gSat);
@@ -78,18 +101,18 @@ void main() {
     m *= mix(gS, gH, smoothstep(0.04, 0.6, ml));
     col = mix(col, m, mood);
   }
-  vec3 hi = max(col - 0.72, 0.0); col = min(col, 0.72) + hi / (1.0 + hi * 3.6);   // highlight shoulder: bright skies roll off instead of clipping to white
   float l = dot(col, vec3(0.299, 0.587, 0.114));
   if (grade > 0.5 && grade < 1.5) { col *= vec3(1.07, 0.98, 0.86); col += vec3(0.025, 0.012, 0.0) * (1.0 - l); }          // ember
   else if (grade > 1.5 && grade < 2.5) { col = mix(vec3(l), col, 0.8) * vec3(0.88, 0.98, 1.12); col += vec3(0.0, 0.006, 0.02); }  // moonlit
   else if (grade > 2.5 && grade < 3.5) { col = vec3(l) * vec3(1.03, 1.0, 0.94); col = (col - 0.5) * 1.22 + 0.5; }       // noir
   else if (grade > 3.5) { col = mix(vec3(l), col, 1.32); col = (col - 0.5) * 1.07 + 0.5; }                                 // vivid
+  // (no second shoulder here: lit stone leaves the tone map at <= ~0.93, so only painted emitters can reach 1 after the mood, and they clip as painted)
   if (scan > 0.5) {                                                 // one scanline per game pixel row
     float y = fract(uv.y * S.y), sl = 0.5 - 0.5 * cos(6.2832 * y);
     col *= mix(1.0, 0.5 + 0.5 * sl, scan > 1.5 ? 0.55 : 0.32);
     if (scan > 1.5) { float m = mod(gl_FragCoord.x, 3.0); col *= (m < 1.0 ? vec3(1.08, 0.9, 0.9) : m < 2.0 ? vec3(0.9, 1.08, 0.9) : vec3(0.9, 0.9, 1.08)) * 1.12; }
   }
-  if (vig > 0.5) { vec2 c = (uv - 0.5) * vec2(1.0, 0.85); col *= 1.0 - 0.42 * smoothstep(0.28, 0.72, length(c)); }
+  if (vig > 0.5) { vec2 c = (uv - 0.5) * vec2(1.0, 0.85); col *= 1.0 - 0.32 * smoothstep(0.3, 0.75, length(c)); }
   if (grain > 0.5) col += (hash(gl_FragCoord.xy + fract(tm * 7.13) * 311.0) - 0.5) * 0.07;
   gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }`;
@@ -261,7 +284,7 @@ function gfxInit() {
     const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
     for (const [p, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, p, v);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    for (const n of ['T', 'B1', 'B2', 'GR', 'S', 'O', 'tm', 'bloom', 'vig', 'scan', 'grain', 'ca', 'filt', 'grade', 'expo', 'chain', 'rays', 'mood', 'gSat', 'gCon', 'gS', 'gH']) GFX.u[n] = gl.getUniformLocation(prog, n);
+    for (const n of ['T', 'B1', 'B2', 'GR', 'S', 'O', 'tm', 'bloom', 'vig', 'scan', 'grain', 'ca', 'filt', 'grade', 'expo', 'chain', 'rays', 'mood', 'gSat', 'gCon', 'gS', 'gH', 'bloomK', 'raysK', 'addCap', 'TMK', 'TMT']) GFX.u[n] = gl.getUniformLocation(prog, n);
     cv.addEventListener('webglcontextlost', e => { e.preventDefault(); GFX.ok = false; GFX.lost = true; });
     Object.assign(GFX, { cv, gl, prog, tex, ok: true });
     gfxChainInit();
@@ -304,7 +327,9 @@ function gfxRender(w, h) {
   gl.uniform1f(u.chain, ch); gl.uniform1f(u.rays, ry ? SETTINGS.rays : 0); gl.uniform1f(u.mood, SETTINGS.mood && room ? 1 : 0);
   gl.uniform3fv(u.gS, M[0]); gl.uniform3fv(u.gH, M[1]); gl.uniform1f(u.gSat, M[2]); gl.uniform1f(u.gCon, M[3]);
   gl.uniform2f(u.S, W, H); gl.uniform2f(u.O, ow, oh); gl.uniform1f(u.tm, time % 1000);
-  gl.uniform1f(u.expo, [0.86, 1, 1.08][SETTINGS.bright ?? 1]); gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
+  const TN = GFX_TONE;   // Brightness: the lighting pass exposes the scene itself (41_light.js), so the post pass only exposes unlit frames
+  gl.uniform1f(u.expo, lit ? 1 : TN.expo[SETTINGS.bright ?? 1]); gl.uniform1f(u.TMK, TN.k); gl.uniform1f(u.TMT, TN.t); gl.uniform1f(u.addCap, TN.cap);
+  gl.uniform1f(u.bloomK, TN.bloom[SETTINGS.bloom] || 0); gl.uniform1f(u.raysK, TN.rays[Math.min(2, SETTINGS.rays | 0)] || 0); gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
   gl.uniform1f(u.ca, SETTINGS.ca); gl.uniform1f(u.filt, SETTINGS.tex); gl.uniform1f(u.grade, SETTINGS.grade);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
@@ -333,8 +358,8 @@ const GFX_ROWS = [
   { k: 'shaders', label: 'Shaders', opts: ['Off', 'On'], desc: 'Post-processing on the game world (the HUD stays sharp). Turn off on slow devices.' },
   { k: 'bright', label: 'Brightness', opts: ['Dark', 'Normal', 'Bright'], desc: 'How much of the dark you can see into. Bright helps on dim screens and in daylight.' },
   { k: 'light', label: 'Lighting', opts: ['Classic', 'Dynamic', 'Hard shadows', 'Soft shadows'], shader: true, desc: 'Dynamic: lanterns, fire and spells light the stone in pixel-art bands. Shadows: walls block the light; soft shadows blur wider the farther they fall.' },
-  { k: 'lband', label: 'Light bands', opts: ['Pixel', 'Smooth'], shader: true, desc: 'Pixel: light falls off in hand-drawn steps with a dithered edge. Smooth: a soft gradient.' },
-  { k: 'rim', label: 'Rim light', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. The edges of figures and carvings that face a light catch it; the far side falls into shade.' },
+  { k: 'lband', label: 'Light bands', opts: ['Stepped', 'Smooth', 'Dithered'], shader: true, desc: 'Stepped: light falls off in a few clean pixel-art steps. Smooth: a soft gradient. Dithered: steps with a checkered retro edge.' },
+  { k: 'rim', label: 'Rim light', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. The lip of stone ledges and walls that face a light catches a bright edge.' },
   { k: 'preset', label: 'Look', desc: 'A ready-made mix of the options below. Change any of them to make your own.' },
   { k: 'tex', label: 'Texture filter', opts: ['Crisp pixels', 'Smooth pixels', 'Soft'], desc: 'Crisp: hard pixel edges. Smooth pixels: clean anti-aliased pixel art (needs shaders). Soft: blurred.' },
   { k: 'bloom', label: 'Bloom', opts: ['Off', 'Low', 'High'], shader: true, desc: 'Embers, fire, spells and light sources glow and bleed into the dark.' },
@@ -396,4 +421,4 @@ function renderGfxSub(M) {
   uiFooter([['↑↓', 'select'], ['←→', 'change'], ['Esc', 'back']]);
 }
 
-Object.assign(window.__game, { pad: padPoll, PAD, GFX, GFX_PRESETS });   // headless tests
+Object.assign(window.__game, { pad: padPoll, PAD, GFX, GFX_PRESETS, GFX_TONE });   // headless tests

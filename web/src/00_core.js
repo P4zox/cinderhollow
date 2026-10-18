@@ -99,6 +99,11 @@ function drawSprite(sh, frame, x, y, face, opt = {}) {
   if (!f) return;
   const flip = face !== sh.native;
   let img = sh.img, sx = f.x, sy = f.y;
+  if (opt.flash && lxFlashSplit(opt)) {   // v17 shading: a light hit flash goes over the lit sprite, not under the light (41_light.js)
+    const o2 = Object.assign({}, opt); delete o2.flash; drawSprite(sh, frame, x, y, face, o2);
+    lxFlashOver(() => drawSprite(sh, frame, x, y, face, Object.assign(o2, { flash: 1, alpha: Math.min(1, opt.flash) * (opt.alpha ?? 1) })));
+    return;
+  }
   if (opt.flash) {
     if (tint.width < f.w || tint.height < f.h) { tint.width = Math.max(tint.width, f.w); tint.height = Math.max(tint.height, f.h); }
     tctx.clearRect(0, 0, f.w, f.h);

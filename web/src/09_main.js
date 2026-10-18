@@ -364,7 +364,7 @@ function renderWorld() {
   const saved = lights; lights = frameLights = [];
   lxDrawParticles();
   lights = saved.concat(frameLights);
-  addLight(P.x, P.y - 16, 100, '255,210,170', 0.9, LX_PLAYER);
+  addLight(P.x, P.y - 12, 60, '255,188,140', 0.42, LX_PLAYER);   // v17: a small warm fill that reads the knight, not a spotlight
   if (dyn) lxCollect(lights); else renderLighting();
   lights = saved;
   g.setTransform(1, 0, 0, 1, 0, 0);

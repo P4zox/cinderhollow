@@ -18,7 +18,7 @@ Object.assign(AREAS, {
 Object.assign(SCALES, { forge: [0, 1, 5, 7, 8], threshold: [0, 2, 5, 7, 9] });
 Object.assign(ROOTS, { forge: 41.2, threshold: 49 });
 if (typeof MAP_COLS !== 'undefined') Object.assign(MAP_COLS, { forge: '#46546a', threshold: '#9aa4b2' });
-if (typeof LX_BOOST !== 'undefined') Object.assign(LX_BOOST, { forge: 1.45, threshold: 1.0 });
+if (typeof LX_BOOST !== 'undefined') Object.assign(LX_BOOST, { forge: 2.0, threshold: 1.0 });   // v17 shading: forge lifted (it measured a mean of ~10/255)
 if (typeof GFX_MOOD !== 'undefined') Object.assign(GFX_MOOD, { forge: [[0.9, 0.96, 1.12], [1.02, 1.0, 0.98], 0.82, 1.08], threshold: [[0.95, 0.97, 1.05], [1.02, 1.02, 1.03], 0.66, 1.0] });
 if (typeof BIOME_TIER !== 'undefined') Object.assign(BIOME_TIER, { forge: { hp: 1.85, dmg: 1.5, cin: 1.7 }, threshold: { hp: 1.85, dmg: 1.5, cin: 1.7 } });
 if (typeof KIT_SKIN_OF !== 'undefined') Object.assign(KIT_SKIN_OF, { forge: 'iron', threshold: 'stone' });

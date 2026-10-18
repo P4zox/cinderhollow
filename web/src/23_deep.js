@@ -260,16 +260,22 @@ HOOKS.render.push(() => {
   const tx0 = Math.max(0, Math.floor(cam.x / TILE) - 1), tx1 = Math.min(room.w - 1, Math.floor((cam.x + W) / TILE) + 1);
   const ty0 = Math.max(0, Math.floor(cam.y / TILE) - 1), ty1 = Math.min(room.h - 1, Math.floor((cam.y + H) / TILE) + 1);
   const fr = Math.floor(time * 8);
+  const lava = [];
   for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
     const t = room.grid[ty * room.w + tx], px = tx * TILE, py = ty * TILE;
-    if (t === T_LAVA) {
+    if (t === T_LAVA) lava.push(tx, ty);
+    else if (t === T_BELT_L || t === T_BELT_R) drawBeltTile(g, null, px, py, tx, ty, room, t === T_BELT_L ? -fr : fr);
+  }
+  const S = DP.sluice;
+  drawGlow(() => {   // v17 shading: lava is a light source, so it goes in the emitter layer and shows as painted (lit, it went deep red)
+    for (let i = 0; i < lava.length; i += 2) {
+      const tx = lava[i], ty = lava[i + 1], px = tx * TILE, py = ty * TILE;
       const surf = lavaSurface(room, tx, ty), tag = surf ? 'lava_top' : 'lava_body';
       if (fxs.ok && fxs.has(tag)) { const tg = fxs.tag(tag), n = tg.to - tg.from + 1, f = fxs.frames[tg.from + (Math.floor(time * (surf ? 7 : 4)) + tx * 3 + ty) % n]; g.drawImage(fxs.img, f.x, f.y, 16, 16, px, py, 16, 16); }
       else if (surf) drawMagma(py + 3, px, px + 16, py + 16); else { g.fillStyle = '#6a1206'; g.fillRect(px, py, 16, 16); }
-    } else if (t === T_BELT_L || t === T_BELT_R) drawBeltTile(g, null, px, py, tx, ty, room, t === T_BELT_L ? -fr : fr);
-  }
-  const S = DP.sluice;
-  if (S && (S.active || S.done || S.armed)) drawMagma(S.y, Math.max(0, cam.x - 4), Math.min(room.pw, cam.x + W + 4), room.ph);
+    }
+    if (S && (S.active || S.done || S.armed)) drawMagma(S.y, Math.max(0, cam.x - 4), Math.min(room.pw, cam.x + W + 4), room.ph);
+  });
 });
 
 // ================================================================== fire shots + fire hazards (own lists: they carry burn / fire)

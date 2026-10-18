@@ -264,16 +264,17 @@ function renderLighting() {
   lg.fillStyle = `rgba(4,3,8,${amb})`; lg.fillRect(0, 0, W, H);
   lg.globalCompositeOperation = 'destination-out';
   for (const L of lights) {
+    const pl = L.o && L.o.player, r = pl ? L.r * 1.2 : L.r, k = Math.min(1, pl ? L.k * 1.65 : L.k);   // v17: the knight's fill (smaller, warmer) keeps a readable pool here
     const x = L.x - cam.x, y = L.y - cam.y;
-    if (x < -L.r || x > W + L.r || y < -L.r || y > H + L.r) continue;
-    const gr = lg.createRadialGradient(x, y, 0, x, y, L.r);
-    gr.addColorStop(0, `rgba(0,0,0,${Math.min(1, L.k)})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
-    lg.fillStyle = gr; lg.fillRect(x - L.r, y - L.r, L.r * 2, L.r * 2);
+    if (x < -r || x > W + r || y < -r || y > H + r) continue;
+    const gr = lg.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, `rgba(0,0,0,${k})`); gr.addColorStop(0.5, `rgba(0,0,0,${k * 0.42})`); gr.addColorStop(1, 'rgba(0,0,0,0)');   // soft shoulder: no disc edge
+    lg.fillStyle = gr; lg.fillRect(x - r, y - r, r * 2, r * 2);
   }
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.drawImage(lightC, 0, 0);
-  // warm additive glow
-  g.globalCompositeOperation = 'lighter';
+  // warm glow (v17: screen, not add: it can brighten a lit wall but never push it to flat white)
+  g.globalCompositeOperation = 'screen';
   for (const L of lights) {
     const x = L.x - cam.x, y = L.y - cam.y, r = L.r * 0.6;
     if (x < -r || x > W + r || y < -r || y > H + r) continue;

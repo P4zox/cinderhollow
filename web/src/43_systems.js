@@ -498,7 +498,7 @@ function sysDrawVista() {
     const A = AREAS[room.def.biome] || AREAS.ramparts, amb = (A.ambient || 0.4) * lerp(0.9, 0.6, v.e);   // a view is lit for looking at
     sysLX.globalCompositeOperation = 'source-over'; sysLX.clearRect(0, 0, W, H); sysLX.fillStyle = `rgba(4,3,8,${amb})`; sysLX.fillRect(0, 0, W, H);
     sysLX.globalCompositeOperation = 'destination-out';
-    const Ls = lights.concat([{ x: P.x, y: P.y - 16, r: 100, k: 0.9, color: '255,210,170' }]);
+    const Ls = lights.concat([{ x: P.x, y: P.y - 12, r: 72, k: 0.7, color: '255,188,140' }]);   // v17: same small warm fill as the play view
     for (const L of Ls) {
       const x = (L.x - v.x0) * v.z, y = (L.y - v.y0) * v.z, r = L.r * v.z; if (x < -r || x > W + r || y < -r || y > H + r) continue;
       const gr = sysLX.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(0,0,0,${Math.min(1, L.k)})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
