@@ -54,6 +54,10 @@ for (const k of KINDS) {
     const [rm, tx, ty] = home(k);
     G.tp(rm, tx, ty); step(20); unstick();
     const first = await killBoss(); step(30); unstick();
+    if (k === 'hearthkeeper') {   // v17: his Core is left in the ash (84_hearthkeeper.js hkCoreProp); take it as a player does
+      for (let i = 0; i < 600 && !E(`props.some(p => p.type === 'hk_core')`); i++) step(1);
+      E(`(props.find(p => p.type === 'hk_core') || { interact() {} }).interact()`); step(30); unstick();
+    }
     row.first = first;
     const core = E(`!!(SAVE.cores && SAVE.cores['${k}'])`);
     T(`${k}: first kill -> its Core`, first === 'dead' && core && E(`!!SAVE.flags['boss:${k}']`), `${first}, core ${core}`);

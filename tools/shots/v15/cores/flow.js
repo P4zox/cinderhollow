@@ -34,7 +34,8 @@ for (const k of ['hound', 'twins', 'sentinels']) {
     const n = E(`BOSS_INFO['${k}'].reward.length`), seen = []; let shown = null;
     for (let i = 0; i < 300 && shown === null; i++) { await sleep(50); step(3); const ti = E('bannerMsg && bannerMsg.title'); if (ti && seen[seen.length - 1] !== ti) seen.push(ti); if (ti === E(`CORES['${k}'].name`)) shown = E('CR.bannerAt'); }
     const items = seen.filter(t => !/Mastery/.test(t));   // (a Mastery rank-up banner may slip in between)
-    T(`${k}: the Core banner follows all ${n} item banners`, shown !== null && items.length === n + 1 && items[n] === E(`CORES['${k}'].name`), seen.join(' > '));
+    const tail = items.slice(-(n + 1));   // earlier bosses' banners may still be in the queue: judge the last n + 1
+    T(`${k}: the Core banner follows all ${n} item banners`, shown !== null && tail.length === n + 1 && tail[n] === E(`CORES['${k}'].name`) && !tail.slice(0, n).includes(tail[n]), seen.join(' > '));
     T(`${k}: ...after every item was granted, ~2.2 s after the last one`, shown !== null && E('CR.bannerPend') === 0 && E('CR.bannerSince') < 3.5, `pend ${E('CR.bannerPend')}, ${(E('CR.bannerSince') || 0).toFixed(2)} s after the last item`);
     if (k === 'hound') T('hound: the reward caches still convert (Emberstones)', E('SAVE.inv.emberstone || 0') > em0, `${em0} -> ${E('SAVE.inv.emberstone || 0')}`); }
   // a second kill of the same boss never duplicates it (forced through rewards())
