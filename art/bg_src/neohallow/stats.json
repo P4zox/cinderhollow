@@ -1,0 +1,16 @@
+{
+ "far": {
+  "colors": 788,
+  "lum": 33.0,
+  "dark": 0.29,
+  "seam": 1.0,
+  "repeat": 0.17
+ },
+ "mid": {
+  "colors": 1097,
+  "lum": 25.7,
+  "dark": 0.43,
+  "seam": 0.49,
+  "repeat": 0.47
+ }
+}

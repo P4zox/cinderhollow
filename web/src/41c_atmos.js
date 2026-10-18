@@ -30,7 +30,8 @@ const LX4_TUNE = { env: 0.4, body: 0.75, bg: 0.12, dark: 0.88, wD: 44, wDm: 84, 
 // 5 ice, 6 wet stone, 7 puddles
 const LX4_RT = ['150,205,140', '140,215,210', '165,180,215', '185,215,250', '160,170,215', '210,232,255', '255,255,255', '190,210,250'].map(c => { const q = c.split(',').map(Number), m = Math.max(...q); return q.map(v => v / m); });
 const LX4_K = { water: 1, ice: 2, wet: 3, puddle: 4 };
-const LX4_WET = { mire: 1, barrows: 1, spire: 1 };   // wet stone (the materials' wet regions, 41b_surf.js LXN_MAT_ROOM; the Spire under its rain only)
+const LX4_WET = { mire: 1, barrows: 1, spire: 1, neohallow: 1 };   // wet stone (the materials' wet regions, 41b_surf.js LXN_MAT_ROOM; the Spire and NEO-HALLOW under their rain only)
+const LX4_WET_OUT = { spire: 1, neohallow: 1 };   // wet only out in the rain (not indoors)
 // depth haze per region: [far, mid, 'r,g,b' air] (any may be null: defaults from LX4_TUNE and the region's tint + ambient)
 const LX4_HAZE = { crown: [0.3, 0.12], lastfield: [0.3, 0.12], dunes: [0.3, 0.12], hoarfrost: [0.3, 0.13], ramparts: [0.28, 0.12] };
 
@@ -123,7 +124,7 @@ function lx4Mask() {
   const T = LX4_TUNE, cx = LX.cx, cy = LX.cy, bio = room.def.biome, forge = bio === 'forge';
   gR.setTransform(1, 0, 0, 1, -cx, -cy);
   const tx0 = Math.floor(cx / TILE) - 1, tx1 = Math.floor((cx + W) / TILE) + 1, ty0 = Math.floor(cy / TILE) - 1, ty1 = Math.floor((cy + H) / TILE) + 1;
-  const wet = LX4_WET[bio] && !(bio === 'spire' && room.def.indoor), skip = [];
+  const wet = LX4_WET[bio] && !(LX4_WET_OUT[bio] && room.def.indoor), skip = [];
   // basins that fill and drain (42_kit.js levels): their own waterline, not the grid's
   if (typeof KIT !== 'undefined' && KIT.objs) for (const o of KIT.objs) {
     if (!o.fluid || !o.F || o.F.fire || !(o.F === KIT_FLUID.water || o.F === KIT_FLUID.poison)) continue;
@@ -167,6 +168,7 @@ function lx4Mask() {
   }
   if (typeof RA !== 'undefined' && RA.roomObj === room && RA.waters) for (const w of RA.waters) lx4Rect(w.x0, w.y, w.x1 - w.x0, w.y1 - w.y + 1, w.y, LX4_K.water, 4);
   if (typeof SPR !== 'undefined' && SPR.puddles && typeof spIn === 'function' && spIn()) for (const pd of SPR.puddles) lx4Rect(pd.x0, Math.round(pd.y) - 1, pd.x1 - pd.x0, T.pudD, Math.round(pd.y) - 1, LX4_K.puddle, 7);
+  if (typeof XS !== 'undefined' && XS.roomObj === room && XS.puddles) for (const pd of XS.puddles) lx4Rect(pd.x0, pd.y - 1, pd.x1 - pd.x0, T.pudD, pd.y - 1, LX4_K.puddle, 7);   // NEO-HALLOW's neon puddles (55_sc.js)
   if (LX4.rn) LX4.rDirty = true;
   return LX4.rn;
 }

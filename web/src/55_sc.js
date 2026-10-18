@@ -96,7 +96,7 @@ HOOKS.render.push(() => {   // the Glitch Driver's afterimages: RGB-split silhou
 // ================================================================== decor + mechanics dispatcher
 const XS_KIND = {};
 SPAWNS.xsc = (s, c) => { const f = XS_KIND[s.kind]; if (f) { try { f(s, c); } catch (e) { console.error('xsc', s.kind, e); } } };
-function xsEnsure() { if (XS.roomObj === room) return; Object.assign(XS, { roomObj: room, wells: [], steams: [], props: [], beat: null, bakes: [], baked: false, bakeT: 0 }); }
+function xsEnsure() { if (XS.roomObj === room) return; Object.assign(XS, { roomObj: room, wells: [], steams: [], props: [], beat: null, bakes: [], baked: false, bakeT: 0, puddles: [] }); }
 function xsProp(s, c, o) {   // a decor prop at the spawn's cell (x = centre, y = floor)
   xsEnsure();
   const p = { type: 'xs_' + s.kind, x: c.cx, y: c.fy, face: s.face || 1, s, anim: { update() {} }, draw() {}, seed: hash2(s.x * 7 + 1, s.y * 13 + 3) * 10, ...o };
@@ -300,23 +300,35 @@ XS_KIND.dumpster = (s, c) => xsProp(s, c, { draw() {
   if (xsDraw('xsc_s', 'dumpster', 0, p.x, p.y + 1, p.face)) return;
   xsR(p.x - 12, p.y - 12, 24, 12, '#1c2a24'); xsR(p.x - 13, p.y - 13, 26, 2, '#2a3a32'); xsR(p.x - 10, p.y - 8, 20, 1, '#0e1612');
 } });
-XS_KIND.puddles = (s, c) => xsProp(s, c, { draw() {   // wet asphalt: rippling neon reflections along the floor
-  const p = this, x0 = s.x * TILE, x1 = x0 + (s.w || 20) * TILE;
-  for (let x = x0; x < x1; x += 11) {
-    if (x < cam.x - 20 || x > cam.x + W + 20) continue;
-    const k = hash2(x, 3), w = 6 + (k * 10 | 0); if (k < 0.3) continue;
-    g.globalAlpha = 0.28; xsR(x, p.y - 1, w, 1, k < 0.55 ? '#3fe0ff' : k < 0.8 ? '#ff3fc0' : '#b8f6ff');
-    const rp = (time * 2 + k * 9) % 1; g.globalAlpha = 0.2 * (1 - rp); xsR(x + w / 2 - rp * w / 2, p.y - 1, Math.max(1, rp * w), 1, '#f2feff');
-  }
-  g.globalAlpha = 1;
-} });
-XS_KIND.cables = (s, c) => xsProp(s, c, { draw() {   // sagging power lines
+XS_KIND.puddles = (s, c) => {   // wet asphalt: puddles along the floor. With Reflections on they are real mirrors (41c_atmos.js lx4Mask reads
+  // XS.puddles, the Spire's puddle kind); the painted ripple glints stay on top either way
+  xsEnsure(); const x0 = s.x * TILE, x1 = x0 + (s.w || 20) * TILE, list = [];
+  for (let x = x0; x < x1; x += 11) { const k = hash2(x, 3), w = 6 + (k * 10 | 0); if (k >= 0.3) list.push([x, Math.min(x1, x + w), k]); }
+  (XS.puddles || (XS.puddles = [])).push(...list.map(([a, b]) => ({ x0: a, x1: b, y: c.fy })));
+  xsProp(s, c, { draw() {
+    const p = this, rf = typeof LX4 !== 'undefined' && SETTINGS.refl && LX4.rfOK && LX.on;
+    for (const [x, xe, k] of list) {
+      if (x < cam.x - 20 || x > cam.x + W + 20) continue;
+      const w = xe - x;
+      g.globalAlpha = rf ? 0.12 : 0.28; xsR(x, p.y - 1, w, 1, k < 0.55 ? '#3fe0ff' : k < 0.8 ? '#ff3fc0' : '#b8f6ff');
+      const rp = (time * 2 + k * 9) % 1; g.globalAlpha = 0.2 * (1 - rp); xsR(x + w / 2 - rp * w / 2, p.y - 1, Math.max(1, rp * w), 1, '#f2feff');
+    }
+    g.globalAlpha = 1;
+  } });
+};
+XS_KIND.cables = (s, c) => xsProp(s, c, { draw() {   // sagging power lines: a bundle of three, the lower ones heavier, a rim of neon on top
   const x0 = s.x * TILE + 8, x1 = (s.x1 || s.x + 10) * TILE + 8, y = s.y * TILE, sag = (s.sag || 3) * 4;
-  if (x1 < cam.x || x0 > cam.x + W || y > cam.y + H + 20 || y + sag < cam.y - 10) return;
-  for (let k = 0; k < 2; k++) {
-    const yy = y + k * 5, n = Math.ceil((x1 - x0) / 2);
-    g.fillStyle = k ? '#0b0d18' : '#161c2c';
-    for (let i = 0; i <= n; i++) { const t = i / n, xx = x0 + (x1 - x0) * t; if (xx < cam.x - 2 || xx > cam.x + W + 2) continue; g.fillRect(Math.round(xx), Math.round(yy + Math.sin(t * Math.PI) * sag * (1 + k * 0.4)), 1, 1); }
+  if (x1 < cam.x || x0 > cam.x + W || y > cam.y + H + 20 || y + sag * 1.6 < cam.y - 10) return;
+  const n = Math.ceil((x1 - x0) / 1);
+  for (let k = 0; k < 3; k++) {
+    const yy = y + k * 3, sg = sag * (1 + k * 0.3);
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, xx = Math.round(x0 + (x1 - x0) * t); if (xx < cam.x - 2 || xx > cam.x + W + 2) continue;
+      const py = Math.round(yy + Math.sin(t * Math.PI) * sg);
+      g.fillStyle = k === 1 ? '#0b0c16' : '#141626'; g.fillRect(xx, py, 1, k === 2 ? 2 : 1);
+      if (k === 0 && i % 3 === 0) { g.fillStyle = '#3a3f5a'; g.fillRect(xx, py - 1, 1, 1); }
+      if (k === 2 && (i + s.x * 7) % 61 === 30) { g.fillStyle = '#2a2d44'; g.fillRect(xx - 1, py + 2, 3, 2); g.fillStyle = (Math.floor(time * 1.5 + i) % 3) ? '#3a0610' : '#e0223f'; g.fillRect(xx, py + 3, 1, 1); }   // a junction box, blinking
+    }
   }
 } });
 XS_KIND.neonstrip = (s, c) => xsProp(s, c, { glow: true, update() { const p = this; for (let i = 0; i < (s.w || 4); i += 6) addLight(s.x * TILE + i * TILE / 1 + 8, (s.y + 1) * TILE + 3, 26, XS_NEON[s.c || 0], 0.35); }, draw() {
@@ -333,18 +345,29 @@ XS_KIND.windows = (s, c) => {   // lit windows: on building faces (solid cells) 
       if (tx < 0 || ty < 0 || tx >= room.w || ty >= room.h) continue;
       const solid = isSolidT(room.grid[ty * room.w + tx]);
       if (room.def.indoor ? solid : !solid) continue;
-      for (let k = 0; k < 2; k++) {
-        const r = hash2(tx * 3 + k, ty * 5 + 11); if (r < (room.def.indoor ? 0.55 : 0.35)) continue;
-        const col = r < 0.8 ? '#ffb050' : r < 0.9 ? '#3fe0ff' : '#ff9fe2';
-        ctx.globalAlpha = room.def.indoor ? 0.22 : 0.55; ctx.fillStyle = col; ctx.fillRect(tx * TILE + 3 + k * 7, ty * TILE + 4, 4, 5);
-        ctx.globalAlpha = room.def.indoor ? 0.12 : 0.3; ctx.fillStyle = '#fff0d0'; ctx.fillRect(tx * TILE + 3 + k * 7, ty * TILE + 4, 4, 1);
+      for (let k = 0; k < 2; k++) {   // v17 art upgrade: a recessed frame, a dim pane lit from inside (blinds half drawn on some)
+        const r = hash2(tx * 3 + k, ty * 5 + 11); if (r < (room.def.indoor ? 0.55 : 0.4)) continue;
+        const col = r < 0.78 ? '#c08040' : r < 0.9 ? '#2a8ab0' : '#a0407e', x = tx * TILE + 2 + k * 7, y = ty * TILE + 4;
+        const A = room.def.indoor ? 0.5 : 1;
+        ctx.globalAlpha = 0.8 * A; ctx.fillStyle = '#06060c'; ctx.fillRect(x, y, 5, 5);
+        ctx.globalAlpha = 0.5 * A; ctx.fillStyle = col; ctx.fillRect(x + 1, y + 1, 3, 3);
+        ctx.globalAlpha = 0.35 * A; ctx.fillStyle = '#ffe6c0'; ctx.fillRect(x + 1, y + 1, 3, 1);
+        if (hash2(tx, ty * 7 + k) < 0.3) { ctx.globalAlpha = 0.7 * A; ctx.fillStyle = '#0c0b16'; ctx.fillRect(x + 1, y + 2, 3, 1); }
+        ctx.globalAlpha = 0.5 * A; ctx.fillStyle = '#2f344b'; ctx.fillRect(x, y + 5, 5, 1);
       }
     }
     ctx.globalAlpha = 1;
   });
 };
+// pipes / warning stripes / railings: tiled from the nh_kit sprites (art/gen_props_neohallow_v2.py; v17 NEO-HALLOW upgrade), the old
+// flat fills only if the sheet is missing
+function xsKit(ctx, tag, x, y) {
+  const sh = sheet('nh_kit'); if (!sh.ok || !sh.has(tag)) return false;
+  const f = sh.frames[sh.tag(tag).from]; ctx.drawImage(sh.img, f.x, f.y, f.w, f.h, x, y, f.w, f.h); return true;
+}
 XS_KIND.pipes = (s, c) => xsBake((bx, fx) => {   // pipes along the tunnel roof
   const y0 = s.y * TILE, x0 = s.x * TILE, x1 = x0 + (s.w || 10) * TILE;
+  if (sheet('nh_kit').ok) { for (let x = x0, i = 0; x < x1; x += 16, i++) xsKit(fx, hash2(i, s.x) < 0.22 ? 'pipe_j' : 'pipe', x, y0); return; }
   for (const [dy, a, b] of [[0, '#26263e', '#3c3c5c'], [6, '#1a1a2c', '#2e2e48']]) {
     fx.fillStyle = a; fx.fillRect(x0, y0 + dy, x1 - x0, 4); fx.fillStyle = b; fx.fillRect(x0, y0 + dy, x1 - x0, 1);
     for (let x = x0 + 12; x < x1; x += 40) { fx.fillStyle = '#44446a'; fx.fillRect(x, y0 + dy - 1, 3, 6); }
@@ -352,10 +375,12 @@ XS_KIND.pipes = (s, c) => xsBake((bx, fx) => {   // pipes along the tunnel roof
 });
 XS_KIND.warnstripes = (s, c) => xsBake((bx, fx) => {
   const y = (s.y + 1) * TILE, x0 = s.x * TILE, x1 = x0 + (s.w || 4) * TILE;
+  if (sheet('nh_kit').ok) { for (let x = x0; x < x1; x += 16) xsKit(fx, x + 16 >= x1 ? 'stripe_e' : 'stripe', x, y); return; }
   for (let x = x0; x < x1; x += 4) { fx.fillStyle = (x / 4) % 2 ? '#c8a020' : '#141424'; fx.fillRect(x, y, 4, 2); }
 });
 XS_KIND.railing = (s, c) => xsBake((bx, fx) => {
   const y = (s.y + 1) * TILE, x0 = s.x * TILE, x1 = x0 + (s.w || 4) * TILE;
+  if (sheet('nh_kit').ok) { for (let x = x0, i = 0; x < x1; x += 16, i++) xsKit(bx, i % 3 === 0 ? 'rail_p' : 'rail', x, y - 16); return; }
   bx.fillStyle = '#34416a'; bx.fillRect(x0, y - 10, x1 - x0, 1); bx.fillStyle = '#222b4a'; bx.fillRect(x0, y - 5, x1 - x0, 1);
   for (let x = x0 + 2; x < x1; x += 8) { bx.fillStyle = '#2a3354'; bx.fillRect(x, y - 10, 1, 10); }
 });
@@ -388,8 +413,18 @@ XS_KIND.steam = (s, c) => {   // a vent that blasts steam upward on a timer (hur
       if (overlap(rect(v.x - 7, v.y - v.h, v.x + 7, v.y), playerHurtbox())) hurtPlayer(26 * NGP.dmg, P.x < v.x ? -1 : 1, v.id * 1000 + Math.floor(((NHR.t || time) + v.phase) / v.period), {});
     } else if (st === 'warn' && Math.random() < 0.4) particles.push({ x: v.x + rand(-3, 3), y: v.y - 2, vx: rand(-10, 10), vy: -rand(10, 30), life: 0.4, kind: 'dust' });
   }, draw() {
-    xsR(v.x - 7, v.y - 3, 14, 3, '#26263e'); xsR(v.x - 5, v.y - 3, 10, 1, v.st === 'warn' ? '#ffb040' : '#3c3c5c');
-    if (v.st === 'on') { g.globalAlpha = 0.35; g.fillStyle = '#d8e2f0'; for (let i = 0; i < 6; i++) { const yy = v.y - ((time * 260 + i * 17) % v.h); g.fillRect(Math.round(v.x - 4 - (v.y - yy) / 14), Math.round(yy), 8 + (v.y - yy) / 7, 4); } g.globalAlpha = 1; }
+    // the vent: a steel box with slats, its lip glowing amber while it builds up (v17 art upgrade)
+    xsR(v.x - 8, v.y - 4, 16, 4, '#191b2a'); xsR(v.x - 8, v.y - 4, 16, 1, '#4c526e'); xsR(v.x - 8, v.y - 1, 16, 1, '#0c0c15');
+    for (let i = -6; i <= 5; i += 2) xsR(v.x + i, v.y - 3, 1, 2, '#07070d');
+    if (v.st === 'warn') { g.globalAlpha = 0.5 + 0.5 * Math.sin(time * 30); xsR(v.x - 6, v.y - 4, 12, 1, '#ffb040'); g.globalAlpha = 1; }
+    if (v.st === 'on') lxAir(() => {   // the column: soft puffs that widen and thin as they rise, lit by the lamps around them
+      for (let i = 0; i < 10; i++) {
+        const k = ((time * 3.2 + i / 10) % 1), yy = v.y - 4 - k * v.h, r = 3 + k * 7;
+        g.globalAlpha = 0.34 * (1 - k * 0.8); g.fillStyle = '#d8dcec';
+        g.beginPath(); g.arc(Math.round(v.x + Math.sin(i * 2.1 + time * 3) * k * 4), Math.round(yy), r, 0, 6.283); g.fill();
+      }
+      g.globalAlpha = 1;
+    });
   } });
 };
 XS_KIND.holo = (s, c) => xsProp(s, c, { glow: true, update() { addLight(this.x, this.y - (s.small ? 20 : 60), s.small ? 50 : 110, '80,210,255', 0.55 + 0.15 * Math.sin(time * 3)); }, draw() {
@@ -650,9 +685,9 @@ function xsMaglevDraw(o) {
     xsR(X, Y - 10, w, 10, '#222b4a'); xsR(X + 2, Y - 12, w - 4, 2, '#34416a'); xsR(X + 4, Y - 8, w - 8, 3, '#0b4d66'); xsR(X, Y, w, 3, '#161c33');
   }
   drawGlow(() => {
-    for (let i = 6; i < w - 6; i += 8) xsR(X + i, Y - 7, 4, 1, '#b8f6ff');
-    xsR(X + 2, Y + 3, w - 4, 1, Y < lane + 2 ? '#3fe0ff' : '#ff3fc0');
-    xsR(dir > 0 ? X + w - 2 : X, Y - 5, 2, 2, '#ffe0a0');
+    if (!sheet('xsc_m').ok) { for (let i = 6; i < w - 6; i += 8) xsR(X + i, Y - 7, 4, 1, '#b8f6ff'); }
+    xsR(X + 6, Y + 16, w - 12, 1, Y < lane + 2 ? '#3fe0ff' : '#ff3fc0');
+    xsR(dir > 0 ? X + w - 4 : X + 1, Y + 4, 3, 2, '#ffe0a0');
   });
   g.restore();
   if (Y < surf) { addLight(X + w / 2, Y + 4, 50, '80,210,255', 0.5); if (Math.random() < 0.3) particles.push({ x: dir > 0 ? X : X + w, y: Y - 4, vx: -dir * rand(20, 50), vy: 0, life: 0.3, kind: 'nh_mote' }); }
@@ -662,12 +697,20 @@ function xsBillboardDraw(o) {
   if (!xsVis(X + w / 2, Y, 60)) return;
   const v = (o.spec.id || '').length + (X >> 4), fl = warn > 0 && Math.floor(KIT.t * (10 + 14 * warn)) % 2;
   // the frame and its bracket are always there; the lit face is the floor
-  xsR(X, Y, w, 3, '#222b4a'); xsR(X + 3, Y + 3, 2, 8, '#161c33'); xsR(X + w - 5, Y + 3, 2, 8, '#161c33');
-  const face = () => {
-    const C = [NH_MG, NH_CY, ['#3a1e06', '#7a4410', '#c87a20', '#ffb050', '#ffe0a0', '#fff']][v % 3];
-    xsR(X + 1, Y - 18, w - 2, 18, C[1]); xsR(X + 2, Y - 17, w - 4, 16, C[2]);
-    for (let i = 0; i < 3; i++) xsR(X + 4, Y - 14 + i * 4, (w - 8) * (0.4 + hash2(v, i) * 0.6), 2, C[4]);
-    xsR(X + 1, Y - 18, w - 2, 1, C[5]);
+  xsR(X, Y, w, 3, '#191b2a'); xsR(X, Y, w, 1, '#5e6684'); xsR(X + 3, Y + 3, 2, 8, '#12131f'); xsR(X + w - 5, Y + 3, 2, 8, '#12131f');
+  const face = () => {   // v17 art upgrade: a dark glass face, a neon frame, made-up glyphs (no letters), scanlines
+    const C = [NH_MG, NH_CY, ['#3a1e06', '#7a4410', '#c87a20', '#ffb050', '#ffe0a0', '#fff']][v % 3], a0 = g.globalAlpha;
+    xsR(X + 1, Y - 18, w - 2, 18, C[0]);
+    g.globalAlpha = a0 * 0.45; for (let yy = Y - 16 + (Math.floor(time * 6) % 2); yy < Y - 1; yy += 2) xsR(X + 2, yy, w - 4, 1, C[1]);
+    g.globalAlpha = a0;
+    for (let k = 0, gx = X + 4; gx < X + w - 6; gx += 6, k++) {
+      const h = hash2(v * 7 + k, 3), y0 = Y - 14;
+      xsR(gx + (h < 0.5 ? 1 : 0), y0, 1, 5, C[4]);
+      if (h > 0.3) xsR(gx, y0 + (h > 0.65 ? 0 : 2), 3, 1, C[4]);
+      if (hash2(v, k + 9) > 0.5) xsR(gx + 2, y0 + 4, 1, 1, C[3]);
+      if (hash2(k, v + 4) > 0.55) xsR(gx, y0 + 7, 4, 1, C[2]);
+    }
+    xsR(X + 1, Y - 18, w - 2, 1, C[4]); xsR(X + 1, Y - 1, w - 2, 1, C[2]); xsR(X + 1, Y - 18, 1, 18, C[3]); xsR(X + w - 2, Y - 18, 1, 18, C[2]);
   };
   if (on && !fl) { drawGlow(face); addLight(X + w / 2, Y - 8, 50, XS_NEON[v % 3], 0.65); }
   else { xsR(X + 1, Y - 18, w - 2, 18, '#0d1120'); xsR(X + 2, Y - 17, w - 4, 16, '#070913'); if (on) { g.globalAlpha = 0.5; drawGlow(face); g.globalAlpha = 1; } }

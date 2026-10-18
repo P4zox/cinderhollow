@@ -338,8 +338,8 @@ function nhDrawFogs() {
 }
 
 // ================================================================== decor props, floating items
-const NH_DECO = { sign: ['sign', 64, true], billboard: ['billboard', 60, true], lamp: ['lamp', 40, true], antenna: ['antenna', 18, true], vent: ['vent', 0, false],
-  canopy: ['canopy', 30, true], pylon: ['pylon', 20, true], rack: ['rack', 20, true], glyph: ['glyph', 30, true] };
+const NH_DECO = { sign: ['sign', 50, true], billboard: ['billboard', 58, true], lamp: ['lamp', 54, true], antenna: ['antenna', 76, true], vent: ['vent', 0, false],
+  canopy: ['canopy', 54, true], pylon: ['pylon', 40, true], rack: ['rack', 26, true], glyph: ['glyph', 28, true] };   // [tag, light height above the floor (v17 art), lit]
 const NH_NEON = ['255,60,190', '80,210,255', '255,160,60'];
 SPAWNS.nh_deco = (s, c) => {
   nhEnsure();
@@ -348,10 +348,11 @@ SPAWNS.nh_deco = (s, c) => {
   const p = { type: 'nh_deco', kind: s.kind, x: c.cx, y: s.hang ? s.y * TILE : c.fy, face: 1, sh, v, anim: new Anim(sh, sh.has(tag) ? tag : (sh.has(s.kind) ? s.kind : Object.keys(sh.tags)[0] || tag), true), hang: !!s.hang, seed: rand(0, 9) };
   p.anim.t = rand(0, 500);
   p.update = dt => {
-    const col = s.kind === 'lamp' || s.kind === 'canopy' ? NH_NEON[1] : s.kind === 'rack' || s.kind === 'glyph' ? '90,255,210' : NH_NEON[v % 3];
+    const col = s.kind === 'lamp' || s.kind === 'canopy' || s.kind === 'glyph' ? NH_NEON[1] : s.kind === 'rack' ? '90,255,210' : s.kind === 'antenna' ? '255,60,70' : NH_NEON[v % 3];
     const fl = s.kind === 'sign' && hash2(Math.floor(time * 7 + p.seed * 10), 1) < 0.04 ? 0.2 : 1;
-    if (d[1]) addLight(p.x, p.y - d[1], s.kind === 'billboard' ? 90 : 46, col, 0.75 * fl);
-    if (s.kind === 'vent' && Math.random() < dt * 5) particles.push({ x: p.x + rand(-4, 4), y: p.y - 14, vx: rand(-6, 6), vy: -rand(14, 30), life: 1.6, kind: 'dust' });
+    if (s.kind === 'antenna') { if ((time * 0.8 + p.seed) % 1 < 0.4) addLight(p.x, p.y - d[1], 22, col, 0.5); }
+    else if (d[1]) addLight(p.x, p.y - d[1], s.kind === 'billboard' ? 90 : s.kind === 'lamp' ? 64 : 46, col, (s.kind === 'pylon' ? 0.4 : 0.75) * fl);
+    if (s.kind === 'vent' && Math.random() < dt * 5) particles.push({ x: p.x - 6 + rand(-2, 2), y: p.y - 31, vx: rand(-4, 10), vy: -rand(14, 30), life: 1.8, kind: 'dust' });
   };
   p.draw = () => {
     const o = s.hang ? { pivot: [Math.floor(sh.fw / 2), 0] } : { bottom: true };
@@ -359,7 +360,7 @@ SPAWNS.nh_deco = (s, c) => {
       const fl = s.kind === 'sign' && hash2(Math.floor(time * 7 + p.seed * 10), 1) < 0.04;
       drawSprite(sh, p.anim.frame, p.x, p.y, 1, { ...o, alpha: fl ? 0.55 : 1 });
       // wet-street reflection of the neon under signs and billboards (outdoor rooms)
-      if (!room.def.indoor && (s.kind === 'sign' || s.kind === 'billboard' || s.kind === 'lamp') && !s.hang) {
+      if (!room.def.indoor && (s.kind === 'sign' || s.kind === 'billboard' || s.kind === 'lamp') && !s.hang && !(typeof LX4 !== 'undefined' && SETTINGS.refl && LX4.rfOK && LX.on)) {   // (with Reflections on the wet roof mirrors them for real)
         const col = s.kind === 'lamp' ? NH_CY : v % 3 === 0 ? NH_MG : v % 3 === 1 ? NH_CY : ['#3a1e06', '#7a4410', '#c87a20', '#ffb050', '#ffe0a0', '#fff'];
         for (let i = 0; i < 7; i++) { const w = 2 + ((i * 5 + Math.floor(time * 6 + p.seed)) % 7); g.globalAlpha = 0.28 - i * 0.03; g.fillStyle = col[3]; g.fillRect(Math.round(p.x - w / 2 + Math.sin(time * 2 + i) * 2), Math.round(p.y + 1 + i * 2), w, 1); }
         g.globalAlpha = 1;
@@ -374,18 +375,102 @@ SPAWNS.nh_item = (s, c) => {
 };
 
 // ================================================================== rain, reflections, drips
-function nhDrawRain() {
+function nhDrawRain() {   // v17 art upgrade: two depths of rain and splashes on the roofs. Drawn into the lit-particle layer (lxAir) when
+  // that is on, so the drops take the colour of the neon they fall past (the signs' lights are colour-matched); a cool grey otherwise
   if (room.def.indoor || nhCyber()) return;
-  const n = 120;
-  for (let i = 0; i < n; i++) {
-    const sx = hash2(i, 17) * (W + 80) - 40, sp = 300 + hash2(i, 5) * 170, len = 6 + Math.floor(hash2(i, 9) * 7);
-    const yy = ((hash2(i, 21) * 400 + time * sp) % (H + 40)) - 20, slant = 0.18;
-    const x = ((((sx + time * sp * slant) % (W + 80)) + W + 80) % (W + 80)) - 40;
-    const k = hash2(i, 31);
-    g.fillStyle = k < 0.08 ? 'rgba(255,90,200,0.35)' : k < 0.2 ? 'rgba(90,220,255,0.35)' : `rgba(150,170,210,${0.12 + hash2(i, 13) * 0.16})`;
-    for (let j = 0; j < len; j++) g.fillRect(Math.round(x + j * slant), Math.round(yy + j), 1, 1);
+  const lit = typeof LX4 !== 'undefined' && LX4.part;
+  for (let L = 0; L < 2; L++) {
+    const n = L ? 110 : 80, slant = 0.2;
+    for (let i = 0; i < n; i++) {
+      const h = hash2(i, 17 + L * 40), sx = h * (W + 80) - 40, sp = L ? 330 + hash2(i, 5) * 170 : 210 + hash2(i, 6) * 90;
+      const len = L ? 6 + Math.floor(hash2(i, 9) * 7) : 3 + Math.floor(hash2(i, 8) * 3);
+      const yy = ((hash2(i, 21 + L) * 400 + time * sp) % (H + 40)) - 20;
+      const x = ((((sx + time * sp * slant) % (W + 80)) + W + 80) % (W + 80)) - 40;
+      const a = L ? 0.13 + hash2(i, 13) * 0.17 : 0.07 + hash2(i, 14) * 0.07;
+      const k = hash2(i, 31);
+      g.fillStyle = !lit && L && k < 0.06 ? `rgba(255,110,210,${a + 0.08})` : !lit && L && k < 0.14 ? `rgba(110,220,255,${a + 0.08})` : `rgba(${lit ? '205,212,240' : '150,165,210'},${lit ? a * 1.3 : a})`;
+      for (let j = 0; j < len; j++) g.fillRect(Math.round(x + j * slant), Math.round(yy + j), 1, 1);
+    }
+  }
+  // splashes: a drop hits a roof in view, a 3 px crown for a tick
+  const tick = Math.floor(time * 12), tx0 = Math.floor(cam.x / TILE), ty0 = Math.max(1, Math.floor(cam.y / TILE)), ty1 = Math.floor((cam.y + H) / TILE);
+  for (let i = 0; i < 26; i++) {
+    const r = hash2(i, tick), wx = cam.x + r * W, tx = Math.floor(wx / TILE);
+    let ty = ty0; while (ty <= ty1 && !(isSolidT(tileAt(tx, ty)) && !isSolidT(tileAt(tx, ty - 1)))) ty++;
+    if (ty > ty1 || tileAt(tx, ty) === NH_T_VOID) continue;
+    const x = Math.round(wx - cam.x), y = ty * TILE - cam.y, ph = (time * 12) % 1;
+    g.fillStyle = `rgba(${lit ? '215,222,245' : '170,185,225'},${0.5 * (1 - ph)})`;
+    g.fillRect(x, y - 1 - Math.round(ph * 2), 1, 1); g.fillRect(x - 1 - Math.round(ph), y - 1, 1, 1); g.fillRect(x + 1 + Math.round(ph), y - 1, 1, 1);
   }
 }
+
+// ================================================================== the backdrop: the megacity (v17 art upgrade, docs/v17/neohallow_upgrade.md)
+// bg_neohallow_far / _mid (art/gen_bg_neohallow_v2.py) drawn like drawParallax (far 0.08 / 0.02, mid 0.3 / 0.08), their 'loop'
+// frames (aviation lights) at a slow 2.5 fps, plus restrained motion at the points the generator painted (NH_BGFX, written by
+// the generator between the markers): flying traffic in three lanes, two searchlights sweeping the cloud deck, holo boards and
+// signs that stutter now and then, steam off rooftop vents. Indoor rooms swap the mid layer for bg_neohallow_inmid (the hall's glass
+// wall with the city through it). Cyberspace (neohallow_cyber) and the NH15 vista keep their own.
+// <nh-bgfx>
+const NH_BGFX = {"lanes":[[96,1.5],[110,2.0],[124,1.2]],"search":[[166,150,"150,220,255"],[410,156,"255,150,220"]],"far_boards":[[106,68,8,46,"255,63,192"],[200,128,22,11,"255,63,192"],[452,122,8,26,"63,224,255"],[26,136,7,20,"255,176,80"],[286,140,16,9,"63,224,255"],[380,132,7,18,"255,63,192"]],"mid_signs":[[42,72,7,48,"255,63,192"],[168,128,6,30,"63,224,255"],[304,60,6,36,"255,176,80"],[411,90,7,50,"255,63,192"],[274,36,12,64,"255,63,192"]],"steam":[[185,103],[376,89]]};
+// </nh-bgfx>
+const NH_BG = { steam: [] };
+function nhBgEach(o, x, fn) { for (let k = -1; k <= Math.ceil(W / o.w) + 1; k++) { const sx = o.ox + x + k * o.w; if (sx > -80 && sx < W + 80) fn(sx); } }
+function nhBgFar(o) {
+  const F = NH_BGFX, t = time;
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (const [bx, by, c] of F.search || []) nhBgEach(o, bx, sx => {   // two searchlights sweep the cloud deck, slow
+    const a = -Math.PI / 2 + 0.42 * Math.sin(t * 0.11 + bx * 0.03), x0 = sx, y0 = o.oy + by, L = 170;
+    const x1 = x0 + Math.cos(a) * L, y1 = y0 + Math.sin(a) * L, px = -Math.sin(a), py = Math.cos(a);
+    const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, `rgba(${c},0.075)`); gr.addColorStop(1, `rgba(${c},0)`);
+    g.fillStyle = gr; g.beginPath(); g.moveTo(x0 - px, y0 - py); g.lineTo(x1 - px * 14, y1 - py * 14); g.lineTo(x1 + px * 14, y1 + py * 14); g.lineTo(x0 + px, y0 + py); g.fill();
+  });
+  (F.lanes || []).forEach(([ly, sp], li) => {   // rivers of light: tail lights one way, head lights the other
+    for (let i = 0; i < 12; i++) {
+      const dir = (i + li) % 2 ? 1 : -1, u = ((t * sp * 6 * dir + hash2(i, li + 30) * o.w) % o.w + o.w) % o.w;
+      const y = o.oy + ly + Math.round(2 * Math.sin(u / 70 + ly)) + (dir > 0 ? 0 : 1);
+      g.globalAlpha = 0.8; nhBgEach(o, u, sx => nhRect(sx, y, 2, 1, dir > 0 ? '#ff4a5a' : '#f8e8c8'));
+    }
+  });
+  g.restore();
+  for (let i = 0; i < (F.far_boards || []).length; i++) {   // a board stutters now and then
+    const [bx, by, bw, bh] = F.far_boards[i], s = Math.floor(t * 12 + i * 37);
+    if (hash2(s, i) < 0.03 || (hash2(Math.floor(t * 0.4), i + 9) < 0.1 && hash2(s, i + 3) < 0.5)) { g.globalAlpha = 0.6; nhBgEach(o, bx, sx => nhRect(sx, o.oy + by, bw, bh, '#0c0a1a')); g.globalAlpha = 1; }
+  }
+}
+function nhBgMid(o) {
+  const F = NH_BGFX, t = time;
+  for (let i = 0; i < (F.mid_signs || []).length; i++) {
+    const [bx, by, bw, bh] = F.mid_signs[i], s = Math.floor(t * 14 + i * 53);
+    if (hash2(s, i + 5) < 0.025 || (hash2(Math.floor(t * 0.33), i + 19) < 0.08 && hash2(s, i + 7) < 0.55)) { g.globalAlpha = 0.55; nhBgEach(o, bx, sx => nhRect(sx, o.oy + by, bw, bh, '#0c0a1a')); g.globalAlpha = 1; }
+  }
+  for (const [vx, vy] of F.steam || []) {   // steam off the rooftop vents: soft puffs that rise, lean with the wind, thin out
+    for (let i = 0; i < 7; i++) {
+      const life = 3.2, k = ((t + i * life / 7 + vx * 0.13) % life) / life, r = 1 + k * 5;
+      g.globalAlpha = 0.16 * Math.sin(k * Math.PI) * (1 - k * 0.4);
+      nhBgEach(o, vx, sx => { g.fillStyle = '#8a80a8'; g.beginPath(); g.arc(Math.round(sx + k * 14 + Math.sin(t + i) * 1.5), Math.round(o.oy + vy - k * 26), r, 0, 6.283); g.fill(); });
+    }
+  }
+  g.globalAlpha = 1;
+}
+const nhParallaxBase = drawParallax;
+drawParallax = function () {   // eslint-disable-line no-func-assign
+  const inn = !!(room && room.def.indoor), far = sheet('bg_neohallow_far'), mid = sheet(inn ? 'bg_neohallow_inmid' : 'bg_neohallow_mid');   // indoors: the hall's own glass wall
+  if (!room || room.def.biome !== 'neohallow' || !far.ok || !mid.ok || !NH_BGFX.lanes) return nhParallaxBase.apply(this, arguments);
+  g.fillStyle = AREAS.neohallow.tint; g.fillRect(0, 0, W, H);
+  const fr = Math.floor(time * 2.5);
+  const layer = (sh, fac, vfac) => {
+    const tg = sh.tag('loop'), f = sh.frames[tg.from + fr % (tg.to - tg.from + 1)];
+    const wx = cam.x + (room.def.gx || 0) * TILE;   // world-continuous: each room shows its own slice of the city
+    const ox = Math.round(-((wx * fac) % f.w + f.w) % f.w), oy = Math.round(clamp(-cam.y * vfac, -(f.h - H) - 20, 20)) + H - f.h;
+    for (let x = ox; x < W; x += f.w) g.drawImage(sh.img, f.x, f.y, f.w, f.h, x, oy, f.w, f.h);
+    return { ox, oy, w: f.w };
+  };
+  nhBgFar(layer(far, 0.08, 0.02));
+  if (!lxMidG) { const o = layer(mid, 0.3, 0.08); if (!inn) nhBgMid(o); return; }
+  const g0 = g; let o; g = lxMidG; try { o = layer(mid, 0.3, 0.08); } finally { g = g0; }   // (41_light.js: the mid layer is also kept as a mask)
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.drawImage(lxMidG.canvas, 0, 0); g.restore();
+  if (!inn) nhBgMid(o);
+};
 
 // ================================================================== main hooks
 HOOKS.update.push(dt => {
@@ -406,7 +491,7 @@ HOOKS.render.push(() => {
   if (typeof nhDrawBossFx === 'function') nhDrawBossFx();
 });
 HOOKS.renderTop.push(() => {
-  if (nhIn()) { nhDrawRain(); if (typeof nhDrawCyberTop === 'function') nhDrawCyberTop(); }
+  if (nhIn()) { lxAir(nhDrawRain); if (typeof nhDrawCyberTop === 'function') nhDrawCyberTop(); }
   nhDrawScanTop(); nhDrawWarp();
 });
 HOOKS.death.push(() => { NHR.carry = 0; });

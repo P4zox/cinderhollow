@@ -26,10 +26,10 @@ const LXN_TUNE = { inner: 1.1, Bi: 2, tiltK: 1.0, dirs: 8, tilts: 3, bMin: 2, bM
 // pixels take a soft sheen. Everything else is matte. Room layers take the region's: ice in the Hoarfrost, wet stone under rain/water.
 const LXN_MAT = [
   [/^(player|wpn_(?!fx_)|hearthkeeper_p|cf_unforged_|cf_smith|gilded_sentinel|grave_knight|enforcer|executioner_|champion|shield_warden|hollow_soldier|hollow_archer|du_soldier|dp_forge_sentry|vael_knight|vael_exec|warden|sf_golem|trn_dummy)/, 'metal'],
-  [/^(prop_(anvil|bell|candelabra|gate|shelfcage|elevator|lever|lantern|chest)|hearthkeeper_props|cfa_(ganvil|rack|gate|guard|doors|furnace)|kit_(gate|parts|plat)|nv_bell|db_(bell|grate|lamp)|xrc_dp_(anvil|cage|gear|pipes|crucible|reliquary)|xrc_sp_(grate|winch|lantern)|xsa_(bell|chand)|cm_(chandelier|candelabra|sconce)|sp_lamp|dp_crucible)/, 'metal'],
+  [/^(prop_(anvil|bell|candelabra|gate|shelfcage|elevator|lever|lantern|chest)|hearthkeeper_props|cfa_(ganvil|rack|gate|guard|doors|furnace)|kit_(gate|parts|plat)|nv_bell|db_(bell|grate|lamp)|xrc_dp_(anvil|cage|gear|pipes|crucible|reliquary)|xrc_sp_(grate|winch|lantern)|xsa_(bell|chand)|cm_(chandelier|candelabra|sconce)|sp_lamp|dp_crucible|nh_(term|train|turret|deco|kit))/, 'metal'],
   [/^(hf_icefall|hf_icicle|hf_golem|ice_warden|sf_glass|sf_lens|sf_shard)/, 'ice'],
 ];
-const LXN_MAT_ROOM = { hoarfrost: 'ice', mire: 'wet', barrows: 'wet', spire: 'wet' };   // (lava is drawn as an emitter: no light to catch)
+const LXN_MAT_ROOM = { hoarfrost: 'ice', mire: 'wet', barrows: 'wet', spire: 'wet', neohallow: 'wet' };   // (lava is drawn as an emitter: no light to catch)
 function lxnMatOf(name) { for (const [re, m] of LXN_MAT) if (re.test(name)) return m; return null; }
 
 // two-pass 3×3 chamfer distance (1, √2): d holds 0 at seeds and a big value elsewhere; capped at cap
@@ -168,7 +168,7 @@ function lxnRoomEntry(cv, kind) {
     const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height;
     const bands = []; for (let y = 0; y < cv.height; y += LXN_BAND) bands.push(y);
     const cy = (LX.cy || 0) + H / 2; bands.sort((a, b) => Math.abs(a + 16 - cy) - Math.abs(b + 16 - cy));
-    const rm = room && LXN_MAT_ROOM[room.def.biome], wetOut = rm === 'wet' && room.def.biome === 'spire' && room.def.indoor;   // the Spire is wet only under its rain
+    const rm = room && LXN_MAT_ROOM[room.def.biome], wetOut = rm === 'wet' && (room.def.biome === 'spire' || room.def.biome === 'neohallow') && room.def.indoor;   // the Spire and NEO-HALLOW are wet only under their rain
     E = { c, x: c.getContext('2d'), bands, kind, done: false, mat: wetOut ? null : kind === 'back' && rm === 'wet' ? null : rm || null };   // wet: the terrain, not the back wall
     LXN.rooms.set(cv, E); LXN.q.push([null, cv, E]);
   }
