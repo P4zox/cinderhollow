@@ -177,8 +177,8 @@ function kitDrawSlab(o, x0, y0, alpha = 1, crack = 0, jx = 0, jy = 0) {
   if (sh.ok && sh.has(o.skin)) {
     const t = sh.tag(o.skin); g.save(); g.globalAlpha = alpha;
     for (let i = 0; i < n; i++) {
-      const f = sh.frames[t.from + (n === 1 ? 3 : i === 0 ? 0 : i === n - 1 ? 2 : 1)];
-      g.drawImage(sh.img, f.x, f.y, f.w, f.h, X + i * TILE, Y, f.w, f.h);
+      const fi = t.from + (n === 1 ? 3 : i === 0 ? 0 : i === n - 1 ? 2 : 1), f = sh.frames[fi];
+      g.drawImage(sh.img, f.x, f.y, f.w, f.h, X + i * TILE, Y, f.w, f.h); lxnRaw(sh, fi, X + i * TILE, Y);   // v17 phase 3: + its normals
       if (crack && sh.has('crack')) { const c = sh.frames[sh.tag('crack').from + Math.min(crack, 2) - 1]; g.drawImage(sh.img, c.x, c.y, c.w, c.h, X + i * TILE, Y, c.w, c.h); }
     }
     g.restore(); return;
@@ -820,8 +820,9 @@ function kitDrawGate(o, cx, top, bot) {
     const bar = sh.frames[sh.first('bar_' + o.skin)], foot = sh.frames[sh.first('foot_' + o.skin)];
     // bars: tile upward from the moving bottom edge, clipped under the cap
     g.save(); g.beginPath(); g.rect(X, top, 16, bot - top); g.clip();
-    for (let y = y1 - 16; y > top - 16; y -= 16) g.drawImage(sh.img, bar.x, bar.y, 16, 16, X, Math.round(y), 16, 16);
-    g.drawImage(sh.img, foot.x, foot.y, 16, 16, X, Math.round(y1 - 16), 16, 16);
+    const bi = sh.first('bar_' + o.skin), fo = sh.first('foot_' + o.skin);
+    for (let y = y1 - 16; y > top - 16; y -= 16) { g.drawImage(sh.img, bar.x, bar.y, 16, 16, X, Math.round(y), 16, 16); if (Math.round(y) >= top) lxnRaw(sh, bi, X, Math.round(y)); }   // (the clip is not mirrored: only whole bars)
+    g.drawImage(sh.img, foot.x, foot.y, 16, 16, X, Math.round(y1 - 16), 16, 16); lxnRaw(sh, fo, X, Math.round(y1 - 16));
     g.restore();
     drawSprite(sh, sh.first('cap_' + o.skin), cx, top + 16, 1, { bottom: true });
     return;

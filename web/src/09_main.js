@@ -325,16 +325,21 @@ function renderWorld() {
   const p2tint = boss && boss.phase === 2 && boss.alive;
   if (p2tint && !dyn) { g.fillStyle = `rgba(255,150,50,${0.05 + 0.03 * Math.sin(time * 3)})`; g.fillRect(cx, cy, W, H); }
   g.drawImage(room.front, 0, 0); lxnLayer(room.front, 'front');
-  for (const p of props) if (p.type !== 'fog' && p.type !== 'veil') lxDrawProp(p);
+  for (const p of props) if (p.type !== 'fog' && p.type !== 'veil') { LXO.occ = lxoProp(p); lxDrawProp(p); }   // v17 phase 3: big props cast shadows too
+  LXO.occ = false;
   for (const f of fx) if (f.name === 'ground_crack') drawFx(f);
   if (HOOKS.renderMid) runHooks('renderMid');   // v16 (79_fatality.js): after the terrain and props, before any body
   // shadows
   const shadow = (x, y, w, a) => { g.fillStyle = `rgba(6,4,10,${a})`; g.beginPath(); g.ellipse(Math.round(x), Math.round(y) + 1, Math.max(2, w), 2.5, 0, 0, 6.3); g.fill(); };
-  if (P.ground) shadow(P.x, P.y, 8, 0.45);
-  for (const e of enemies) if (e.ground && !e.cfg.flying) shadow(e.x, e.y, e.w * 0.6, 0.4);
-  if (boss && boss.state !== 'dormant') shadow(boss.x, boss.floor, boss.kind === 'hound' ? 55 : 34, 0.5);
+  if (!LXO.on) {   // v17 phase 3: under Dynamic lighting with Character shadows the lighting pass lays soft contact pools instead (lxoFinish)
+    if (P.ground) shadow(P.x, P.y, 8, 0.45);
+    for (const e of enemies) if (e.ground && !e.cfg.flying) shadow(e.x, e.y, e.w * 0.6, 0.4);
+    if (boss && boss.state !== 'dormant') shadow(boss.x, boss.floor, boss.kind === 'hound' ? 55 : 34, 0.5);
+  }
+  LXO.occ = LXO.on && SETTINGS.csh >= 2;   // the bodies go into the silhouette buffer: they cast shadows (41b_surf.js)
   if (boss) boss.draw();
   for (const e of enemies) e.draw();
+  LXO.occ = false;
   for (const h of hazards) if (h.pool) { g.fillStyle = `rgba(110,170,50,${0.45 * Math.min(1, h.life)})`; g.beginPath(); g.ellipse(Math.round(h.x), Math.round(h.y) - 1, h.w / 2, 3, 0, 0, 6.3); g.fill(); }
   const rw = fxSheet('rot_wave');
   drawGlow(() => {
@@ -348,10 +353,12 @@ function renderWorld() {
   for (const gh of ghosts) drawSprite(sheet('player'), gh.f, gh.x, gh.y, gh.face, { alpha: gh.life / 0.22 * 0.45, flash: 1, flashColor: gh.red ? '#c02030' : '#5a2a4a' });
   if (!(P.inv > 0 && P.state !== 'hurt' && P.state !== 'dead' && P.state !== 'rise' && Math.floor(time * 20) % 2)) {
     const op = P.flash > 0 ? { flash: P.flash * 0.55, flashColor: '#ff3030' } : P.empower > 0 ? { flash: 0.15 + 0.1 * Math.sin(time * 12), flashColor: '#ffd070' } : {};
+    LXO.occ = LXO.on && SETTINGS.csh >= 2;
     drawSprite(sheet('player'), P.anim.frame, P.x, P.y, P.face, op);
     const ws = sheet('wpn_' + (SAVE.weapon || 'longsword'));
     const sgl = SIGS[SAVE.weapon], sigGlow = sgl && ATK[P.state] && P.anim.i >= ATK[P.state].active[0] - 1 && P.anim.i <= ATK[P.state].active[1];
     drawSprite(ws.ok ? ws : sheet('wpn_longsword'), P.anim.frame, P.x, P.y, P.face, P.fireT > 0 ? { flash: 0.35 + 0.15 * Math.sin(time * 20), flashColor: '#ff8a30' } : sigGlow ? { flash: 0.45, flashColor: sgl.glow } : op);
+    LXO.occ = false;
     if (sgl && !ATK[P.state] && Math.random() < 0.08) particles.push({ x: P.x + P.face * rand(4, 16), y: P.y - rand(8, 24), vx: 0, vy: -rand(5, 15), life: 0.5, kind: sgl.pk });
     if (P.fireT > 0) addLight(P.x + P.face * 12, P.y - 18, 40, '255,150,60', 0.8);
   }
@@ -365,7 +372,7 @@ function renderWorld() {
   lxDrawParticles();
   lights = saved.concat(frameLights);
   addLight(P.x, P.y - 12, 60, '255,188,140', 0.42, LX_PLAYER);   // v17: a small warm fill that reads the knight, not a spotlight
-  if (dyn) lxCollect(lights); else renderLighting();
+  if (dyn) { lxoFinish(cx, cy); lxCollect(lights); } else renderLighting();
   lights = saved;
   g.setTransform(1, 0, 0, 1, 0, 0);
   if (dyn) { g = gTop; if (p2tint) { g.fillStyle = `rgba(255,150,50,${0.04 + 0.02 * Math.sin(time * 3)})`; g.fillRect(0, 0, W, H); } }

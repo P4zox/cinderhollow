@@ -269,7 +269,7 @@ function spUpdateStrikes(dt) {
     s.t += dt;
     if (!s.fx && s.t >= s.warn - 0.24) s.fx = spawnFx(fxOr('sp_strike', 'pillar'), s.x, s.y, 1, null, { bottom: true });
     if (s.t >= s.warn && !s.hit) {
-      s.hit = true; spSfx.strike(); shake = Math.max(shake, 5); SPR.flash = Math.max(SPR.flash, 0.5);
+      s.hit = true; spSfx.strike(); shake = Math.max(shake, 5); SPR.flash = Math.max(SPR.flash, 0.5); SPR.flashDx = clamp((s.x - cam.x - W / 2) / 260, -0.7, 0.7);   // v17 phase 3: the flash comes from the strike's side
       for (let i = 0; i < 14; i++) particles.push({ x: s.x, y: s.y - 2, vx: rand(-120, 120), vy: -rand(30, 160), g: 380, life: rand(0.3, 0.7), kind: 'spark' });
       for (const pd of SPR.puddles) if (Math.abs(clamp(s.x, pd.x0, pd.x1) - s.x) < 40 && Math.abs(pd.y - s.y) < 20) spElectrify(pd, 0.02);
     }
@@ -297,7 +297,7 @@ function spSkyFlash(big = true) {
   const t = sh.tags[Math.random() < 0.5 ? 'flash' : 'flash2'] || sh.tags.flash; if (!t) return;
   if (!sh.loopTag) sh.loopTag = { ...sh.tags.loop };
   SPR.sky = { from: t.from, to: t.to, i: 0, t: 0 };
-  SPR.flash = Math.max(SPR.flash, big ? 0.55 : 0.3);
+  SPR.flash = Math.max(SPR.flash, big ? 0.55 : 0.3); SPR.flashDx = 0.45 * Math.sin(time * 12.9898);   // v17 phase 3: a slant for its shadows (no Math.random: keeps seeded tests in step)
   SPR.thunder.push(rand(0.35, 1.3));
 }
 function spUpdateSky(dt) {
@@ -310,7 +310,7 @@ function spUpdateSky(dt) {
   }
   for (let i = SPR.thunder.length - 1; i >= 0; i--) { SPR.thunder[i] -= dt; if (SPR.thunder[i] <= 0) { spSfx.thunder(rand(0.6, 1)); shake = Math.max(shake, 1.5); SPR.thunder.splice(i, 1); } }
   SPR.flash = Math.max(0, SPR.flash - dt * 2.2);
-  if (SPR.flash > 0) addLight(cam.x + W / 2, cam.y + H / 2, 420, '200,220,255', SPR.flash * 1.1);
+  if (SPR.flash > 0) lxSkyLight(SPR.flash * 1.1, '200,220,255', SPR.flashDx, () => addLight(cam.x + W / 2, cam.y + H / 2, 420, '200,220,255', SPR.flash * 1.1));   // v17 phase 3: a sky light with shadows (41_light.js)
   if (!spOpenSky()) return;
   SPR.skyT -= dt;
   if (SPR.skyT <= 0) { SPR.skyT = rand(6, 13) * (boss && boss.kind === 'cindervane' && boss.phase === 2 ? 0.5 : 1); spSkyFlash(); }

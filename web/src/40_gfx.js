@@ -191,7 +191,7 @@ function gfxChainInit() {
     };
     const w2 = W >> 1, h2 = H >> 1, w4 = W >> 2, h4 = H >> 2;
     Object.assign(GFX, { pBP: gfxProg(gl, GFX_BP), pBL: gfxProg(gl, GFX_BLR), pRY: gfxProg(gl, GFX_RAY),
-      rA: rt(w2, h2), rB: rt(w2, h2), rC: rt(w4, h4), rD: rt(w4, h4), rG: rt(w2, h2), chain: true });
+      rA: rt(w2, h2), rB: rt(w2, h2), rC: rt(w4, h4), rD: rt(w4, h4), rG: rt(w2, h2), rM: rt(W >> 3, H >> 3), chain: true });   // rM: the exposure meter (phase 3)
   } catch (e) { console.warn('bloom chain unavailable, using the single-pass bloom:', e && e.message); GFX.chain = false; }
   gl.useProgram(GFX.prog); gl.activeTexture(gl.TEXTURE0);
   return GFX.chain;
@@ -247,6 +247,37 @@ function gfxRaySources(dt) {
   for (let i = GFX_RAYSRC.length - 1; i >= 0; i--) if (!GFX_RAYSRC[i].seen && GFX_RAYSRC[i].k < 0.01) GFX_RAYSRC.splice(i, 1);
   return GFX_RAYSRC.slice().sort((a, b) => b.k - a.k).slice(0, 3);
 }
+// v17 phase 3: eye adaptation. Not an auto-exposure: every region keeps its calibrated look (LX_BOOST, LX_EXPO). When the room changes,
+// the new room's first lit frame is metered (mean luminance, 48×27 box-filtered, one readback) against the last room's, and the
+// exposure starts from where the eye was, A0 = (new / old)^s (clamped: a dark hall looks darker for a moment, a bright one glares a
+// little), then settles to exactly 1 with time constant tau (≈ 0.9 s to 95 %). Small differences (|ln| < dead) do nothing.
+const GFX_EYE = { s: 0.5, lo: 0.72, hi: 1.35, tau: 0.3, dead: 0.1, every: 2 };
+function gfxMeter(src) {
+  const gl = GFX.gl, M = GFX.rM;
+  gfxPass(GFX.pBP, src, M, W, H, q => { gl.uniform1f(q.th, -1); gl.uniform1f(q.knee, 0); });
+  const buf = GFX.mBuf || (GFX.mBuf = new Uint8Array(M.w * M.h * 4));
+  gl.readPixels(0, 0, M.w, M.h, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  let s = 0; for (let i = 0; i < buf.length; i += 4) s += 0.299 * buf[i] + 0.587 * buf[i + 1] + 0.114 * buf[i + 2];
+  return Math.max(2, s / (buf.length / 4));
+}
+function gfxEye(lit, dt) {
+  const E = GFX.eye || (GFX.eye = { room: null, key: 0, A: 1, A0: 1, t: 0, m: 0, wait: 0 });
+  if (!lit || !SETTINGS.eyead || !GFX.chain || !room) { E.room = room; E.key = 0; E.A = E.A0 = 1; return 1; }
+  const T = GFX_EYE;
+  if (room !== E.room) { E.room = room; E.wait = 3; E.t = 0; }   // the new room's first frames still lack its lamps (and sit under the fade): meter the 3rd
+  if (E.wait > 0) {
+    if (--E.wait > 0) return E.A;
+    const k = gfxMeter(lit);
+    if (E.key > 0) { const r = Math.log(k / E.key); E.A0 = Math.abs(r) < T.dead ? 1 : clamp(Math.exp(r * T.s), T.lo, T.hi); } else E.A0 = 1;
+    E.key = k; E.t = 0; E.m = 0;
+  } else {
+    E.t += dt; E.m += dt;
+    if (E.m > T.every && E.t > 1.5) { E.m = 0; E.key = 0.5 * E.key + 0.5 * gfxMeter(lit); }   // follow the room as the view moves (where the eye is when it leaves)
+  }
+  E.A = E.A0 === 1 ? 1 : Math.pow(E.A0, Math.exp(-E.t / T.tau));
+  return E.A;
+}
 // biome mood: [shadow tint, highlight tint, saturation, contrast]; blended over ~0.5 s when the biome changes
 const GFX_MOOD_DEF = [[1, 1, 1], [1, 1, 1], 1, 1];
 const GFX_MOOD = {
@@ -300,6 +331,7 @@ function gfxRender(w, h) {
   gl.activeTexture(gl.TEXTURE0);
   if (!lit) { gl.bindTexture(gl.TEXTURE_2D, GFX.tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, low); }
   const src = lit || GFX.tex, dt = clamp(time - (GFX.lastT ?? time), 0, 0.1); GFX.lastT = time;   // game time: fades hold while paused
+  const eye = gfxEye(lit, dt);   // v17 phase 3: eye adaptation after a room change (1 when settled, and always 1 unlit)
   const bl = SETTINGS.bloom > 0, rs = SETTINGS.rays > 0 && GFX.chain ? gfxRaySources(dt) : [], ry = rs.some(q => q.k > 0.01);
   if (GFX.chain && (bl || ry)) {
     const { pBP, pBL, rA, rB, rC, rD, rG } = GFX;
@@ -328,7 +360,7 @@ function gfxRender(w, h) {
   gl.uniform3fv(u.gS, M[0]); gl.uniform3fv(u.gH, M[1]); gl.uniform1f(u.gSat, M[2]); gl.uniform1f(u.gCon, M[3]);
   gl.uniform2f(u.S, W, H); gl.uniform2f(u.O, ow, oh); gl.uniform1f(u.tm, time % 1000);
   const TN = GFX_TONE;   // Brightness: the lighting pass exposes the scene itself (41_light.js), so the post pass only exposes unlit frames
-  gl.uniform1f(u.expo, lit ? 1 : TN.expo[SETTINGS.bright ?? 1]); gl.uniform1f(u.TMK, TN.k); gl.uniform1f(u.TMT, TN.t); gl.uniform1f(u.addCap, TN.cap);
+  gl.uniform1f(u.expo, lit ? eye : TN.expo[SETTINGS.bright ?? 1]); gl.uniform1f(u.TMK, TN.k); gl.uniform1f(u.TMT, TN.t); gl.uniform1f(u.addCap, TN.cap);
   gl.uniform1f(u.bloomK, TN.bloom[SETTINGS.bloom] || 0); gl.uniform1f(u.raysK, TN.rays[Math.min(2, SETTINGS.rays | 0)] || 0); gl.uniform1f(u.bloom, SETTINGS.bloom); gl.uniform1f(u.vig, SETTINGS.vig); gl.uniform1f(u.scan, SETTINGS.scan); gl.uniform1f(u.grain, SETTINGS.grain);
   gl.uniform1f(u.ca, SETTINGS.ca); gl.uniform1f(u.filt, SETTINGS.tex); gl.uniform1f(u.grade, SETTINGS.grade);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -361,6 +393,9 @@ const GFX_ROWS = [
   { k: 'lband', label: 'Light bands', opts: ['Stepped', 'Smooth', 'Dithered'], shader: true, desc: 'Stepped: light falls off in a few clean pixel-art steps. Smooth: a soft gradient. Dithered: steps with a checkered retro edge.' },
   { k: 'surf', label: 'Surface lighting', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. Light wraps around the knight, foes and stone: the side facing a lamp catches it, the far side falls into shade.' },
   { k: 'rim', label: 'Rim light', opts: ['Off', 'On'], shader: true, desc: 'Needs Surface lighting. The edge of a silhouette that faces a lamp catches a thin bright rim.' },
+  { k: 'csh', label: 'Character shadows', opts: ['Off', 'Contact', 'On'], shader: true, desc: 'Needs Dynamic lighting. Contact: a soft shadow pools under feet. On: the knight, foes and bosses also throw shadows from nearby lamps (needs shadows).' },
+  { k: 'mat', label: 'Materials', opts: ['Off', 'On'], shader: true, desc: 'Needs Surface lighting. Armour, blades and iron catch small glints from lamps; wet stone and ice a soft sheen.' },
+  { k: 'eyead', label: 'Eye adaptation', opts: ['Off', 'On'], shader: true, desc: 'Needs Dynamic lighting. Stepping from a bright room into a dark one, your eyes take a moment to adjust (and back).' },
   { k: 'preset', label: 'Look', desc: 'A ready-made mix of the options below. Change any of them to make your own.' },
   { k: 'tex', label: 'Texture filter', opts: ['Crisp pixels', 'Smooth pixels', 'Soft'], desc: 'Crisp: hard pixel edges. Smooth pixels: clean anti-aliased pixel art (needs shaders). Soft: blurred.' },
   { k: 'bloom', label: 'Bloom', opts: ['Off', 'Low', 'High'], shader: true, desc: 'Embers, fire, spells and light sources glow and bleed into the dark.' },

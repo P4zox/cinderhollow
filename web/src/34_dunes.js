@@ -538,6 +538,7 @@ function duDrawBlasters() {
 function duStormBoss(S, dt) {
   if (!S.on) { S.walls = []; return; }
   S.wallT -= dt; S.boltT -= dt; S.flash = Math.max(0, S.flash - dt * 3);
+  if (S.flash > 0) lxSkyLight(S.flash * 0.8, '205,220,255', S.slant || 0, () => {});   // v17 phase 3: the bolt lights the arena from the sky, with shadows (Dynamic only)
   if (S.wallT <= 0 && S.k > 0.6) {
     S.wallT = rand(7, 10); const dir = Math.random() < 0.5 ? -1 : 1;
     S.walls.push({ x: dir > 0 ? S.L - 90 : S.R + 90, dir, v: 150, w: 46, warn: 1.3, id: ++hazardId, t: 0 });
@@ -555,7 +556,7 @@ function duStormBoss(S, dt) {
   S.walls = S.walls.filter(w => w.warn > 0 || (w.dir > 0 ? w.x < S.R + 120 : w.x > S.L - 120));
   if (S.boltT <= 0 && S.k > 0.5) {
     S.boltT = rand(2.2, 3.8); S.flash = 1; flashScreen = Math.max(flashScreen, 0.25);
-    const x = clamp(P.x + rand(-60, 60), S.L - 20, S.R + 20), fl = S.floor, pts = [];
+    const x = clamp(P.x + rand(-60, 60), S.L - 20, S.R + 20), fl = S.floor, pts = []; S.slant = clamp((x - cam.x - W / 2) / 260, -0.7, 0.7);
     for (let y = 0; y <= fl; y += 14) pts.push([x + rand(-7, 7), y]);
     pts[pts.length - 1] = [x, fl];
     duMark(x, fl, 0.7, 22, '200,220,255');

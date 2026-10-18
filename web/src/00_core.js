@@ -126,11 +126,13 @@ function drawSprite(sh, frame, x, y, face, opt = {}) {
   if (opt.blend) g.globalCompositeOperation = opt.blend;
   if (opt.rot) {
     g.translate(X, Y); if (flip) g.scale(-1, 1); g.rotate(opt.rot);
-    g.drawImage(img, sx, sy, f.w, f.h, -ax, -ay, f.w, f.h); g.restore(); return;
+    g.drawImage(img, sx, sy, f.w, f.h, -ax, -ay, f.w, f.h);
+    if (lxNHook && lxNHook.g === g) lxNHook.rot(sh, frame, -ax, -ay, f.w, f.h, img, sx, sy);   // v17 phase 3: rotated normals / silhouette
+    g.restore(); return;
   }
   if (flip) { g.translate(X, 0); g.scale(-1, 1); g.drawImage(img, sx, sy, f.w, f.h, -ax, Y - ay, f.w, f.h); }
   else g.drawImage(img, sx, sy, f.w, f.h, X - ax, Y - ay, f.w, f.h);
-  if (lxNHook && lxNHook.g === g) lxNHook.sprite(sh, frame, flip, flip ? -ax : X - ax, Y - ay, f.w, f.h);   // v17 surface lighting (41b_surf.js): the frame's normals, same place
+  if (lxNHook && lxNHook.g === g) lxNHook.sprite(sh, frame, flip, flip ? -ax : X - ax, Y - ay, f.w, f.h, img, sx, sy);   // v17 surface lighting (41b_surf.js): the frame's normals, same place (phase 3: + its silhouette)
   g.restore();
 }
 function drawRotated(sh, frame, x, y, angle, alpha = 1) {
@@ -140,6 +142,7 @@ function drawRotated(sh, frame, x, y, angle, alpha = 1) {
   g.translate(Math.round(x), Math.round(y));
   g.rotate(angle - (sh.native === -1 ? Math.PI : 0));
   g.drawImage(sh.img, f.x, f.y, f.w, f.h, -Math.floor(f.w / 2), -Math.floor(f.h / 2), f.w, f.h);
+  if (lxNHook && lxNHook.g === g) lxNHook.rot(sh, frame, -Math.floor(f.w / 2), -Math.floor(f.h / 2), f.w, f.h, sh.img, f.x, f.y);   // v17 phase 3
   g.restore();
 }
 // meta rect (frame coords, native facing) -> world rect for an entity {x,y,face} drawn with sheet sh
